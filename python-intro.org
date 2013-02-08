@@ -1,0 +1,4128 @@
+#+TITLE:     Introduction to python for scientific and engineering computations
+#+AUTHOR:    John Kitchin
+#+EMAIL:     johnrkitchin@gmail.com
+#+DATE:      2013-01-21 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+http://scipy-lectures.github.com/index.html
+
+* Basic python usage
+** TODO http://matlab.cheme.cmu.edu/2011/09/26/some-basic-data-structures-in-matlab/
+** Basic math
+Python is a basic calculator out of the box. Here we consider the most basic mathematical operations: addition, subtraction, multiplication, division and exponenetiation. we use the func:print to get the output. For now we consider integers and float numbers. An integer is a plain number like 0, 10 or -2345. A float number has a decimal in it. The following are all floats: 1.0, -9., and 3.56. Note the trailing zero is not required, although it is good style.
+
+#+BEGIN_SRC python 
+print 2 + 4
+print 8.1 - 5
+#+END_SRC
+
+#+RESULTS:
+: 6
+: 3.1
+
+Multiplication is equally straightforward.
+#+BEGIN_SRC python
+print 5 * 4
+print 3.1*2
+#+END_SRC
+
+#+RESULTS:
+: 20
+: 6.2
+
+Division is almost as straightforward, but we have to remember that integer division is not the same as float division. Let us consider float division first.
+
+#+BEGIN_SRC python
+print 4.0 / 2.0
+print 1.0/3.1
+#+END_SRC
+
+#+RESULTS:
+: 2.0
+: 0.322580645161
+
+Now, consider the integer versions:
+
+#+BEGIN_SRC python
+print 4 / 2
+print 1/3
+#+END_SRC
+
+#+RESULTS:
+: 2
+: 0
+
+The first result is probably what you expected, but the second may come as a surprise. In integer division the remainder is discarded, and the result is an integer. 
+
+Exponentiation is also a basic math operation that python supports directly.
+
+#+BEGIN_SRC python
+print 3.**2
+print 3**2
+print 2**0.5
+#+END_SRC
+
+#+RESULTS:
+: 9.0
+: 9
+: 1.41421356237
+
+Other types of mathematical operations require us to import functionality from python libraries. We consider those in the next section.
+
+** Advanced mathematical operators
+The primary library we will consider is mod:numpy, which provides many mathematical functions, statistics as well as support for linear algebra. For a complete listing of the functions available, see http://docs.scipy.org/doc/numpy/reference/routines.math.html. We begin with the simplest functions.
+
+#+BEGIN_SRC python
+import numpy as np
+print np.sqrt(2)
+#+END_SRC
+
+#+RESULTS:
+: 1.41421356237
+
+*** Exponential and logarithmic functions
+Here is the exponential function.
+#+BEGIN_SRC python
+import numpy as np
+print np.exp(1)
+#+END_SRC
+
+#+RESULTS:
+: 2.71828182846
+
+There are two logarithmic functions commonly used, the natural log function func:numpy.log and the base10 logarithm func:numpy.log10.
+
+#+BEGIN_SRC python
+import numpy as np
+print np.log(10)
+print np.log10(10)  # base10
+#+END_SRC
+
+#+RESULTS:
+: 2.30258509299
+: 1.0
+
+There are many other intrinsic functions available in mod:numpy which we will eventually cover. First, we need to consider how to create our own functions.
+
+** Creating your own functions
+We can combine operations to evaluate complex equations. Consider the value of the equation $x^3 - \log(x)$ for the value $x=4.1$.
+
+#+BEGIN_SRC python
+import numpy as np
+x = 3
+print x**3 - np.log(x)
+#+END_SRC
+
+#+RESULTS:
+: 25.9013877113
+
+It would be tedious to type this out each time. Next, we learn how to express this equation as a new function, which we can call with different values.
+
+#+BEGIN_SRC python
+import numpy as np
+def f(x):
+    return x**3 - np.log(x)
+
+print f(3)
+print f(5.1)
+#+END_SRC
+
+#+RESULTS:
+: 25.9013877113
+: 131.02175946
+
+It may not seem like we did much there, but this is the foundation for solving equations in the future. Before we get to solving equations, we have a few more details to consider. Next, we consider evaluating functions on arrays of values. 
+
+** Functions on arrays of values
+It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
+
+#+BEGIN_SRC python
+import numpy as np
+print np.linspace(0, np.pi, 10)
+#+END_SRC
+
+#+RESULTS:
+: [ 0.          0.34906585  0.6981317   1.04719755  1.3962634   1.74532925
+:   2.0943951   2.44346095  2.7925268   3.14159265]
+
+The main point of using the mod:numpy functions is that they work element-wise on elements of an array. In this example, we compute the $\cos(x)$ for each element of $x$.
+
+#+BEGIN_SRC python
+import numpy as np
+x = np.linspace(0, np.pi, 10)
+print np.cos(x)
+#+END_SRC
+
+#+RESULTS:
+: [ 1.          0.93969262  0.76604444  0.5         0.17364818 -0.17364818
+:  -0.5        -0.76604444 -0.93969262 -1.        ]
+
+You can already see from this output that there is a root to the equation $\cos(x) = 0$, because there is a change in sign in the output. This is not a very convenient way to view the results; a graph would be better.  We use mod:matplotlib to make figures. Here is an example.
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, np.pi, 10)
+plt.plot(x, np.cos(x))
+plt.xlabel('x')
+plt.ylabel('cos(x)')
+plt.savefig('images/plot-cos.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/plot-cos.png]]
+
+This figure illustrates graphically what the numbers above show. The function crosses zero at approximately $x = 1.5$. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation $f(x) = \cos(x) = 0$. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.
+
+#+BEGIN_SRC python
+from scipy.optimize import fsolve 
+import numpy as np
+
+def f(x):
+    return np.cos(x)
+
+sol, = fsolve(f, x0=1.5) # the comma after sol makes it return a float
+print sol
+print np.pi / 2
+#+END_SRC
+
+#+RESULTS:
+: 1.57079632679
+: 1.57079632679
+
+We know the solution is \pi/2. 
+** Advanced function creation
+Python has some nice features in creating functions. You can create default values for variables, have optional variables and optional keyword variables.
+In this function f(a,b), =a= and =b= are called positional arguments, and they are required, and must be provided in the same order as the function defines.
+
+If we provide a default value for an argument, then the argument is called a keyword argument, and it becomes optional. You can combine positional arguments and keyword arguments, but positional arguments must come first. Here is an example.
+
+#+BEGIN_SRC python
+def func(a, n=2):
+    "compute the nth power of a"
+    return a**n
+
+# three different ways to call the function
+print func(2)
+print func(2, 3)
+print func(2, n=4)
+#+END_SRC
+
+#+RESULTS:
+: 4
+: 8
+: 16
+
+In the first call to the function, we only define the argument =a=, which is a mandatory, positional argument. In the second call, we define =a= and =n=, in the order they are defined in the function. Finally, in the third call, we define =a= as a positional argument, and =n= as a keyword argument.
+
+If all of the arguments are optional, we can even call the function with no arguments. If you give arguments as positional arguments, they are used in the order defined in the function. If you use keyword arguments, the order is arbitrary.
+
+#+BEGIN_SRC python
+def func(a=1, n=2):
+    "compute the nth power of a"
+    return a**n
+
+# three different ways to call the function
+print func()
+print func(2, 4)
+print func(n=4, a=2)
+#+END_SRC
+
+#+RESULTS:
+: 1
+: 16
+: 16
+
+It is occasionally useful to allow an arbitrary number of arguments in a function. Suppose we want a function that can take an arbitrary number of positional arguments and return the sum of all the arguments. We use the syntax =*args= to indicate arbitrary positional arguments. Inside the function the variable =args= is a tuple containing all of the arguments passed to the function. 
+
+#+BEGIN_SRC python
+def func(*args):
+    sum = 0
+    for arg in args:
+        sum += arg
+    return sum
+
+print func(1, 2, 3, 4)
+#+END_SRC
+
+#+RESULTS:
+: 10
+
+A more "functional programming" version of the last function is given here. This is an advanced approach that is less readable to new users, but more compact and likely more efficient for large numbers of arguments.
+
+#+BEGIN_SRC python
+import operator
+def func(*args):
+    return reduce(operator.add, args)
+print func(1, 2, 3, 4)
+
+#+END_SRC
+
+#+RESULTS:
+: 10
+
+It is possible to have arbitrary keyword arguments. This is a common pattern when you call another function within your function that takes keyword arguments. We use =**kwargs= to indicate that arbitrary keyword arguments can be given to the function. Inside the function, kwargs is variable containing a dictionary of the keywords and values passed in.
+
+#+BEGIN_SRC python
+def func(**kwargs):
+    for kw in kwargs:
+        print '{0} = {1}'.format(kw, kwargs[kw])
+
+func(t1=6, color='blue')
+#+END_SRC
+
+#+RESULTS:
+: color = blue
+: t1 = 6
+
+A typical example might be:
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+
+def myplot(x, y, fname=None, **kwargs):
+    "make plot of x,y. save to fname if not None. provide kwargs to plot"
+    plt.plot(x, y, **kwargs)
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('My plot')
+    if fname:
+        plt.savefig(fname)
+    else:
+        plt.show()
+
+x = [1, 3, 4, 5]
+y = [3, 6, 9, 12]
+
+myplot(x, y, 'images/myfig.png', color='orange', marker='s')
+
+# you can use a dictionary as kwargs
+d = {'color':'magenta',
+     'marker':'d'}
+
+myplot(x, y, 'images/myfig2.png', **d)
+
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/myfig.png]]
+
+[[./images/myfig2.png]]
+
+In that example we wrap the matplotlib plotting commands in a function, which we can call the way we want to, with arbitrary optional arguments. In this example, you cannot pass keyword arguments that are illegal to the plot command or you will get an error.
+
+It is possible to combine all the options at once. I admit it is hard to imagine where this would be really useful, but it can be done!
+#+BEGIN_SRC python
+import numpy as np
+
+def func(a, b=2, *args, **kwargs):
+    "return a**b + sum(args) and print kwargs"
+    for kw in kwargs:
+        print 'kw: {0} = {1}'.format(kw, kwargs[kw])
+
+    return a**b + np.sum(args)
+
+print func(2, 3, 4, 5, mysillykw='hahah')
+#+END_SRC
+
+#+RESULTS:
+: kw: mysillykw = hahah
+: 17
+
+** Controlling the format of printed variables
+   :PROPERTIES:
+   :categories: python
+   :date:     2013-01-21
+   :last-published: 2013-01-21
+   :END:
+This was first worked out in this [[http://matlab.cheme.cmu.edu/2011/10/06/sprintfing-to-the-finish/][original Matlab post]].
+
+Often you will want to control the way a variable is printed. You may want to only show a few decimal places, or print in scientific notation, or embed the result in a string. Here are some examples of printing with no control over the format.
+ 
+#+BEGIN_SRC python
+a = 2./3
+print a
+print 1/3
+print 1./3.
+print 10.1
+print "Avogadro's number is ", 6.022e23,'.'
+#+END_SRC
+
+#+RESULTS:
+: 0.666666666667
+: 0
+: 0.333333333333
+: 10.1
+: Avogadro's number is  6.022e+23 .
+
+There is no control over the number of decimals, or spaces around a printed number. 
+
+In python, we use the format function to control how variables are printed. With the format function you use codes like {/n/:format specifier} to indicate that a formatted string should be used. /n/ is the /n^{th}/ argument passed to format, and there are a variety of format specifiers. Here we examine how to format float numbers. The specifier has the general form "w.df" where w is the width of the field, and d is the number of decimals, and f indicates a float number. "1.3f" means to print a float number with 3 decimal places. Here is an example.
+
+#+BEGIN_SRC python
+print 'The value of 1/3 to 3 decimal places is {0:1.3f}'.format(1./3.)
+#+END_SRC
+
+#+RESULTS:
+: The value of 1/3 to 3 decimal places is 0.333
+
+In that example, the 0 in {0:1.3f} refers to the first (and only) argument to the format function. If there is more than one argument, we can refer to them like this:
+
+#+BEGIN_SRC python
+print 'Value 0 = {0:1.3f}, value 1 = {1:1.3f}, value 0 = {0:1.3f}'.format(1./3., 1./6.)
+#+END_SRC
+
+#+RESULTS:
+: Value 0 = 0.333, value 1 = 0.167, value 0 = 0.333
+
+Note you can refer to the same argument more than once, and in arbitrary order within the string.
+
+Suppose you have a list of numbers you want to print out, like this:
+
+#+BEGIN_SRC python
+for x in [1./3., 1./6., 1./9.]:
+    print 'The answer is {0:1.2f}'.format(x)
+#+END_SRC
+
+#+RESULTS:
+: The answer is 0.33
+: The answer is 0.17
+: The answer is 0.11
+
+The "g" format specifier is a general format that can be used to indicate a precision, or to indicate significant digits. To print a number with a specific number of significant digits we do this:
+
+#+BEGIN_SRC python
+print '{0:1.3g}'.format(1./3.)
+print '{0:1.3g}'.format(4./3.)
+#+END_SRC
+
+#+RESULTS:
+: 0.333
+: 1.33
+
+We can also specify plus or minus signs. Compare the next two outputs.
+
+#+BEGIN_SRC python
+for x in [-1., 1.]: print '{0:1.2f}'.format(x)
+#+END_SRC
+
+#+RESULTS:
+: -1.00
+: 1.00
+
+You can see the decimals do not align. That is because there is a minus sign in front of one number. We can specify to show the sign for positive and negative numbers, or to pad positive numbers to leave space for positive numbers.
+
+#+BEGIN_SRC python
+for x in [-1., 1.]: print '{0:+1.2f}'.format(x) # explicit sign
+for x in [-1., 1.]: print '{0: 1.2f}'.format(x) # pad positive numbers
+#+END_SRC
+
+#+RESULTS:
+: -1.00
+: +1.00
+: -1.00
+:  1.00
+
+We use the "e" or "E" format modifier to specify scientific notation.
+#+BEGIN_SRC python
+import numpy as np
+eps = np.finfo(np.double).eps
+print eps
+print '{0}'.format(eps)
+print '{0:1.2f}'.format(eps)
+print '{0:1.2e}'.format(eps)  #exponential notation
+print '{0:1.2E}'.format(eps)  #exponential notation with capital E
+#+END_SRC
+
+#+RESULTS:
+: 2.22044604925e-16
+: 2.22044604925e-16
+: 0.00
+: 2.22e-16
+: 2.2E-16
+
+As a float with 2 decimal places, that very small number is practically equal to 0.
+
+We can even format percentages. Note you do not need to put the % in your string.
+#+BEGIN_SRC python
+print 'the fraction {0} corresponds to {0:1.0%}'.format(0.78) 
+#+END_SRC
+
+#+RESULTS:
+: the fraction 0.78 corresponds to 78%
+
+There are many other options for formatting strings. See http://docs.python.org/2/library/string.html#formatstrings for a full specification of the options.
+
+** TODO Advanced string formatting
+** TODO http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/
+** Defining functions in python
+
+Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-got-two-turntables-and-a-microphone/][Matlab implementation. ]]
+
+We often need to make functions in our codes to do things. 
+
+#+BEGIN_SRC python :session
+def f(x):
+    "return the inverse square of x"
+    return 1.0 / x**2
+
+print f(3)
+print f([4,5])
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... >>> 0.111111111111
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "<stdin>", line 3, in f
+: TypeError: unsupported operand type(s) for ** or pow(): 'list' and 'int'
+
+Note that functions are not automatically vectorized. There are a few ways to achieve that. One is to "cast" the input variables to objects that support vectorized operations, such as numpy.array objects.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+def f(x):
+    "return the inverse square of x"
+    x = np.array(x)
+    return 1.0 / x**2
+
+print f(3)
+print f([4,5])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... ... ... ... >>> 0.111111111111
+: [ 0.0625  0.04  ]
+
+It is possible to have more than one variable.
+
+#+BEGIN_SRC python
+import numpy as np
+
+def func(x, y):
+    "return product of x and y"
+    return x * y
+
+print func(2, 3)
+print func(np.array([2, 3]), np.array([3, 4]))
+#+END_SRC
+
+#+RESULTS:
+: 6
+: [ 6 12]
+
+You can define "lambda" functions, which are also known as inline or anonymous functions. The syntax is =lambda var:f(var)=. I think these are hard to read and discourage their use. Here is a typical usage where you have to define a simple function that is passed to another function, e.g. scipy.integrate.quad to perform an integral.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+print quad(lambda x:x**3, 0 ,2)
+
+#+END_SRC
+
+#+RESULTS:
+: (4.0, 4.440892098500626e-14)
+
+It is possible to nest functions inside of functions like this.
+#+BEGIN_SRC python
+
+def wrapper(x):
+    a = 4
+    def func(x, a):
+        return a * x
+
+    return func(x, a)
+
+print wrapper(4)
+
+#+END_SRC
+
+#+RESULTS:
+: 16
+
+An alternative approach is to "wrap" a function, say to fix a parameter. You might do this so you can integrate the wrapped function, which depends on only a single variable, whereas the original function depends on two variables.
+#+BEGIN_SRC python
+def func(x, a):
+        return a * x
+ 
+def wrapper(x):
+    a = 4
+    return func(x, a)
+
+print wrapper(4)
+#+END_SRC
+
+#+RESULTS:
+: 16
+
+Last example, defining a function for an ode
+
+#+BEGIN_SRC python
+from scipy.integrate import odeint
+import numpy as np
+import matplotlib.pyplot as plt
+
+k = 2.2
+def myode(t,y):
+    "ode defining exponential growth"
+    return k * t
+
+y0 = 3
+tspan = np.linspace(0,1)
+y =  odeint(myode, y0, tspan)
+
+plt.plot(tspan, y)
+plt.xlabel('Time')
+plt.ylabel('y')
+plt.savefig('images/funcs-ode.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/funcs-ode.png]]
+
+* Math
+** Integrating equations in python
+  :PROPERTIES:
+  :date:     2013-01-20
+  :last-published: 2013-01-20
+  :categories: python integration
+  :END:
+
+A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
+
+#+BEGIN_SRC python
+import scipy
+from scipy.integrate import quad
+
+nu0 = 5     # L/min
+alpha = 1.0 # L/min
+def integrand(t):
+    return nu0 + alpha * t
+
+t0 = 0.0
+tfinal = 10.0
+V, estimated_error = quad(integrand, t0, tfinal)
+print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+... ... >>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 3, in f
+TypeError: 'int' object is not iterable
+[16, 25]
+>>>   File "<stdin>", line 1
+    * Math
+    ^
+SyntaxError: invalid syntax
+File "<stdin>", line 1
+    ** Integrating equations in python
+     ^
+SyntaxError: invalid syntax
+File "<stdin>", line 1
+    :PROPERTIES:
+    ^
+IndentationError: unexpected indent
+File "<stdin>", line 1
+    :date:     2013-01-20
+    ^
+IndentationError: unexpected indent
+File "<stdin>", line 1
+    :last-published: 2013-01-20
+    ^
+IndentationError: unexpected indent
+File "<stdin>", line 1
+    :categories: python integration
+    ^
+IndentationError: unexpected indent
+File "<stdin>", line 1
+    :END:
+    ^
+IndentationError: unexpected indent
+>>>   File "<stdin>", line 1
+    A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
+           ^
+SyntaxError: invalid syntax
+>>> ... >>> >>> >>> >>> >>> ... ... >>> >>> >>> >>> 100.00 L flowed into the tank over 10 minutes
+#+end_example
+
+That is all there is too it!
+** TODO http://matlab.cheme.cmu.edu/2011/12/24/a-novel-way-to-numerically-estimate-the-derivative-of-a-function-complex-step-derivative-approximation/
+** TODO http://matlab.cheme.cmu.edu/2011/11/05/vectorized-piecewise-functions/
+** TODO http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/
+** Smooth transitions between discontinuous functions	     :fluids:example:
+  :PROPERTIES:
+  :categories: [Miscellaneous, nonlinear algebra]
+  :date:     2013-01-31
+  :last-published: 2013-01-31
+  :END:
+
+[[http://matlab.cheme.cmu.edu/2011/10/30/smooth-transitions-between-discontinuous-functions/][original post]]
+
+In [[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Post 1280]] we used a correlation for the Fanning friction factor for turbulent flow in a pipe. For laminar flow (Re < 3000), there is another correlation that is commonly used: $f_F = 16/Re$. Unfortunately, the correlations for laminar flow and turbulent flow have different values at the transition that should occur at Re = 3000. This discontinuity can cause a lot of problems for numerical solvers that rely on derivatives.
+
+Today we examine a strategy for smoothly joining these two functions. First we define the two functions.
+
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.optimize import fsolve
+import matplotlib.pyplot as plt
+
+def fF_laminar(Re):
+    return 16.0 / Re
+
+def fF_turbulent_unvectorized(Re):
+    # Nikuradse correlation for turbulent flow
+    # 1/np.sqrt(f) = (4.0*np.log10(Re*np.sqrt(f))-0.4)
+    # we have to solve this equation to get f
+    def func(f):
+        return 1/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
+    fguess = 0.01
+    f, = fsolve(func, fguess)
+    return f
+
+# this enables us to pass vectors to the function and get vectors as
+# solutions
+fF_turbulent = np.vectorize(fF_turbulent_unvectorized)
+#+END_SRC
+
+#+RESULTS:
+
+Now we plot the correlations.
+
+#+BEGIN_SRC python :session
+Re1 = np.linspace(500, 3000)
+f1 = fF_laminar(Re1)
+
+Re2 = np.linspace(3000, 10000)
+f2 = fF_turbulent(Re2)
+
+plt.figure(1); plt.clf()
+plt.plot(Re1, f1, label='laminar')
+plt.plot(Re2, f2, label='turbulent')
+plt.xlabel('Re')
+plt.ylabel('$f_F$')
+plt.legend()
+plt.savefig('smooth-transitions-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> <matplotlib.figure.Figure object at 0x051FF630>
+: [<matplotlib.lines.Line2D object at 0x05963C10>]
+: [<matplotlib.lines.Line2D object at 0x0576DD70>]
+: <matplotlib.text.Text object at 0x0577CFF0>
+: <matplotlib.text.Text object at 0x05798790>
+: <matplotlib.legend.Legend object at 0x05798030>
+
+[[./smooth-transitions-1.png]]
+
+You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
+Sigmoid functions
+
+A sigmoid function smoothly varies from 0 to 1 according to the equation: $\sigma(x) = \frac{1}{1 + e^{-(x-x0)/\alpha}}$. The transition is centered on $x0$, and $\alpha$ determines the width of the transition.
+
+#+BEGIN_SRC python :session
+x = np.linspace(-4,4);
+y = 1.0 / (1 + np.exp(-x / 0.1))
+plt.figure(2); plt.clf()
+plt.plot(x, y)
+plt.xlabel('x'); plt.ylabel('y'); plt.title('$\sigma(x)$')
+plt.savefig('smooth-transitions-sigma.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> <matplotlib.figure.Figure object at 0x0596CF10>
+: [<matplotlib.lines.Line2D object at 0x05A26D90>]
+: <matplotlib.text.Text object at 0x059A6050>
+: <matplotlib.text.Text object at 0x059AF0D0>
+: <matplotlib.text.Text object at 0x059BEA30>
+
+[[./smooth-transitions-sigma.png]]
+
+If we have two functions, $f_1(x)$ and $f_2(x)$ we want to smoothly join, we do it like this: $f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)$. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.
+
+#+BEGIN_SRC python :session
+def fanning_friction_factor(Re):
+    '''combined, continuous correlation for the fanning friction factor.
+    the alpha parameter is chosen to provide the desired smoothness.
+    The transition region is about +- 4*alpha. The value 450 was
+    selected to reasonably match the shape of the correlation
+    function provided by Morrison (see last section of this file)'''
+    sigma =  1. / (1 + np.exp(-(Re - 3000.0) / 450.0));
+    f = (1-sigma) * fF_laminar(Re) + sigma * fF_turbulent(Re)
+    return f
+
+Re = np.linspace(500,10000);
+f = fanning_friction_factor(Re);
+
+# add data to figure 1
+plt.figure(1)
+plt.plot(Re,f, label='smooth transition')
+plt.xlabel('Re')
+plt.ylabel('$f_F$')
+plt.legend()
+plt.savefig('smooth-transitions-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... ... ... >>> >>> >>> >>> ... <matplotlib.figure.Figure object at 0x051FF630>
+: [<matplotlib.lines.Line2D object at 0x05786310>]
+: <matplotlib.text.Text object at 0x0577CFF0>
+: <matplotlib.text.Text object at 0x05798790>
+: <matplotlib.legend.Legend object at 0x05A302B0>
+
+[[./smooth-transitions-3.png]]
+
+You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.
+
+[[http://www.chem.mtu.edu/~fmorriso/DataCorrelationForSmoothPipes2010.pdf][Morrison]] derived a single function for the friction factor correlation over all Re: $f = \frac{0.0076\left(\frac{3170}{Re}\right)^{0.165}}{1 + \left(\frac{3171}{Re}\right)^{7.0}} + \frac{16}{Re}$. Here we show the comparison with the approach used above. The friction factor differs slightly at high Re, becauase Morrison’s is based on the Prandlt correlation, while the work here is based on the Nikuradse correlation. They are similar, but not the same.
+
+#+BEGIN_SRC python :session
+# add this correlation to figure 1
+h, = plt.plot(Re, 16.0/Re + (0.0076 * (3170 / Re)**0.165) / (1 + (3170.0 / Re)**7))
+
+ax = plt.gca()
+handles, labels = ax.get_legend_handles_labels()
+
+handles.append(h)
+labels.append('Morrison')
+ax.legend(handles, labels)
+plt.savefig('smooth-transitions-morrison.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> <matplotlib.legend.Legend object at 0x05A5AEB0>
+
+[[./smooth-transitions-morrison.png]]
+
+*** Summary
+
+The approach demonstrated here allows one to smoothly join two discontinuous functions that describe physics in different regimes, and that must transition over some range of data. It should be emphasized that the method has no physical basis, it simply allows one to create a mathematically smooth function, which could be necessary for some optimizers or solvers to work.
+
+** On the quad or trapz'd in ChemE heaven
+   :PROPERTIES:
+   :categories: [integration, python]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2011/09/12/on-the-quad-or-trapzd-in-cheme-heaven/][Matlab post]]
+
+What is the difference between quad and trapz? The short answer is that quad integrates functions (via a function handle) using numerical quadrature, and trapz performs integration of arrays of data using the trapezoid method.
+
+Let us look at some examples. We consider the example of computing $\int_0^2 x^3 dx$. the analytical integral is $1/4 x^4$, so we know the integral evaluates to 16/4 = 4. This will be our benchmark for comparison to the numerical methods.
+
+We use the scipy.integrate.quad command  to evaluate this $\int_0^2 x^3 dx$.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+
+ans, err = quad(lambda x: x**3, 0, 2)
+print ans
+#+END_SRC
+
+#+RESULTS:
+: 4.0
+
+you can also define a function for the integrand.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+
+def integrand(x):
+    return x**3
+
+ans, err = quad(integrand, 0, 2)
+print ans
+#+END_SRC
+
+#+RESULTS:
+: 4.0
+
+*** Numerical data integration
+
+if we had numerical data like this, we use trapz to integrate it
+
+#+BEGIN_SRC python
+import numpy as np
+
+x = np.array([0, 0.5, 1, 1.5, 2])
+y = x**3
+
+i2 = np.trapz(y, x)
+
+error = (i2 - 4)/4
+
+print i2, error
+#+END_SRC
+
+#+RESULTS:
+: 4.25 0.0625
+
+Note the integral of these vectors is greater than 4! You can see why here.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+x = np.array([0, 0.5, 1, 1.5, 2])
+y = x**3
+
+x2 = np.linspace(0, 2)
+y2 = x2**3
+
+plt.plot(x, y, label='5 points')
+plt.plot(x2, y2, label='50 points')
+plt.legend()
+plt.savefig('images/quad-1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/quad-1.png]]
+
+The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.
+
+#+BEGIN_SRC python
+import numpy as np
+
+x2 = np.linspace(0, 2, 100)
+y2 = x2**3
+
+print np.trapz(y2, x2)
+#+END_SRC
+
+#+RESULTS:
+: 4.00040812162
+
+*** Combining numerical data with quad
+
+You might want to combine numerical data with the quad function if you want to perform integrals easily. Let us say you are given this data:
+
+x = [0 0.5 1 1.5 2];
+y = [0    0.1250    1.0000    3.3750    8.0000];
+
+and you want to integrate this from x = 0.25 to 1.75. We do not have data in those regions, so some interpolation is going to be needed. Here is one approach.
+
+#+BEGIN_SRC python
+from scipy.interpolate import interp1d
+from scipy.integrate import quad
+import numpy as np
+
+x = [0, 0.5, 1, 1.5, 2]
+y = [0,    0.1250,    1.0000,    3.3750,    8.0000]
+
+f = interp1d(x, y)
+
+# numerical trapezoid method
+xfine = np.linspace(0.25, 1.75)
+yfine = f(xfine)
+print np.trapz(yfine, xfine)
+
+# quadrature with interpolation
+ans, err = quad(f, 0.25, 1.75)
+print ans
+#+END_SRC
+
+#+RESULTS:
+: 2.53199187838
+: 2.53125
+
+These approaches are very similar, and both rely on linear interpolation. The second approach is simpler, and uses fewer lines of code.
+
+*** Summary
+
+trapz and quad are functions for getting integrals. Both can be used with numerical data if interpolation is used. The syntax for the quad and trapz function is different in scipy than in Matlab.
+
+Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equations/][post]] for an example of solving an integral equation using quad and fsolve.
+
+
+** TODO http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/
+** Polynomials in python
+   :PROPERTIES:
+   :categories: math, polynomials
+   :date:     2013-01-22
+   :last-published: 2013-01-22
+   :END:
+This was originally posted at [[ http://matlab.cheme.cmu.edu/2011/08/01/polynomials-in-matlab/][Polynomials in Matlab]].
+
+Polynomials can be represented as a list of coefficients. For example, the polynomial $4*x^3 + 3*x^2 -2*x + 10 = 0$ can be represented as [4, 3, -2, 10]. Here are some ways to create a polynomial object, and evaluate it.
+
+#+BEGIN_SRC python 
+import numpy as np
+
+ppar = [4, 3, -2, 10]
+p = np.poly1d(ppar)
+
+print p(3)
+print np.polyval(ppar, 3)
+
+x = 3
+print 4*x**3 + 3*x**2 -2*x + 10
+#+END_SRC
+
+#+RESULTS:
+: 139
+: 139
+: 139
+
+numpy makes it easy to get the derivative and integral of a polynomial.
+
+Consider: $y = 2x^2 - 1$. We know the derivative is $4x$. Here we compute the derivative and evaluate it at x=4.
+
+#+BEGIN_SRC python
+import numpy as np
+
+p = np.poly1d([2, 0, -1])
+p2 = np.polyder(p)
+print p2
+print p2(4)
+#+END_SRC
+
+#+RESULTS:
+:  
+: 4 x
+: 16
+
+The integral of the previous polynomial is $\frac{2}{3} x^3 - x + c$. We assume $C=0$. Let us compute the integral $\int_2^4 2x^2 - 1 dx$.
+
+#+BEGIN_SRC python
+import numpy as np
+
+p = np.poly1d([2, 0, -1])
+p2 = np.polyint(p)
+print p2
+print p2(4) - p2(2)
+
+#+END_SRC
+
+#+RESULTS:
+:         3
+: 0.6667 x - 1 x
+: 35.3333333333
+
+One reason to use polynomials is the ease of finding all of the roots using numpy.roots. 
+
+#+BEGIN_SRC python
+import numpy as np
+print np.roots([2, 0, -1]) # roots are +- sqrt(2)
+
+# note that imaginary roots exist, e.g. x^2 + 1 = 0 has two roots, +-i
+p = np.poly1d([1, 0, 1])
+print np.roots(p)
+#+END_SRC
+
+#+RESULTS:
+: [ 0.70710678 -0.70710678]
+: [ 0.+1.j  0.-1.j]
+
+There are applications of polynomials in thermodynamics. The van der waal equation is a cubic polynomial $f(V) = V^3 - \frac{p n b + n R T}{p} V^2 + \frac{n^2 a}{p}V - \frac{n^3 a b}{p} = 0$, where $a$ and $b$ are constants, $p$ is the pressure, $R$ is the gas constant, $T$ is an absolute temperature and $n$ is the number of moles. The roots of this equation tell you the volume of the gas at those conditions.
+
+#+BEGIN_SRC python
+import numpy as np
+# numerical values of the constants
+a = 3.49e4
+b = 1.45
+p = 679.7   # pressure in psi
+T = 683     # T in Rankine
+n = 1.136   # lb-moles
+R = 10.73  	# ft3 psi R^−1 lb-mol−1
+
+ppar = [1.0, -(p*n*b+n*R*T)/p, n**2*a/p,  -n**3*a*b/p];
+print np.roots(ppar)
+#+END_SRC
+
+#+RESULTS:
+: [ 5.09432376+0.j          4.40066810+1.43502848j  4.40066810-1.43502848j]
+
+Note that only one root is real (and even then, we have to interpet 0.j as not being imaginary. Also, in a cubic polynomial, there can only be two imaginary roots). In this case that means there is only one phase present.
+
+*** Summary
+Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
+
+** Integrating functions in python				       :math:
+   :PROPERTIES:
+   :categories: [python, math]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/01/integrating-functions-in-matlab/][Matlab post]]
+
+*Problem statement*
+
+find the integral of a function f(x) from a to b i.e.
+
+$$\int_a^b f(x) dx$$
+
+In python we use numerical quadrature to achieve this with the scipy.integrate.quad command. 
+
+as a specific example, lets integrate
+
+$$y=x^2$$
+
+from x=0 to x=1. You should be able to work out that the answer is 1/3.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+
+def integrand(x):
+    return x**2
+
+ans, err = quad(integrand, 0, 1)
+print ans
+#+END_SRC
+
+#+RESULTS:
+: 0.333333333333
+
+*** double integrals
+
+we use the scipy.integrate.dblquad command
+
+Integrate $f(x,y)=y sin(x)+x cos(y)$ over
+
+$\pi <= x <= 2\pi$
+
+$0 <= y <= \pi$
+
+i.e.
+
+$\int_{x=\pi}^{2\pi}\int_{y=0}^{\pi}y sin(x)+x cos(y)dydx$
+
+The syntax in dblquad is a bit more complicated than in Matlab. We have to provide callable functions for the range of the y-variable. Here they are constants, so we create lambda functions that return the constants. Also, note that the order of arguments in the integrand is different than in Matlab.
+
+#+BEGIN_SRC python
+from scipy.integrate import dblquad
+import numpy as np
+
+def integrand(y, x):
+    'y must be the first argument, and x the second.'
+    return y * np.sin(x) + x * np.cos(y)
+
+ans, err = dblquad(integrand, np.pi, 2*np.pi,
+                   lambda x: 0,
+                   lambda x: np.pi)
+print ans
+
+
+#+END_SRC
+
+#+RESULTS:
+: -9.86960440109
+
+we use the tplquad command  to integrate $f(x,y,z)=y sin(x)+z cos(x)$ over the region
+
+$0 <= x <= \pi$
+
+$0 <= y <= 1$
+
+$-1 <= z <= 1$
+
+#+BEGIN_SRC python
+from scipy.integrate import tplquad
+import numpy as np
+
+def integrand(z, y, x):
+    return y * np.sin(x) + z * np.cos(x)
+
+ans, err = tplquad(integrand,
+                   0, np.pi,  # x limits
+                   lambda x: 0,
+                   lambda x: 1, # y limits
+                   lambda x,y: -1,
+                   lambda x,y: 1) # z limits
+
+print ans 
+
+#+END_SRC
+
+#+RESULTS:
+: 2.0
+
+*** Summary
+scipy.integrate offers the same basic functionality as Matlab does. The syntax differs significantly for these simple examples, but the use of functions for the limits enables freedom to integrate over non-constant limits.
+
+* Linear algebra
+** Sums, products and linear algebra notation - avoiding loops where possible
+
+[[http://matlab.cheme.cmu.edu/2012/01/03/sums-products-and-linear-algebra-notation-avoiding-loops-where-possible/][Matlab comparison]]
+
+Today we examine some methods of linear algebra that allow us to
+avoid writing explicit loops in Matlab for some kinds of
+mathematical operations. 
+
+
+Consider the operation on two vectors $\bf{a}$
+and $\bf{b}$.
+
+
+ $$y=\sum\limits_{i=1}^n a_ib_i$$
+
+a = [1 2 3 4 5];
+b = [3 6 8 9 10];
+
+*** Old-fashioned way with a loop
+We can compute this with a loop, where you initialize y, and then
+ add the product of the ith elements of a and b to y in each
+iteration of the loop. This is known to be slow for large vectors
+
+#+BEGIN_SRC python
+a = [1, 2, 3, 4, 5]
+b = [3, 6, 8, 9, 10]
+
+sum = 0
+for i in range(len(a)):
+    sum = sum + a[i] * b[i]
+print sum
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+This is an old fashioned style of coding. A more modern, pythonic approach is:
+#+BEGIN_SRC python
+a = [1, 2, 3, 4, 5]
+b = [3, 6, 8, 9, 10]
+
+sum = 0
+for x,y in zip(a,b):
+    sum += x * y
+print sum
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** The numpy approach
+The most compact method is to use the  methods in numpy.
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+b = np.array([3, 6, 8, 9, 10])
+
+print np.sum(a * b)
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** Matrix algebra approach.
+The operation defined above is actually a dot product. We an directly compute the dot product in numpy. Note that with 1d arrays, python knows what to do and does not require any transpose operations.
+
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+b = np.array([3, 6, 8, 9, 10])
+
+print np.dot(a, b)
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** Another example
+Consider $y = \sum\limits_{i=1}^n w_i x_i^2$. This operation is like a weighted sum of squares.
+The old-fashioned way to do this is with a loop.
+
+#+BEGIN_SRC python
+w = [0.1, 0.25, 0.12, 0.45, 0.98];
+x = [9, 7, 11, 12, 8];
+y = 0
+for wi, xi in zip(w,x):
+   y += wi * xi**2
+print y
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+Compare this to the more modern numpy approach.
+
+#+BEGIN_SRC python
+import numpy as np
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.sum(w * x**2)
+print y
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+We can also express this in matrix algebra form. The operation is equivalent to $y = \vec{x} \cdot D_w \cdot \vec{x}^T$ where $D_w$ is a diagonal matrix with the weights on the diagonal.
+
+#+BEGIN_SRC python
+import numpy as np
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.dot(x, np.dot(np.diag(w), x))
+print y
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+This last form avoids explicit loops and sums, and relies on fast linear algebra routines.
+
+*** Last example
+Consider the sum of the product of three vectors. Let $y = \sum\limits_{i=1}^n w_i x_i y_i$. This is like a weighted sum of products. 
+
+#+BEGIN_SRC python
+import numpy as np
+
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.array([2, 5, 3, 8, 0])
+
+print np.sum(w * x * y)
+print np.dot(w, np.dot(np.diag(x), y))
+#+END_SRC
+
+#+RESULTS:
+: 57.71
+: 57.71
+
+
+*** Summary
+We showed examples of the following equalities between traditional
+sum notations and linear algebra
+
+
+ $$\bf{a}\bf{b}=\sum\limits_{i=1}^n a_ib_i$$
+
+ $$\bf{x}\bf{D_w}\bf{x^T}=\sum\limits_{i=1}^n w_ix_i^2$$
+
+
+ $$\bf{x}\bf{D_w}\bf{y^T}=\sum\limits_{i=1}^n w_i x_i y_i$$
+
+These relationships enable one to write the sums as a single line of
+python code, which utilizes fast linear algebra subroutines, avoids
+the construction of slow loops, and reduces the opportunity for
+errors in the code. Admittedly, it introduces the opportunity for
+new types of errors, like using the wrong relationship, or linear
+algebra errors due to matrix size mismatches.
+
+** TODO http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/
+** Rules for transposition 
+
+[[http://matlab.cheme.cmu.edu/2011/08/01/illustrating-matrix-transpose-rules-in-matrix-multiplication/][Matlab comparison]]
+
+Here are the four rules for matrix multiplication and transposition
+
+1. $(\mathbf{A}^T)^T = \mathbf{A}$
+
+2. $(\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T+\mathbf{B}^T$
+
+3. $(\mathit{c}\mathbf{A})^T = \mathit{c}\mathbf{A}^T$
+
+4. $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$
+
+reference: Chapter 7.2 in Advanced Engineering Mathematics, 9th edition.
+by E. Kreyszig.
+
+*** The transpose in Python
+
+There are two ways to get the transpose of a matrix: with a notation, and
+with a function.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+# function
+print np.transpose(A)
+
+
+# notation
+print A.T
+#+END_SRC
+
+#+RESULTS:
+: [[ 5  4]
+:  [-8  0]
+:  [ 1  0]]
+: [[ 5  4]
+:  [-8  0]
+:  [ 1  0]]
+
+*** Rule 1
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+print np.all(A == (A.T).T)
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 2
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+B = np.array([[3, 4, 5], [1, 2,3]])
+
+print np.all( A.T + B.T == (A + B).T)
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 3
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+c = 2.1
+
+print np.all( (c*A).T == c*A.T)
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 4
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+B = np.array([[0, 2],
+              [1, 2],
+              [6, 7]])
+
+print np.all(np.dot(A, B).T == np.dot(B.T, A.T))
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Summary
+That wraps up showing numerically the transpose rules work for these examples.
+
+** Solving linear equations
+Given these equations, find [x1, x2, x3]
+\begin{equation}
+x_1 - x_2 + x_3 &=& 0 \\
+10 x_2 + 25 x_3 &=& 90 \\
+20 x_1 + 10 x_2 &=& 80
+\end{equation}
+
+reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
+
+When solving linear equations, we can represent them in matrix form. The we simply use =numpy.linalg.solve= to get the solution.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [20, 10, 0]])
+
+b = np.array([0, 90, 80])
+
+x = np.linalg.solve(A, b)
+print x
+print np.dot(A,x)
+
+# Let us confirm the solution.
+# this shows one element is not equal because of float tolerance
+print np.dot(A,x) == b
+
+# here we use a tolerance comparison to show the differences is less
+# than a defined tolerance.
+TOLERANCE = 1e-12
+print np.abs((np.dot(A, x) - b)) <= TOLERANCE
+#+END_SRC
+
+#+RESULTS:
+: [ 2.  4.  2.]
+: [  2.66453526e-15   9.00000000e+01   8.00000000e+01]
+: [False  True  True]
+: [ True  True  True]
+
+It can be useful to confirm there should be a solution, e.g. that the equations are all independent. The matrix rank will tell us that. Note that numpy:rank does not give you the matrix rank, but rather the number of dimensions of the array. We compute the rank by computing the number of singular values of the matrix that are greater than zero, within a prescribed tolerance. We use the =numpy.linalg.svd= function for that. In Matlab you would use the rref command to see if there are any rows that are all zero, but this command does not exist in numpy. That command does not have practical use in numerical linear algebra and has not been implemented.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [20, 10, 0]])
+
+b = np.array([0, 90, 80])
+
+# determine number of independent rows in A we get the singular values
+# and count the number greater than 0.
+TOLERANCE = 1e-12
+u, s, v = np.linalg.svd(A)
+print 'Singular values: {0}'.format(s)
+print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
+
+# to illustrate a case where there are only 2 independent rows
+# consider this case where row3 = 2*row2.
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [0, 20, 50]])
+
+u, s, v = np.linalg.svd(A)
+
+print 'Singular values: {0}'.format(s)
+print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
+#+END_SRC
+
+#+RESULTS:
+: Singular values: [ 27.63016717  21.49453733   1.5996022 ]
+: # of independent rows: 3
+: Singular values: [ 60.21055203   1.63994657  -0.        ]
+: # of independent rows: 2
+
+[[http://matlab.cheme.cmu.edu/2011/08/01/solving-linear-equations/][Matlab comparison]]
+
+* Nonlinear algebra
+** Polynomials
+** fsolve
+** method of continuity
+** TODO http://matlab.cheme.cmu.edu/2011/11/01/method-of-continuity-for-nonlinear-equation-solving/
+** TODO http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/
+** TODO http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/
+** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
+**  Solving integral equations with fsolve
+   :PROPERTIES:
+   :categories: nonlinear-algebra, reaction-engineering
+   :date:     2013-01-23
+   :last-published: 2013-01-23
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equations/][Original post in Matlab]]
+
+Occasionally we have integral equations we need to solve in engineering problems, for example, the volume of plug flow reactor can be defined by this equation: $V = \int_{Fa(V=0)}^{Fa} \frac{1}{r_a} dFa$ where $r_a$ is the rate law. Suppose we know the reactor volume is 100 L, the inlet molar flow of A is 1 mol/L, the volumetric flow is 10 L/min, and $r_a = -k Ca$, with $k=0.23$ 1/min. What is the exit molar flow rate? We need to solve the following equation:
+
+$$100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa$$
+
+We start by creating a function handle that describes the integrand. We can use this function in the quad command to evaluate the integral.
+
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.integrate import quad
+from scipy.optimize import fsolve
+
+k = 0.23
+nu = 10.0
+Fao = 1.0
+
+def integrand(Fa):
+    return -1.0 / (k * Fa / nu)
+
+def func(Fa):
+    integral,err = quad(integrand, Fao, Fa)
+    return 100.0 - integral
+
+vfunc = np.vectorize(func)
+#+END_SRC
+
+
+#+RESULTS:
+
+We will need an initial guess, so we make a plot of our function to get an idea.
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+
+f = np.linspace(0.01, 1)
+plt.plot(f, vfunc(f))
+plt.xlabel('Molar flow rate')
+plt.savefig('images/integral_eqn_guess.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [<matplotlib.lines.Line2D object at 0x12920750>]
+: <matplotlib.text.Text object at 0x12905050>
+
+[[./images/integral_eqn_guess.png]]
+
+Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.
+
+#+BEGIN_SRC python :session
+Fa_guess = 0.1
+Fa_exit, = fsolve(vfunc, Fa_guess)
+print 'The exit concentration is {0:1.2f} mol/L'.format(Fa_exit / nu)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> The exit concentration is 0.01 mol/L
+
+*** Summary notes
+This example seemed a little easier in Matlab, where the quad function seemed to get automatically vectorized. Here we had to do it by hand.
+
+** TODO http://matlab.cheme.cmu.edu/2011/08/29/nonlinear-curve-fitting-with-parameter-confidence-intervals/
+* Ordinary differential equations
+** Simulating the events feature of Matlab's ode solvers
+The ode solvers in Matlab allow you create functions that define events that can stop the integration, detect roots, etc... We will explore how to get a similar effect in python. Here is an example that somewhat does this, but it is only an approximation. We will manually integrate the ODE, adjusting the time step in each iteration to zero in on the solution. When the desired accuracy is reached, we stop the integration. 
+
+It does not appear that events are supported in scipy. A solution is at http://mail.scipy.org/pipermail/scipy-dev/2005-July/003078.html, but it does not appear integrated into scipy yet (8 years later ;).
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+
+def dCadt(Ca, t):
+    "the ode function"
+    k = 0.23
+    return -k * Ca**2
+
+Ca0 = 2.3
+
+# create lists to store time span and solution
+tspan = [0, ]
+sol = [Ca0,]
+i = 0
+
+while i < 100:   # take max of 100 steps
+    t1 = tspan[i]
+    Ca = sol[i]
+
+    # pick the next time using a Newton-Raphson method
+    # we want f(t, Ca) = (Ca(t) - 1)**2 = 0
+    # df/dt = df/dCa dCa/dt
+    #       = 2*(Ca - 1) * dCadt
+    t2 = t1 - (Ca - 1.0)**2 / (2 * (Ca - 1) *dCadt(Ca, t1))
+        
+    f = odeint(dCadt, Ca, [t1, t2])
+
+    if np.abs(Ca - 1.0) <= 1e-4:
+        print 'Solution reached at i = {0}'.format(i)
+        break
+
+    tspan += [t2]
+    sol.append(f[-1][0])
+    i += 1
+
+print 'At t={0:1.2f}  Ca = {1:1.3f}'.format(tspan[-1], sol[-1])
+
+import matplotlib.pyplot as plt
+plt.plot(tspan, sol, 'bo')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: Solution reached at i = 15
+: At t=2.46  Ca = 1.000
+
+This particular solution works for this example, probably because it is well behaved. It is "downhill" to the desired solution. It is not obvious this would work for every example, and it is certainly possible the algorithm could go "backward" in time. A better approach might be to integrate forward until you detect a sign change in your event function, and then refine it in a separate loop.
+
+I like the events integration in Matlab better, but this is actually pretty functional. It should not be too hard to use this for root counting, e.g. by counting sign changes. It would be considerably harder to get the actual roots. It might also be hard to get the positions of events that include the sign or value of the derivatives at the event points.
+
+ODE solving in Matlab is considerably more advanced in functionality than in scipy. There do seem to be some extra packages, e.g. pydstools, scikits.odes that add extra ode functionality.
+
+** Mimicking ode events in python
+  :PROPERTIES:
+  :date:     2013-01-28
+  :last-published: 2013-01-29
+  :END:
+The ODE functions in scipy.integrate do not directly support events like the functions in Matlab do. We can achieve something like it though, by digging into the guts of the solver, and writing a little code. In  previous [[http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/][example]] I used an event to count the number of roots in a function by integrating the derivative of the function. 
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+
+def myode(f, x):
+    return 3*x**2 + 12*x -4
+
+def event(f, x):
+    'an event is when f = 0'
+    return f 
+
+# initial conditions
+x0 = -8
+f0 = -120
+
+# final x-range and step to integrate over.
+xf = 4   #final x value
+deltax = 0.45 #xstep
+
+# lists to store the results in
+X = [x0]
+sol = [f0]
+e = [event(f0, x0)]
+events = []
+x2 = x0
+# manually integrate at each time step, and check for event sign changes at each step
+while x2 <= xf: #stop integrating when we get to xf
+    x1 = X[-1]
+    x2 = x1 + deltax
+    f1 = sol[-1]
+    
+    f2 = odeint(myode, f1, [x1, x2]) # integrate from x1,f1 to x2,f2
+    X += [x2]
+    sol += [f2[-1][0]]
+
+    # now evaluate the event at the last position
+    e += [event(sol[-1], X[-1])]
+
+    if e[-1] * e[-2] < 0:
+        # Event detected where the sign of the event has changed. The
+        # event is between xPt = X[-2] and xLt = X[-1]. run a modified bisect
+        # function to narrow down to find where event = 0
+        xLt = X[-1]
+        fLt = sol[-1]
+        eLt = e[-1]
+
+        xPt = X[-2]
+        fPt = sol[-2]
+        ePt = e[-2]
+
+        j = 0
+        while j < 100:
+            if np.abs(xLt - xPt) < 1e-6:
+                # we know the interval to a prescribed precision now.
+                # print 'Event found between {0} and {1}'.format(x1t, x2t)
+                print 'x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt)
+                events += [(xLt, fLt)]
+                break # and return to integrating
+
+            m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
+                                        #bracketing zero
+
+            #estimated x where the zero is      
+            new_x = -ePt / m + xPt
+
+            # now get the new value of the integrated solution at that new x
+            f  = odeint(myode, fPt, [xPt, new_x])
+            new_f = f[-1][-1]
+            new_e = event(new_f, new_x)
+                        
+            # now check event sign change
+            if eLt * new_e > 0:
+                xPt = new_x
+                fPt = new_f
+                ePt = new_e
+            else:
+                xLt = new_x
+                fLt = new_f
+                eLt = new_e
+
+            j += 1
+        
+        
+import matplotlib.pyplot as plt
+plt.plot(X, sol)
+
+# add event points to the graph
+for x,e in events:
+    plt.plot(x,e,'bo ')
+plt.savefig('images/event-ode-1.png')
+#+END_SRC
+
+#+RESULTS:
+: x = -6.00000006443, event = -4.63518112781e-15, f = -4.63518112781e-15
+: x = -1.99999996234, event = -1.40512601554e-15, f = -1.40512601554e-15
+: x = 1.99999988695, event = -1.11022302463e-15, f = -1.11022302463e-15
+
+[[./images/event-ode-1.png]]
+
+That was a lot of programming to do something like find the roots of the function!
+** Plotting ODE solutions in cylindrical coordinates
+   :PROPERTIES:
+   :categories: [ODEs]
+   :date:     2013-02-07
+   :last-published: 2013-02-07
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2011/11/08/plot-the-solution-to-an-ode-in-cylindrical-coordinates-2/][Matlab post]]
+
+It is straightforward to plot functions in Cartesian coordinates. It is less convenient to plot them in cylindrical coordinates. Here we solve an ODE in cylindrical coordinates, and then convert the solution to Cartesian coordinates for simple plotting.
+
+#+BEGIN_SRC python 
+import numpy as np
+from scipy.integrate import odeint
+
+def dfdt(F, t):
+    rho, theta, z = F
+    drhodt = 0   # constant radius
+    dthetadt = 1 # constant angular velocity
+    dzdt = -1    # constant dropping velocity
+    return [drhodt, dthetadt, dzdt]
+
+# initial conditions
+rho0 = 1
+theta0 = 0
+z0 = 100
+
+tspan = np.linspace(0, 50, 500)
+sol = odeint(dfdt, [rho0, theta0, z0], tspan)
+
+rho = sol[:,0]
+theta = sol[:,1]
+z = sol[:,2]
+
+# convert cylindrical coords to cartesian for plotting.
+X = rho * np.cos(theta)
+Y = rho * np.sin(theta)
+
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.plot(X, Y, z)
+plt.savefig('images/ode-cylindrical.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/ode-cylindrical.png]]
+
+** Solving parameterized ODEs over and over conveniently
+   :PROPERTIES:
+   :categories: [reaction-engineering, ODEs]
+   :date:     2013-02-07
+   :last-published: 2013-02-07
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/16/parameterized-odes/][Matlab post]]
+Sometimes we have an ODE that depends on a parameter, and we want to solve the ODE for several parameter values. It is inconvenient to write an ode function for each parameter case. Here we examine a convenient way to solve this problem; we pass the parameter to the ODE at runtime. We consider the following ODE:
+
+$$\frac{dCa}{dt} = -k Ca(t)$$
+
+where $k$ is a parameter, and we want to solve the equation for a couple of values of $k$ to test the sensitivity of the solution on the parameter. Our question is, given $Ca(t=0)=2$, how long does it take to get $Ca = 1$, and how sensitive is the answer to small variations in $k$?
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def myode(Ca, t, k):
+    'ODE definition'
+    dCadt = -k * Ca
+    return dCadt
+
+tspan = np.linspace(0, 0.5)
+k0 = 2
+Ca0 = 2
+
+plt.figure(); plt.clf()
+
+for k in [0.95 * k0, k0, 1.05 * k0]:
+    sol = odeint(myode, Ca0, tspan, args=(k,))
+    plt.plot(tspan, sol, label='k={0:1.2f}'.format(k))
+    print 'At t=0.5 Ca = {0:1.2f} mol/L'.format(sol[-1][0])
+
+plt.legend(loc='best')
+plt.xlabel('Time')
+plt.ylabel('$C_A$ (mol/L)')
+plt.savefig('images/parameterized-ode1.png')
+#+END_SRC
+#+RESULTS:
+: At t=0.5 Ca = 0.77 mol/L
+: At t=0.5 Ca = 0.74 mol/L
+: At t=0.5 Ca = 0.70 mol/L
+
+[[./images/parameterized-ode1.png]]
+
+You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of $k$! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.   
+
+** TODO http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/
+** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
+** Solving a second order ode
+   :PROPERTIES:
+   :categories: [ODEs, math]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/26/solving-a-second-order-ode/][Matlab post]]
+
+
+The odesolvers in scipy can only solve first order ODEs, or systems of first order ODES. To solve a second order ODE, we must convert it by changes of variables to a system of first order ODES. We consider the Van der Pol oscillator here:
+
+$$\frac{d^2x}{dt^2} - \mu(1-x^2)\frac{dx}{dt} + x = 0$$
+
+$\mu$ is a constant. If we let $y=x - x^3/3$ http://en.wikipedia.org/wiki/Van_der_Pol_oscillator, then we arrive at this set of equations:
+
+$$\frac{dx}{dt} = \mu(x-1/3x^3-y)$$
+
+$$\frac{dy}{dt} = \mu/x$$
+
+here is how we solve this set of equations. Let $\mu=1$.
+
+#+BEGIN_SRC python 
+from scipy.integrate import odeint
+import numpy as np
+
+mu = 1.0
+
+def vanderpol(X, t):
+    x = X[0]
+    y = X[1]
+    dxdt = mu * (x - 1./3.*x**3 - y)
+    dydt = x / mu
+    return [dxdt, dydt]
+
+X0 = [1, 2]
+t = np.linspace(0, 40, 250)
+
+sol = odeint(vanderpol, X0, t)
+
+import matplotlib.pyplot as plt
+x = sol[:, 0]
+y = sol[:, 1]
+
+plt.plot(t,x, t, y)
+plt.xlabel('t')
+plt.legend(('x', 'y'))
+plt.savefig('images/vanderpol-1.png')
+
+# phase portrait
+plt.figure()
+plt.plot(x,y)
+plt.plot(x[0], y[0], 'ro')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.savefig('images/vanderpol-2.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/vanderpol-1.png]]
+
+Here is the phase portrait. You can see that a limit cycle is approached, indicating periodicity in the solution.
+
+[[./images/vanderpol-2.png]]
+
+** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
+** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
+** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
+** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
+** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
+** TODO http://matlab.cheme.cmu.edu/2011/09/01/odes-with-discontinuous-forcing-functions/
+** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
+** Solving Bessel's Equation numerically
+   :PROPERTIES:
+   :categories: [ODEs, math]
+   :date:     2013-02-07
+   :last-published: 2013-02-07
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/08/solving-bessels-equation-numerically/][Matlab post]]
+
+Reference Ch 5.5 Kreysig, Advanced Engineering Mathematics, 9th ed.
+
+Bessel's equation $x^2 y'' + x y' + (x^2 - \nu^2)y=0$ comes up often in engineering problems such as heat transfer. The solutions to this equation are the Bessel functions. To solve this equation numerically, we must convert it to a system of first order ODEs. This can be done by letting $z = y'$ and $z' = y''$ and performing the change of variables:
+
+$$ y' = z$$
+
+$$ z' = \frac{1}{x^2}(-x z - (x^2 - \nu^2) y$$
+
+if we take the case where $\nu = 0$, the solution is known to be the Bessel function $J_0(x)$, which is represented in Matlab as besselj(0,x). The initial conditions for this problem are: $y(0) = 1$ and $y'(0)=0$.
+
+There is a problem with our system of ODEs at x=0. Because of the $1/x^2$ term, the ODEs are not defined at x=0. If we start very close to zero instead, we avoid the problem.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+from scipy.special import jn # bessel function
+import matplotlib.pyplot as plt
+
+def fbessel(Y, x):
+    nu = 0.0
+    y = Y[0]
+    z = Y[1]
+  
+    dydx = z
+    dzdx = 1.0 / x**2 * (-x * z - (x**2 - nu**2) * y)
+    return [dydx, dzdx]
+
+x0 = 1e-15
+y0 = 1
+z0 = 0
+Y0 = [y0, z0]
+
+xspan = np.linspace(1e-15, 10)
+sol = odeint(fbessel, Y0, xspan)
+
+plt.plot(xspan, sol[:,0], label='numerical soln')
+plt.plot(xspan, jn(0, xspan), 'r--', label='Bessel')
+plt.legend()
+plt.savefig('images/bessel.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/bessel.png]]
+
+You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.
+
+** TODO http://matlab.cheme.cmu.edu/2011/08/09/phase-portraits-of-a-system-of-odes/
+** TODO http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/
+** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
+* Boundary value equations
+** TODO http://matlab.cheme.cmu.edu/2011/09/30/plane-poiseuelle-flow-solved-by-finite-difference/
+** TODO http://matlab.cheme.cmu.edu/2011/09/08/plane-poiseuille-flow-bvp-solve-by-shooting-method/
+** TODO http://matlab.cheme.cmu.edu/2011/08/11/plane-poiseuille-flow-bvp/
+** TODO http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/
+* Partial differential equations
+** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
+* Statistics
+** TODO are averages different
+http://matlab.cheme.cmu.edu/2012/01/28/are-two-averages-different/
+** TODO
+[[http://matlab.cheme.cmu.edu/2011/10/01/model-selection/][Matlab post]]
+
+adapted from http://www.itl.nist.gov/div898/handbook/pmd/section4/pmd44.htm
+
+In this example, we show some ways to choose which of several models fit data the best. We have data for the total pressure and temperature of a fixed amount of a gas in a tank that was measured over the course of several days. We want to select a model that relates the pressure to the gas temperature.
+
+The data is stored in a text file download PT.txt , with the following structure:
+
+#+BEGIN_EXAMPLE
+Run          Ambient                            Fitted
+ Order  Day  Temperature  Temperature  Pressure    Value    Residual
+  1      1      23.820      54.749      225.066   222.920     2.146
+...
+#+END_EXAMPLE
+
+We need to read the data in, and perform a regression analysis on P vs. T. In python we start counting at 0, so we actually want columns 3 and 4.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt('data/PT.txt', skiprows=2)
+T = data[:, 3]
+P = data[:, 4]
+
+plt.plot(T, P, 'k.')
+plt.xlabel('Temperature')
+plt.ylabel('Pressure')
+plt.savefig('images/model-selection-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04BD4890>]
+: <matplotlib.text.Text object at 0x04AF6A70>
+: <matplotlib.text.Text object at 0x04BAFB10>
+
+[[./images/model-selection-1.png]]
+
+It appears the data is roughly linear, and we know from the ideal gas law that PV = nRT, or P = nR/V*T, which says P should be linearly correlated with V. Note that the temperature data is in degC, not in K, so it is not expected that P=0 at T = 0. We will use linear algebra to compute the line coefficients. At this time I do not know how to compute the confidence intervals of the coefficients in an elegant way.
+
+#+BEGIN_SRC python :session
+A = np.vstack([T**0, T]).T
+b = P
+
+x, res, rank, s = np.linalg.lstsq(A, b)
+intercept, slope = x
+print intercept, slope
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> 7.74899739238 3.93014043824
+
+
+The R^2 value accounts roughly for the fraction of variation in the data that can be described by the model. Hence, a value close to one means nearly all the variations are described by the model, except for random variations.
+
+#+BEGIN_SRC python :session
+ybar = np.mean(P)
+SStot = np.sum((P - ybar)**2)
+SSerr = np.sum((P - np.dot(A, x))**2)
+R2 = 1 - SSerr/SStot
+print R2
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 0.993715411798
+
+#+BEGIN_SRC python :session
+plt.figure(); plt.clf()
+plt.plot(T, P, 'k.', T, np.dot(A, x), 'b-')
+plt.xlabel('Temperature')
+plt.ylabel('Pressure')
+plt.title('R^2 = {0:1.3f}'.format(R2))
+plt.savefig('images/model-selection-2.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x04BE4DF0>
+: [<matplotlib.lines.Line2D object at 0x04C981D0>, <matplotlib.lines.Line2D object at 0x04BEE810>]
+: <matplotlib.text.Text object at 0x04CAF550>
+: <matplotlib.text.Text object at 0x04CB95D0>
+: <matplotlib.text.Text object at 0x04CCAF30>
+
+[[./images/model-selection-2.png]]
+
+The fit looks good, and R^2 is near one, but is it a good model? There are a few ways to examine this. We want to make sure that there are no systematic trends in the errors between the fit and the data, and we want to make sure there are not hidden correlations with other variables. The residuals are the error between the fit and the data. The residuals should not show any patterns when plotted against any variables, and they do not in this case.
+
+TODO
+#+BEGIN_SRC python :session
+residuals = P - np.dot(A, x)
+
+plt.figure()
+
+f, (ax1, ax2, ax3) = plt.subplots(3)
+
+ax1.plot(T,residuals,'ko')
+ax1.set_xlabel('Temperature')
+
+
+run_order = data[:, 0]
+ax2.plot(run_order, residuals,'ko ')
+ax2.set_xlabel('run order')
+
+ambientT = data[:, 2]
+ax3.plot(ambientT, residuals,'ko')
+ax3.set_xlabel('ambient temperature')
+
+plt.tight_layout() # make sure plots do not overlap
+
+plt.savefig('images/model-selection-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> <matplotlib.figure.Figure object at 0x04DF2270>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04D44A10>]
+: <matplotlib.text.Text object at 0x04E114D0>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04F5AAF0>]
+: <matplotlib.text.Text object at 0x04D284D0>
+: >>> >>> [<matplotlib.lines.Line2D object at 0x04F5AE50>]
+: <matplotlib.text.Text object at 0x04EE17D0>
+
+[[./images/model-selection-3.png]]
+
+there may be some correlations in the residuals with the run order. That could indicate an experimental source of error.
+
+We assume all the errors are uncorrelated with each other. We can use a lag plot to assess this, where we plot residual[i] vs residual[i-1], i.e. we look for correlations between adjacent residuals. This plot should look random, with no correlations if the model is good.
+
+#+BEGIN_SRC python :session
+plt.figure(); plt.clf()
+plt.plot(residuals[1:-1], residuals[0:-2],'ko')
+plt.xlabel('residual[i]')
+plt.ylabel('residual[i-1]')
+plt.savefig('images/model-selection-correlated-residuals.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x04FE6DB0>
+: [<matplotlib.lines.Line2D object at 0x050B8350>]
+: <matplotlib.text.Text object at 0x050017B0>
+: <matplotlib.text.Text object at 0x0500B670>
+
+[[./images/model-selection-correlated-residuals.png]]
+
+It is hard to argue there is any correlation here. 
+
+Lets consider a quadratic model instead.
+
+#+BEGIN_SRC python :session
+A = np.vstack([T**0, T, T**2]).T
+b = P;
+
+x, res, rank, s = np.linalg.lstsq(A, b)
+print x
+
+
+ybar = np.mean(P)
+SStot = np.sum((P - ybar)**2)
+SSerr = np.sum((P - np.dot(A,x))**2)
+R2 = 1 - SSerr/SStot
+print R2
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> [  9.00353031e+00   3.86669879e+00   7.26244301e-04]
+: >>> >>> >>> >>> >>> >>> 0.993721969407
+
+
+You can see that the R^2 value is not better than the one from a linear fit,  so adding a parameter does not increase the goodness of fit. This is an example of overfitting the data, but it also makes you question whether the constant is meaningful in the linear model. 
+
+Lets consider a model with intercept = 0, P = alpha*T
+
+#+BEGIN_SRC python :session
+A = np.vstack([T]).T
+b = P;
+
+x, res, rank, s = np.linalg.lstsq(A, b)
+
+plt.figure()
+plt.plot(T, P, 'k. ', T, np.dot(A, x))
+plt.xlabel('Temperature')
+plt.ylabel('Pressure')
+plt.legend(['data', 'fit'])
+
+ybar = np.mean(P)
+SStot = np.sum((P - ybar)**2)
+SSerr = np.sum((P - np.dot(A,x))**2)
+R2 = 1 - SSerr/SStot
+plt.title('R^2 = {0:1.3f}'.format(R2))
+plt.savefig('images/model-selection-no-intercept.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> <matplotlib.figure.Figure object at 0x0519BFB0>
+: [<matplotlib.lines.Line2D object at 0x0524AA50>, <matplotlib.lines.Line2D object at 0x052400B0>]
+: <matplotlib.text.Text object at 0x051ABB70>
+: <matplotlib.text.Text object at 0x05227A30>
+: <matplotlib.legend.Legend object at 0x05253190>
+: >>> >>> >>> >>> >>> <matplotlib.text.Text object at 0x052403B0>
+
+[[./images/model-selection-no-intercept.png]]
+The fit is visually still pretty good, and the R^2 value is only slightly worse. Let us examine the residuals again. 
+
+
+#+BEGIN_SRC python :session
+residuals = P - np.dot(A,x)
+
+plt.figure()
+plt.plot(T,residuals,'ko')
+plt.xlabel('Temperature')
+plt.ylabel('residuals')
+plt.savefig('images/model-selection-no-incpt-resid.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> <matplotlib.figure.Figure object at 0x05253E70>
+: [<matplotlib.lines.Line2D object at 0x05386130>]
+: <matplotlib.text.Text object at 0x05365E90>
+: <matplotlib.text.Text object at 0x050DFBB0>
+
+[[./images/model-selection-no-incpt-resid.png]]
+
+You can see a slight trend of decreasing value of the residuals as the Temperature increases. This may indicate a deficiency in the model with no intercept. For the ideal gas law in degC: $PV = nR(T+273)$ or $P = nR/V*T + 273*nR/V$, so the intercept is expected to be non-zero in this case. Specifically, we expect the intercept to be 273*R*n/V. Since the molar density of a gas is pretty small, the intercept may be close to, but not equal to zero. That is why the fit still looks ok, but is not as good as letting the intercept be a fitting parameter. That is an example of the deficiency in our model.
+
+In the end, it is hard to justify a model more complex than a line in this case. 
+
+
+** TODO http://matlab.cheme.cmu.edu/2011/09/06/introduction-to-statistical-data-analysis-2/
+** TODO http://matlab.cheme.cmu.edu/2011/08/27/introduction-to-statistical-data-analysis/
+** TODO http://matlab.cheme.cmu.edu/2011/09/05/numerical-propogation-of-errors/
+** TODO http://matlab.cheme.cmu.edu/2011/09/04/random-thoughts/
+* Data analysis
+** Linear regression
+** Nonlinear regression
+** TODO http://matlab.cheme.cmu.edu/2011/10/10/nonlinearfit_minsse-m/
+** TODO http://matlab.cheme.cmu.edu/2011/10/09/graphical-methods-to-help-get-initial-guesses-for-multivariate-nonlinear-regression/
+** TODO http://matlab.cheme.cmu.edu/2011/09/24/linear-least-squares-fitting-with-linear-algebra/
+** TODO http://matlab.cheme.cmu.edu/2011/09/29/fitting-a-numerical-ode-solution-to-data/
+** TODO http://matlab.cheme.cmu.edu/2011/09/10/reading-parameter-database-text-files-in-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/
+** http://matlab.cheme.cmu.edu/2011/08/07/reading-in-delimited-text-files/
+** TODO http://matlab.cheme.cmu.edu/2011/08/04/fit-a-line-to-numerical-data/
+* Interpolation
+** Better interpolate than never
+   :PROPERTIES:
+   :categories: [interpolation, basic matlab]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2012/02/02/better-interpolate-than-never/][Matlab post]]
+
+We often have some data that we have obtained in the lab, and we want to solve some problem using the data. For example, suppose we have this data that describes the value of f at time t.
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+
+t = [0.5, 1, 3, 6]
+f = [0.6065,    0.3679,    0.0498,    0.0025]
+plt.plot(t,f)
+plt.xlabel('t')
+plt.ylabel('f(t)')
+plt.savefig('images/interpolate-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04D18730>]
+: <matplotlib.text.Text object at 0x04BEE8B0>
+: <matplotlib.text.Text object at 0x04C03970>
+
+[[./images/interpolate-1.png]]
+
+*** Estimate the value of f at t=2.
+
+This is a simple interpolation problem.
+#+BEGIN_SRC python :session
+from scipy.interpolate import interp1d
+
+g = interp1d(t, f) # default is linear interpolation
+
+print g(2)
+print g([2, 3, 4])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 0.20885
+: [ 0.20885     0.0498      0.03403333]
+
+The function we sample above is actually f(t) = exp(-t). The linearly interpolated example is not too accurate.
+
+#+BEGIN_SRC python :session
+import numpy as np
+print np.exp(-2)
+#+END_SRC
+
+#+RESULTS:
+: 
+: 0.135335283237
+
+*** improved interpolation?
+
+we can tell interp1d to use a different interpolation scheme such as cubic polynomial splines like this. For nonlinear functions, this may improve the accuracy of the interpolation, as it implicitly includes information about the curvature by fitting a cubic polynomial over neighboring points. 
+
+#+BEGIN_SRC python :session
+g2 = interp1d(t, f, 'cubic')
+print g2(2)
+print g2([2, 3, 4])
+#+END_SRC
+
+#+RESULTS:
+: 
+: 0.108481818182
+: [ 0.10848182  0.0498      0.08428727]
+
+Interestingly, this is a different value than Matlab's cubic interpolation. Let us show the cubic spline fit.
+
+#+BEGIN_SRC python :session
+plt.figure()
+plt.plot(t,f)
+plt.xlabel('t')
+plt.ylabel('f(t)')
+
+x = np.linspace(0.5, 6)
+fit = g2(x)
+plt.plot(x, fit, label='fit')
+plt.savefig('images/interpolation-2.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x04EF2430>
+: [<matplotlib.lines.Line2D object at 0x04F20ED0>]
+: <matplotlib.text.Text object at 0x04EF2FF0>
+: <matplotlib.text.Text object at 0x04F060D0>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04F17570>]
+
+[[./images/interpolation-2.png]]
+
+Wow. That is a weird looking fit. Very different from what Matlab [[http://matlab.cheme.cmu.edu/wp-content/uploads/2012/02/interp_methods_02.png][produces]]. This is a good teaching moment not to rely blindly on interpolation! We will rely on the linear interpolation from here out which behaves predictably.
+
+*** The inverse question
+
+It is easy to interpolate a new value of f given a value of t. What if we want to know the time that f=0.2? We can approach this a few ways.
+
+**** method 1
+
+We setup a function that we can use fsolve on. The function will be equal to zero at the time. The second function will look like 0 = 0.2 - f(t). The answer for 0.2=exp(-t) is t = 1.6094. Since we use interpolation here, we will get an approximate answer. 
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fsolve
+
+def func(t):
+    return 0.2 - g(t)
+
+initial_guess = 2
+ans, = fsolve(func, initial_guess)
+print ans
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... ... >>> >>> >>> 2.0556428796
+
+**** method 2: switch the interpolation order
+
+We can switch the order of the interpolation to solve this problem. An issue we have to address in this method is that the "x" values must be monotonically /increasing/. It is somewhat subtle to reverse a list in python. I will use the cryptic syntax of [::-1] instead of the list.reverse() function or reversed() function. list.reverse() actually reverses the list "in place", which changes the contents of the variable. That is not what I want. reversed() returns an iterator which is also not what I want. [::-1] is a fancy indexing trick that returns a reversed list.
+
+#+BEGIN_SRC python :session
+g3 = interp1d(f[::-1], t[::-1])
+
+print g3(0.2)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> 2.0556428796
+
+*** A harder problem
+
+Suppose we want to know at what time is 1/f = 100? Now we have to decide what do we interpolate: f(t) or 1/f(t). Let us look at both ways and decide what is best. The answer to $1/exp(-t) = 100$ is 4.6052
+
+**** interpolate on f(t) then invert the interpolated number
+
+#+BEGIN_SRC python :session
+def func(t):
+    'objective function. we do some error bounds because we cannot interpolate out of the range.'
+    if t < 0.5: t=0.5
+    if t > 6: t = 6
+    return 100 - 1.0 / g(t)   
+
+initial_guess = 4.5
+a1, = fsolve(func, initial_guess)
+print a1
+print 'The %error is {0:%}'.format((a1 - 4.6052)/4.6052)
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... >>> >>> >>> 5.52431289641
+: The %error is 19.958154%
+
+**** invert f(t) then interpolate on 1/f
+#+BEGIN_SRC python :session
+ig = interp1d(t, 1.0 / np.array(f))
+
+def ifunc(t):
+    if t < 0.5: t=0.5
+    if t > 6: t = 6
+    return 100 - ig(t)   
+
+initial_guess = 4.5
+a2, = fsolve(ifunc, initial_guess)
+print a2
+print 'The %error is {0:%}'.format((a2 - 4.6052)/4.6052)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... ... ... ... >>> >>> >>> 3.6310782241
+: The %error is -21.152649%
+
+*** Discussion
+
+In this case you get different errors, one overestimates and one underestimates the answer, and by a lot: \pm 20%. Let us look at what is happening.
+
+#+BEGIN_SRC python 
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.interpolate import interp1d
+
+t = [0.5, 1, 3, 6]
+f = [0.6065,    0.3679,    0.0498,    0.0025]
+
+x = np.linspace(0.5, 6)
+
+
+g = interp1d(t, f) # default is linear interpolation
+ig = interp1d(t, 1.0 / np.array(f))
+
+plt.figure()
+plt.plot(t, 1 / np.array(f), 'ko ', label='data')
+plt.plot(x, 1 / g(x), label='1/interpolated f(x)')
+plt.plot(x, ig(x), label='interpolate on 1/f(x)')
+plt.plot(x, 1 / np.exp(-x), 'k--', label='1/exp(-x)')
+plt.xlabel('t')
+plt.ylabel('1/f(t)')
+plt.legend(loc='best')
+plt.savefig('images/interpolation-3.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/interpolation-3.png]]
+
+You can see that the 1/interpolated f(x) underestimates the value, while interpolated (1/f(x)) overestimates the value. This is an example of where you clearly need more data in that range to make good estimates. Neither interpolation method is doing a great job. The trouble in reality is that you often do not know the real function to do this analysis. Here you can say the time is probably between 3.6 and 5.5 where 1/f(t) = 100, but you can not read much more than that into it. If you need a more precise answer, you need better data, or you need to use an approach other than interpolation. For example, you could fit an exponential function to the data and use that to estimate values at other times.
+
+So which is the best to interpolate? I think you should interpolate the quantity that is linear in the problem you want to solve, so in this case I think interpolating 1/f(x) is better. When you use an interpolated function in a nonlinear function, strange, unintuitive things can happen. That is why the blue curve looks odd. Between data points are linear segments in the original interpolation, but when you invert them, you cause the curvature to form.
+
+** TODO http://matlab.cheme.cmu.edu/2011/08/01/interpolation-of-data/
+* Optimization
+** TODO http://matlab.cheme.cmu.edu/2011/12/24/constrained-optimization/
+** Using Lagrange multipliers in optimization
+   :PROPERTIES:
+   :categories: optimization
+   :date:     2013-02-03
+   :last-published: 2013-02-03
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/24/using-lagrange-multipliers-in-optimization/][Matlab post]]  (adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.)
+
+Suppose we seek to maximize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We want the maximum value of the circle, on the plane. We plot these two functions here.
+
+#+BEGIN_SRC python 
+import numpy as np
+
+x = np.linspace(-1.5, 1.5)
+
+[X, Y] = np.meshgrid(x, x)
+
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+
+ax.plot_surface(X, Y, X + Y)
+
+theta = np.linspace(0,2*np.pi);
+R = 1.0
+x1 = R * np.cos(theta)
+y1 = R * np.sin(theta)
+
+ax.plot(x1, y1, x1 + y1, 'r-')
+plt.savefig('images/lagrange-1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/lagrange-1.png]]
+
+*** Construct the Lagrange multiplier augmented function
+
+To find the maximum, we construct the following function: $\Lambda(x,y; \lambda) = f(x,y)+\lambda g(x,y)$ where $g(x,y) = x^2 + y^2 - 1 = 0$, which is the constraint function. Since $g(x,y)=0$, we are not really changing the original function, provided that the constraint is met!
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+def func(X):
+    x = X[0]
+    y = X[1]
+    L = X[2] # this is the multiplier. lambda is a reserved keyword in python
+    return x + y + L * (x**2 + y**2 - 1)
+#+END_SRC
+
+#+RESULTS:
+
+*** Finding the partial derivatives
+
+The minima/maxima of the augmented function are located where all of the partial derivatives of the augmented function are equal to zero, i.e. $\partial \Lambda/\partial x = 0$, $\partial \Lambda/\partial y = 0$, and $\partial \Lambda/\partial \lambda = 0$. the process for solving this is usually to analytically evaluate the partial derivatives, and then solve the unconstrained resulting equations, which may be nonlinear.
+
+Rather than perform the analytical differentiation, here we develop a way to numerically approximate the partial derivatives.
+
+#+BEGIN_SRC python :session
+def dfunc(X):
+    dLambda = np.zeros(len(X))
+    h = 1e-3 # this is the step size used in the finite difference.
+    for i in range(len(X)):
+        dX = np.zeros(len(X))
+        dX[i] = h
+        dLambda[i] = (func(X+dX)-func(X-dX))/(2*h);
+    return dLambda
+#+END_SRC
+
+#+RESULTS:
+
+*** Now we solve for the zeros in the partial derivatives
+
+The function we defined above (dfunc) will equal zero at a maximum or minimum. It turns out there are two solutions to this problem, but only one of them is the maximum value. Which solution you get depends on the initial guess provided to the solver. Here we have to use some judgement to identify the maximum.
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fsolve
+
+# this is the max
+X1 = fsolve(dfunc, [1, 1, 0])
+print X1, func(X1)
+
+# this is the min
+X2 = fsolve(dfunc, [-1, -1, 0])
+print X2, func(X2)
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... >>> [ 0.70710678  0.70710678 -0.70710678] 1.41421356237
+: >>> ... >>> [-0.70710678 -0.70710678  0.70710678] -1.41421356237
+
+*** Summary
+Three dimensional plots in matplotlib are a little more difficult than in Matlab (where the code is almost the same as 2D plots, just different commands, e.g. plot vs plot3). In Matplotlib you have to import additional modules in the right order, and use the object oriented approach to plotting as shown here.
+
+** Linear programming example with inequality constraints 
+   :PROPERTIES:
+   :date:     2013-01-31
+   :last-published: 2013-01-31
+   :categories: [linear programming, optimization]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][Matlab post]]
+
+adapted from http://www.matrixlab-examples.com/linear-programming.html which solves this problem with fminsearch.
+
+Let us suppose that a merry farmer has 75 roods (4 roods = 1 acre) on which to plant two crops: wheat and corn. To produce these crops, it costs the farmer (for seed, water, fertilizer, etc. ) $120 per rood for the wheat, and $210 per rood for the corn. The farmer has $15,000 available for expenses, but after the harvest the farmer must store the crops while awaiting favorable or good market conditions. The farmer has storage space for 4,000 bushels. Each rood yields an average of 110 bushels of wheat or 30 bushels of corn. If the net profit per bushel of wheat (after all the expenses) is $1.30 and for corn is $2.00, how should the merry farmer plant the 75 roods to maximize profit?
+
+Let $x$ be the number of roods of wheat planted, and $y$ be the number of roods of corn planted. The profit function is: \( P = (110)($1.3)x + (30)($2)y = 143x + 60y \)
+
+There are some constraint inequalities, specified by the limits on expenses, storage and roodage. They are:
+
+\($120x + $210y <= $15000\) (The total amount spent cannot exceed the amount the farm has)
+
+\(110x + 30y <= 4000\) (The amount generated should not exceed storage space.)
+
+\(x + y <= 75\) (We cannot plant more space than we have.)
+
+\(0 <= x and 0 <= y \) (all amounts of planted land must be positive.)
+
+To solve this problem, we cast it as a linear programming problem, which minimizes a function f(X) subject to some constraints. We create a proxy function for the negative of profit, which we seek to minimize.
+
+f = -(143*x + 60*y)
+
+#+BEGIN_SRC python 
+from scipy.optimize import fmin_cobyla
+
+def objective(X):
+    '''objective function to minimize. It is the negative of profit,
+    which we seek to maximize.'''
+    x, y = X
+    return -(143*x + 60*y)
+
+def c1(X):
+    'Ensure 120x + 210y <= 15000'
+    x,y = X
+    return 15000 - 120 * x - 210*y
+
+def c2(X):
+    'ensure 110x + 30y <= 4000'
+    x,y = X
+    return 4000 - 110*x - 30 * y
+
+def c3(X):
+    'Ensure x + y is less than or equal to 75'
+    x,y = X
+    return 75 - x - y
+
+def c4(X):
+    'Ensure x >= 0'
+    return X[0]
+
+def c5(X):
+    'Ensure y >= 0'
+    return X[1]
+
+X = fmin_cobyla(objective, x0=[20, 30], cons=[c1, c2, c3, c4, c5])
+
+print 'We should plant {0:1.2f} roods of wheat.'.format(X[0])
+print 'We should plant {0:1.2f} roods of corn'.format(X[1])
+print 'The maximum profit we can earn is ${0:1.2f}.'.format(-objective(X))
+#+END_SRC
+
+#+RESULTS:
+: 
+:    Normal return from subroutine COBYLA
+: 
+:    NFVALS =   40   F =-6.315625E+03    MAXCV = 4.547474E-13
+:    X = 2.187500E+01   5.312500E+01
+: We should plant 21.88 roods of wheat.
+: We should plant 53.12 roods of corn
+: The maximum profit we can earn is $6315.62.
+
+This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][post]], but we get to the same answer. The linear programming capability in scipy is currently somewhat limited in 0.10. It is a little better in 0.11, but probably not as advanced as Matlab. There are some external libraries available:
+
+1. http://abel.ee.ucla.edu/cvxopt/
+2. http://openopt.org/LP
+
+* Plotting
+** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
+** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
+** TODO http://matlab.cheme.cmu.edu/2011/11/21/interacting-with-the-steam-entropy-temperature-chart/
+** TODO http://matlab.cheme.cmu.edu/2011/12/07/interacting-with-graphs-with-keypresses/
+** TODO http://matlab.cheme.cmu.edu/2011/11/24/turkeyfy-your-plots/
+** TODO http://matlab.cheme.cmu.edu/2011/11/22/3d-plots-of-the-steam-tables/
+** TODO http://matlab.cheme.cmu.edu/2011/11/11/interacting-with-labeled-data-points/
+** TODO http://matlab.cheme.cmu.edu/2011/09/13/check-out-the-new-fall-colors/
+** TODO http://matlab.cheme.cmu.edu/2011/09/14/picassos-short-lived-blue-period-with-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/09/16/customizing-plots-after-the-fact/
+** TODO http://matlab.cheme.cmu.edu/2011/08/25/plotting-two-datasets-with-very-different-scales/
+** TODO http://matlab.cheme.cmu.edu/2011/08/01/basic-plotting-tutorial/
+** TODO http://matlab.cheme.cmu.edu/2011/08/01/plot-customizations-modifying-line-text-and-figure-properties/
+* Programming
+** Some of this, sum of that
+   :PROPERTIES:
+   :categories: [Miscellaneous, recursion]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/29/some-of-this-sum-of-that/][Matlab plot]]
+
+Python provides a sum function to compute the sum of a list. However, the sum function does not work on every arrangement of numbers, and it certainly does not work on nested lists. We will solve this problem with recursion.
+
+Here is a simple example.
+
+#+BEGIN_SRC python
+v = [1, 2, 3, 4, 5, 6, 7, 8, 9] # a list
+print sum(v)
+
+v = (1, 2, 3, 4, 5, 6, 7, 8, 9)  # a tuple
+print sum(v)
+#+END_SRC
+
+#+RESULTS:
+: 45
+: 45
+
+If you have data in a dictionary, sum works by default on the keys. You can give the sum function the values like this.
+
+#+BEGIN_SRC python
+v = {'a':1, 'b':3, 'c':4}
+print sum(v.values())
+#+END_SRC
+
+#+RESULTS:
+: 8
+
+*** Nested lists
+
+Suppose now we have nested lists. This kind of structured data might come up if you had grouped several things together. For example, suppose we have 5 departments, with 1, 5, 15, 7 and 17 people in them, and in each department they are divided into groups.
+
+Department 1: 1 person
+Department 2: group of 2 and group of 3
+Department 3: group of 4 and 11, with a subgroups of 5 and 6 making
+              up the group of 11.
+Department 4: 7 people
+Department 5: one group of 8 and one group of 9.
+
+We might represent the data like this nested list. Now, if we want to compute the total number of people, we need to add up each group. We cannot simply sum the list, because some elements are single numbers, and others are lists, or lists of lists. We need to recurse through each entry until we get down to a number, which we can add to the running sum. 
+#+BEGIN_SRC python
+v = [1, 
+    [2, 3],
+    [4, [5, 6]],
+    7,
+    [8,9]]
+
+def recursive_sum(X):
+    'compute sum of arbitrarily nested lists'
+    s = 0 # initial value of the sum
+
+    for i in range(len(X)):
+        import types  # we use this to test if we got a number
+        if isinstance(X[i], (types.IntType,
+                             types.LongType,
+                             types.FloatType,
+                             types.ComplexType)):
+            # this is the terminal step
+            s += X[i]
+        else:
+            # we did not get a number, so we recurse
+            s += recursive_sum(X[i])
+    return s
+
+print recursive_sum(v)
+print recursive_sum([1,2,3,4,5,6,7,8,9]) # test on non-nested list
+#+END_SRC
+
+#+RESULTS:
+: 45
+: 45
+
+In [[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Post 1970]] we examined recursive functions that could be replaced by loops. Here we examine a function that can only work with recursion because the nature of the nested data structure is arbitrary. There are arbitary branches and depth in the data structure. Recursion is nice because you do not have to define that structure in advance.
+
+** Lather, rinse and repeat
+   :PROPERTIES:
+   :categories: [math, recursive]
+   :date:     2013-02-02
+   :last-published: 2013-02-02
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Matlab post]]
+
+Recursive functions are functions that call themselves repeatedly until some exit condition is met. Today we look at a classic example of recursive function for computing a factorial. The factorial of a non-negative integer n is denoted n!, and is defined as the product of all positive integers less than or equal to n.
+
+The key ideas in defining a recursive function is that there needs to be some logic to identify when to terminate the function. Then, you need logic that calls the function again, but with a smaller part of the problem. Here we recursively call the function with n-1 until it gets called with n=0. 0! is defined to be 1.
+
+#+BEGIN_SRC python
+
+def recursive_factorial(n):
+    '''compute the factorial recursively. Note if you put a negative
+    number in, this function will never end. We also do not check if
+    n is an integer.'''
+    if n == 0:
+        return 1
+    else:
+        return n * recursive_factorial(n - 1)
+
+print recursive_factorial(5)
+#+END_SRC
+
+#+RESULTS:
+: 120
+
+#+BEGIN_SRC python
+from scipy.misc import factorial
+print factorial(5)
+#+END_SRC
+
+#+RESULTS:
+: 120.0
+
+**** Compare to a loop solution
+
+This example can also be solved by a loop. This loop is easier to read and understand than the recursive function. Note the recursive nature of defining the variable as itself times a number.
+
+#+BEGIN_SRC python
+n = 5
+factorial_loop = 1
+for i in range(1, n + 1):
+    factorial_loop *= i
+
+print factorial_loop
+#+END_SRC
+
+#+RESULTS:
+: 120
+
+There are some significant differences in this example than in Matlab. 
+
+  1. the syntax of the for loop is quite different with the use of the =in= operator.
+  2. python has the nice *= operator to replace a = a * i
+  3. We have to loop from 1 to n+1 because the last number in the range is not returned.
+
+*** Conclusions
+
+Recursive functions have a special niche in mathematical programming. There is often another way to accomplish the same goal. That is not always true though, and in a future post we will examine cases where recursion is the only way to solve a problem.
+
+** TODO regular expressions
+http://matlab.cheme.cmu.edu/2012/05/07/1701/
+** TODO http://matlab.cheme.cmu.edu/2011/11/12/unique-entries-in-a-vector/
+** TODO http://matlab.cheme.cmu.edu/2011/11/12/sorting-in-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/10/23/using-java-inside-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/
+** TODO http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/
+* Worked examples
+** Peak finding in Raman spectroscopy
+   :PROPERTIES:
+   :categories: data-analysis
+   :END:
+Raman spectroscopy is a vibrational spectroscopy. The data typically comes as intensity vs. wavenumber, and it is discrete. Sometimes it is necessary to identify the precise location of a peak. In this post, we will use spline smoothing to construct an interpolating function of the data, and then use fminbnd to identify peak positions.
+
+This example was originally worked out in Matlab at http://matlab.cheme.cmu.edu/2012/08/27/peak-finding-in-raman-spectroscopy/
+
+numpy:loadtxt
+
+Let us take a look at the raw data.
+
+#+BEGIN_SRC python :session 
+import os
+print os.getcwd()
+print os.environ['HOME']
+#+END_SRC
+
+#+RESULTS:
+: 
+: /home/jkitchin/Dropbox/intro-python
+: /home/jkitchin
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+w, i = np.loadtxt('data/raman.txt', usecols=(0, 1), unpack=True)
+
+plt.plot(w, i)
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)')
+plt.savefig('images/raman-1.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1d372810>]
+: <matplotlib.text.Text object at 0x1d48df90>
+: <matplotlib.text.Text object at 0x1d356a10>
+
+[[./images/raman-1.png]]
+
+The next thing to do is narrow our focus to the region we are interested in between 1340 cm^{-1} and 1360 cm^{-1}.
+
+#+BEGIN_SRC python :session
+ind = (w > 1340) & (w < 1360)
+w1 = w[ind]
+i1 = i[ind]
+
+plt.plot(w1, i1, 'b. ')
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)')
+plt.savefig('images/raman-2.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x1d5005d0>]
+: <matplotlib.text.Text object at 0x1d37a650>
+: <matplotlib.text.Text object at 0x1d3809d0>
+
+[[./images/raman-2.png]]
+
+Next we consider a scipy:UnivariateSpline. This function "smooths" the data.
+
+#+BEGIN_SRC python :session
+from scipy.interpolate import UnivariateSpline
+
+# s is a "smoothing" factor
+sp = UnivariateSpline(w1, i1, s=3000)
+
+plt.plot(w1, i1, 'b. ')
+plt.plot(w1, sp(w1), 'r-')
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)')
+plt.savefig('images/raman-3.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... [<matplotlib.lines.Line2D object at 0x1dd35e90>]
+: [<matplotlib.lines.Line2D object at 0x2ab334a3d510>]
+: <matplotlib.text.Text object at 0x1d49bad0>
+: <matplotlib.text.Text object at 0x1dd3b950>
+
+[[./images/raman-3.png]]
+
+Note that the UnivariateSpline function returns a "callable" function! Our next goal is to find the places where there are peaks. This is defined by the first derivative of the data being equal to zero. It is easy to get the first derivative of a UnivariateSpline with a second argument as shown below.
+
+#+BEGIN_SRC python :session
+# get the first derivative evaluated at all the points
+d1 =  sp(w1, 1)
+plt.plot(w1, d1, label='first derivative')
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('First derivative')
+
+# find the places where the first derivative crosses zero
+s = np.zeros(d1.shape)
+s[d1 >= 0] = 1
+s[d1 < 0] = 0
+
+initial_guesses = w1[np.diff(s) == -1]
+plt.plot(initial_guesses, 0*initial_guesses, 'ro ', label='Guesses of zeros')
+plt.legend(loc='best')
+plt.savefig('images/raman-4.png'
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x1d9eaad0>]
+: <matplotlib.text.Text object at 0x1d4f2210>
+: <matplotlib.text.Text object at 0x1d9e6910>
+: >>> ... >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1d4f3250>]
+: <matplotlib.legend.Legend object at 0x1d839510>
+
+[[./images/raman-4.png]]
+
+Now, we can use these initial guesses to solve for the actual values.
+
+#+BEGIN_SRC python :session 
+from scipy.optimize import fminbound
+
+def func(w):
+    'function to minimize'
+    return -sp(w)
+
+for value in initial_guesses:
+    sol = fminbound(func, value - 1, value + 1)
+    plt.plot(sol, sp(sol), 'ro ', ms=8)
+    print 'Peak found at {0} cm^{{-1}}'.format(sol)
+
+plt.plot(w1, i1, 'b. ')
+plt.plot(w1, sp(w1), 'r-')
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)')
+plt.savefig('images/raman-5.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... >>> ... [<matplotlib.lines.Line2D object at 0x1da00510>]
+: Peak found at 1346.50980295 cm^{-1}
+: [<matplotlib.lines.Line2D object at 0x1d4c0110>]
+: Peak found at 1348.11261373 cm^{-1}
+: [<matplotlib.lines.Line2D object at 0x1da02b90>]
+: [<matplotlib.lines.Line2D object at 0x1da02750>]
+: <matplotlib.text.Text object at 0x1da01850>
+: <matplotlib.text.Text object at 0x1d9d4110>
+
+In the end, we have illustrated how to construct a spline smoothing interpolation function and to find maxima in the function, including generating some initial guesses. There is more art to this than you might like, since you have to judge how much smoothing is enough or too much. With too much, you may smooth peaks out. With too little, noise may be mistaken for peaks.
+
+*** Summary notes
+Using org-mode with :session allows a large script to be broken up into mini sections. However, it only seems to work with the default python mode in Emacs, and it does not work with emacs-for-python or the latest python-mode. I also do not really like the output style, e.g. the output from the plotting commands.
+
+** Curve fitting to get overlapping peak areas
+  :PROPERTIES:
+  :categories: data-analysis
+  :date:     2013-01-29
+  :last-published: 2013-01-29
+  :END:
+
+Today we examine an approach to fitting curves to overlapping peaks to deconvolute them so we can estimate the area under each curve. We have a text file that contains data from a gas chromatograph with two peaks that overlap. We want the area under each peak to estimate the gas composition. You will see how to read the text file in, parse it to get the data for plotting and analysis, and then how to fit it.
+
+
+A line like "# of Points	9969" tells us the number of points we have to read. The data starts after a line containing "R.Time	Intensity". Here we read the number of points, and then get the data into arrays.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+datafile = 'data/gc-data-21.txt'
+
+i = 0
+with open(datafile) as f:
+    lines = f.readlines()
+
+for i,line in enumerate(lines):
+    if '# of Points' in line:
+        npoints = int(line.split()[-1])
+    elif 'R.Time	Intensity' in line:
+        i += 1
+        break
+
+# now get the data
+t, intensity = [], []
+for j in range(i, i + npoints):
+    fields = lines[j].split()
+    t += [float(fields[0])]
+    intensity += [int(fields[1])]
+
+t = np.array(t)
+intensity = np.array(intensity)
+
+# now plot the data in the relevant time frame
+plt.plot(t, intensity)
+plt.xlim([4, 6])
+plt.xlabel('Time (s)')
+plt.ylabel('Intensity (arb. units)')
+plt.savefig('images/deconvolute-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> ... ... >>> ... ... ... ... ... ... >>> ... >>> ... ... ... ... >>> >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x04CE6CF0>]
+: (4, 6)
+: <matplotlib.text.Text object at 0x04BBB950>
+: <matplotlib.text.Text object at 0x04BD0A10>
+
+[[./images/deconvolute-1.png]]
+
+You can see there is a non-zero baseline. We will normalize that by the average between 4 and 4.4 seconds.
+
+#+BEGIN_SRC python :session
+intensity -= np.mean(intensity[(t> 4) & (t < 4.4)])
+plt.figure()
+plt.plot(t, intensity)
+plt.xlim([4, 6])
+plt.xlabel('Time (s)')
+plt.ylabel('Intensity (arb. units)')
+plt.savefig('./images/deconvolute-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: <matplotlib.figure.Figure object at 0x04CF7950>
+: [<matplotlib.lines.Line2D object at 0x04DF5C30>]
+: (4, 6)
+: <matplotlib.text.Text object at 0x04DDB690>
+: <matplotlib.text.Text object at 0x04DE3630>
+
+[[./images/deconvolute-2.png]]
+
+The peaks are asymmetric, decaying gaussian functions. We define a function for this 
+
+#+BEGIN_SRC python :session
+from scipy.special import erf
+
+def asym_peak(t, pars):
+    'from Anal. Chem. 1994, 66, 1294-1301'
+    a0 = pars[0]  # peak area
+    a1 = pars[1]  # elution time
+    a2 = pars[2]  # width of gaussian
+    a3 = pars[3]  # exponential damping term
+    f = (a0/2/a3*np.exp(a2**2/2.0/a3**2 + (a1 - t)/a3)
+         *(erf((t-a1)/(np.sqrt(2.0)*a2) - a2/np.sqrt(2.0)/a3) + 1.0))
+    return f
+#+END_SRC
+
+#+RESULTS:
+
+To get two peaks, we simply add two peaks together.
+
+#+BEGIN_SRC python :session
+def two_peaks(t, *pars):    
+    'function of two overlapping peaks'
+    a10 = pars[0]  # peak area
+    a11 = pars[1]  # elution time
+    a12 = pars[2]  # width of gaussian
+    a13 = pars[3]  # exponential damping term
+    a20 = pars[4]  # peak area
+    a21 = pars[5]  # elution time
+    a22 = pars[6]  # width of gaussian
+    a23 = pars[7]  # exponential damping term   
+    p1 = asym_peak(t, [a10, a11, a12, a13])
+    p2 = asym_peak(t, [a20, a21, a22, a23])
+    return p1 + p2
+#+END_SRC
+
+#+RESULTS:
+
+To show the function is close to reasonable, we plot the fitting function with an initial guess for each parameter. The fit is not good, but we have only guessed the parameters for now. 
+
+
+#+BEGIN_SRC python :session
+parguess = (1500, 4.85, 0.05, 0.05, 5000, 5.1, 0.05, 0.1)
+plt.figure()
+plt.plot(t, intensity)
+plt.plot(t,two_peaks(t, *parguess),'g-')
+plt.xlim([4, 6])
+plt.xlabel('Time (s)')
+plt.ylabel('Intensity (arb. units)')
+plt.savefig('images/deconvolution-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: <matplotlib.figure.Figure object at 0x04FEF690>
+: [<matplotlib.lines.Line2D object at 0x05049870>]
+: [<matplotlib.lines.Line2D object at 0x04FEFA90>]
+: (4, 6)
+: <matplotlib.text.Text object at 0x0502E210>
+: <matplotlib.text.Text object at 0x050362B0>
+
+
+[[./images/deconvolution-3.png]]
+
+Next, we use nonlinear curve fitting from scipy.optimize.curve_fit
+
+#+BEGIN_SRC python :session
+from scipy.optimize import curve_fit
+
+popt, pcov = curve_fit(two_peaks, t, intensity, parguess)
+print popt
+
+plt.plot(t, two_peaks(t, *popt), 'r-')
+plt.legend(['data', 'initial guess','final fit'])
+
+plt.savefig('images/deconvolution-4.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [  1.31039283e+03   4.87474330e+00   5.55414785e-02   2.50610175e-02
+:    5.32556821e+03   5.14121507e+00   4.68236129e-02   1.04105615e-01]
+: >>> [<matplotlib.lines.Line2D object at 0x0505BA10>]
+: <matplotlib.legend.Legend object at 0x05286270>
+
+[[./images/deconvolution-4.png]]
+
+The fits are not perfect. The small peak is pretty good, but there is an unphysical tail on the larger peak, and a small mismatch at the peak. There is not much to do about that, it means the model peak we are using is not a good model for the peak. We will still integrate the areas though.
+
+#+BEGIN_SRC python :session
+pars1 = popt[0:4]
+pars2 = popt[4:8]
+
+peak1 = asym_peak(t, pars1)
+peak2 = asym_peak(t, pars2)
+
+area1 = np.trapz(peak1, t)
+area2 = np.trapz(peak2, t)
+
+print 'Area 1 = {0:1.2f}'.format(area1)
+print 'Area 2 = {0:1.2f}'.format(area2)
+
+print 'Area 1 is {0:1.2%} of the whole area'.format(area1/(area1 + area2))
+print 'Area 2 is {0:1.2%} of the whole area'.format(area2/(area1 + area2))
+
+plt.figure()
+plt.plot(t, intensity)
+plt.plot(t, peak1, 'r-')
+plt.plot(t, peak2, 'g-')
+plt.xlim([4, 6])
+plt.xlabel('Time (s)')
+plt.ylabel('Intensity (arb. units)')
+plt.legend(['data', 'peak 1', 'peak 2'])
+plt.savefig('images/deconvolution-5.png')
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> >>> >>> >>> >>> >>> >>> >>> Area 1 = 1310.39
+Area 2 = 5325.57
+>>> Area 1 is 19.75% of the whole area
+Area 2 is 80.25% of the whole area
+>>> <matplotlib.figure.Figure object at 0x05286ED0>
+[<matplotlib.lines.Line2D object at 0x053A5AB0>]
+[<matplotlib.lines.Line2D object at 0x05291D30>]
+[<matplotlib.lines.Line2D object at 0x053B9810>]
+(4, 6)
+<matplotlib.text.Text object at 0x0529C4B0>
+<matplotlib.text.Text object at 0x052A3450>
+<matplotlib.legend.Legend object at 0x053B9ED0>
+#+end_example
+
+[[./images/deconvolution-5.png]]
+
+This sample was air, and the first peak is oxygen, and the second peak is nitrogen. we come pretty close to the actual composition of air, although it is low on the oxygen content. To do better, one would have to use a calibration curve.
+
+In the end, the overlap of the peaks is pretty small, but it is still difficult to reliably and reproducibly deconvolute them. By using an algorithm like we have demonstrated here, it is possible at least to make the deconvolution reproducible.
+
+*** Notable differences from Matlab
+1. The order of arguments to np.trapz is reversed. 
+2. The order of arguments to the fitting function scipy.optimize.curve_fit is different than in Matlab.
+3. The scipy.optimize.curve_fit function expects a fitting function that has all parameters as arguments, where Matlab expects a vector of parameters.
+** Estimating the boiling point of water
+   :PROPERTIES:
+   :categories: thermodynamics
+   :date:     2013-02-04
+   :last-published: 2013-02-04
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/01/01/estimating-the-boiling-point-of-water/][Matlab post]]
+
+I got distracted looking for Shomate parameters for ethane today, and came across this [[http://senese.wordpress.com/2010/01/26/notebook-3-2-predicting-boiling-points-from-liquidvapor-gibbs-free-energy-functions/][website]] on predicting the boiling point of water using the Shomate equations. The basic idea is to find the temperature where the Gibbs energy of water as a vapor is equal to the Gibbs energy of the liquid.
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+#+END_SRC
+
+#+RESULTS:
+
+Liquid water (http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=2#Thermo-Condensed)
+#+BEGIN_SRC python :session
+# valid over 298-500
+
+Hf_liq = -285.830   # kJ/mol
+S_liq = 0.06995     # kJ/mol/K
+shomateL = [-203.6060,
+            1523.290,
+           -3196.413,
+            2474.455,
+               3.855326,
+            -256.5478,
+            -488.7163,
+            -285.8304]
+#+END_SRC
+
+#+RESULTS:
+
+Gas phase water (http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1&Type=JANAFG&Table=on#JANAFG)
+
+Interestingly, these parameters are listed as valid only above 500K. That means we have to extrapolate the values down to 298K. That is risky for polynomial models, as they can deviate substantially outside the region they were fitted to.
+
+#+BEGIN_SRC python :session
+Hf_gas = -241.826  # kJ/mol
+S_gas = 0.188835   # kJ/mol/K
+
+shomateG = [30.09200,
+             6.832514,
+             6.793435,
+            -2.534480,
+             0.082139,
+          -250.8810,
+           223.3967,
+          -241.8264]
+#+END_SRC
+
+#+RESULTS:
+
+Now, we wan to compute G for each phase as a function of T
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+T = np.linspace(0, 200) + 273.15
+t = T / 1000.0
+
+sTT = np.vstack([np.log(t),
+                 t,
+                 (t**2) / 2.0,
+                 (t**3) / 3.0,
+                 -1.0 / (2*t**2),
+                 0 * t,
+                 t**0,
+                 0 * t**0]).T / 1000.0
+
+hTT = np.vstack([t,
+                 (t**2)/2.0,
+                 (t**3)/3.0,
+                 (t**4)/4.0,
+                 -1.0 / t,
+                 1 * t**0,
+                 0 * t**0,
+                 -1 * t**0]).T
+
+Gliq = Hf_liq + np.dot(hTT, shomateL) - T*(np.dot(sTT, shomateL))
+Ggas = Hf_gas + np.dot(hTT, shomateG) - T*(np.dot(sTT, shomateG))
+                 
+from scipy.interpolate import interp1d
+from scipy.optimize import fsolve
+
+f = interp1d(T, Gliq - Ggas)
+bp, = fsolve(f, 373)
+print 'The boiling point is {0} K'.format(bp)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> ... ... ... ... ... ... ... >>> >>> ... ... ... ... ... ... ... >>> >>> >>> >>> ... >>> >>> >>> >>> >>> The boiling point is 373.206081312 K
+
+#+BEGIN_SRC python :session
+plt.figure(); plt.clf()
+plt.plot(T-273.15, Gliq, T-273.15, Ggas)
+plt.legend(['liquid water', 'steam'])
+
+plt.xlabel('Temperature $^\circ$C')
+plt.ylabel('$\Delta G$ (kJ/mol)')
+plt.title('The boiling point is approximately {0:1.2f} $^\circ$C'.format(bp-273.15))
+plt.savefig('images/boiling-water.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x050D2E30>
+: [<matplotlib.lines.Line2D object at 0x051AB610>, <matplotlib.lines.Line2D object at 0x051B4C90>]
+: <matplotlib.legend.Legend object at 0x051B9030>
+: >>> <matplotlib.text.Text object at 0x0519E390>
+: <matplotlib.text.Text object at 0x050FB390>
+: <matplotlib.text.Text object at 0x050FBFB0>
+
+[[./images/boiling-water.png]]
+
+*** Summary
+
+The answer we get us 0.05 K too high, which is not bad considering we estimated it using parameters that were fitted to thermodynamic data and that had finite precision and extrapolated the steam properties below the region the parameters were stated to be valid for.
+
+** TODO http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/
+** TODO http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/
+** TODO http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/
+** TODO http://matlab.cheme.cmu.edu/2011/12/18/conservation-of-mass-in-chemical-reactions/
+** Water gas shift equilibria via the NIST Webbook
+   :PROPERTIES:
+   :categories: [Miscellaneous, nonlinear algebra]
+   :tags:     [thermodynamics, reaction engineering]
+   :date:     2013-02-01
+   :last-published: 2013-02-01
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/12/water-gas-shift-equilibria-via-the-nist-webbook/][Matlab post]]
+
+The [[http://webbook.nist.gov/chemistry/][NIST webbook]] provides parameterized models of the enthalpy, entropy and heat capacity of many molecules. In this example, we will examine how to use these to compute the equilibrium constant for the water gas shift reaction $CO + H_2O \rightleftharpoons CO_2 + H_2$ in the temperature range of 500K to 1000K.
+
+Parameters are provided for:
+
+   Cp = heat capacity (J/mol*K)
+   H = standard enthalpy (kJ/mol)
+   S = standard entropy (J/mol*K)
+
+with models in the form: $Cp^\circ = A + B*t + C*t^2 + D*t^3 + E/t^2$
+
+$H^\circ - H^\circ_{298.15}= A*t + B*t^2/2 + C*t^3/3 + D*t^4/4 - E/t + F - H$
+
+$S^\circ = A*ln(t) + B*t + C*t^2/2 + D*t^3/3 - E/(2*t^2) + G$
+
+where $t=T/1000$, and $T$ is the temperature in Kelvin. We can use this data to calculate equilibrium constants in the following manner. First, we have heats of formation at standard state for each compound; for elements, these are zero by definition, and for non-elements, they have values available from the NIST webbook. There are also values for the absolute entropy at standard state. Then, we have an expression for the change in enthalpy from standard state as defined above, as well as the absolute entropy. From these we can derive the reaction enthalpy, free energy and entropy at standard state, as well as at other temperatures.
+
+We will examine the water gas shift enthalpy, free energy and equilibrium constant from 500K to 1000K, and finally compute the equilibrium composition of a gas feed containing 5 atm of CO and H_2 at 1000K.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+T = np.linspace(500,1000) # degrees K
+t = T/1000;
+#+END_SRC
+
+#+RESULTS:
+
+*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Units=SI&Mask=1#Thermo-Gas][hydrogen]]
+#+BEGIN_SRC python :session
+# T = 298-1000K valid temperature range
+A =  33.066178
+B = -11.363417
+C =  11.432816
+D = -2.772874
+E = -0.158558
+F = -9.980797
+G =  172.707974
+H =  0.0
+
+Hf_29815_H2 = 0.0 # kJ/mol
+S_29815_H2 = 130.68 # J/mol/K
+
+dH_H2 = A*t + B*t**2/2 + C*t**3/3 + D*t**4/4 - E/t + F - H;
+S_H2 = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
+#+END_SRC
+
+#+RESULTS:
+
+*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1#Thermo-Gas][H_2O]]
+
+Note these parameters limit the temperature range we can examine, as these parameters are not valid below 500K. There is another set of parameters for lower temperatures, but we do not consider them here.
+#+BEGIN_SRC python :session
+# 500-1700 K valid temperature range
+A =   30.09200
+B =   6.832514
+C =   6.793435
+D =  -2.534480
+E =   0.082139
+F =  -250.8810
+G =   223.3967
+H =  -241.8264
+
+Hf_29815_H2O = -241.83 #this is Hf.
+S_29815_H2O = 188.84
+
+dH_H2O = A*t + B*t**2/2 + C*t**3/3 + D*t**4/4 - E/t + F - H;
+S_H2O = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
+#+END_SRC
+
+#+RESULTS:
+
+*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&Units=SI&Mask=1#Thermo-Gas][CO]]
+
+#+BEGIN_SRC python :session
+# 298. - 1300K valid temperature range
+A =   25.56759
+B =   6.096130
+C =   4.054656
+D =  -2.671301
+E =   0.131021
+F =  -118.0089
+G =   227.3665
+H = -110.5271
+
+Hf_29815_CO = -110.53 #this is Hf kJ/mol.
+S_29815_CO = 197.66
+
+dH_CO = A*t + B*t**2/2 + C*t**3/3 + D*t**4/4 - E/t + F - H;
+S_CO = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
+#+END_SRC
+
+#+RESULTS:
+
+*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&Units=SI&Mask=1#Thermo-Gas][CO_2]]
+#+BEGIN_SRC python :session
+# 298. - 1200.K valid temperature range
+A =   24.99735
+B =   55.18696
+C =  -33.69137
+D =   7.948387
+E =  -0.136638
+F =  -403.6075
+G =   228.2431
+H =  -393.5224
+
+Hf_29815_CO2 = -393.51 # this is Hf.
+S_29815_CO2 = 213.79
+
+dH_CO2 = A*t + B*t**2/2 + C*t**3/3 + D*t**4/4 - E/t + F - H;
+S_CO2 = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
+#+END_SRC
+
+#+RESULTS:
+
+*** Standard state heat of reaction
+
+We compute the enthalpy and free energy of reaction at 298.15 K for the following reaction $CO + H2O \rightleftharpoons H2 + CO2$.
+
+#+BEGIN_SRC python :session
+Hrxn_29815 = Hf_29815_CO2 + Hf_29815_H2 - Hf_29815_CO - Hf_29815_H2O;
+Srxn_29815 = S_29815_CO2 + S_29815_H2 - S_29815_CO - S_29815_H2O;
+Grxn_29815 = Hrxn_29815 - 298.15*(Srxn_29815)/1000;
+
+print('deltaH = {0:1.2f}'.format(Hrxn_29815))
+print('deltaG = {0:1.2f}'.format(Grxn_29815))
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> deltaH = -41.15
+: deltaG = -28.62
+
+*** Non-standard state $\Delta H$ and $\Delta G$
+
+We have to correct for temperature change away from standard state. We only correct the enthalpy for this temperature change. The correction looks like this:
+
+$$ \Delta H_{rxn}(T) = \Delta H_{rxn}(T_{ref}) + \sum_i \nu_i (H_i(T)-H_i(T_{ref}))$$
+
+Where $\nu_i$ are the stoichiometric coefficients of each species, with appropriate sign for reactants and products, and $(H_i(T)-H_i(T_{ref})$ is precisely what is calculated for each species with the equations
+
+The entropy is on an absolute scale, so we directly calculate entropy at each temperature. Recall that H is in kJ/mol and S is in J/mol/K, so we divide S by 1000 to make the units match.
+#+BEGIN_SRC python :session
+Hrxn = Hrxn_29815 + dH_CO2 + dH_H2 - dH_CO - dH_H2O
+Grxn = Hrxn - T*(S_CO2 + S_H2 - S_CO - S_H2O)/1000
+#+END_SRC
+
+#+RESULTS:
+
+*** Plot how the $\Delta G$ varies with temperature
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+plt.figure(); plt.clf()
+plt.plot(T,Grxn, label='$\Delta G_{rxn}$')
+plt.plot(T,Hrxn, label='$\Delta H_{rxn}$')
+plt.xlabel('Temperature (K)')
+plt.ylabel('(kJ/mol)')
+plt.legend( loc='best')
+plt.savefig('wgs-nist-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: <matplotlib.figure.Figure object at 0x04199CF0>
+: [<matplotlib.lines.Line2D object at 0x0429BF30>]
+: [<matplotlib.lines.Line2D object at 0x0427DFB0>]
+: <matplotlib.text.Text object at 0x041B79F0>
+: <matplotlib.text.Text object at 0x040CEF70>
+: <matplotlib.legend.Legend object at 0x043CB5F0>
+
+[[./wgs-nist-1.png]]
+Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.
+
+*** Equilibrium constant calculation
+
+Note the equilibrium constant starts out high, i.e. strongly favoring the formation of products, but drops very quicky with increasing temperature.
+
+#+BEGIN_SRC python :session
+R = 8.314e-3 # kJ/mol/K
+K = np.exp(-Grxn/R/T);
+
+plt.figure()
+plt.plot(T,K)
+plt.xlim([500, 1000])
+plt.xlabel('Temperature (K)')
+plt.ylabel('Equilibrium constant')
+plt.savefig('wgs-nist-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> <matplotlib.figure.Figure object at 0x044DBE90>
+: [<matplotlib.lines.Line2D object at 0x045A53F0>]
+: (500, 1000)
+: <matplotlib.text.Text object at 0x04577470>
+: <matplotlib.text.Text object at 0x0457F410>
+
+[[./wgs-nist-2.png]]
+
+*** Equilibrium yield of WGS
+
+Now let us suppose we have a reactor with a feed of H_2O and CO at 10atm at 1000K. What is the equilibrium yield of H_2? Let $\epsilon$ be the extent of reaction, so that $F_i = F_{i,0} + \nu_i \epsilon$. For reactants, $\nu_i$ is negative, and for products, $\nu_i$ is positive. We have to solve for the extent of reaction that satisfies the equilibrium condition.
+
+#+BEGIN_SRC python :session
+from scipy.interpolate import interp1d
+from scipy.optimize import fsolve
+
+# 
+# A = CO
+# B = H2O
+# C = H2
+# D = CO2
+
+Pa0 = 5; Pb0 = 5; Pc0 = 0; Pd0 = 0;  # pressure in atm
+R = 0.082;
+Temperature = 1000;
+
+# we can estimate the equilibrium like this. We could also calculate it
+# using the equations above, but we would have to evaluate each term. Above
+# we simply computed a vector of enthalpies, entropies, etc... Here we interpolate
+K_func = interp1d(T,K);
+K_Temperature = K_func(1000)
+
+
+# If we let X be fractional conversion then we have $C_A = C_{A0}(1-X)$,
+# $C_B = C_{B0}-C_{A0}X$, $C_C = C_{C0}+C_{A0}X$, and $C_D =
+# C_{D0}+C_{A0}X$. We also have $K(T) = (C_C C_D)/(C_A C_B)$, which finally
+# reduces to $0 = K(T) - Xeq^2/(1-Xeq)^2$ under these conditions.
+
+def f(X):
+    return K_Temperature - X**2/(1-X)**2;
+
+x0 = 0.5
+Xeq, = fsolve(f, x0)
+
+print('The equilibrium conversion for these feed conditions is: {0:1.2f}'.format(Xeq))
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> ... ... ... ... ... >>> >>> >>> >>> >>> ... ... ... >>> >>> >>> >>> ... ... ... ... >>> ... ... >>> >>> >>> 0.54504291144
+: The equilibrium conversion for these feed conditions is: 0.55
+
+*** Compute gas phase pressures of each species
+
+Since there is no change in moles for this reaction, we can directly calculation the pressures from the equilibrium conversion and the initial pressure of gases. you can see there is a slightly higher pressure of H_2 and CO_2 than the reactants, consistent with the equilibrium constant of about 1.44 at 1000K. At a lower temperature there would be a much higher yield of the products. For example, at 550K the equilibrium constant is about 58, and the pressure of H_2 is 4.4 atm due to a much higher equilibrium conversion of 0.88.
+
+#+BEGIN_SRC python :session
+P_CO = Pa0*(1-Xeq)
+P_H2O = Pa0*(1-Xeq)
+P_H2 = Pa0*Xeq
+P_CO2 = Pa0*Xeq
+
+print P_CO,P_H2O, P_H2, P_CO2
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> 2.2747854428 2.2747854428 2.7252145572 2.7252145572
+
+*** Compare the equilibrium constants
+
+We can compare the equilibrium constant from the Gibbs free energy and the one from the ratio of pressures. They should be the same!
+
+#+BEGIN_SRC python :session
+print K_Temperature
+print (P_CO2*P_H2)/(P_CO*P_H2O)
+#+END_SRC
+
+#+RESULTS:
+: 1.43522674762
+: 1.43522674762
+
+They are the same.
+
+*** Summary
+
+The NIST Webbook provides a plethora of data for computing thermodynamic properties. It is a little tedious to enter it all into Matlab, and a little tricky to use the data to estimate temperature dependent reaction energies. A limitation of the Webbook is that it does not tell you have the thermodynamic properties change with pressure. Luckily, those changes tend to be small.
+
+I noticed a different behavior in interpolation between scipy.interpolate.interp1d and Matlab's interp1. The scipy function returns an interpolating function, whereas the Matlab function directly interpolates new values, and returns the actual interpolated data. 
+
+
+** TODO http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/
+** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
+** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
+** TODO http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/
+** TODO http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/
+** TODO http://matlab.cheme.cmu.edu/2011/09/15/calculating-a-bubble-point-pressure/
+** TODO http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/
+** Constrained minimization to find equilibrium compositions
+   :PROPERTIES:
+   :categories: [Optimization, thermodynamics, reaction engineering]
+   :date:     2013-02-05
+   :last-published: 2013-02-05
+   :END:
+
+adapated from Chemical Reactor analysis and design fundamentals, Rawlings and Ekerdt, appendix A.2.3.
+
+[[http://matlab.cheme.cmu.edu/2011/08/12/constrained-minimization-to-find-equilibrium-compositions/][Matlab post]]
+
+The equilibrium composition of a reaction is the one that minimizes the total Gibbs free energy. The Gibbs free energy of a reacting ideal gas mixture depends on the mole fractions of each species, which are determined by the initial mole fractions of each species, the extent of reactions that convert each species, and the equilibrium constants.
+
+Reaction 1: $I + B \rightleftharpoons P1$
+
+Reaction 2: $I + B \rightleftharpoons P2$
+
+Here we define the Gibbs free energy of the mixture as a function of the reaction extents.
+#+BEGIN_SRC python  :session
+import numpy as np
+
+def gibbs(E):
+    'function defining Gibbs free energy as a function of reaction extents'
+    e1 = E[0]
+    e2 = E[1]
+    # known equilibrium constants and initial amounts
+    K1 = 108; K2 = 284; P = 2.5;
+    yI0 = 0.5; yB0 = 0.5; yP10 = 0.0; yP20 = 0.0;
+    # compute mole fractions
+    d = 1 - e1 - e2;
+    yI = (yI0 - e1 - e2) / d;
+    yB = (yB0 - e1 - e2) / d;
+    yP1 = (yP10 + e1) / d;
+    yP2 = (yP20 + e2) / d;
+    G = (-(e1 * np.log(K1) + e2 * np.log(K2)) +
+         d * np.log(P) + yI * d * np.log(yI) + 
+         yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+    return G
+#+END_SRC
+
+The equilibrium constants for these reactions are known, and we seek to find the equilibrium reaction extents so we can determine equilibrium compositions. The equilibrium reaction extents are those that minimize the Gibbs free energy.  We have the following constraints, written in standard less than or equal to form:
+
+$-\epsilon_1 \le 0$
+
+$-\epsilon_2 \le 0$
+
+$\epsilon_1 + \epsilon_2 \le 0.5$
+
+In Matlab we express this in matrix form as Ax=b where $A = \left[ \begin{array}{cc} -1 & 0 \\ 0 & -1 \\ 1 & 1 \end{array} \right]$ and $b = \left[ \begin{array}{c} 0 \\ 0 \\ 0.5\end{array} \right]$
+
+Unlike in Matlab, in python we construct the inequality constraints as functions that are greater than or equal to zero when the constraint is met.
+
+#+BEGIN_SRC python :session
+def constraint1(E):
+    e1 = E[0]
+    return e1
+
+def constraint2(E):
+    e2 = E[1]
+    return e2
+
+def constraint3(E):
+    e1 = E[0]
+    e2 = E[1]
+    return 0.5 - (e1 + e2)
+#+END_SRC
+
+#+RESULTS:
+
+Now, we minimize.
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fmin_slsqp
+
+X0 = [0.133, 0.351]
+X = fmin_slsqp(gibbs, X0, ieqcons=[constraint1, constraint2, constraint3])
+print X
+
+print gibbs(X)
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -2.55942338611
+:             Iterations: 1
+:             Function evaluations: 8
+:             Gradient evaluations: 1
+: [ 0.1330313   0.35101555]
+: >>> -2.55942338611
+
+
+One way we can verify our solution is to plot the gibbs function and see where the minimum is, and whether there is more than one minimum. We start by making grids over the range of 0 to 0.5. Note we actually start slightly above zero because at zero there are some numerical imaginary elements of the gibbs function or it is numerically not defined since there are logs of zero there. We also set all elements where the sum of the two extents is greater than 0.5 to near zero, since those regions violate the constraints. 
+
+#+BEGIN_SRC python 
+import numpy as np
+import matplotlib.pyplot as plt
+
+def gibbs(E):
+    'function defining Gibbs free energy as a function of reaction extents'
+    e1 = E[0]
+    e2 = E[1]
+    # known equilibrium constants and initial amounts
+    K1 = 108; K2 = 284; P = 2.5;
+    yI0 = 0.5; yB0 = 0.5; yP10 = 0.0; yP20 = 0.0;
+    # compute mole fractions
+    d = 1 - e1 - e2;
+    yI = (yI0 - e1 - e2)/d;
+    yB = (yB0 - e1 - e2)/d;
+    yP1 = (yP10 + e1)/d;
+    yP2 = (yP20 + e2)/d;
+    G = (-(e1 * np.log(K1) + e2 * np.log(K2)) +
+         d * np.log(P) + yI * d * np.log(yI) + 
+         yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+    return G
+
+
+a = np.linspace(0.001, 0.5, 100)
+E1, E2 = np.meshgrid(a,a)
+
+sumE = E1 + E2
+E1[sumE >= 0.5] = 0.00001
+E2[sumE >= 0.5] = 0.00001
+
+# now evaluate gibbs
+G = np.zeros(E1.shape)
+m,n = E1.shape
+
+G = gibbs([E1, E2])
+
+CS = plt.contour(E1, E2, G, levels=np.linspace(G.min(),G.max(),100))
+plt.xlabel('$\epsilon_1$')
+plt.ylabel('$\epsilon_2$')
+plt.colorbar()
+
+plt.plot([ 0.1330313],   [0.35101555], 'ro')
+
+plt.savefig('images/gibbs-minimization-1.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/gibbs-minimization-1.png]]
+
+You can see we found the minimum. We can compute the mole fractions pretty easily.
+
+#+BEGIN_SRC python :session
+e1 = X[0];
+e2 = X[1];
+
+yI0 = 0.5; yB0 = 0.5; yP10 = 0; yP20 = 0; #initial mole fractions
+
+d = 1 - e1 - e2;
+yI = (yI0 - e1 - e2)/d;
+yB = (yB0 - e1 - e2)/d;
+yP1 = (yP10 + e1)/d;
+yP2 = (yP20 + e2)/d;
+
+print('y_I = {0:1.3f} y_B = {1:1.3f} y_P1 = {2:1.3f} y_P2 = {3:1.3f}'.format(yI,yB,yP1,yP2))
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> y_I = 0.031 y_B = 0.031 y_P1 = 0.258 y_P2 = 0.680
+
+*** summary
+I found setting up the constraints in this example to be more confusing than the Matlab syntax.
+
+** Time dependent concentration in a first order reversible reaction in a batch reactor.
+   :PROPERTIES:
+   :categories: [reaction engineering, ODEs]
+   :date:     2013-02-05
+   :last-published: 2013-02-05
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2011/08/07/first-order-reversible-reaction-in-batch-reactor/][Matlab post]]
+
+Given this reaction $A \rightleftharpoons B$, with these rate laws:
+
+forward rate law: $-r_a = k_1 C_A$
+
+backward rate law: $-r_b = k_{-1} C_B$
+
+plot the concentration of A vs. time. This example illustrates a set of coupled first order ODES.
+
+#+BEGIN_SRC python
+from scipy.integrate import odeint
+import numpy as np
+
+def myode(C, t):
+    # ra = -k1*Ca
+    # rb = -k_1*Cb
+    # net rate for production of A:  ra - rb
+    # net rate for production of B: -ra + rb
+
+    k1 = 1   # 1/min;
+    k_1 = 0.5   # 1/min;
+
+    Ca = C[0]
+    Cb = C[1]
+
+    ra = -k1 * Ca
+    rb = -k_1 * Cb
+
+    dCadt =  ra - rb
+    dCbdt = -ra + rb
+
+    dCdt = [dCadt, dCbdt]
+    return dCdt
+
+tspan = np.linspace(0, 5)
+
+init = [1, 0]  # mol/L
+C = odeint(myode, init, tspan)
+
+Ca = C[:,0]
+Cb = C[:,1]
+
+import matplotlib.pyplot as plt
+plt.plot(tspan, Ca, tspan, Cb)
+plt.xlabel('Time (min)')
+plt.ylabel('C (mol/L)')
+plt.legend(['$C_A$', '$C_B$'])
+plt.savefig('images/reversible-batch.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/reversible-batch.png]]
+
+That is it. The main difference between this and Matlab is the order of arguments in odeint is different, and the ode function has differently ordered arguments. 
+
+** Finding equilibrium conversion
+
+A common problem to solve in reaction engineering is finding the equilibrium conversion.[fn:1] A typical problem to solve is the following nonlinear equation:
+
+$1.44 = \frac{X_e^2}{(1-X_e)^2}$
+
+To solve this we create a function:
+
+$f(X_e)=0=1.44 - \frac{X_e^2}{(1-X_e)^2}$
+
+and use a nonlinear solver to find the value of $X_e$ that makes this function equal to zero. We have to provide an initial guess. Chemical intuition suggests that the solution must be between 0 and 1, and mathematical intuition suggests the solution might be near 0.5 (which would give a ratio near 1).
+
+Here is our solution.
+
+#+BEGIN_SRC python
+from scipy.optimize import fsolve
+
+def func(Xe):
+    z = 1.44 - (Xe**2)/(1-Xe)**2
+    return z
+
+X0 = 0.5
+Xe, = fsolve(func, X0)
+print('The equilibrium conversion is X = {0:1.2f}'.format(Xe))
+#+END_SRC
+
+#+RESULTS:
+: The equilibrium conversion is X = 0.55
+
+*** Footnotes
+
+[fn:1] See Fogler, 4th ed. page 1025 for the setup of this equation. 
+
+** Plug flow reactor with a pressure drop
+   :PROPERTIES:
+   :categories: python reaction-engineering
+   :END:
+
+If there is a pressure drop in a plug flow reactor, [fn:2] there are two equations needed to determine the exit conversion: one for the conversion, and one from the pressure drop.
+
+\begin{eqnarray}
+\frac{dX}{dW} &=& \frac{k'}{F_A0} \left ( \frac{1-X}{1 + \epsilon X} \right) y\\
+\frac{dX}{dy} &=& -\frac{\alpha (1 + \epsilon X)}{2y}
+\end{eqnarray}
+
+Here is how to integrate these equations numerically in python.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+kprime = 0.0266
+Fa0 = 1.08
+alpha = 0.0166
+epsilon = -0.15
+
+def dFdW(F, W):
+    'set of ODEs to integrate'
+    X = F[0]
+    y = F[1]
+    dXdW = kprime / Fa0 * (1-X) / (1 + epsilon*X) * y
+    dydW = -alpha * (1 + epsilon * X) / (2 * y)
+    return [dXdW, dydW]
+
+Wspan = np.linspace(0,60)
+X0 = 0.0
+y0 = 1.0
+F0 = [X0, y0]
+sol = odeint(dFdW, F0, Wspan)
+
+# now plot the results
+plt.plot(Wspan, sol[:,0], label='Conversion')
+plt.plot(Wspan, sol[:,1], 'g--', label='y=$P/P_0$')
+plt.legend(loc='best')
+plt.xlabel('Catalyst weight (lb_m)')
+plt.savefig('images/2013-01-08-pdrop.png')
+#+END_SRC
+
+#+RESULTS:
+
+Here is the resulting figure.
+
+[[./images/2013-01-08-pdrop.png]]
+
+*** Footnotes
+
+[fn:2] Fogler, 4th edition. page 193.
+
+** Solving CSTR design equations
+  :PROPERTIES:
+  :categories: python,reaction-engineering
+  :layout:   post
+  :END:
+
+Given a continuously stirred tank reactor with a volume of 66,000 dm^3 where the reaction $A \rightarrow B$ occurs, at a rate of $-r_A = k C_A^2$ ($k=3$ L/mol/h), with an entering molar flow of F_{A0} = 5 mol/h and a volumetric flowrate of 10 L/h, what is the exit concentration of A?
+
+From a mole balance we know that at steady state $0 = F_{A0} - F_A + V r_A$. That equation simply states the sum of the molar flow of A in in minus the molar flow of A out  plus the molar rate A is generated is equal to zero at steady state. This is directly the equation we need to solve. We need the following relationship:
+
+1. $F_A = v0 C_A$
+
+#+BEGIN_SRC python :exports both
+from scipy.optimize import fsolve
+
+Fa0 = 5.0
+v0 = 10.
+
+V = 66000.0  # reactor volume L^3
+k = 3.0      # rate constant L/mol/h
+
+def func(Ca):
+    "Mole balance for a CSTR. Solve this equation for func(Ca)=0"
+    Fa = v0 * Ca     # exit molar flow of A
+    ra = -k * Ca**2  # rate of reaction of A L/mol/h
+    return Fa0 - Fa + V * ra
+
+# CA guess that that 90 % is reacted away
+CA_guess = 0.1 * Fa0 / v0
+CA_sol, = fsolve(func, CA_guess)
+
+print 'The exit concentration is {0} mol/L'.format(CA_sol)
+#+END_SRC
+
+#+RESULTS:
+: The exit concentration is 0.005 mol/L
+
+It is a little confusing why it is necessary to put a comma after the CA_sol in the fsolve command. If you do not put it there, you get brackets around the answer.
+
+** Integrating the batch reactor mole balance
+#+begin_html
+---
+layout: post
+title: Integrating the batch reactor mole balance
+tags:
+categories: python reaction-engineering ODE
+---
+#+end_html
+
+An alternative approach to the [[
+plt.show()][last post]] of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
+
+$\frac{dX}{dt} = -r_A V/N_{A0}$.
+
+Given a value of initial concentration, or volume and initial number of moles of A, we can integrate this ODE to find the conversion at some later time. We assume that $X(t=0)=0$. We will integrate the ODE over a time span of 0 to 10,000 seconds.
+
+#+BEGIN_SRC python
+from scipy.integrate import odeint
+import numpy as np
+import matplotlib.pyplot as plt
+
+k = 1.0e-3
+Ca0 = 1.0  # mol/L
+
+def func(X, t):
+    ra = -k * (Ca0 * (1 - X))**2
+    return -ra / Ca0
+
+X0 = 0
+tspan = np.linspace(0,10000)
+
+sol = odeint(func, X0, tspan)
+plt.plot(tspan,sol)
+plt.xlabel('Time (sec)')
+plt.ylabel('Conversion')
+plt.savefig('images/2013-01-06-batch-conversion.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/013-01-06-batch-conversion.png]]
+
+You can read off of this figure to find the time required to achieve a particular conversion.
+
+
+* Units
+** TODO http://matlab.cheme.cmu.edu/2011/08/05/using-cmu-units-in-matlab-for-basic-calculations/
+** Using units in python
+  :PROPERTIES:
+  :categories: python units
+  :date:     2013-01-19
+  :last-published: 2013-01-20
+  :END:
+
+I think an essential feature in an engineering computational environment is properly handling units and unit conversions. Mathcad supports that pretty well. I wrote a [[https://github.com/jkitchin/matlab-cmu][package]] for doing it in Matlab. Today I am going to explore units in python. Here are some of the packages that I have found which support units to some extent
+
+1. http://pypi.python.org/pypi/units/
+2. http://packages.python.org/quantities/user/tutorial.html
+3. http://dirac.cnrs-orleans.fr/ScientificPython/ScientificPythonManual/Scientific.Physics.PhysicalQuantities-module.html
+4. http://home.scarlet.be/be052320/Unum.html
+5. https://simtk.org/home/python_units
+6. http://docs.enthought.com/scimath/units/intro.html
+
+The last one looks most promising.
+
+#+BEGIN_SRC python
+import numpy as np
+from scimath.units.volume import liter
+from scimath.units.substance import mol
+
+q = np.array([1, 2, 3]) * mol
+print q
+
+P = q / liter
+print P
+
+#+END_SRC
+
+#+RESULTS:
+: [1.0*mol 2.0*mol 3.0*mol]
+: [1000.0*m**-3*mol 2000.0*m**-3*mol 3000.0*m**-3*mol]
+
+That doesn't look too bad. It is a little clunky to have to import every unit, and it is clear the package is saving everything in SI units by default. Let us try to solve an equation.
+
+Find the time that solves this equation. 
+
+$0.01 = C_{A0} e^{-kt}$
+
+First we solve without units. That way we know the answer.
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+
+CA0 = 1.0  # mol/L
+CA = 0.01  # mol/L
+k = 1.0    # 1/s
+
+def func(t):
+    z = CA - CA0 * np.exp(-k*t)
+    return z
+
+t0 = 2.3
+
+t, = fsolve(func, t0)
+print 't = {0:1.2f} seconds'.format(t)
+#+END_SRC
+
+#+RESULTS:
+: t = 4.61 seconds
+
+
+Now, with units. I note here that I tried the obvious thing of just importing the units, and adding them on, but the package is unable to work with floats that have units. For some functions, there must be an ndarray with units which is practically what the UnitScalar code below does. 
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+from scimath.units.volume import liter
+from scimath.units.substance import mol
+from scimath.units.time import second
+from scimath.units.api import has_units, UnitScalar
+
+CA0 = UnitScalar(1.0, units = mol / liter)
+CA = UnitScalar(0.01, units = mol / liter)
+k = UnitScalar(1.0, units = 1 / second)
+
+@has_units(inputs="t::units=s",
+           outputs="result::units=mol/liter")
+def func(t):
+    z = CA - CA0 * float(np.exp(-k*t))
+    return z
+
+t0 = UnitScalar(2.3, units = second)
+
+t, = fsolve(func, t0)
+print 't = {0:1.2f} seconds'.format(t)
+print type(t)
+#+END_SRC
+
+#+RESULTS:
+: t = 4.61 seconds
+: <type 'numpy.float64'>
+
+This is some heavy syntax that in the end does not preserve the units. In my Matlab package, we had to "wrap" many functions like fsolve so they would preserve units. Clearly this package will need that as well. Overall, in its current implementation this package does not do what I would expect all the time.[fn:1]
+
+
+
+[fn:1] Then again no package does yet!
+
+
