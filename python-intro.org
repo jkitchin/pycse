@@ -6,7 +6,7 @@
 #+KEYWORDS:
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
@@ -142,6 +142,133 @@ print f(5.1)
 : 131.02175946
 
 It may not seem like we did much there, but this is the foundation for solving equations in the future. Before we get to solving equations, we have a few more details to consider. Next, we consider evaluating functions on arrays of values. 
+** Defining functions in python
+
+Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-got-two-turntables-and-a-microphone/][Matlab implementation. ]]
+
+We often need to make functions in our codes to do things. 
+
+#+BEGIN_SRC python :session
+def f(x):
+    "return the inverse square of x"
+    return 1.0 / x**2
+
+print f(3)
+print f([4,5])
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... >>> 0.111111111111
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+:   File "<stdin>", line 3, in f
+: TypeError: unsupported operand type(s) for ** or pow(): 'list' and 'int'
+
+Note that functions are not automatically vectorized. There are a few ways to achieve that. One is to "cast" the input variables to objects that support vectorized operations, such as numpy.array objects.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+def f(x):
+    "return the inverse square of x"
+    x = np.array(x)
+    return 1.0 / x**2
+
+print f(3)
+print f([4,5])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... ... ... ... >>> 0.111111111111
+: [ 0.0625  0.04  ]
+
+It is possible to have more than one variable.
+
+#+BEGIN_SRC python
+import numpy as np
+
+def func(x, y):
+    "return product of x and y"
+    return x * y
+
+print func(2, 3)
+print func(np.array([2, 3]), np.array([3, 4]))
+#+END_SRC
+
+#+RESULTS:
+: 6
+: [ 6 12]
+
+You can define "lambda" functions, which are also known as inline or anonymous functions. The syntax is =lambda var:f(var)=. I think these are hard to read and discourage their use. Here is a typical usage where you have to define a simple function that is passed to another function, e.g. scipy.integrate.quad to perform an integral.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+print quad(lambda x:x**3, 0 ,2)
+
+#+END_SRC
+
+#+RESULTS:
+: (4.0, 4.440892098500626e-14)
+
+It is possible to nest functions inside of functions like this.
+#+BEGIN_SRC python
+
+def wrapper(x):
+    a = 4
+    def func(x, a):
+        return a * x
+
+    return func(x, a)
+
+print wrapper(4)
+
+#+END_SRC
+
+#+RESULTS:
+: 16
+
+An alternative approach is to "wrap" a function, say to fix a parameter. You might do this so you can integrate the wrapped function, which depends on only a single variable, whereas the original function depends on two variables.
+#+BEGIN_SRC python
+def func(x, a):
+        return a * x
+ 
+def wrapper(x):
+    a = 4
+    return func(x, a)
+
+print wrapper(4)
+#+END_SRC
+
+#+RESULTS:
+: 16
+
+Last example, defining a function for an ode
+
+#+BEGIN_SRC python
+from scipy.integrate import odeint
+import numpy as np
+import matplotlib.pyplot as plt
+
+k = 2.2
+def myode(t,y):
+    "ode defining exponential growth"
+    return k * t
+
+y0 = 3
+tspan = np.linspace(0,1)
+y =  odeint(myode, y0, tspan)
+
+plt.plot(tspan, y)
+plt.xlabel('Time')
+plt.ylabel('y')
+plt.savefig('images/funcs-ode.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/funcs-ode.png]]
 
 ** Functions on arrays of values
 It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
@@ -467,133 +594,172 @@ There are many other options for formatting strings. See http://docs.python.org/
 
 ** TODO Advanced string formatting
 ** TODO http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/
-** Defining functions in python
-
-Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-got-two-turntables-and-a-microphone/][Matlab implementation. ]]
-
-We often need to make functions in our codes to do things. 
-
-#+BEGIN_SRC python :session
-def f(x):
-    "return the inverse square of x"
-    return 1.0 / x**2
-
-print f(3)
-print f([4,5])
-#+END_SRC
-
-#+RESULTS:
-: 
-: ... ... >>> 0.111111111111
-: Traceback (most recent call last):
-:   File "<stdin>", line 1, in <module>
-:   File "<stdin>", line 3, in f
-: TypeError: unsupported operand type(s) for ** or pow(): 'list' and 'int'
-
-Note that functions are not automatically vectorized. There are a few ways to achieve that. One is to "cast" the input variables to objects that support vectorized operations, such as numpy.array objects.
-
-#+BEGIN_SRC python :session
+** Creating arrays in python
+Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
+#+BEGIN_SRC python
 import numpy as np
 
-def f(x):
-    "return the inverse square of x"
-    x = np.array(x)
-    return 1.0 / x**2
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
 
-print f(3)
-print f([4,5])
+print np.column_stack([a, b])
+
+# this means stack the arrays vertically, e.g. on top of each other
+print np.vstack([a, b]).T
 #+END_SRC
 
 #+RESULTS:
-: 
-: >>> ... ... ... ... >>> 0.111111111111
-: [ 0.0625  0.04  ]
+: [[1 4]
+:  [2 5]
+:  [3 6]]
+: [[1 4]
+:  [2 5]
+:  [3 6]]
 
-It is possible to have more than one variable.
+Or rows:
 
 #+BEGIN_SRC python
 import numpy as np
 
-def func(x, y):
-    "return product of x and y"
-    return x * y
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
 
-print func(2, 3)
-print func(np.array([2, 3]), np.array([3, 4]))
+print np.row_stack([a, b])
+
+# this means stack the arrays vertically, e.g. on top of each other
+print np.vstack([a, b])
 #+END_SRC
 
 #+RESULTS:
-: 6
-: [ 6 12]
+: [[1 2 3]
+:  [4 5 6]]
+: [[1 2 3]
+:  [4 5 6]]
 
-You can define "lambda" functions, which are also known as inline or anonymous functions. The syntax is =lambda var:f(var)=. I think these are hard to read and discourage their use. Here is a typical usage where you have to define a simple function that is passed to another function, e.g. scipy.integrate.quad to perform an integral.
-
-#+BEGIN_SRC python
-from scipy.integrate import quad
-print quad(lambda x:x**3, 0 ,2)
-
-#+END_SRC
-
-#+RESULTS:
-: (4.0, 4.440892098500626e-14)
-
-It is possible to nest functions inside of functions like this.
-#+BEGIN_SRC python
-
-def wrapper(x):
-    a = 4
-    def func(x, a):
-        return a * x
-
-    return func(x, a)
-
-print wrapper(4)
-
-#+END_SRC
-
-#+RESULTS:
-: 16
-
-An alternative approach is to "wrap" a function, say to fix a parameter. You might do this so you can integrate the wrapped function, which depends on only a single variable, whereas the original function depends on two variables.
-#+BEGIN_SRC python
-def func(x, a):
-        return a * x
- 
-def wrapper(x):
-    a = 4
-    return func(x, a)
-
-print wrapper(4)
-#+END_SRC
-
-#+RESULTS:
-: 16
-
-Last example, defining a function for an ode
+The opposite operation is to extract the rows or columns of a 2D array into smaller arrays. We might want to do that to extract a row or column from a calculation for further analysis, or plotting for example. There are splitting functions in numpy. They are somewhat confusing, so we examine some examples. The numpy.hsplit command splits an array "horizontally". The best way to think about it is that the "splits" move horizontally across the array. In other words, you draw a vertical split, move over horizontally, draw another vertical split, etc... You must specify the number of splits that you want, and the array must be evenly divisible by the number of splits.
 
 #+BEGIN_SRC python
-from scipy.integrate import odeint
 import numpy as np
-import matplotlib.pyplot as plt
 
-k = 2.2
-def myode(t,y):
-    "ode defining exponential growth"
-    return k * t
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
 
-y0 = 3
-tspan = np.linspace(0,1)
-y =  odeint(myode, y0, tspan)
+# split into two parts
+p1, p2 = np.hsplit(A, 2)
+print p1
+print p2
 
-plt.plot(tspan, y)
-plt.xlabel('Time')
-plt.ylabel('y')
-plt.savefig('images/funcs-ode.png')
+#split into 4 parts
+p1, p2, p3, p4 = np.hsplit(A, 4)
+print p1
+print p2
+print p3
+print p4
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
+[[1 2]
+ [4 5]]
+[[3 5]
+ [6 9]]
+[[1]
+ [4]]
+[[2]
+ [5]]
+[[3]
+ [6]]
+[[5]
+ [9]]
+#+end_example
 
-[[./images/funcs-ode.png]]
+In the numpy.vsplit command the "splits" go "vertically" down the array. Note that the split commands return 2D arrays.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2 = np.vsplit(A, 2)
+print p1
+print p2
+print p2.shape
+#+END_SRC
+
+#+RESULTS:
+: [[1 2 3 5]]
+: [[4 5 6 9]]
+: (1, 4)
+
+An alternative approach is array unpacking. In this example, we unpack the array into two variables. The array unpacks by row.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2 = A
+print p1
+print p2
+#+END_SRC
+
+#+RESULTS:
+: [1 2 3 5]
+: [4 5 6 9]
+
+To get the columns, just transpose the array.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2, p3, p4 = A.T
+print p1
+print p2
+print p3
+print p4
+print p4.shape
+#+END_SRC
+
+#+RESULTS:
+: [1 4]
+: [2 5]
+: [3 6]
+: [5 9]
+: (2,)
+
+Note that now, we have 1D arrays.
+
+You can also access rows and columns by indexing. We index an array by [row, column]. To get a row, we specify the row number, and all the columns in that row like this [row, :]. Similarly, to get a column, we specify that we want all rows in that column like this: [:, column]. This approach is useful when you only want a few columns or rows.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# get row 1
+print A[1]
+print A[1, :]  # row 1, all columns
+
+print A[:, 2]  # get third column 
+print A[:, 2].shape
+#+END_SRC
+
+#+RESULTS:
+: [4 5 6 9]
+: [4 5 6 9]
+: [3 6]
+: (2,)
+
+Note that even when we specify a column, it is returned as a 1D array.
 
 * Math
 ** Integrating equations in python
@@ -621,52 +787,127 @@ print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-... ... >>> Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 3, in f
-TypeError: 'int' object is not iterable
-[16, 25]
->>>   File "<stdin>", line 1
-    * Math
-    ^
-SyntaxError: invalid syntax
-File "<stdin>", line 1
-    ** Integrating equations in python
-     ^
-SyntaxError: invalid syntax
-File "<stdin>", line 1
-    :PROPERTIES:
-    ^
-IndentationError: unexpected indent
-File "<stdin>", line 1
-    :date:     2013-01-20
-    ^
-IndentationError: unexpected indent
-File "<stdin>", line 1
-    :last-published: 2013-01-20
-    ^
-IndentationError: unexpected indent
-File "<stdin>", line 1
-    :categories: python integration
-    ^
-IndentationError: unexpected indent
-File "<stdin>", line 1
-    :END:
-    ^
-IndentationError: unexpected indent
->>>   File "<stdin>", line 1
-    A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
-           ^
-SyntaxError: invalid syntax
->>> ... >>> >>> >>> >>> >>> ... ... >>> >>> >>> >>> 100.00 L flowed into the tank over 10 minutes
-#+end_example
+: 100.00 L flowed into the tank over 10 minutes
 
 That is all there is too it!
 ** TODO http://matlab.cheme.cmu.edu/2011/12/24/a-novel-way-to-numerically-estimate-the-derivative-of-a-function-complex-step-derivative-approximation/
 ** TODO http://matlab.cheme.cmu.edu/2011/11/05/vectorized-piecewise-functions/
-** TODO http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/
+** A novel way to numerically estimate the derivative of a function - complex-step derivative approximation
+   :PROPERTIES:
+   :categories: [math]
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/][Matlab post]]
+
+Adapted from http://biomedicalcomputationreview.org/2/3/8.pdf and
+http://dl.acm.org/citation.cfm?id=838250.838251
+
+This posts introduces a novel way to numerically estimate the derivative
+of a function that does not involve finite difference schemes. Finite
+difference schemes are approximations to derivatives that become more and
+more accurate as the step size goes to zero, except that as the step size
+approaches the limits of machine accuracy, new errors can appear in the
+approximated results. In the references above, a new way to compute the
+derivative is presented that does not rely on differences!
+
+The new way is: $f'(x) = \rm{imag}(f(x + i\Delta x)/\Delta x)$ where the
+function $f$ is evaluated in imaginary space with a small $\Delta x$ in
+the complex plane. The derivative is miraculously equal to the imaginary
+part of the result in the limit of $\Delta x \rightarrow 0$!
+
+This example comes from the first link. The derivative must be evaluated
+using the chain rule.  We compare a forward difference, central
+difference and complex-step derivative approximations.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):   return np.sin(3*x)*np.log(x)
+
+x = 0.7
+h = 1e-7
+
+# analytical derivative
+dfdx_a = 3 * np.cos( 3*x)*np.log(x) + np.sin(3*x) / x
+
+# finite difference
+dfdx_fd = (f(x + h) - f(x))/h
+
+# central difference
+dfdx_cd = (f(x+h)-f(x-h))/(2*h)
+
+# complex method
+dfdx_I = np.imag(f(x + np.complex(0, h))/h)
+
+print dfdx_a
+print dfdx_fd
+print dfdx_cd
+print dfdx_cd
+
+#+END_SRC
+
+#+RESULTS:
+: 1.77335410624
+: 1.7733539398
+: 1.77335410523
+: 1.77335410523
+
+These are all the same to 4 decimal places. The simple finite difference is the least accurate, and the central differences is practically the same as the complex number approach.
+
+Let us use this method to verify the fundamental Theorem of Calculus, i.e.
+to evaluate the derivative of an integral function. Let $f(x) =
+\int\limits_1^{x^2} tan(t^3)dt$, and we now want to compute df/dx.
+Of course, this can be done
+[[http://mathmistakes.info/facts/CalculusFacts/learn/doi/doif.html][analytically]], but it is not trivial!
+
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.integrate import quad
+
+def f_(z):
+    def integrand(t):
+        return np.tan(t**3)
+    return quad(integrand, 0, z**2)
+
+f = np.vectorize(f_)
+
+x = np.linspace(0, 1)
+
+h = 1e-7
+
+dfdx = np.imag(f(x + complex(0, h)))/h
+dfdx_analytical = 2 * x * np.tan(x**6)
+
+import matplotlib.pyplot as plt
+
+plt.plot(x, dfdx, x, dfdx_analytical, 'r--')
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> >>> ... ... ... ... >>> >>> >>> >>> >>> >>> >>> c:\Python27\lib\site-packages\scipy\integrate\quadpack.py:312: ComplexWarning: Casting complex values to real discards the imaginary part
+  return _quadpack._qagse(func,a,b,args,full_output,epsabs,epsrel,limit)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "c:\Python27\lib\site-packages\numpy\lib\function_base.py", line 1885, in __call__
+    for x, c in zip(self.ufunc(*newargs), self.otypes)])
+  File "<stdin>", line 4, in f_
+  File "c:\Python27\lib\site-packages\scipy\integrate\quadpack.py", line 247, in quad
+    retval = _quad(func,a,b,args,full_output,epsabs,epsrel,limit,points)
+  File "c:\Python27\lib\site-packages\scipy\integrate\quadpack.py", line 312, in _quad
+    return _quadpack._qagse(func,a,b,args,full_output,epsabs,epsrel,limit)
+TypeError: can't convert complex to float
+>>> >>> >>> >>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'dfdx' is not defined
+#+end_example
+
+Interesting this fails.
+
 ** Smooth transitions between discontinuous functions	     :fluids:example:
   :PROPERTIES:
   :categories: [Miscellaneous, nonlinear algebra]
@@ -720,7 +961,7 @@ plt.plot(Re2, f2, label='turbulent')
 plt.xlabel('Re')
 plt.ylabel('$f_F$')
 plt.legend()
-plt.savefig('smooth-transitions-1.png')
+plt.savefig('images/smooth-transitions-1.png')
 #+END_SRC
 
 #+RESULTS:
@@ -732,7 +973,7 @@ plt.savefig('smooth-transitions-1.png')
 : <matplotlib.text.Text object at 0x05798790>
 : <matplotlib.legend.Legend object at 0x05798030>
 
-[[./smooth-transitions-1.png]]
+[[./images/smooth-transitions-1.png]]
 
 You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
 Sigmoid functions
@@ -745,7 +986,7 @@ y = 1.0 / (1 + np.exp(-x / 0.1))
 plt.figure(2); plt.clf()
 plt.plot(x, y)
 plt.xlabel('x'); plt.ylabel('y'); plt.title('$\sigma(x)$')
-plt.savefig('smooth-transitions-sigma.png')
+plt.savefig('images/smooth-transitions-sigma.png')
 #+END_SRC
 
 #+RESULTS:
@@ -756,7 +997,7 @@ plt.savefig('smooth-transitions-sigma.png')
 : <matplotlib.text.Text object at 0x059AF0D0>
 : <matplotlib.text.Text object at 0x059BEA30>
 
-[[./smooth-transitions-sigma.png]]
+[[./images/smooth-transitions-sigma.png]]
 
 If we have two functions, $f_1(x)$ and $f_2(x)$ we want to smoothly join, we do it like this: $f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)$. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.
 
@@ -780,7 +1021,7 @@ plt.plot(Re,f, label='smooth transition')
 plt.xlabel('Re')
 plt.ylabel('$f_F$')
 plt.legend()
-plt.savefig('smooth-transitions-3.png')
+plt.savefig('images/smooth-transitions-3.png')
 #+END_SRC
 
 #+RESULTS:
@@ -791,7 +1032,7 @@ plt.savefig('smooth-transitions-3.png')
 : <matplotlib.text.Text object at 0x05798790>
 : <matplotlib.legend.Legend object at 0x05A302B0>
 
-[[./smooth-transitions-3.png]]
+[[./images/smooth-transitions-3.png]]
 
 You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.
 
@@ -807,18 +1048,49 @@ handles, labels = ax.get_legend_handles_labels()
 handles.append(h)
 labels.append('Morrison')
 ax.legend(handles, labels)
-plt.savefig('smooth-transitions-morrison.png')
+plt.savefig('images/smooth-transitions-morrison.png')
 #+END_SRC
 
 #+RESULTS:
 : 
 : >>> >>> >>> >>> >>> >>> >>> <matplotlib.legend.Legend object at 0x05A5AEB0>
 
-[[./smooth-transitions-morrison.png]]
+[[./images/smooth-transitions-morrison.png]]
 
 *** Summary
 
 The approach demonstrated here allows one to smoothly join two discontinuous functions that describe physics in different regimes, and that must transition over some range of data. It should be emphasized that the method has no physical basis, it simply allows one to create a mathematically smooth function, which could be necessary for some optimizers or solvers to work.
+
+** Smooth transitions between two constants
+Suppose we have a parameter that has two different values depending on the value of a dimensionless number. For example when the dimensionless number is much less than 1, x = 2/3, and when x is much greater than 1, x = 1. We desire a smooth transition from 2/3 to 1  as a function of x to avoid discontinuities in functions of x. We will adapt the smooth transitions between functions to be a smooth transition between constants.
+
+We define our function as $x(D) = x0 + (x1 - x0)*(1 - sigma(D,w)$. We control the rate of the transition by the variable $w$
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x0 = 2.0 / 3.0
+x1 = 1.5
+
+w = 0.05
+
+D = np.linspace(0,2, 500)
+
+sigmaD = 1.0 / (1.0 + np.exp(-(1 - D) / w))
+
+x =  x0 + (x1 - x0)*(1 - sigmaD)
+
+plt.plot(D, x)
+plt.xlabel('D'); plt.ylabel('x')
+plt.savefig('images/smooth-transitions-constants.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/smooth-transitions-constants.png]]
+
+This is a nice trick to get an analytical function with continuous derivatives for a transition between two constants. You could have the transition occur at a value other than D = 1, as well by changing the argument to the exponential function.
 
 ** On the quad or trapz'd in ChemE heaven
    :PROPERTIES:
@@ -1046,7 +1318,7 @@ b = 1.45
 p = 679.7   # pressure in psi
 T = 683     # T in Rankine
 n = 1.136   # lb-moles
-R = 10.73  	# ft3 psi R^−1 lb-mol−1
+R = 10.73  	# ft^3 * psi /R / lb-mol
 
 ppar = [1.0, -(p*n*b+n*R*T)/p, n**2*a/p,  -n**3*a*b/p];
 print np.roots(ppar)
@@ -1434,11 +1706,11 @@ That wraps up showing numerically the transpose rules work for these examples.
 
 ** Solving linear equations
 Given these equations, find [x1, x2, x3]
-\begin{equation}
+\begin{eqnarray}
 x_1 - x_2 + x_3 &=& 0 \\
 10 x_2 + 25 x_3 &=& 90 \\
 20 x_1 + 10 x_2 &=& 80
-\end{equation}
+\end{eqnarray}
 
 reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
 
@@ -1992,9 +2264,77 @@ You can see the numerical and analytical solutions overlap, indicating they are 
 * Partial differential equations
 ** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
 * Statistics
+** Basic statistics
+Given several measurements of a single quantity, determine the average value of the measurements, the standard deviation of the measurements and the 95% confidence interval for the average.
+
+This is a recipe for computing the confidence interval. The strategy is:
+1. compute the average
+2. Compute the standard deviation of your data
+3. Define the confidence interval, e.g. 95% = 0.95
+4. compute the student-t multiplier. This is a function of the confidence
+interval you specify, and the number of data points you have minus 1. You
+subtract 1 because one degree of freedom is lost from calculating the
+average. The confidence interval is defined as
+ybar +- T_multiplier*std/sqrt(n).
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.stats.distributions import  t
+
+y = [8.1, 8.0, 8.1]
+
+ybar = np.mean(y)
+s = np.std(y)
+
+ci = 0.95
+alpha = 1.0 - ci
+
+n = len(y)
+T_multiplier = t.ppf(1-alpha/2.0, n-1)
+
+ci95 = T_multiplier * s / np.sqrt(n-1)
+
+print [ybar - ci95, ybar + ci95]
+#+END_SRC
+
+#+RESULTS:
+: [7.9232449090029595, 8.210088424330376]
+
+We are 95% certain the next measurement will fall in the interval above.
+
+** Confidence interval on an average
+   :PROPERTIES:
+   :categories: [statistics]
+   :date:     2013-02-10
+   :last-published: 2013-02-10
+   :END:
+mod:scipy has a statistical package available for getting statistical distributions. This is useful for computing confidence intervals using the student-t tables. Here is an example of computing a 95% confidence interval on an average.
+#+BEGIN_SRC python :results output :exports both
+import numpy as np
+from scipy.stats.distributions import  t
+
+n = 10 # number of measurements
+dof = n - 1 # degrees of freedom
+avg_x = 16.1 # average measurement
+std_x = 0.01 # standard deviation of measurements
+
+# Find 95% prediction interval for next measurement
+
+alpha = 1.0 - 0.95
+
+pred_interval = t.ppf(1-alpha/2., dof) * std_x * np.sqrt(1.0 + 1.0/n)
+
+s = ['We are 95% confident the next measurement',
+       ' will be between {0:1.3f} and {1:1.3f}']
+print ''.join(s).format(avg_x - pred_interval, avg_x + pred_interval)
+#+END_SRC
+
+#+RESULTS:
+: We are 95% confident the next measurement will be between 16.076 and 16.124
+
 ** TODO are averages different
 http://matlab.cheme.cmu.edu/2012/01/28/are-two-averages-different/
-** TODO
+** TODO Model selection
 [[http://matlab.cheme.cmu.edu/2011/10/01/model-selection/][Matlab post]]
 
 adapted from http://www.itl.nist.gov/div898/handbook/pmd/section4/pmd44.htm
@@ -2028,9 +2368,9 @@ plt.savefig('images/model-selection-1.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04BD4890>]
-: <matplotlib.text.Text object at 0x04AF6A70>
-: <matplotlib.text.Text object at 0x04BAFB10>
+: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04C9EB30>]
+: <matplotlib.text.Text object at 0x04B1BA70>
+: <matplotlib.text.Text object at 0x04BCEB10>
 
 [[./images/model-selection-1.png]]
 
@@ -2042,13 +2382,44 @@ b = P
 
 x, res, rank, s = np.linalg.lstsq(A, b)
 intercept, slope = x
-print intercept, slope
+print 'b, m =', intercept, slope
+
+n = len(b)
+k = len(x)
+
+sigma2 = np.sum((b - np.dot(A,x))**2) / (n - k)
+
+C = sigma2 * np.linalg.inv(np.dot(A.T, A))
+se = np.sqrt(np.diag(C))
+
+from scipy.stats.distributions import  t
+alpha = 0.05
+
+sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+CI = sT * se
+
+print 'CI = ',CI
+for beta, ci in zip(x, CI):
+    print '[{0} {1}]'.format(beta - ci, beta + ci)
 #+END_SRC
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> 7.74899739238 3.93014043824
+: >>> >>> >>> >>> b, m = 7.74899739238 3.93014043824
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [ 4.76934837  0.10273167]
+: ... ... [2.97964902579 12.518345759]
+: [3.82740876376 4.03287211272]
 
+b =
+
+    7.7490
+    3.9301
+
+
+bint =
+
+    2.9839   12.5141
+    3.8275    4.0328
 
 The R^2 value accounts roughly for the fraction of variation in the data that can be described by the model. Hence, a value close to one means nearly all the variations are described by the model, except for random variations.
 
@@ -2152,29 +2523,67 @@ b = P;
 x, res, rank, s = np.linalg.lstsq(A, b)
 print x
 
+n = len(b)
+k = len(x)
+
+sigma2 = np.sum((b - np.dot(A,x))**2) / (n - k)
+
+C = sigma2 * np.linalg.inv(np.dot(A.T, A))
+se = np.sqrt(np.diag(C))
+
+from scipy.stats.distributions import  t
+alpha = 0.05
+
+sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+CI = sT * se
+
+print 'CI = ',CI
+for beta, ci in zip(x, CI):
+    print '[{0} {1}]'.format(beta - ci, beta + ci)
+
 
 ybar = np.mean(P)
 SStot = np.sum((P - ybar)**2)
 SSerr = np.sum((P - np.dot(A,x))**2)
 R2 = 1 - SSerr/SStot
-print R2
+print 'R^2 = {0}'.format(R2)
 #+END_SRC
 
 #+RESULTS:
 : 
 : >>> >>> >>> [  9.00353031e+00   3.86669879e+00   7.26244301e-04]
-: >>> >>> >>> >>> >>> >>> 0.993721969407
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [  1.38159883e+01   6.62722021e-01   7.49219194e-03]
+: ... ... [-4.81245797151 22.8195185832]
+: [3.20397676962 4.52942081128]
+: [-0.0067659476372 0.00821843623849]
+: >>> >>> >>> >>> >>> R^2 = 0.993721969407
 
+You can see that the confidence interval on the constant and T^2 term includes zero. That is a good indication this additional parameter is not significant. You can see also that the R^2 value is not better than the one from a linear fit,  so adding a parameter does not increase the goodness of fit. This is an example of overfitting the data. 
 
-You can see that the R^2 value is not better than the one from a linear fit,  so adding a parameter does not increase the goodness of fit. This is an example of overfitting the data, but it also makes you question whether the constant is meaningful in the linear model. 
-
-Lets consider a model with intercept = 0, P = alpha*T
+Let us consider a model with intercept = 0, P = alpha*T. 
 
 #+BEGIN_SRC python :session
 A = np.vstack([T]).T
 b = P;
 
 x, res, rank, s = np.linalg.lstsq(A, b)
+
+n = len(b)
+k = len(x)
+
+sigma2 = np.sum((b - np.dot(A,x))**2) / (n - k)
+
+C = sigma2 * np.linalg.inv(np.dot(A.T, A))
+se = np.sqrt(np.diag(C))
+
+from scipy.stats.distributions import  t
+alpha = 0.05
+
+sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+CI = sT * se
+
+for beta, ci in zip(x, CI):
+    print '[{0} {1}]'.format(beta - ci, beta + ci)
 
 plt.figure()
 plt.plot(T, P, 'k. ', T, np.dot(A, x))
@@ -2192,12 +2601,13 @@ plt.savefig('images/model-selection-no-intercept.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> <matplotlib.figure.Figure object at 0x0519BFB0>
-: [<matplotlib.lines.Line2D object at 0x0524AA50>, <matplotlib.lines.Line2D object at 0x052400B0>]
-: <matplotlib.text.Text object at 0x051ABB70>
-: <matplotlib.text.Text object at 0x05227A30>
-: <matplotlib.legend.Legend object at 0x05253190>
-: >>> >>> >>> >>> >>> <matplotlib.text.Text object at 0x052403B0>
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... [4.05677333771 4.12311140623]
+: <matplotlib.figure.Figure object at 0x04FBA1D0>
+: [<matplotlib.lines.Line2D object at 0x052ECD90>, <matplotlib.lines.Line2D object at 0x052E33B0>]
+: <matplotlib.text.Text object at 0x04FE7070>
+: <matplotlib.text.Text object at 0x052C9ED0>
+: <matplotlib.legend.Legend object at 0x052F84D0>
+: >>> >>> >>> >>> >>> <matplotlib.text.Text object at 0x052E36B0>
 
 [[./images/model-selection-no-intercept.png]]
 The fit is visually still pretty good, and the R^2 value is only slightly worse. Let us examine the residuals again. 
@@ -2230,7 +2640,135 @@ In the end, it is hard to justify a model more complex than a line in this case.
 ** TODO http://matlab.cheme.cmu.edu/2011/09/06/introduction-to-statistical-data-analysis-2/
 ** TODO http://matlab.cheme.cmu.edu/2011/08/27/introduction-to-statistical-data-analysis/
 ** TODO http://matlab.cheme.cmu.edu/2011/09/05/numerical-propogation-of-errors/
-** TODO http://matlab.cheme.cmu.edu/2011/09/04/random-thoughts/
+** Random thoughts
+   :PROPERTIES:
+   :categories: [math, statistics]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/04/random-thoughts/][Matlab post]]
+
+Random numbers are used in a variety of simulation methods, most notably Monte Carlo simulations. In another later example, we will see how we can use random numbers for error propogation analysis. First, we discuss two types of pseudorandom numbers we can use in python: uniformly distributed and normally distributed numbers.
+
+Say you are the gambling type, and bet your friend $5 the next random number will be greater than 0.49. Let us ask Python to roll the random number generator for us.
+
+#+BEGIN_SRC python
+import numpy as np
+
+n = np.random.uniform()
+print 'n = {0}'.format(n)
+
+if n > 0.49:
+    print 'You win!'
+else:
+    print 'you lose.'
+#+END_SRC
+
+#+RESULTS:
+: n = 0.381896986693
+: you lose.
+
+The odds of you winning the last bet are slightly stacked in your favor. There is only a 49% chance your friend wins, but a 51% chance that you win. Lets play the game a lot of times times and see how many times you win, and your friend wins. First, lets generate a bunch of numbers and look at the distribution with a histogram.
+
+#+BEGIN_SRC python
+import numpy as np
+
+N = 10000
+games = np.random.uniform(size=(1,N))
+
+wins = np.sum(games > 0.49)
+losses = N - wins
+
+print 'You won {0} times ({1:%})'.format(wins, float(wins) / N)
+
+import matplotlib.pyplot as plt
+count, bins, ignored = plt.hist(games)
+plt.savefig('images/random-thoughts-1.png')
+#+END_SRC
+
+#+RESULTS:
+: You won 5090 times (50.900000%)
+
+[[./images/random-thoughts-1.png]]
+
+As you can see you win slightly more than you lost.
+
+It is possible to get random integers. Here are a few examples of getting a random integer between 1 and 100. You might do this to get random indices of a list, for example.
+
+#+BEGIN_SRC python
+import numpy as np
+
+print np.random.random_integers(1, 100)
+print np.random.random_integers(1, 100, 3)
+print np.random.random_integers(1, 100, (2,2))
+#+END_SRC
+
+#+RESULTS:
+: 96
+: [ 95  49 100]
+: [[69 54]
+:  [41 93]]
+
+The normal distribution is defined by $f(x)=\frac{1}{\sqrt{2\pi \sigma^2}} \exp (-\frac{(x-\mu)^2}{2\sigma^2})$ where $\mu$ is the mean value, and $\sigma$ is the standard deviation. In the standard distribution, $\mu=0$ and $\sigma=1$.
+
+#+BEGIN_SRC python
+import numpy as np
+
+mu = 1
+sigma = 0.5
+print np.random.normal(mu, sigma)
+print np.random.normal(mu, sigma, 2)
+#+END_SRC
+
+#+RESULTS:
+: 1.04225842065
+: [ 0.58105204  0.64853157]
+
+Let us compare the sampled distribution to the analytical distribution. We generate a large set of samples, and calculate the probability of getting each value using the matplotlib.pyplot.hist command.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+mu = 0; sigma = 1
+
+N = 5000
+samples = np.random.normal(mu, sigma, N)
+
+counts, bins, ignored = plt.hist(samples, 50, normed=True)
+
+plt.plot(bins, 1.0/np.sqrt(2 * np.pi * sigma**2)*np.exp(-((bins - mu)**2)/(2*sigma**2)))
+plt.savefig('images/random-thoughts-2.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/random-thoughts-2.png]]
+
+What fraction of points lie between plus and minus one standard deviation of the mean?
+
+samples >= mu-sigma will return a vector of ones where the inequality is true, and zeros where it is not. (samples >= mu-sigma) & (samples <= mu+sigma) will return a vector of ones where there is a one in both vectors, and a zero where there is not. In other words, a vector where both inequalities are true. Finally, we can sum the vector to get the number of elements where the two inequalities are true, and finally normalize by the total number of samples to get the fraction of samples that are greater than -sigma and less than sigma.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+mu = 0; sigma = 1
+
+N = 5000
+samples = np.random.normal(mu, sigma, N)
+
+a = np.sum((samples >= (mu - sigma)) & (samples <= (mu + sigma))) / float(N) 
+b = np.sum((samples >= (mu - 2*sigma)) & (samples <= (mu + 2*sigma))) / float(N) 
+print '{0:%} of samples are within +- standard deviations of the mean'.format(a)
+print '{0:%} of samples are within +- 2standard deviations of the mean'.format(b)
+#+END_SRC
+
+#+RESULTS:
+: 67.500000% of samples are within +- standard deviations of the mean
+: 95.580000% of samples are within +- 2standard deviations of the mean
+
+*** Summary
+We only considered the numpy.random functions here, and not all of them. There are many distributions of random numbers to choose from. There are also random numbers in the python random module. Remember these are only [[http://en.wikipedia.org/wiki/Pseudorandom_number_generator][pseudorandom]] numbers, but they are still useful for many applications.
+
 * Data analysis
 ** Linear regression
 ** Nonlinear regression
@@ -2242,6 +2780,169 @@ In the end, it is hard to justify a model more complex than a line in this case.
 ** TODO http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/
 ** http://matlab.cheme.cmu.edu/2011/08/07/reading-in-delimited-text-files/
 ** TODO http://matlab.cheme.cmu.edu/2011/08/04/fit-a-line-to-numerical-data/
+** Nonlinear curve fitting
+Here is a typical nonlinear function fit to data. you need to provide an initial guess. In this example we fit the Birch-Murnaghan equation of state to energy vs. volume data from density functional theory calculations.
+
+#+BEGIN_SRC python :results outputt
+from scipy.optimize import leastsq
+import numpy as np
+
+vols = np.array([13.71, 14.82, 16.0, 17.23, 18.52])
+
+energies = np.array([-56.29, -56.41, -56.46, -56.463, -56.41])
+
+def Murnaghan(parameters, vol):
+    'From Phys. Rev. B 28, 5480 (1983)'
+    E0, B0, BP, V0 = parameters
+
+    E = E0 + B0 * vol / BP * (((V0 / vol)**BP) / (BP - 1) + 1) - V0 * B0 / (BP - 1.0)
+
+    return E
+
+def objective(pars, y, x):
+    #we will minimize this function
+    err =  y - Murnaghan(pars, x)
+    return err
+
+x0 = [ -56.0, 0.54, 2.0, 16.5] #initial guess of parameters
+
+plsq = leastsq(objective, x0, args=(energies, vols))
+
+print 'Fitted parameters = {0}'.format(plsq[0])
+
+import matplotlib.pyplot as plt
+plt.plot(vols,energies, 'ro')
+
+#plot the fitted curve on top
+x = np.linspace(min(vols), max(vols), 50)
+y = Murnaghan(plsq[0], x)
+plt.plot(x, y, 'k-')
+plt.xlabel('Volume')
+plt.ylabel('Energy')
+plt.savefig('images/nonlinear-curve-fitting.png')
+#+END_SRC
+
+#+RESULTS:
+: Fitted parameters = [-56.46839641   0.57233217   2.7407944   16.55905648]
+
+#+caption: Example of least-squares non-linear curve fitting.
+[[./images/nonlinear-curve-fitting.png]]
+
+See additional examples at \url{http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html}.
+
+** Nonlinear curve fitting by direct least squares minimization
+Here is an example of fitting a nonlinear function to data by direct minimization of the summed squared error. 
+#+BEGIN_SRC python :results output :exports both
+from scipy.optimize import fmin
+import numpy as np
+
+volumes = np.array([13.71, 14.82, 16.0, 17.23, 18.52])
+
+energies = np.array([-56.29, -56.41, -56.46, -56.463,-56.41])
+
+def Murnaghan(parameters,vol):
+    'From PRB 28,5480 (1983'
+    E0 = parameters[0]
+    B0 = parameters[1]
+    BP = parameters[2]
+    V0 = parameters[3]
+
+    E = E0 + B0*vol/BP*(((V0/vol)**BP)/(BP-1)+1) - V0*B0/(BP-1.)
+
+    return E
+
+def objective(pars,vol):
+    #we will minimize this function
+    err =  energies - Murnaghan(pars,vol)
+    return np.sum(err**2) #we return the summed squared error directly
+
+x0 = [ -56., 0.54, 2., 16.5] #initial guess of parameters
+
+plsq = fmin(objective,x0,args=(volumes,)) #note args is a tuple
+
+print 'parameters = {0}'.format(plsq)
+
+import matplotlib.pyplot as plt
+plt.plot(volumes,energies,'ro')
+
+#plot the fitted curve on top
+x = np.linspace(min(volumes),max(volumes),50)
+y = Murnaghan(plsq,x)
+plt.plot(x,y,'k-')
+plt.xlabel('Volume ($\AA^3$)')
+plt.ylabel('Total energy (eV)')
+plt.savefig('images/nonlinear-fitting-lsq.png')
+#+END_SRC
+
+#+RESULTS:
+: Optimization terminated successfully.
+:          Current function value: 0.000020
+:          Iterations: 137
+:          Function evaluations: 240
+: parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
+
+#+caption: Fitting a nonlinear function.
+[[./images/nonlinear-fitting-lsq.png]]
+
+** Nonlinear curve fitting with confidence interval
+   :PROPERTIES:
+   :categories: [data analysis]
+   :END:
+
+Fit this equation to data
+y = c1 exp(-x) + c2*x
+
+this is actually could be a linear regression problem, but it is convenient towe illustrate the  use the nonlinear fitting routine because it makes it easy to get
+confidence intervals for comparison. 
+
+#+BEGIN_SRC python :results output
+# Nonlinear curve fit with confidence interval
+import numpy as np
+from scipy.optimize import curve_fit
+from scipy.stats.distributions import  t
+
+x = np.array([ 0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9,  1. ])
+y = np.array([ 4.70192769,  4.46826356,  4.57021389,  4.29240134,  3.88155125,
+               3.78382253,  3.65454727,  3.86379487,  4.16428541,  4.06079909])
+
+# this is the function we want to fit to our data
+def func(x,c0, c1):
+    return c0 * np.exp(-x) + c1*x
+
+pars, pcov = curve_fit(func, x, y, p0=[4.96, 2.11])
+
+alpha = 0.05 # 95% confidence interval
+
+n = len(y)    # number of data points
+p = len(pars) # number of parameters
+
+dof = max(0, n-p) # number of degrees of freedom
+
+tval = t.ppf(1.0-alpha/2., dof) # student-t value for the dof and confidence level
+
+for i, p,var in zip(range(n), pars, np.diag(pcov)):
+    sigma = var**0.5
+    print 'c{0}: {1} [{2}  {3}]'.format(i, p,
+                                  p - sigma*tval,
+                                  p + sigma*tval)
+
+import matplotlib.pyplot as plt
+plt.plot(x,y,'bo ')
+xfit = np.linspace(0,1)
+yfit = func(xfit, pars[0], pars[1])
+plt.plot(xfit,yfit,'b-')
+plt.legend(['data','fit'],loc='best')
+plt.savefig('images/nonlin-fit-ci.png')
+#+END_SRC
+
+#+RESULTS:
+: c0: 4.96713966439 [4.62674476567  5.30753456311]
+: c1: 2.10995112628 [1.76711622427  2.45278602828]
+
+#+caption: Nonlinear fit to data.
+#+attr_latex: placement=[H]
+[[./images/nonlin-fit-ci.png]]
+
 * Interpolation
 ** Better interpolate than never
    :PROPERTIES:
@@ -2460,6 +3161,48 @@ You can see that the 1/interpolated f(x) underestimates the value, while interpo
 So which is the best to interpolate? I think you should interpolate the quantity that is linear in the problem you want to solve, so in this case I think interpolating 1/f(x) is better. When you use an interpolated function in a nonlinear function, strange, unintuitive things can happen. That is why the blue curve looks odd. Between data points are linear segments in the original interpolation, but when you invert them, you cause the curvature to form.
 
 ** TODO http://matlab.cheme.cmu.edu/2011/08/01/interpolation-of-data/
+** Interpolation with splines
+   :PROPERTIES:
+   :categories: [interpolation]
+   :END:
+When you do not know the functional form of data to fit an equation, you can still fit/interpolate with splines.
+#+BEGIN_SRC python
+# use splines to fit and interpolate data
+from scipy.interpolate import interp1d
+from scipy.optimize import fmin
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.array([ 0,      1,      2,      3,      4    ])
+y = np.array([ 0.,     0.308,  0.55,   0.546,  0.44 ])
+
+# create the interpolating function
+f = interp1d(x, y, kind='cubic', bounds_error=False)
+
+# to find the maximum, we minimize the negative of the function. We
+# cannot just multiply f by -1, so we create a new function here.
+f2 = interp1d(x, -y, kind='cubic')
+xmax = fmin(f2, 2.5)
+
+xfit = np.linspace(0,4)
+
+plt.plot(x,y,'bo')
+plt.plot(xfit, f(xfit),'r-')
+plt.plot(xmax, f(xmax),'g*')
+plt.legend(['data','fit','max'], loc='best', numpoints=1)
+plt.xlabel('x data')
+plt.ylabel('y data')
+plt.title('Max point = ({0:1.2f}, {1:1.2f})'.format(float(xmax),
+                                                    float(f(xmax))))
+plt.savefig('images/splinefit.png')
+#+END_SRC
+
+#+caption: Illustration of a spline fit to data and finding the maximum point.
+#+attr_latex: placement=[H]
+[[./images/splinefit.png]]
+
+There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html
+
 * Optimization
 ** TODO http://matlab.cheme.cmu.edu/2011/12/24/constrained-optimization/
 ** Using Lagrange multipliers in optimization
@@ -2577,7 +3320,7 @@ Let $x$ be the number of roods of wheat planted, and $y$ be the number of roods 
 
 There are some constraint inequalities, specified by the limits on expenses, storage and roodage. They are:
 
-\($120x + $210y <= $15000\) (The total amount spent cannot exceed the amount the farm has)
+\(\$120x + \$210y <= \$15000\) (The total amount spent cannot exceed the amount the farm has)
 
 \(110x + 30y <= 4000\) (The amount generated should not exceed storage space.)
 
@@ -3483,7 +4226,7 @@ plt.plot(T,Hrxn, label='$\Delta H_{rxn}$')
 plt.xlabel('Temperature (K)')
 plt.ylabel('(kJ/mol)')
 plt.legend( loc='best')
-plt.savefig('wgs-nist-1.png')
+plt.savefig('images/wgs-nist-1.png')
 #+END_SRC
 
 #+RESULTS:
@@ -3495,7 +4238,8 @@ plt.savefig('wgs-nist-1.png')
 : <matplotlib.text.Text object at 0x040CEF70>
 : <matplotlib.legend.Legend object at 0x043CB5F0>
 
-[[./wgs-nist-1.png]]
+[[./images/wgs-nist-1.png]]
+
 Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.
 
 *** Equilibrium constant calculation
@@ -3511,7 +4255,7 @@ plt.plot(T,K)
 plt.xlim([500, 1000])
 plt.xlabel('Temperature (K)')
 plt.ylabel('Equilibrium constant')
-plt.savefig('wgs-nist-2.png')
+plt.savefig('images/wgs-nist-2.png')
 #+END_SRC
 
 #+RESULTS:
@@ -3522,7 +4266,7 @@ plt.savefig('wgs-nist-2.png')
 : <matplotlib.text.Text object at 0x04577470>
 : <matplotlib.text.Text object at 0x0457F410>
 
-[[./wgs-nist-2.png]]
+[[./images/wgs-nist-2.png]]
 
 *** Equilibrium yield of WGS
 
@@ -3611,7 +4355,82 @@ I noticed a different behavior in interpolation between scipy.interpolate.interp
 ** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
 ** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
 ** TODO http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/
-** TODO http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/
+** Computing a pipe diameter
+   :PROPERTIES:
+   :categories: [nonlinear algebra, fluids]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Matlab post]]
+A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length of 100 m. The pressure drop cannot exceed 103 kPa at 25 degC. Compute the minimum pipe diameter required for this application.
+
+Adapted from problem 8.8 in Problem solving in chemical and Biochemical Engineering with Polymath, Excel, and Matlab. page 303.
+
+We need to estimate the Fanning friction factor for these conditions so we can estimate the frictional losses that result in a pressure drop for a uniform, circular pipe. The frictional forces are given by $F_f = 2f_F \frac{\Delta L v^2}{D}$, and the corresponding pressure drop is given by $\Delta P = \rho F_f$. In these equations, $\rho$ is the fluid density, $v$ is the fluid velocity, $D$ is the pipe diameter, and $f_F$ is the Fanning friction factor. The average fluid velocity is given by $v = \frac{q}{\pi D^2/4}$.
+
+For laminar flow, we estimate $f_F = 16/Re$, which is a linear equation, and for turbulent flow ($Re > 2100$) we have the implicit equation $\frac{1}{\sqrt{f_F}}=4.0 \log(Re \sqrt{f_F})-0.4$. Of course, we define $Re = \frac{D v\rho}{\mu}$ where $\mu$ is the viscosity of the fluid.
+
+It is known that $\rho(T) = 46.048 + 9.418 T -0.0329 T^2 +4.882\times10^{-5}-2.895\times10^{-8}T^4$ and $\mu = \exp\left({-10.547 + \frac{541.69}{T-144.53}}\right)$ where $\rho$ is in kg/m^3 and $\mu$ is in kg/(m*s).
+
+The aim is to find $D$ that solves: $ \Delta p = \rho 2 f_F \frac{\Delta L v^2}{D}$. This is a nonlinear equation in $D$, since D affects the fluid velocity, the Re, and the Fanning friction factor. Here is the solution
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+import matplotlib.pyplot as plt
+
+T = 25 + 273.15
+Q = 2.5e-3       # m^3/s
+deltaP = 103000  # Pa
+deltaL = 100     # m
+
+#Note these correlations expect dimensionless T, where the magnitude
+# of T is in K
+
+def rho(T):
+    return 46.048 + 9.418 * T -0.0329 * T**2 +4.882e-5 * T**3 - 2.895e-8 * T**4
+
+def mu(T):
+    return np.exp(-10.547 + 541.69 / (T - 144.53))
+
+def fanning_friction_factor_(Re):
+    if Re < 2100:
+        raise Exception('Flow is probably not turbulent, so this correlation is not appropriate.')
+    # solve the Nikuradse correlation to get the friction factor
+    def fz(f): return 1.0/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
+    sol, = fsolve(fz, 0.01)
+    return sol
+
+fanning_friction_factor = np.vectorize(fanning_friction_factor_)
+
+Re = np.linspace(2200, 9000)
+f = fanning_friction_factor(Re)
+
+plt.plot(Re, f)
+plt.xlabel('Re')
+plt.ylabel('fanning friction factor')
+# You can see why we use 0.01 as an initial guess for solving for the
+# Fanning friction factor; it falls in the middle of ranges possible
+# for these Re numbers.
+plt.savefig('images/pipe-diameter-1.png')
+
+
+def objective(D):
+    v = Q / (np.pi * D**2 / 4)
+    Re = D * v * rho(T) / mu(T)
+
+    fF = fanning_friction_factor(Re)
+
+    return deltaP - 2 * fF * rho(T) * deltaL * v**2 / D
+    
+D, = fsolve(objective, 0.04)
+
+print('The minimum pipe diameter is {0} m\n'.format(D))
+#+END_SRC
+
+#+RESULTS:
+: The minimum pipe diameter is 0.0389653369531 m
+: 
+Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.
+
 ** TODO http://matlab.cheme.cmu.edu/2011/09/15/calculating-a-bubble-point-pressure/
 ** TODO http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/
 ** Constrained minimization to find equilibrium compositions
@@ -3977,17 +4796,11 @@ print 'The exit concentration is {0} mol/L'.format(CA_sol)
 It is a little confusing why it is necessary to put a comma after the CA_sol in the fsolve command. If you do not put it there, you get brackets around the answer.
 
 ** Integrating the batch reactor mole balance
-#+begin_html
----
-layout: post
-title: Integrating the batch reactor mole balance
-tags:
-categories: python reaction-engineering ODE
----
-#+end_html
+   :PROPERTIES:
+   :categories: [python, reaction engineering, ODEs]
+   :END:
 
-An alternative approach to the [[
-plt.show()][last post]] of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
+An alternative approach of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
 
 $\frac{dX}{dt} = -r_A V/N_{A0}$.
 
@@ -4017,10 +4830,128 @@ plt.savefig('images/2013-01-06-batch-conversion.png')
 
 #+RESULTS:
 
-[[./images/013-01-06-batch-conversion.png]]
+[[./images/2013-01-06-batch-conversion.png]]
 
 You can read off of this figure to find the time required to achieve a particular conversion.
 
+** Using constrained optimization to find the amount of each phase present
+The problem we solve here is that we have several compounds containing Ni and Al, and a bulk mixture of a particular composition of Ni and Al. We want to know which mixture of phases will minimize the total energy. The tricky part is that the optimization is constrained because the mixture of phases must have the overall stoichiometry we want.  We formulate the problem like this.
+
+
+
+Basically, we want to minimize the function $E = \sum w_i E_i$, where $w_i$ is the mass of phase $i$, and $E_i$ is the energy per unit mass of phase $i$. There are some constraints to ensure conservation of mass. Let us consider the following compounds: Al, NiAl, Ni3Al, and Ni, and consider a case where the bulk composition of our alloy is 93.3% Ni and balance Al. We want to know which phases are present, and in what proportions.
+
+
+We use scipy.optimize.fmin_slsqp to solve this problem, and define two equality constraint functions, and the bounds on each fraction.
+
+Note: the energies in this example are totally made up.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fmin_slsqp
+
+Ni = 58.693
+Al = 26.982
+
+COMPOSITIONS = ['Al', 'NiAl', 'Ni3Al',  'Ni']
+MW = np.array(  [Al, Ni + Al, 3*Ni + Al, Ni])
+NNi = np.array([0.0, 1.0, 3.0, 1.0])  # number of Ni in each compd
+WNi = Ni*NNi / MW             # weight fraction of Ni in each cmpd
+
+ENERGIES = np.array([0.0, -2.1*2, -1.8*4, 0.0])*1000/MW # energy/kg
+
+BNi = 0.933  # bulk weight fraction
+
+
+def G(w):
+    'function to minimize'
+    return np.dot(w, ENERGIES)
+
+def ec1(w):
+    'conservation of Ni'
+    return BNi - np.dot(w, WNi)
+
+def ec2(w):
+    'weight fractions sum to one'
+    return 1 - np.sum(w)
+
+w0 = np.array([0.0, 0.0, 0.5, 0.5]) # guess weight fractions
+
+y = fmin_slsqp(G,   
+               w0,
+               eqcons=[ec1, ec2], 
+               bounds=[(0,1)]*len(w0))
+
+for ci, wi in zip(COMPOSITIONS, y):
+    print '{0:8s} {1:+8.2%}'.format(ci, wi)
+
+print G(y), ec1(y), ec2(y), np.dot(y, WNi)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -17.8785857228
+            Iterations: 2
+            Function evaluations: 12
+            Gradient evaluations: 2
+Al         -0.00%
+NiAl       +0.00%
+Ni3Al     +50.42%
+Ni        +49.58%
+-17.8785857228 -5.58553203689e-12 0.0 0.933000000006
+#+end_example
+
+So, the sample will be about 50% /by weight/ of Ni3Al, and 50% /by weight/ on pure Ni.
+
+It may be convenient to formulate this in terms of moles.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fmin_slsqp
+
+COMPOSITIONS = ['Al', 'NiAl', 'Ni3Al',  'Ni']
+xNi = np.array([0.0, 0.5, 0.75, 1.0])
+
+
+ENERGIES = np.array([0.0, -2.1, -1.8, 0.0])
+
+xNiB = 0.2  # bulk Ni composition
+
+def G(n):
+    'function to minimize'
+    return np.dot(n, ENERGIES)
+
+def ec1(n):
+    'conservation of Ni'
+    Ntot = np.sum(n)
+    return (Ntot * xNiB) - np.dot(n,  xNi)
+
+def ec2(n):
+    'mole fractions sum to one'
+    return 1 - np.sum(n)
+
+n0 = np.array([0.0, 0.0, 0.5, 0.5]) # initial guess
+
+y = fmin_slsqp(G,   
+               n0,
+               eqcons=[ec1, ec2], bounds=[(0, 1)]*(len(n0)))
+
+for ci, xi in zip(COMPOSITIONS, y):
+    print '{0:8s} {1:+8.2}'.format(ci, xi)
+
+#+END_SRC
+
+#+RESULTS:
+: Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -0.84
+:             Iterations: 2
+:             Function evaluations: 12
+:             Gradient evaluations: 2
+: Al           +0.6
+: NiAl         +0.4
+: Ni3Al    +1.1e-15
+: Ni       -7.8e-16
 
 * Units
 ** TODO http://matlab.cheme.cmu.edu/2011/08/05/using-cmu-units-in-matlab-for-basic-calculations/
