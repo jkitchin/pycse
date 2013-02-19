@@ -1,4 +1,4 @@
-#+TITLE:     Introduction to python for scientific and engineering computations
+#+TITLE:     pycse - Python Computations in Science and Engineeringcomputations
 #+AUTHOR:    John Kitchin
 #+EMAIL:     johnrkitchin@gmail.com
 #+DATE:      2013-01-21 Mon
@@ -593,7 +593,184 @@ print 'the fraction {0} corresponds to {0:1.0%}'.format(0.78)
 There are many other options for formatting strings. See http://docs.python.org/2/library/string.html#formatstrings for a full specification of the options.
 
 ** TODO Advanced string formatting
-** TODO http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/
+** Indexing vectors and arrays in Python
+   :PROPERTIES:
+   :categories: [basic]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/][Matlab post]]
+There are times where you have a lot of data in a vector or array and you want to extract a portion of the data for some analysis. For example, maybe you want to plot column 1 vs column 2, or you want the integral of data between x = 4 and x = 6, but your vector covers 0 < x < 10. Indexing is the way to do these things.
+
+A key point to remember is that in python array/vector indices start at 0. Unlike Matlab, which uses parentheses to index a array, we use brackets in python.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+x = np.linspace(-np.pi, np.pi, 10)
+print x
+
+print x[0]  # first element
+print x[2]  # third element
+print x[-1] # last element
+print x[-2] # second to last element
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+:   1.04719755  1.74532925  2.44346095  3.14159265]
+: >>> -3.14159265359
+: -1.74532925199
+: 3.14159265359
+: 2.44346095279
+
+We can select a range of elements too. The syntax a:b extracts the a^{th} to (b-1)^{th} elements. The syntax a:b:n starts at a, skips nelements up to the index b.
+
+#+BEGIN_SRC python :session
+print x[1:4]     # second to fourth element. Element 5 is not included
+print x[0:-1:2]  # every other element
+print x[:]       # print the whole vector
+print x[-1:0:-1] # reverse the vector!
+#+END_SRC
+
+#+RESULTS:
+: [-2.44346095 -1.74532925 -1.04719755]
+: [-3.14159265 -1.74532925 -0.34906585  1.04719755  2.44346095]
+: [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+:   1.04719755  1.74532925  2.44346095  3.14159265]
+: [ 3.14159265  2.44346095  1.74532925  1.04719755  0.34906585 -0.34906585
+:  -1.04719755 -1.74532925 -2.44346095]
+
+Suppose we want the part of the vector where x > 2. We could do that by inspection, but there is a better way. We can create a mask of boolean (0 or 1) values that specify whether x > 2 or not, and then use the mask as an index.
+
+#+BEGIN_SRC python :session
+print x[x > 2]
+#+END_SRC
+
+#+RESULTS:
+: [ 2.44346095  3.14159265]
+
+You can use this to analyze subsections of data, for example to integrate the function y = sin(x) where x > 2.
+
+#+BEGIN_SRC python :session
+y = np.sin(x)
+
+print np.trapz( x[x > 2], y[x > 2])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> -1.79500162881
+
+*** 2d arrays
+In 2d arrays, we use  row, column notation. We use a : to indicate all rows or all columns.
+
+#+BEGIN_SRC python :session
+a = np.array([[1, 2, 3], 
+              [4, 5, 6], 
+              [7, 8, 9]])
+
+print a[0, 0]
+print a[-1, -1]
+
+print a[0, :] # row one
+print a[:, 0] # column one
+print a[:]
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... >>> >>> 1
+: 9
+: >>> [1 2 3]
+: [1 4 7]
+: [[1 2 3]
+:  [4 5 6]
+:  [7 8 9]]
+
+*** Using indexing to assign values to rows and columns
+
+#+BEGIN_SRC python :session
+b = np.zeros((3, 3))
+print b
+
+b[:, 0] = [1, 2, 3] # set column 0
+b[2, 2] = 12        # set a single element
+print b
+
+b[2] = 6  # sets everything in row 2 to 6!
+print b
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+[[ 0.  0.  0.]
+ [ 0.  0.  0.]
+ [ 0.  0.  0.]]
+>>> >>> >>> [[  1.   0.   0.]
+ [  2.   0.   0.]
+ [  3.   0.  12.]]
+>>> >>> [[ 1.  0.  0.]
+ [ 2.  0.  0.]
+ [ 6.  6.  6.]]
+#+end_example
+
+Python does not have the linear assignment method like Matlab does. You can achieve something like that as follows. We flatten the array to 1D, do the linear assignment, and reshape the result back to the 2D array.
+
+#+BEGIN_SRC python :session
+c = b.flatten()
+c[2] = 34
+b[:] = c.reshape(b.shape)
+print b
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [[  1.   0.  34.]
+:  [  2.   0.   0.]
+:  [  6.   6.   6.]]
+
+*** 3D arrays
+The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think about the indexing like this: (row, column, page)
+
+#+BEGIN_SRC python :session
+M = np.random.uniform(size=(3,3,3))  # a 3x3x3 array
+print M
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+[[[ 0.78557795  0.36454381  0.96090072]
+  [ 0.76133373  0.03250485  0.08517174]
+  [ 0.96007909  0.08654002  0.29693648]]
+
+ [[ 0.58270738  0.60656083  0.47703339]
+  [ 0.62551477  0.62244626  0.11030327]
+  [ 0.2048839   0.83081982  0.83660668]]
+
+ [[ 0.12489176  0.20783996  0.38481792]
+  [ 0.05234762  0.03989146  0.09731516]
+  [ 0.67427208  0.51793637  0.89016255]]]
+#+end_example
+
+#+BEGIN_SRC python :session
+print M[:, :, 0]  # 2d array on page 0
+print M[:, 0, 0]  # column 0 on page 0
+print M[1, :, 2]  # row 1 on page 2
+#+END_SRC
+
+#+RESULTS:
+: [[ 0.78557795  0.76133373  0.96007909]
+:  [ 0.58270738  0.62551477  0.2048839 ]
+:  [ 0.12489176  0.05234762  0.67427208]]
+: [ 0.78557795  0.58270738  0.12489176]
+: [ 0.47703339  0.11030327  0.83660668]
+
+
+*** Summary
+The most common place to use indexing is probably when a function returns an array with the independent variable in column 1 and solution in column 2, and you want to plot the solution. Second is when you want to analyze one part of the solution. There are also applications in numerical methods, for example in assigning values to the elements of a matrix or vector.
+
 ** Creating arrays in python
 Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
 #+BEGIN_SRC python
@@ -766,7 +943,7 @@ Note that even when we specify a column, it is returned as a 1D array.
   :PROPERTIES:
   :date:     2013-01-20
   :last-published: 2013-01-20
-  :categories: python integration
+  :categories: [python, integration]
   :END:
 
 A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
@@ -910,9 +1087,9 @@ Interesting this fails.
 
 ** Smooth transitions between discontinuous functions	     :fluids:example:
   :PROPERTIES:
-  :categories: [Miscellaneous, nonlinear algebra]
+  :categories: [miscellaneous, nonlinear-algebra]
   :date:     2013-01-31
-  :last-published: 2013-01-31
+  :last-published: 2013-02-18
   :END:
 
 [[http://matlab.cheme.cmu.edu/2011/10/30/smooth-transitions-between-discontinuous-functions/][original post]]
@@ -1232,7 +1409,7 @@ Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equa
 ** TODO http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/
 ** Polynomials in python
    :PROPERTIES:
-   :categories: math, polynomials
+   :categories: [math, polynomials]
    :date:     2013-01-22
    :last-published: 2013-01-22
    :END:
@@ -1782,16 +1959,9 @@ print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
 [[http://matlab.cheme.cmu.edu/2011/08/01/solving-linear-equations/][Matlab comparison]]
 
 * Nonlinear algebra
-** Polynomials
-** fsolve
-** method of continuity
-** TODO http://matlab.cheme.cmu.edu/2011/11/01/method-of-continuity-for-nonlinear-equation-solving/
-** TODO http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/
-** TODO http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/
-** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
 **  Solving integral equations with fsolve
    :PROPERTIES:
-   :categories: nonlinear-algebra, reaction-engineering
+   :categories: [nonlinear-algebra, reaction-engineering]
    :date:     2013-01-23
    :last-published: 2013-01-23
    :END:
@@ -1858,9 +2028,64 @@ print 'The exit concentration is {0:1.2f} mol/L'.format(Fa_exit / nu)
 
 *** Summary notes
 This example seemed a little easier in Matlab, where the quad function seemed to get automatically vectorized. Here we had to do it by hand.
+** TODO http://matlab.cheme.cmu.edu/2011/11/01/method-of-continuity-for-nonlinear-equation-solving/
+** TODO http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/
+** TODO http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/
+** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/29/nonlinear-curve-fitting-with-parameter-confidence-intervals/
+
 * Ordinary differential equations
+** Plotting ODE solutions in cylindrical coordinates
+   :PROPERTIES:
+   :categories: [ODE]
+   :date:     2013-02-07
+   :last-published: 2013-02-18
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2011/11/08/plot-the-solution-to-an-ode-in-cylindrical-coordinates-2/][Matlab post]]
+
+It is straightforward to plot functions in Cartesian coordinates. It is less convenient to plot them in cylindrical coordinates. Here we solve an ODE in cylindrical coordinates, and then convert the solution to Cartesian coordinates for simple plotting.
+
+#+BEGIN_SRC python 
+import numpy as np
+from scipy.integrate import odeint
+
+def dfdt(F, t):
+    rho, theta, z = F
+    drhodt = 0   # constant radius
+    dthetadt = 1 # constant angular velocity
+    dzdt = -1    # constant dropping velocity
+    return [drhodt, dthetadt, dzdt]
+
+# initial conditions
+rho0 = 1
+theta0 = 0
+z0 = 100
+
+tspan = np.linspace(0, 50, 500)
+sol = odeint(dfdt, [rho0, theta0, z0], tspan)
+
+rho = sol[:,0]
+theta = sol[:,1]
+z = sol[:,2]
+
+# convert cylindrical coords to cartesian for plotting.
+X = rho * np.cos(theta)
+Y = rho * np.sin(theta)
+
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.plot(X, Y, z)
+plt.savefig('images/ode-cylindrical.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/ode-cylindrical.png]]
+** TODO http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/
+** TODO http://matlab.cheme.cmu.edu/2011/09/01/odes-with-discontinuous-forcing-functions/
 ** Simulating the events feature of Matlab's ode solvers
 The ode solvers in Matlab allow you create functions that define events that can stop the integration, detect roots, etc... We will explore how to get a similar effect in python. Here is an example that somewhat does this, but it is only an approximation. We will manually integrate the ODE, adjusting the time step in each iteration to zero in on the solution. When the desired accuracy is reached, we stop the integration. 
 
@@ -2026,61 +2251,16 @@ plt.savefig('images/event-ode-1.png')
 [[./images/event-ode-1.png]]
 
 That was a lot of programming to do something like find the roots of the function!
-** Plotting ODE solutions in cylindrical coordinates
-   :PROPERTIES:
-   :categories: [ODEs]
-   :date:     2013-02-07
-   :last-published: 2013-02-07
-   :END:
-
-[[http://matlab.cheme.cmu.edu/2011/11/08/plot-the-solution-to-an-ode-in-cylindrical-coordinates-2/][Matlab post]]
-
-It is straightforward to plot functions in Cartesian coordinates. It is less convenient to plot them in cylindrical coordinates. Here we solve an ODE in cylindrical coordinates, and then convert the solution to Cartesian coordinates for simple plotting.
-
-#+BEGIN_SRC python 
-import numpy as np
-from scipy.integrate import odeint
-
-def dfdt(F, t):
-    rho, theta, z = F
-    drhodt = 0   # constant radius
-    dthetadt = 1 # constant angular velocity
-    dzdt = -1    # constant dropping velocity
-    return [drhodt, dthetadt, dzdt]
-
-# initial conditions
-rho0 = 1
-theta0 = 0
-z0 = 100
-
-tspan = np.linspace(0, 50, 500)
-sol = odeint(dfdt, [rho0, theta0, z0], tspan)
-
-rho = sol[:,0]
-theta = sol[:,1]
-z = sol[:,2]
-
-# convert cylindrical coords to cartesian for plotting.
-X = rho * np.cos(theta)
-Y = rho * np.sin(theta)
-
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot(X, Y, z)
-plt.savefig('images/ode-cylindrical.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/ode-cylindrical.png]]
-
+** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
+** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
+** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
+** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
+** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
 ** Solving parameterized ODEs over and over conveniently
    :PROPERTIES:
-   :categories: [reaction-engineering, ODEs]
+   :categories: [reaction-engineering, ODE]
    :date:     2013-02-07
-   :last-published: 2013-02-07
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/16/parameterized-odes/][Matlab post]]
 Sometimes we have an ODE that depends on a parameter, and we want to solve the ODE for several parameter values. It is inconvenient to write an ode function for each parameter case. Here we examine a convenient way to solve this problem; we pass the parameter to the ODE at runtime. We consider the following ODE:
@@ -2123,14 +2303,13 @@ plt.savefig('images/parameterized-ode1.png')
 [[./images/parameterized-ode1.png]]
 
 You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of $k$! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.   
-
 ** TODO http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/
-** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
+** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
 ** Solving a second order ode
    :PROPERTIES:
-   :categories: [ODEs, math]
+   :categories: [ODE, math]
    :date:     2013-02-02
-   :last-published: 2013-02-02
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/26/solving-a-second-order-ode/][Matlab post]]
 
@@ -2190,19 +2369,11 @@ plt.savefig('images/vanderpol-2.png')
 Here is the phase portrait. You can see that a limit cycle is approached, indicating periodicity in the solution.
 
 [[./images/vanderpol-2.png]]
-
-** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
-** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
-** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
-** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
-** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
-** TODO http://matlab.cheme.cmu.edu/2011/09/01/odes-with-discontinuous-forcing-functions/
-** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
 ** Solving Bessel's Equation numerically
    :PROPERTIES:
-   :categories: [ODEs, math]
+   :categories: [ODE, math]
    :date:     2013-02-07
-   :last-published: 2013-02-07
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/08/solving-bessels-equation-numerically/][Matlab post]]
 
@@ -2254,17 +2425,348 @@ plt.savefig('images/bessel.png')
 You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.
 
 ** TODO http://matlab.cheme.cmu.edu/2011/08/09/phase-portraits-of-a-system-of-odes/
-** TODO http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/
-** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
+** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
+** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
 * Boundary value equations
-** TODO http://matlab.cheme.cmu.edu/2011/09/30/plane-poiseuelle-flow-solved-by-finite-difference/
-** TODO http://matlab.cheme.cmu.edu/2011/09/08/plane-poiseuille-flow-bvp-solve-by-shooting-method/
+I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
+
+** Plane Poiseuille flow - BVP solve by shooting method
+   :PROPERTIES:
+   :categories: [BVP]
+   :date:     2013-02-15
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/08/plane-poiseuille-flow-bvp-solve-by-shooting-method/][Matlab post]]
+
+One approach to solving BVPs is to use the shooting method. The reason we cannot use an initial value solver for a BVP is that there is not enough information at the initial value to start. In the shooting method, we take the function value at the initial point, and guess what the function derivatives are so that we can do an integration. If our guess was good, then the solution will go through the known second boundary point. If not, we guess again, until we get the answer we need. In this example we repeat the pressure driven flow example, but illustrate the shooting method.
+
+In the pressure driven flow of a fluid with viscosity $\mu$ between two stationary plates separated by distance $d$ and driven by a pressure drop $\Delta P/\Delta x$, the governing equations on the velocity $u$ of the fluid are (assuming flow in the x-direction with the velocity varying only in the y-direction):
+
+$$\frac{\Delta P}{\Delta x} = \mu \frac{d^2u}{dy^2}$$
+
+with boundary conditions $u(y=0) = 0$ and $u(y=d) = 0$, i.e. the no-slip condition at the edges of the plate.
+
+we convert this second order BVP to a system of ODEs by letting $u_1 = u$, $u_2 = u_1'$ and then $u_2' = u_1''$. This leads to:
+
+$\frac{d u_1}{dy} = u_2$
+
+$\frac{d u_2}{dy} = \frac{1}{\mu}\frac{\Delta P}{\Delta x}$
+
+with boundary conditions $u_1(y=0) = 0$ and $u_1(y=d) = 0$.
+
+for this problem we let the plate separation be d=0.1, the viscosity $\mu = 1$, and $\frac{\Delta P}{\Delta x} = -100$.
+
+*** First guess
+
+We need u_1(0) and u_2(0), but we only have u_1(0). We need to guess a value for u_2(0) and see if the solution goes through the u_2(d)=0 boundary value.
+
+#+BEGIN_SRC python 
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+d = 0.1 # plate thickness
+
+def odefun(U, y):
+    u1, u2 = U
+    mu = 1
+    Pdrop = -100
+    du1dy = u2
+    du2dy = 1.0 / mu * Pdrop
+    return [du1dy, du2dy]
+
+u1_0 = 0 # known
+u2_0 = 1 # guessed
+
+dspan = np.linspace(0, d)
+
+U = odeint(odefun, [u1_0, u2_0], dspan)
+
+plt.plot(dspan, U[:,0])
+plt.plot([d],[0], 'ro')
+plt.xlabel('d')
+plt.ylabel('$u_1$')
+plt.savefig('images/bvp-shooting-1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/bvp-shooting-1.png]]
+
+Here we have undershot the boundary condition. Let us try a larger guess.
+*** Second guess
+#+BEGIN_SRC python 
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+d = 0.1 # plate thickness
+
+def odefun(U, y):
+    u1, u2 = U
+    mu = 1
+    Pdrop = -100
+    du1dy = u2
+    du2dy = 1.0 / mu * Pdrop
+    return [du1dy, du2dy]
+
+u1_0 = 0 # known
+u2_0 = 10 # guessed
+
+dspan = np.linspace(0, d)
+
+U = odeint(odefun, [u1_0, u2_0], dspan)
+
+plt.plot(dspan, U[:,0])
+plt.plot([d],[0], 'ro')
+plt.xlabel('d')
+plt.ylabel('$u_1$')
+plt.savefig('images/bvp-shooting-2.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/bvp-shooting-2.png]]
+
+Now we have clearly overshot. Let us now make a function that will iterate for us to find the right value.
+
+#+BEGIN_SRC python 
+import numpy as np
+from scipy.integrate import odeint
+from scipy.optimize import fsolve
+import matplotlib.pyplot as plt
+
+d = 0.1 # plate thickness
+Pdrop = -100
+mu = 1
+
+def odefun(U, y):
+    u1, u2 = U
+    du1dy = u2
+    du2dy = 1.0 / mu * Pdrop
+    return [du1dy, du2dy]
+
+u1_0 = 0 # known
+dspan = np.linspace(0, d)
+
+def objective(u2_0):
+    dspan = np.linspace(0, d)
+    U = odeint(odefun, [u1_0, u2_0], dspan)
+    u1 = U[:,0]
+    return u1[-1]
+
+u2_0, = fsolve(objective, 1.0)
+
+# now solve with optimal u2_0
+U = odeint(odefun, [u1_0, u2_0], dspan)
+
+plt.plot(dspan, U[:,0], label='Numerical solution')
+plt.plot([d],[0], 'ro')
+
+# plot an analytical solution
+u = -(Pdrop) * d**2 / 2 / mu * (dspan / d - (dspan / d)**2)
+plt.plot(dspan, u, 'r--', label='Analytical solution')
+
+
+plt.xlabel('d')
+plt.ylabel('$u_1$')
+plt.legend(loc='best')
+plt.savefig('images/bvp-shooting-3.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/bvp-shooting-3.png]]
+
+You can see the agreement is excellent!
+
+** Plane poiseuelle flow solved by finite difference
+   :PROPERTIES:
+   :date:     2013-02-14
+   :last-published: 2013-02-14
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/30/plane-poiseuelle-flow-solved-by-finite-difference/][Matlab post]]
+
+Adapted from http://www.physics.arizona.edu/~restrepo/475B/Notes/sourcehtml/node24.html
+
+We want to solve a linear boundary value problem of the form: y” = p(x)y’ + q(x)y + r(x) with boundary conditions y(x1) = alpha and y(x2) = beta.
+
+For this example, we solve the plane poiseuille flow problem using a finite difference approach. An advantage of the approach we use here is we do not have to rewrite the second order ODE as a set of coupled first order ODEs, nor do we have to provide guesses for the solution. We do, however, have to discretize the derivatives and formulate a linear algebra problem.
+
+we want to solve u” = 1/mu*DPDX with u(0)=0 and u(0.1)=0. for this problem we let the plate separation be d=0.1, the viscosity $\mu = 1$, and $\frac{\Delta P}{\Delta x} = -100$.
+
+The idea behind the finite difference method is to approximate the derivatives by finite differences on a grid. See here for details. By discretizing the ODE, we arrive at a set of linear algebra equations of the form $A y = b$, where $A$ and $b$ are defined as follows.
+
+\[A = \left [ \begin{array}{ccccc} %
+ 2 + h^2 q_1         & -1 + \frac{h}{2} p_1 & 0                    & 0 & 0 \\
+-1 - \frac{h}{2} p_2 & 2 + h^2 q_2          & -1 + \frac{h}{2} p_2 & 0 & 0 \\
+0                    & \ddots               & \ddots               & \ddots & 0 \\
+0                    & 0                    & -1 - \frac{h}{2} p_{N-1} & 2 + h^2 q_{N-1} & -1 + \frac{h}{2} p_{N-1} \\
+0                    & 0                    & 0  & -1 - \frac{h}{2} p_N & 2 + h^2 q_N \end{array} \right ] \]
+
+\[ y = \left [ \begin{array}{c} y_i \\ \vdots \\ y_N \end{array} \right ] \]
+
+\[ b = \left [ \begin{array}{c} -h^2 r_1 + ( 1 + \frac{h}{2} p_1) \alpha \\
+-h^2 r_2 \\
+\vdots \\
+-h^2 r_{N-1} \\
+-h^2 r_N + (1 - \frac{h}{2} p_N) \beta \end{array} \right] \]
+
+#+BEGIN_SRC python
+import numpy as np
+
+# we use the notation for y'' = p(x)y' + q(x)y + r(x)
+def p(x): return 0
+def q(x): return 0
+def r(x): return -100
+
+#we use the notation y(x1) = alpha and y(x2) = beta
+
+x1 = 0; alpha = 0.0
+x2 = 0.1; beta = 0.0
+
+npoints = 100
+
+# compute interval width
+h = (x2-x1)/npoints;
+
+# preallocate and shape the b vector and A-matrix
+b = np.zeros((npoints - 1, 1));
+A = np.zeros((npoints - 1, npoints - 1));
+X = np.zeros((npoints - 1, 1));
+
+#now we populate the A-matrix and b vector elements
+for i in range(npoints - 1):
+    X[i,0] = x1 + (i + 1) * h
+
+    # get the value of the BVP Odes at this x
+    pi = p(X[i])
+    qi = q(X[i])
+    ri = r(X[i])
+
+    if i == 0:
+        # first boundary condition
+        b[i] = -h**2 * ri + (1 + h / 2 * pi)*alpha; 
+    elif i == npoints - 1:
+        # second boundary condition
+        b[i] = -h**2 * ri + (1 - h / 2 * pi)*beta; 
+    else:
+        b[i] = -h**2 * ri # intermediate points
+    
+    for j in range(npoints - 1):
+        if j == i: # the diagonal
+            A[i,j] = 2 + h**2 * qi
+        elif j == i - 1: # left of the diagonal
+            A[i,j] = -1 - h / 2 * pi
+        elif j == i + 1: # right of the diagonal
+            A[i,j] = -1 + h / 2 * pi
+        else:
+            A[i,j] = 0 # off the tri-diagonal
+ 
+# solve the equations A*y = b for Y
+Y = np.linalg.solve(A,b)
+
+x = np.hstack([x1, X[:,0], x2])
+y = np.hstack([alpha, Y[:,0], beta])
+
+import matplotlib.pyplot as plt
+
+plt.plot(x, y)
+
+mu = 1
+d = 0.1
+x = np.linspace(0,0.1);
+Pdrop = -100 # this is DeltaP/Deltax
+u = -(Pdrop) * d**2 / 2.0 / mu * (x / d - (x / d)**2)
+plt.plot(x,u,'r--')
+
+plt.xlabel('distance between plates')
+plt.ylabel('fluid velocity')
+plt.legend(('finite difference', 'analytical soln'))
+plt.savefig('images/pp-bvp-fd.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/pp-bvp-fd.png]]
+
+You can see excellent agreement here between the numerical and analytical solution.
 ** TODO http://matlab.cheme.cmu.edu/2011/08/11/plane-poiseuille-flow-bvp/
+There is no equivalent of this Matlab function in scipy.
+
 ** TODO http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/
+There is no equivalent of this Matlab function in scipy.
+
 * Partial differential equations
 ** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
+I do not think there is a way to do this in scipy.
 * Statistics
+** Introduction to statistical data analysis
+   :PROPERTIES:
+   :categories: [statistics]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/27/introduction-to-statistical-data-analysis/][Matlab post]]
+
+Given several measurements of a single quantity, determine the average value of the measurements, the standard deviation of the measurements and the 95% confidence interval for the average.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+y = [8.1, 8.0, 8.1]
+
+ybar = np.mean(y)
+s = np.std(y, ddof=1)
+
+print ybar, s
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> 8.06666666667 0.057735026919
+
+Interesting, we have to specify the divisor in numpy.std by the ddof argument. The default for this in Matlab is 1, the default for this function is 0.
+
+Here is the principle of computing a confidence interval.
+
+1.     compute the average
+2.    Compute the standard deviation of your data
+3.     Define the confidence interval, e.g. 95% = 0.95
+4.    compute the student-t multiplier. This is a function of the
+      confidence interval you specify, and the number of data points
+      you have minus 1. You subtract 1 because one degree of freedom
+      is lost from calculating the average.
+
+The confidence interval is defined as ybar +- T_multiplier*std/sqrt(n).
+
+#+BEGIN_SRC python :session
+from scipy.stats.distributions import  t
+ci = 0.95
+alpha = 1.0 - ci
+
+n = len(y)
+T_multiplier = t.ppf(1.0 - alpha / 2.0, n - 1)
+
+ci95 = T_multiplier * s / np.sqrt(n)
+
+print 'T_multiplier = {0}'.format(T_multiplier)
+print 'ci95 = {0}'.format(ci95)
+print 'The true average is between {0} and {1} at a 95% confidence level'.format(ybar - ci95, ybar + ci95)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> T_multiplier = 4.30265272991
+: ci95 = 0.143421757664
+: The true average is between 7.923244909 and 8.21008842433 at a 95% confidence level
 ** Basic statistics
+   :PROPERTIES:
+   :categories: [statistics]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
 Given several measurements of a single quantity, determine the average value of the measurements, the standard deviation of the measurements and the 95% confidence interval for the average.
 
 This is a recipe for computing the confidence interval. The strategy is:
@@ -2332,9 +2834,112 @@ print ''.join(s).format(avg_x - pred_interval, avg_x + pred_interval)
 #+RESULTS:
 : We are 95% confident the next measurement will be between 16.076 and 16.124
 
-** TODO are averages different
-http://matlab.cheme.cmu.edu/2012/01/28/are-two-averages-different/
-** TODO Model selection
+** Are averages different
+   :PROPERTIES:
+   :categories: [data-analysis, statistics]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/01/28/are-two-averages-different/][Matlab post]]
+
+Adapted from http://stattrek.com/ap-statistics-4/unpaired-means.aspx
+
+Class A had 30 students who received an average test score of 78, with standard deviation of 10. Class B had 25 students an average test score of 85, with a standard deviation of 15. We want to know if the difference in these averages is statistically relevant. Note that we only have estimates of the true average and standard deviation for each class, and there is uncertainty in those estimates. As a result, we are unsure if the averages are really different. It could have just been luck that a few students in class B did better.
+
+The hypothesis:
+
+the true averages are the same. We need to perform a two-sample t-test of the hypothesis that $\mu_1 - \mu_2 = 0$ (this is often called the null hypothesis). we use a two-tailed test because we do not care if the difference is positive or negative, either way means the averages are not the same.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+n1 = 30  # students in class A
+x1 = 78.0  # average grade in class A
+s1 = 10.0  # std dev of exam grade in class A
+
+n2 = 25  # students in class B
+x2 = 85.0  # average grade in class B
+s2 = 15.0  # std dev of exam grade in class B
+
+# the standard error of the difference between the two averages. 
+SE = np.sqrt(s1**2 / n1 + s2**2 / n2)
+
+# compute DOF
+DF = (n1 - 1) + (n2 - 1)
+#+END_SRC
+
+#+RESULTS:
+
+see the discussion at http://stattrek.com/Help/Glossary.aspx?Target=Two-sample%20t-test for a more complex definition of degrees of freedom. Here we simply subtract one from each sample size to account for the estimation of the average of each sample.
+
+
+compute the t-score for our data
+
+The difference between two averages determined from small sample numbers follows the t-distribution. the t-score is the difference between the difference of the means and the hypothesized difference of the means, normalized by the standard error. we compute the absolute value of the t-score to make sure it is positive for convenience later.
+#+BEGIN_SRC python :session
+tscore = np.abs(((x1 - x2) - 0) / SE)
+print tscore
+#+END_SRC
+
+#+RESULTS:
+: 
+: 1.99323179108
+
+Interpretation
+
+A way to approach determinining if the difference is significant or not is to ask, does our computed average fall within a confidence range of the hypothesized value (zero)? If it does, then we can attribute the difference to statistical variations at that confidence level. If it does not, we can say that statistical variations do not account for the difference at that confidence level, and hence the averages must be different.
+
+Let us compute the t-value that corresponds to a 95% confidence level for a mean of zero with the degrees of freedom computed earlier. This means that 95% of the t-scores we expect to get will fall within $\pm$ t95.
+
+
+#+BEGIN_SRC python :session
+from scipy.stats.distributions import  t
+
+ci = 0.95;
+alpha = 1 - ci;
+t95 = t.ppf(1.0 - alpha/2.0, DF)
+
+print t95
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> 2.00574599354
+
+since tscore < t95, we conclude that at the 95% confidence level we cannot say these averages are statistically different because our computed t-score falls in the expected range of deviations. Note that our t-score is very close to the 95% limit. Let us consider a smaller confidence interval.
+
+#+BEGIN_SRC python :session
+ci = 0.94
+alpha = 1 - ci;
+t95 = t.ppf(1.0 - alpha/2.0, DF)
+
+print t95
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 1.92191364181
+
+at the 94% confidence level, however, tscore > t94, which means we can say with 94% confidence that the two averages are different; class B performed better than class A did. Alternatively, there is only about a 6% chance we are wrong about that statement.
+another way to get there
+
+An alternative way to get the confidence that the averages are different is to directly compute it from the cumulative t-distribution function. We compute the difference between all the t-values less than tscore and the t-values less than -tscore, which is the fraction of measurements that are between them. You can see here that we are practically 95% sure that the averages are different.
+
+#+BEGIN_SRC python :session
+f = t.cdf(tscore, DF) - t.cdf(-tscore, DF)
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: 0.948605075732
+
+** Model selection
+   :PROPERTIES:
+   :categories: [statistics, data-analysis]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
 [[http://matlab.cheme.cmu.edu/2011/10/01/model-selection/][Matlab post]]
 
 adapted from http://www.itl.nist.gov/div898/handbook/pmd/section4/pmd44.htm
@@ -2368,13 +2973,13 @@ plt.savefig('images/model-selection-1.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04C9EB30>]
-: <matplotlib.text.Text object at 0x04B1BA70>
-: <matplotlib.text.Text object at 0x04BCEB10>
+: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x00000000084398D0>]
+: <matplotlib.text.Text object at 0x000000000841F6A0>
+: <matplotlib.text.Text object at 0x0000000008423DD8>
 
 [[./images/model-selection-1.png]]
 
-It appears the data is roughly linear, and we know from the ideal gas law that PV = nRT, or P = nR/V*T, which says P should be linearly correlated with V. Note that the temperature data is in degC, not in K, so it is not expected that P=0 at T = 0. We will use linear algebra to compute the line coefficients. At this time I do not know how to compute the confidence intervals of the coefficients in an elegant way.
+It appears the data is roughly linear, and we know from the ideal gas law that PV = nRT, or P = nR/V*T, which says P should be linearly correlated with V. Note that the temperature data is in degC, not in K, so it is not expected that P=0 at T = 0. We will use linear algebra to compute the line coefficients. 
 
 #+BEGIN_SRC python :session
 A = np.vstack([T**0, T]).T
@@ -2395,7 +3000,7 @@ se = np.sqrt(np.diag(C))
 from scipy.stats.distributions import  t
 alpha = 0.05
 
-sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+sT = t.ppf(1-alpha/2., n - k) # student T multiplier
 CI = sT * se
 
 print 'CI = ',CI
@@ -2406,20 +3011,11 @@ for beta, ci in zip(x, CI):
 #+RESULTS:
 : 
 : >>> >>> >>> >>> b, m = 7.74899739238 3.93014043824
-: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [ 4.76934837  0.10273167]
-: ... ... [2.97964902579 12.518345759]
-: [3.82740876376 4.03287211272]
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [ 4.76511545  0.1026405 ]
+: ... ... [2.98388194638 12.5141128384]
+: [3.82749994079 4.03278093569]
 
-b =
-
-    7.7490
-    3.9301
-
-
-bint =
-
-    2.9839   12.5141
-    3.8275    4.0328
+The confidence interval on the intercept is large, but it does not contain zero at the 95% confidence level.
 
 The R^2 value accounts roughly for the fraction of variation in the data that can be described by the model. Hence, a value close to one means nearly all the variations are described by the model, except for random variations.
 
@@ -2445,17 +3041,16 @@ plt.savefig('images/model-selection-2.png')
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x04BE4DF0>
-: [<matplotlib.lines.Line2D object at 0x04C981D0>, <matplotlib.lines.Line2D object at 0x04BEE810>]
-: <matplotlib.text.Text object at 0x04CAF550>
-: <matplotlib.text.Text object at 0x04CB95D0>
-: <matplotlib.text.Text object at 0x04CCAF30>
+: <matplotlib.figure.Figure object at 0x0000000008423860>
+: [<matplotlib.lines.Line2D object at 0x00000000085BE780>, <matplotlib.lines.Line2D object at 0x00000000085BE940>]
+: <matplotlib.text.Text object at 0x0000000008449898>
+: <matplotlib.text.Text object at 0x000000000844CCF8>
+: <matplotlib.text.Text object at 0x000000000844ED30>
 
 [[./images/model-selection-2.png]]
 
 The fit looks good, and R^2 is near one, but is it a good model? There are a few ways to examine this. We want to make sure that there are no systematic trends in the errors between the fit and the data, and we want to make sure there are not hidden correlations with other variables. The residuals are the error between the fit and the data. The residuals should not show any patterns when plotted against any variables, and they do not in this case.
 
-TODO
 #+BEGIN_SRC python :session
 residuals = P - np.dot(A, x)
 
@@ -2482,17 +3077,17 @@ plt.savefig('images/model-selection-3.png')
 
 #+RESULTS:
 : 
-: >>> <matplotlib.figure.Figure object at 0x04DF2270>
-: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04D44A10>]
-: <matplotlib.text.Text object at 0x04E114D0>
-: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x04F5AAF0>]
-: <matplotlib.text.Text object at 0x04D284D0>
-: >>> >>> [<matplotlib.lines.Line2D object at 0x04F5AE50>]
-: <matplotlib.text.Text object at 0x04EE17D0>
+: >>> <matplotlib.figure.Figure object at 0x00000000085C21D0>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000008861CC0>]
+: <matplotlib.text.Text object at 0x00000000085D3A58>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000008861E80>]
+: <matplotlib.text.Text object at 0x00000000085EC5F8>
+: >>> >>> [<matplotlib.lines.Line2D object at 0x0000000008861C88>]
+: <matplotlib.text.Text object at 0x0000000008846828>
 
 [[./images/model-selection-3.png]]
 
-there may be some correlations in the residuals with the run order. That could indicate an experimental source of error.
+There may be some correlations in the residuals with the run order. That could indicate an experimental source of error.
 
 We assume all the errors are uncorrelated with each other. We can use a lag plot to assess this, where we plot residual[i] vs residual[i-1], i.e. we look for correlations between adjacent residuals. This plot should look random, with no correlations if the model is good.
 
@@ -2505,10 +3100,10 @@ plt.savefig('images/model-selection-correlated-residuals.png')
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x04FE6DB0>
-: [<matplotlib.lines.Line2D object at 0x050B8350>]
-: <matplotlib.text.Text object at 0x050017B0>
-: <matplotlib.text.Text object at 0x0500B670>
+: <matplotlib.figure.Figure object at 0x000000000886EB00>
+: [<matplotlib.lines.Line2D object at 0x0000000008A02908>]
+: <matplotlib.text.Text object at 0x00000000089E8198>
+: <matplotlib.text.Text object at 0x00000000089EB908>
 
 [[./images/model-selection-correlated-residuals.png]]
 
@@ -2534,7 +3129,7 @@ se = np.sqrt(np.diag(C))
 from scipy.stats.distributions import  t
 alpha = 0.05
 
-sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+sT = t.ppf(1-alpha/2., n - k) # student T multiplier
 CI = sT * se
 
 print 'CI = ',CI
@@ -2552,13 +3147,13 @@ print 'R^2 = {0}'.format(R2)
 #+RESULTS:
 : 
 : >>> >>> >>> [  9.00353031e+00   3.86669879e+00   7.26244301e-04]
-: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [  1.38159883e+01   6.62722021e-01   7.49219194e-03]
-: ... ... [-4.81245797151 22.8195185832]
-: [3.20397676962 4.52942081128]
-: [-0.0067659476372 0.00821843623849]
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> CI =  [  1.38030344e+01   6.62100654e-01   7.48516727e-03]
+: ... ... [-4.79950412123 22.8065647329]
+: [3.20459813681 4.52879944409]
+: [-0.00675892296907 0.00821141157035]
 : >>> >>> >>> >>> >>> R^2 = 0.993721969407
 
-You can see that the confidence interval on the constant and T^2 term includes zero. That is a good indication this additional parameter is not significant. You can see also that the R^2 value is not better than the one from a linear fit,  so adding a parameter does not increase the goodness of fit. This is an example of overfitting the data. 
+You can see that the confidence interval on the constant and T^2 term includes zero. That is a good indication this additional parameter is not significant. You can see also that the R^2 value is not better than the one from a linear fit,  so adding a parameter does not increase the goodness of fit. This is an example of overfitting the data. Since the constant in this model is apparently not significant, let us consider the simplest model with a fixed intercept of zero.
 
 Let us consider a model with intercept = 0, P = alpha*T. 
 
@@ -2579,7 +3174,7 @@ se = np.sqrt(np.diag(C))
 from scipy.stats.distributions import  t
 alpha = 0.05
 
-sT = t.ppf(1-alpha/2., n - (k+1)) # student T multiplier
+sT = t.ppf(1-alpha/2.0, n - k) # student T multiplier
 CI = sT * se
 
 for beta, ci in zip(x, CI):
@@ -2601,13 +3196,13 @@ plt.savefig('images/model-selection-no-intercept.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... [4.05677333771 4.12311140623]
-: <matplotlib.figure.Figure object at 0x04FBA1D0>
-: [<matplotlib.lines.Line2D object at 0x052ECD90>, <matplotlib.lines.Line2D object at 0x052E33B0>]
-: <matplotlib.text.Text object at 0x04FE7070>
-: <matplotlib.text.Text object at 0x052C9ED0>
-: <matplotlib.legend.Legend object at 0x052F84D0>
-: >>> >>> >>> >>> >>> <matplotlib.text.Text object at 0x052E36B0>
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... [4.05680124495 4.12308349899]
+: <matplotlib.figure.Figure object at 0x0000000008870BE0>
+: [<matplotlib.lines.Line2D object at 0x00000000089F4550>, <matplotlib.lines.Line2D object at 0x00000000089F4208>]
+: <matplotlib.text.Text object at 0x0000000008A13630>
+: <matplotlib.text.Text object at 0x0000000008A16DA0>
+: <matplotlib.legend.Legend object at 0x00000000089EFD30>
+: >>> >>> >>> >>> >>> <matplotlib.text.Text object at 0x000000000B26C0B8>
 
 [[./images/model-selection-no-intercept.png]]
 The fit is visually still pretty good, and the R^2 value is only slightly worse. Let us examine the residuals again. 
@@ -2625,10 +3220,10 @@ plt.savefig('images/model-selection-no-incpt-resid.png')
 
 #+RESULTS:
 : 
-: >>> <matplotlib.figure.Figure object at 0x05253E70>
-: [<matplotlib.lines.Line2D object at 0x05386130>]
-: <matplotlib.text.Text object at 0x05365E90>
-: <matplotlib.text.Text object at 0x050DFBB0>
+: >>> <matplotlib.figure.Figure object at 0x0000000008A0F5C0>
+: [<matplotlib.lines.Line2D object at 0x000000000B29B0F0>]
+: <matplotlib.text.Text object at 0x000000000B276FD0>
+: <matplotlib.text.Text object at 0x000000000B283780>
 
 [[./images/model-selection-no-incpt-resid.png]]
 
@@ -2636,13 +3231,150 @@ You can see a slight trend of decreasing value of the residuals as the Temperatu
 
 In the end, it is hard to justify a model more complex than a line in this case. 
 
+** Numerical propogation of errors
+   :PROPERTIES:
+   :categories: [statistics]
+   :date:     2013-02-16
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/05/numerical-propogation-of-errors/][Matlab post]]
 
-** TODO http://matlab.cheme.cmu.edu/2011/09/06/introduction-to-statistical-data-analysis-2/
-** TODO http://matlab.cheme.cmu.edu/2011/08/27/introduction-to-statistical-data-analysis/
-** TODO http://matlab.cheme.cmu.edu/2011/09/05/numerical-propogation-of-errors/
+Propagation of errors is essential to understanding how the uncertainty in a parameter affects computations that use that parameter. The uncertainty propogates by a set of rules into your solution. These rules are not easy to remember, or apply to complicated situations, and are only approximate for equations that are nonlinear in the parameters.
+
+We will use a Monte Carlo simulation to illustrate error propogation. The idea is to generate a distribution of possible parameter values, and to evaluate your equation for each parameter value. Then, we perform statistical analysis on the results to determine the standard error of the results.
+
+We will assume all parameters are defined by a normal distribution with known mean and standard deviation.
+
+*** Addition and subtraction
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+N = 1e6 # number of samples of parameters
+
+A_mu = 2.5; A_sigma = 0.4
+B_mu = 4.1; B_sigma = 0.3
+
+A = np.random.normal(A_mu, A_sigma, size=(1, N))
+B = np.random.normal(B_mu, B_sigma, size=(1, N))
+
+p = A + B
+m = A - B
+
+print np.std(p)
+print np.std(m)
+
+print np.sqrt(A_sigma**2 + B_sigma**2) # the analytical std dev
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> 0.500505424616
+: 0.500113385681
+: >>> 0.5
+
+*** Multiplication 
+
+#+BEGIN_SRC python :session
+F_mu = 25.0; F_sigma = 1;
+x_mu = 6.4; x_sigma = 0.4;
+
+F = np.random.normal(F_mu, F_sigma, size=(1, N))
+x = np.random.normal(x_mu, x_sigma, size=(1, N))
+
+t = F * x
+print np.std(t)
+print np.sqrt((F_sigma / F_mu)**2 + (x_sigma / x_mu)**2) * F_mu * x_mu
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> 11.8900166284
+: 11.8726576637
+
+*** Division
+This is really like multiplication: F / x = F * (1 / x).
+
+#+BEGIN_SRC python :session
+d = F / x
+print np.std(d)
+print np.sqrt((F_sigma / F_mu)**2 + (x_sigma / x_mu)**2) * F_mu / x_mu
+#+END_SRC
+
+#+RESULTS:
+: 
+: 0.293757533168
+: 0.289859806243
+
+*** exponents
+This rule is different than multiplication (A^2 = A*A) because in the previous examples we assumed the errors in A and B for A*B were uncorrelated. in A*A, the errors are not uncorrelated, so there is a different rule for error propagation.
+
+#+BEGIN_SRC python :session
+t_mu = 2.03; t_sigma = 0.01*t_mu; # 1% error
+A_mu = 16.07; A_sigma = 0.06;
+
+t = np.random.normal(t_mu, t_sigma, size=(1, N))
+A = np.random.normal(A_mu, A_sigma, size=(1, N))
+
+# Compute t^5 and sqrt(A) with error propogation
+print np.std(t**5)
+print (5 * t_sigma / t_mu) * t_mu**5
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> ... 1.72454836176
+: 1.72365440621
+
+#+BEGIN_SRC python :session
+print np.std(np.sqrt(A))
+print 1.0 / 2.0 * A_sigma / A_mu * np.sqrt(A_mu)
+#+END_SRC
+
+#+RESULTS:
+: 0.00748903477329
+: 0.00748364738749
+
+*** the chain rule in error propogation
+
+let v = v0 + a*t, with uncertainties in vo,a and t
+
+#+BEGIN_SRC python :session
+vo_mu = 1.2; vo_sigma = 0.02;
+a_mu = 3.0;  a_sigma  = 0.3;
+t_mu = 12.0; t_sigma  = 0.12;
+
+vo = np.random.normal(vo_mu, vo_sigma, (1, N))
+a = np.random.normal(a_mu, a_sigma, (1, N))
+t = np.random.normal(t_mu, t_sigma, (1, N))
+
+v = vo + a*t
+
+print np.std(v)
+print np.sqrt(vo_sigma**2 + t_mu**2 * a_sigma**2 + a_mu**2 * t_sigma**2)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> 3.62232509326
+: 3.61801050303
+
+*** Summary
+    :PROPERTIES:
+    :date:     2013-02-16
+    :last-published: 2013-02-16
+    :END:
+
+You can numerically perform error propogation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propogation is you do not have to remember the error propogation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
+
+    1. You have to know the distribution of the errors in the parameters
+    2. You have to assume the errors in parameters are uncorrelated.
+
 ** Random thoughts
    :PROPERTIES:
    :categories: [math, statistics]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/04/random-thoughts/][Matlab post]]
 
@@ -2770,17 +3502,239 @@ print '{0:%} of samples are within +- 2standard deviations of the mean'.format(b
 We only considered the numpy.random functions here, and not all of them. There are many distributions of random numbers to choose from. There are also random numbers in the python random module. Remember these are only [[http://en.wikipedia.org/wiki/Pseudorandom_number_generator][pseudorandom]] numbers, but they are still useful for many applications.
 
 * Data analysis
-** Linear regression
-** Nonlinear regression
-** TODO http://matlab.cheme.cmu.edu/2011/10/10/nonlinearfit_minsse-m/
-** TODO http://matlab.cheme.cmu.edu/2011/10/09/graphical-methods-to-help-get-initial-guesses-for-multivariate-nonlinear-regression/
-** TODO http://matlab.cheme.cmu.edu/2011/09/24/linear-least-squares-fitting-with-linear-algebra/
-** TODO http://matlab.cheme.cmu.edu/2011/09/29/fitting-a-numerical-ode-solution-to-data/
-** TODO http://matlab.cheme.cmu.edu/2011/09/10/reading-parameter-database-text-files-in-matlab/
-** TODO http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/
-** http://matlab.cheme.cmu.edu/2011/08/07/reading-in-delimited-text-files/
-** TODO http://matlab.cheme.cmu.edu/2011/08/04/fit-a-line-to-numerical-data/
+** Fit a line to numerical data
+   :PROPERTIES:
+   :categories: [data-analysis]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/04/fit-a-line-to-numerical-data/][Matlab post]]
+
+We want to fit a line to this data:
+
+#+BEGIN_SRC python :session
+x = [0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10]
+y = [0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147]
+#+END_SRC
+
+#+RESULTS:
+
+polyfit(x,y,n) where n is the polynomial order, n=1 for a line
+
+note that the output of this command is a “polynomial in Matlab. See polynomials for more details.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+p = np.polyfit(x, y, 1)
+slope, intercept = p
+print slope, intercept
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> -0.3145221843 0.00062457337884
+
+To show the fit, we can use numpy.polyval to evaluate the fit at many points.
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+
+xfit = np.linspace(0, 10)
+yfit = np.polyval(p, xfit)
+
+plt.plot(x, y, 'bo', label='raw data')
+plt.plot(xfit, yfit, 'r-', label='fit')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.savefig('images/linefit-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x053C1790>]
+: [<matplotlib.lines.Line2D object at 0x0313C610>]
+: <matplotlib.text.Text object at 0x052A4950>
+: <matplotlib.text.Text object at 0x052B9A10>
+: <matplotlib.legend.Legend object at 0x053C1CD0>
+
+[[./images/linefit-1.png]]
+
+** Linear least squares fitting with linear algebra
+   :PROPERTIES:
+   :categories: [data-analysis, linear-algebra]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/24/linear-least-squares-fitting-with-linear-algebra/][Matlab post]]
+
+The idea here is to formulate a set of linear equations that is easy to solve. We  can express the equations in terms of our unknown fitting parameters $p_i$ as:
+
+#+BEGIN_EXAMPLE
+x1^0*p0 + x1*p1 = y1
+x2^0*p0 + x2*p1 = y2
+x3^0*p0 + x3*p1 = y3
+etc...
+#+END_EXAMPLE
+
+Which we write in matrix form as $A p = y$ where $A$ is a matrix of column vectors, e.g. [1, x_i]. $A$ is not a square matrix, so we cannot solve it as written. Instead, we form $A^T A p = A^T y$ and solve that set of equations.
+
+#+BEGIN_SRC python
+import numpy as np
+x = np.array([0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10])
+y = np.array([0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147])
+
+A = np.column_stack([x**0, x])
+
+M = np.dot(A.T, A)
+b = np.dot(A.T, y)
+
+i1, slope1 = np.dot(np.linalg.inv(M), b)
+i2, slope2 = np.linalg.solve(M, b) # an alternative approach.
+
+print i1, slope1
+print i2, slope2
+
+# plot data and fit
+import matplotlib.pyplot as plt
+
+plt.plot(x, y, 'bo')
+plt.plot(x, np.dot(A, [i1, slope1]), 'r--')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.savefig('images/la-line-fit.png')
+#+END_SRC
+
+#+RESULTS:
+: 0.00062457337884 -0.3145221843
+: 0.00062457337884 -0.3145221843
+
+[[./images/la-line-fit.png]]
+
+This method can be readily extended to fitting any polynomial model, or other linear model that is fit in a least squares sense. This method does not provide confidence intervals.
+
+** Linear regression with confidence intervals.
+   :PROPERTIES:
+   :categories: [data-analysis, linear-regression, confidence-interval]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/][Matlab post]]
+Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. Data from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.
+
+We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the data in the least squares sense. We can write this in a linear algebra form as: T*p = Ca where T is a matrix of columns [1 t t^2 t^3 t^4], and p is a column vector of the fitting parameters. We want to solve for the p vector and estimate the confidence intervals.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.stats.distributions import  t
+
+time = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
+Ca = np.array([50.0, 38.0, 30.6, 25.6, 22.2, 19.5, 17.4])*1e-3
+
+T = np.column_stack([time**0, time, time**2, time**3, time**4])
+
+p, res, rank, s = np.linalg.lstsq(T, Ca)
+# the parameters are now in p
+
+# compute the confidence intervals
+n = len(Ca)
+k = len(p)
+
+sigma2 = np.sum((Ca - np.dot(T, p))**2) / (n - k)  # RMSE
+
+C = sigma2 * np.linalg.inv(np.dot(T.T, T)) # covariance matrix
+se = np.sqrt(np.diag(C)) # standard error
+
+alpha = 0.05 # 100*(1 - alpha) confidence level
+
+sT = t.ppf(1.0 - alpha/2.0, n - k) # student T multiplier
+CI = sT * se
+
+for beta, ci in zip(p, CI):
+    print '{2: 1.2e} [{0: 1.4e} {1: 1.4e}]'.format(beta - ci, beta + ci, beta)
+
+SS_tot = np.sum((Ca - np.mean(Ca))**2)
+SS_err = np.sum((np.dot(T, p) - Ca)**2)
+
+#  http://en.wikipedia.org/wiki/Coefficient_of_determination
+Rsq = 1 - SS_err/SS_tot
+print 'R^2 = {0}'.format(Rsq)
+
+# plot fit
+import matplotlib.pyplot as plt
+plt.plot(time, Ca, 'bo', label='raw data')
+plt.plot(time, np.dot(T, p), 'r-', label='fit')
+plt.xlabel('Time')
+plt.ylabel('Ca (mol/L)')
+plt.legend(loc='best')
+plt.savefig('images/linregress-conf.png')
+#+END_SRC
+
+#+RESULTS:
+:  5.00e-02 [ 4.9680e-02  5.0300e-02]
+: -2.98e-04 [-3.1546e-04 -2.8023e-04]
+:  1.34e-06 [ 1.0715e-06  1.6155e-06]
+: -3.48e-09 [-4.9032e-09 -2.0665e-09]
+:  3.70e-12 [ 1.3501e-12  6.0439e-12]
+: R^2 = 0.999986967246
+
+[[./images/linregress-conf.png]]
+
+A fourth order polynomial fits the data well, with a good R^2 value. All of the parameters appear to be significant, i.e. zero is not included in any of the parameter confidence intervals. This does not mean this is the best model for the data, just that the model fits well.
+
+** Fitting a numerical ODE solution to data
+   :PROPERTIES:
+   :categories: [data-analysis, nonlinear-regression]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/29/fitting-a-numerical-ode-solution-to-data/][Matlab post]]
+
+Suppose we know the concentration of A follows this differential equation: $\frac{dC_A}{dt} = -k C_A$, and we have data we want to fit to it. Here is an example of doing that.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import curve_fit
+from scipy.integrate import odeint
+
+# given data we want to fit
+tspan = [0, 0.1, 0.2, 0.4, 0.8, 1]
+Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
+
+def fitfunc(t, k):
+    'Function that returns Ca computed from an ODE for a k'
+    def myode(Ca, t):
+        return -k * Ca
+
+    Ca0 = Ca_data[0]
+    Casol = odeint(myode, Ca0, t)
+    return Casol[:,0]
+
+k_fit, kcov = curve_fit(fitfunc, tspan, Ca_data, p0=1.3)
+print k_fit
+
+tfit = np.linspace(0,1);
+fit = fitfunc(tfit, k_fit)
+
+import matplotlib.pyplot as plt
+plt.plot(tspan, Ca_data, 'ro', label='data')
+plt.plot(tfit, fit, 'b-', label='fit')
+plt.legend(loc='best')
+plt.savefig('images/ode-fit.png')
+#+END_SRC
+
+#+RESULTS:
+: [ 2.58893455]
+
+[[./images/ode-fit.png]]
+
 ** Nonlinear curve fitting
+   :PROPERTIES:
+   :categories: [data-analysis, nonlinear-regression]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
 Here is a typical nonlinear function fit to data. you need to provide an initial guess. In this example we fit the Birch-Murnaghan equation of state to energy vs. volume data from density functional theory calculations.
 
 #+BEGIN_SRC python :results outputt
@@ -2829,8 +3783,116 @@ plt.savefig('images/nonlinear-curve-fitting.png')
 [[./images/nonlinear-curve-fitting.png]]
 
 See additional examples at \url{http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html}.
+** Graphical methods to help get initial guesses for multivariate nonlinear regression
+   :PROPERTIES:
+   :categories: [data-analysis, plotting]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/09/graphical-methods-to-help-get-initial-guesses-for-multivariate-nonlinear-regression/][Matlab post]]
+
+Fit the model f(x1,x2; a,b) = a*x1 + x2^b to the data given below. This model has two independent variables, and two parameters.
+
+We want to do a nonlinear fit to find a and b that minimize the summed squared errors between the model predictions and the data. With only two variables, we can graph how the summed squared error varies with the parameters, which may help us get initial guesses. Let us assume the parameters lie in a range, here we choose 0 to 5. In other problems you would adjust this as needed.
+
+#+BEGIN_SRC python
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
+x1 = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+x2 = [0.2, 0.4, 0.8, 0.9, 1.1, 2.1]
+X = np.column_stack([x1, x2]) # independent variables
+
+f = [ 3.3079,    6.6358,   10.3143,   13.6492,   17.2755,   23.6271]
+
+fig = plt.figure()
+ax = fig.gca(projection = '3d')
+
+ax.plot(x1, x2, f)
+ax.set_xlabel('x1')
+ax.set_ylabel('x2')
+ax.set_zlabel('f(x1,x2)')
+
+plt.savefig('images/graphical-mulvar-1.png')
+
+
+arange = np.linspace(0,5);
+brange = np.linspace(0,5);
+
+A,B = np.meshgrid(arange, brange)
+
+def model(X, a, b):
+    'Nested function for the model'
+    x1 = X[:, 0]
+    x2 = X[:, 1]
+    
+    f = a * x1 + x2**b
+    return f
+
+@np.vectorize
+def errfunc(a, b):
+    # function for the summed squared error
+    fit = model(X, a, b)
+    sse = np.sum((fit - f)**2)
+    return sse
+
+SSE = errfunc(A, B)
+
+plt.clf()
+plt.contourf(A, B, SSE, 50)
+plt.plot([3.2], [2.1], 'ro')
+plt.figtext( 3.4, 2.2, 'Minimum near here', color='r')
+
+plt.savefig('images/graphical-mulvar-2.png')
+
+guesses = [3.18, 2.02]
+
+from scipy.optimize import curve_fit
+
+popt, pcov = curve_fit(model, X, f, guesses)
+print popt
+
+plt.plot([popt[0]], [popt[1]], 'r*')
+plt.savefig('images/graphical-mulvar-3.png')
+
+print model(X, *popt)
+
+fig = plt.figure()
+ax = fig.gca(projection = '3d')
+
+ax.plot(x1, x2, f, 'ko', label='data')
+ax.plot(x1, x2, model(X, *popt), 'r-', label='fit')
+ax.set_xlabel('x1')
+ax.set_ylabel('x2')
+ax.set_zlabel('f(x1,x2)')
+
+plt.savefig('images/graphical-mulvar-4.png')
+
+
+#+END_SRC
+
+#+RESULTS:
+: [ 3.21694798  1.9728254 ]
+: [  3.25873623   6.59792994  10.29473657  13.68011436  17.29161001
+:   23.62366445]
+
+[[./images/graphical-mulvar-1.png]]
+
+[[./images/graphical-mulvar-2.png]]
+
+[[./images/graphical-mulvar-3.png]]
+
+[[./images/graphical-mulvar-4.png]]
+
+It can be difficult to figure out initial guesses for nonlinear fitting problems. For one and two dimensional systems, graphical techniques may be useful to visualize how the summed squared error between the model and data depends on the parameters.
 
 ** Nonlinear curve fitting by direct least squares minimization
+   :PROPERTIES:
+   :categories: [data-analysis]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
 Here is an example of fitting a nonlinear function to data by direct minimization of the summed squared error. 
 #+BEGIN_SRC python :results output :exports both
 from scipy.optimize import fmin
@@ -2884,16 +3946,81 @@ plt.savefig('images/nonlinear-fitting-lsq.png')
 #+caption: Fitting a nonlinear function.
 [[./images/nonlinear-fitting-lsq.png]]
 
-** Nonlinear curve fitting with confidence interval
+** Nonlinear curve fitting with parameter confidence intervals
    :PROPERTIES:
-   :categories: [data analysis]
+   :categories: [data-analysis]
+   :date:     2013-02-12
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/29/nonlinear-curve-fitting-with-parameter-confidence-intervals/][Matlab post]]
+
+We often need to estimate parameters from nonlinear regression of data. We should also consider how good the parameters are, and one way to do that is to consider the confidence interval. A confidence interval tells us a range that we are confident the true parameter lies in. 
+
+In this example we use a nonlinear curve-fitting function: scipy.optimize.curve_fit to give us the parameters in a function that we define which best fit the data. The scipy.optimize.curve_fit function also gives us the [[http://en.wikipedia.org/wiki/Covariance_matrix][covariance]] matrix which we can use to estimate the standard error of each parameter. Finally,  we modify the standard error by a student-t value which accounts for the additional uncertainty in our estimates due to the small number of data points we are fitting to. 
+
+We will fit the function $y = a x / (b + x)$ to some data, and compute the 95% confidence intervals on the parameters.
+
+#+BEGIN_SRC python :results output
+# Nonlinear curve fit with confidence interval
+import numpy as np
+from scipy.optimize import curve_fit
+from scipy.stats.distributions import  t
+
+x = np.array([0.5, 0.387, 0.24, 0.136, 0.04, 0.011])
+y = np.array([1.255, 1.25, 1.189, 1.124, 0.783, 0.402])
+
+# this is the function we want to fit to our data
+def func(x, a, b):
+    'nonlinear function in a and b to fit to data'
+    return a * x / (b + x)
+
+initial_guess = [1.2, 0.03]
+pars, pcov = curve_fit(func, x, y, p0=initial_guess)
+
+alpha = 0.05 # 95% confidence interval = 100*(1-alpha)
+
+n = len(y)    # number of data points
+p = len(pars) # number of parameters
+
+dof = max(0, n - p) # number of degrees of freedom
+
+# student-t value for the dof and confidence level
+tval = t.ppf(1.0-alpha/2., dof) 
+
+for i, p,var in zip(range(n), pars, np.diag(pcov)):
+    sigma = var**0.5
+    print 'p{0}: {1} [{2}  {3}]'.format(i, p,
+                                  p - sigma*tval,
+                                  p + sigma*tval)
+
+import matplotlib.pyplot as plt
+plt.plot(x,y,'bo ')
+xfit = np.linspace(0,1)
+yfit = func(xfit, pars[0], pars[1])
+plt.plot(xfit,yfit,'b-')
+plt.legend(['data','fit'],loc='best')
+plt.savefig('images/nonlin-curve-fit-ci.png')
+#+END_SRC
+
+#+RESULTS:
+: p0: 1.32753141454 [1.3005365922  1.35452623688]
+: p1: 0.0264615569701 [0.0236076538292  0.0293154601109]
+
+[[./images/nonlin-curve-fit-ci.png]]
+
+You can see by inspection that the fit looks pretty reasonable. The parameter confidence intervals are not too big, so we can be pretty confident of their values.
+
+** Nonlinear curve fitting with confidence intervals
+   :PROPERTIES:
+   :categories: [data-analysis]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
    :END:
 
-Fit this equation to data
-y = c1 exp(-x) + c2*x
+Our goal is to fit this equation to data $y = c1 exp(-x) + c2*x$ and compute the confidence intervals on the parameters.
 
-this is actually could be a linear regression problem, but it is convenient towe illustrate the  use the nonlinear fitting routine because it makes it easy to get
-confidence intervals for comparison. 
+This is actually could be a linear regression problem, but it is convenient to illustrate the  use the nonlinear fitting routine because it makes it easy to get
+confidence intervals for comparison. The basic idea is to use the covariance matrix returned from the nonlinear fitting routine to estimate the student-t corrected confidence interval. 
 
 #+BEGIN_SRC python :results output
 # Nonlinear curve fit with confidence interval
@@ -2918,7 +4045,7 @@ p = len(pars) # number of parameters
 
 dof = max(0, n-p) # number of degrees of freedom
 
-tval = t.ppf(1.0-alpha/2., dof) # student-t value for the dof and confidence level
+tval = t.ppf(1.0 - alpha / 2.0, dof) # student-t value for the dof and confidence level
 
 for i, p,var in zip(range(n), pars, np.diag(pcov)):
     sigma = var**0.5
@@ -2942,13 +4069,123 @@ plt.savefig('images/nonlin-fit-ci.png')
 #+caption: Nonlinear fit to data.
 #+attr_latex: placement=[H]
 [[./images/nonlin-fit-ci.png]]
+** Parameter estimation by directly minimizing summed squared errors
+   :PROPERTIES:
+   :categories: [data-analysis]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/10/nonlinearfit_minsse-m/][Matlab post]]
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.array([0.0,       1.1,       2.3,      3.1,       4.05,      6.0])
+y = np.array([0.0039,    1.2270,    5.7035,   10.6472,   18.6032,   42.3024])
+
+plt.plot(x, y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.savefig('images/nonlin-minsse-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x000000000733D898>]
+: <matplotlib.text.Text object at 0x00000000071EC5C0>
+: <matplotlib.text.Text object at 0x00000000071EED30>
+
+[[./images/nonlin-minsse-1.png]]
+
+We are going to fit the function $y = x^a$ to the data. The best $a$ will minimize the summed squared error between the model and the fit. 
+
+#+BEGIN_SRC python :session
+def errfunc_(a):
+    return np.sum((y - x**a)**2)
+
+errfunc = np.vectorize(errfunc_)
+
+arange = np.linspace(1, 3)
+sse = errfunc(arange)
+
+plt.figure()
+plt.plot(arange, sse)
+plt.xlabel('a')
+plt.ylabel('$\Sigma (y - y_{pred})^2$')
+plt.savefig('images/nonlin-minsse-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... >>> >>> >>> >>> >>> >>> <matplotlib.figure.Figure object at 0x000000000736DBA8>
+: [<matplotlib.lines.Line2D object at 0x00000000075CBEF0>]
+: <matplotlib.text.Text object at 0x00000000076B8C18>
+: <matplotlib.text.Text object at 0x0000000007698BE0>
+
+[[./images/nonlin-minsse-2.png]]
+
+Based on the graph above, you can see a minimum in the summed squared error near $a = 2.1$. We use that as our initial guess. Since we know the answer is bounded, we use scipy.optimize.fminbound
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fminbound
+
+amin = fminbound(errfunc, 1.0, 3.0)
+
+print amin
+
+plt.figure()
+plt.plot(x, y, 'bo', label='data')
+plt.plot(x, x**amin, 'r-', label='fit')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(loc='best')
+plt.savefig('images/nonlin-minsse-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 2.09004838933
+: >>> <matplotlib.figure.Figure object at 0x00000000075D8470>
+: [<matplotlib.lines.Line2D object at 0x0000000007BDFA20>]
+: [<matplotlib.lines.Line2D object at 0x0000000007BDFC18>]
+: <matplotlib.text.Text object at 0x0000000007BC6828>
+: <matplotlib.text.Text object at 0x0000000007BCAF98>
+: <matplotlib.legend.Legend object at 0x0000000007BE3128>
+
+[[./images/nonlin-minsse-3.png]]
+
+We can do nonlinear fitting by directly minimizing the summed squared error between a model and data. This method lacks some of the features of other methods, notably the simple ability to get the confidence interval. However, this method is flexible and may offer more insight into how the solution depends on the parameters. 
+** Reading in delimited text files
+[[http://matlab.cheme.cmu.edu/2011/08/07/reading-in-delimited-text-files/][Matlab post]]
+
+sometimes you will get data in a delimited text file format, .e.g. separated by commas or tabs. Matlab can read these in easily. Suppose we have a file containing this data:
+
+#+BEGIN_EXAMPLE
+1   3
+3   4
+5   6
+4   8
+#+END_EXAMPLE
+
+It is easy to read this directly into variables like this:
+#+BEGIN_SRC python
+import numpy as np
+
+x,y = np.loadtxt('data/testdata.txt', unpack=True)
+
+print x,y
+#+END_SRC
+
+#+RESULTS:
+: [ 1.  3.  5.  4.] [ 3.  4.  6.  8.]
 
 * Interpolation
 ** Better interpolate than never
    :PROPERTIES:
-   :categories: [interpolation, basic matlab]
+   :categories: [interpolation, basic-matlab]
    :date:     2013-02-02
-   :last-published: 2013-02-02
+   :last-published: 2013-02-18
    :END:
 
 [[http://matlab.cheme.cmu.edu/2012/02/02/better-interpolate-than-never/][Matlab post]]
@@ -3204,7 +4441,6 @@ plt.savefig('images/splinefit.png')
 There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html
 
 * Optimization
-** TODO http://matlab.cheme.cmu.edu/2011/12/24/constrained-optimization/
 ** Using Lagrange multipliers in optimization
    :PROPERTIES:
    :categories: optimization
@@ -3303,12 +4539,46 @@ print X2, func(X2)
 
 *** Summary
 Three dimensional plots in matplotlib are a little more difficult than in Matlab (where the code is almost the same as 2D plots, just different commands, e.g. plot vs plot3). In Matplotlib you have to import additional modules in the right order, and use the object oriented approach to plotting as shown here.
+** Constrained optimization
+   :PROPERTIES:
+   :categories: [optimization]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/24/constrained-optimization/][Matlab post]]
+
+adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.
+
+Suppose we seek to minimize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We could setup a Lagrange multiplier approach to solving this problem, but we will use a constrained optimization approach instead.
+
+#+BEGIN_SRC python
+from scipy.optimize import fmin_slsqp
+
+def objective(X):
+    x, y = X
+    return x + y
+
+def eqc(X):
+    'equality constraint'
+    x, y = X
+    return x**2 + y**2 - 1.0
+
+X0 = [-1, -1]
+X = fmin_slsqp(objective, X0, eqcons=[eqc])
+print X
+#+END_SRC
+
+#+RESULTS:
+: Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -1.41421356237
+:             Iterations: 5
+:             Function evaluations: 20
+:             Gradient evaluations: 5
+: [-0.70710678 -0.70710678]
 
 ** Linear programming example with inequality constraints 
    :PROPERTIES:
    :date:     2013-01-31
-   :last-published: 2013-01-31
-   :categories: [linear programming, optimization]
+   :last-published: 2013-02-18
+   :categories: [linear-programming, optimization]
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][Matlab post]]
 
@@ -3386,6 +4656,69 @@ This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/
 1. http://abel.ee.ucla.edu/cvxopt/
 2. http://openopt.org/LP
 
+** Find the minimum distance from a point to a curve.
+   :PROPERTIES:
+   :categories: [optimization]
+   :date:     2013-02-14
+   :last-published: 2013-02-14
+   :END:
+A problem that can be cast as a constrained minimization problem is to find the minimum distance from a point to a curve. Suppose we have $f(x) = x^2$, and the point (0.5, 2). what is the minimum distance from that point to $f(x)$?
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import fmin_cobyla
+
+P = (0.5, 2)
+
+def f(x):
+    return x**2
+
+def objective(X):
+    x,y = X
+    return np.sqrt((x - P[0])**2 + (y - P[1])**2)
+
+def c1(X):
+    x,y = X
+    return f(x) - y
+
+X = fmin_cobyla(objective, x0=[0.5,0.5], cons=[c1])
+
+print 'The minimum distance is {0:1.2f}'.format(objective(X))
+
+# Verify the vector to this point is normal to the tangent of the curve
+# position vector from curve to point
+v1 = np.array(P) - np.array(X)
+# position vector
+v2 = np.array([1, 2.0 * X[0]])
+print 'dot(v1, v2) = ',np.dot(v1, v2)
+
+x = np.linspace(-2, 2, 100)
+
+plt.plot(x, f(x), 'r-', label='f(x)')
+plt.plot(P[0], P[1], 'bo', label='point')
+plt.plot([P[0], X[0]], [P[1], X[1]], 'b-', label='shortest distance')
+plt.plot([X[0], X[0] + 1], [X[1], X[1] + 2.0 * X[0]], 'g-', label='tangent')
+plt.axis('equal')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend(loc='best')
+plt.savefig('images/min-dist-p-func.png')
+#+END_SRC
+
+#+RESULTS:
+: The minimum distance is 0.86
+: dot(v1, v2) =  0.000336477214214
+: 
+:    Normal return from subroutine COBYLA
+: 
+:    NFVALS =   44   F = 8.579598E-01    MAXCV = 0.000000E+00
+:    X = 1.300793E+00   1.692061E+00
+
+[[./images/min-dist-p-func.png]]
+
+In the code above, we demonstrate that the point we find on the curve that minimizes the distance satisfies the property that a vector from that point to our other point is normal to the tangent of the curve at that point. This is shown by the fact that the dot product of the two vectors is very close to zero. It is not zero because of the accuracy criteria that is used to stop the minimization is not high enough.
+
 * Plotting
 ** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
 ** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
@@ -3403,9 +4736,9 @@ This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/
 * Programming
 ** Some of this, sum of that
    :PROPERTIES:
-   :categories: [Miscellaneous, recursion]
+   :categories: [miscellaneous, recursion]
    :date:     2013-02-02
-   :last-published: 2013-02-02
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2012/05/29/some-of-this-sum-of-that/][Matlab plot]]
 
@@ -4057,14 +5390,197 @@ The answer we get us 0.05 K too high, which is not bad considering we estimated 
 
 ** TODO http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/
 ** TODO http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/
-** TODO http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/
-** TODO http://matlab.cheme.cmu.edu/2011/12/18/conservation-of-mass-in-chemical-reactions/
+** The Gibbs free energy of a reacting mixture and the equilibrium composition
+   :PROPERTIES:
+   :categories: [optimization, thermodynamics, reaction-engineering]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/][Matlab post]]
+
+In this post we derive the equations needed to find the equilibrium composition of a reacting mixture. We use the method of direct minimization of the Gibbs free energy of the reacting mixture.
+
+The Gibbs free energy of a mixture is defined as $G = \sum\limits_j \mu_j n_j$ where $\mu_j$ is the chemical potential of species $j$, and it is temperature and pressure dependent, and $n_j$ is the number of moles of species $j$.
+
+We define the chemical potential as $\mu_j = G_j^\circ + RT\ln a_j$, where $G_j^\circ$ is the Gibbs energy in a standard state, and $a_j$ is the activity of species $j$ if the pressure and temperature are not at standard state conditions.
+
+If a reaction is occurring, then the number of moles of each species are related to each other through the reaction extent $\epsilon$ and stoichiometric coefficients: $n_j = n_{j0} + \nu_j \epsilon$. Note that the reaction extent has units of moles.
+
+Combining these three equations and expanding the terms leads to:
+
+$$G = \sum\limits_j n_{j0}G_j^\circ +\sum\limits_j \nu_j G_j^\circ \epsilon +RT\sum\limits_j(n_{j0} + \nu_j\epsilon)\ln a_j $$
+
+The first term is simply the initial Gibbs free energy that is present before any reaction begins, and it is a constant. It is difficult to evaluate, so we will move it to the left side of the equation in the next step, because it does not matter what its value is since it is a constant. The second term is related to the Gibbs free energy of reaction: $\Delta_rG = \sum\limits_j \nu_j G_j^\circ$. With these observations we rewrite the equation as:
+
+$$G - \sum\limits_j n_{j0}G_j^\circ = \Delta_rG \epsilon +RT\sum\limits_j(n_{j0} + \nu_j\epsilon)\ln a_j $$
+
+Now, we have an equation that allows us to compute the change in Gibbs free energy as a function of the reaction extent, initial number of moles of each species, and the activities of each species. This difference in Gibbs free energy has no natural scale, and depends on the size of the system, i.e. on $n_{j0}$. It is desirable to avoid this, so we now rescale the equation by the total initial moles present, $n_{T0}$ and define a new variable $\epsilon' = \epsilon/n_{T0}$, which is dimensionless. This leads to:
+
+$$ \frac{G - \sum\limits_j n_{j0}G_j^\circ}{n_{T0}} = \Delta_rG \epsilon' + RT \sum\limits_j(y_{j0} + \nu_j\epsilon')\ln a_j $$
+
+where $y_{j0}$ is the initial mole fraction of species $j$ present. The mole fractions are intensive properties that do not depend on the system size. Finally, we need to address $a_j$. For an ideal gas, we know that $A_j = \frac{y_j P}{P^\circ}$, where the numerator is the partial pressure of species $j$ computed from the mole fraction of species $j$ times the total pressure. To get the mole fraction we note:
+
+$$y_j = \frac{n_j}{n_T} = \frac{n_{j0} + \nu_j \epsilon}{n_{T0} + \epsilon \sum\limits_j \nu_j} = \frac{y_{j0} + \nu_j \epsilon'}{1 + \epsilon'\sum\limits_j \nu_j} $$
+
+This finally leads us to an equation that we can evaluate as a function of reaction extent:
+
+$$ \frac{G - \sum\limits_j n_{j0}G_j^\circ}{n_{T0}} = \widetilde{\widetilde{G}} = \Delta_rG \epsilon' + RT\sum\limits_j(y_{j0} + \nu_j\epsilon') \ln\left(\frac{y_{j0}+\nu_j\epsilon'}{1+\epsilon'\sum\limits_j\nu_j} \frac{P}{P^\circ}\right) $$
+
+we use a double tilde notation to distinguish this quantity from the quantity derived by Rawlings and Ekerdt which is further normalized by a factor of $RT$. This additional scaling makes the quantities dimensionless, and makes the quantity have a magnitude of order unity, but otherwise has no effect on the shape of the graph.
+
+Finally, if we know the initial mole fractions, the initial total pressure, the Gibbs energy of reaction, and the stoichiometric coefficients, we can plot the scaled reacting mixture energy as a function of reaction extent. At equilibrium, this energy will be a minimum. We consider the example in Rawlings and Ekerdt where isobutane (I) reacts with 1-butene (B) to form 2,2,3-trimethylpentane (P). The reaction occurs at a total pressure of 2.5 atm at 400K, with equal molar amounts of I and B. The standard Gibbs free energy of reaction at 400K is -3.72 kcal/mol. Compute the equilibrium composition.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+R = 8.314
+P = 250000  # Pa
+P0 = 100000 # Pa, approximately 1 atm
+T = 400 # K
+
+Grxn = -15564.0 #J/mol
+yi0 = 0.5; yb0 = 0.5; yp0 = 0.0; # initial mole fractions
+
+yj0 = np.array([yi0, yb0, yp0])
+nu_j = np.array([-1.0, -1.0, 1.0])   # stoichiometric coefficients
+
+def Gwigglewiggle(extentp):
+    diffg = Grxn * extentp
+    sum_nu_j = np.sum(nu_j)
+    for i,y in enumerate(yj0):
+        x1 = yj0[i] + nu_j[i] * extentp
+        x2 = x1 / (1.0 + extentp*sum_nu_j)
+        diffg += R * T * x1 * np.log(x2 * P / P0)
+    return diffg
+#+END_SRC
+
+#+RESULTS:
+
+There are bounds on how large $\epsilon'$ can be. Recall that $n_j = n_{j0} + \nu_j \epsilon$, and that $n_j \ge 0$. Thus, $\epsilon_{max} = -n_{j0}/\nu_j$, and the maximum value that $\epsilon'$ can have is therefore $-y_{j0}/\nu_j$ where $y_{j0}>0$. When there are multiple species, you need the smallest $epsilon'_{max}$ to avoid getting negative mole numbers.
+
+#+BEGIN_SRC python :session
+epsilonp_max = min(-yj0[yj0 > 0] / nu_j[yj0 > 0])
+epsilonp = np.linspace(1e-6, epsilonp_max, 1000);
+
+import matplotlib.pyplot as plt
+
+plt.plot(epsilonp,Gwigglewiggle(epsilonp))
+plt.xlabel('$\epsilon$')
+plt.ylabel('Gwigglewiggle')
+plt.savefig('images/gibbs-minim-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x10a8bf50>]
+: <matplotlib.text.Text object at 0x10608190>
+: <matplotlib.text.Text object at 0x10609d10>
+
+[[./images/gibbs-minim-1.png]]
+
+Now we simply minimize our Gwigglewiggle function. Based on the figure above, the miminum is near 0.45.
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fminbound
+
+epsilonp_eq = fminbound(Gwigglewiggle, 0, 0.45)
+
+plt.plot([extmin], [Gwigglewiggle(epsilonp_eq)], 'ro')
+plt.savefig('images/gibbs-minim-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [<matplotlib.lines.Line2D object at 0x10a8b5d0>]
+
+[[./images/gibbs-minim-2.png]]
+
+To compute equilibrium mole fractions we do this:
+#+BEGIN_SRC python :session
+yi = (yi0 + nu_j[0]*epsilonp_eq) / (1.0 + epsilonp_eq*np.sum(nu_j))
+yb = (yb0 + nu_j[1]*epsilonp_eq) / (1.0 + epsilonp_eq*np.sum(nu_j))
+yp = (yp0 + nu_j[2]*epsilonp_eq) / (1.0 + epsilonp_eq*np.sum(nu_j))
+
+print yi, yb, yp
+
+# or this
+y_j = (yj0 + np.dot(nu_j, epsilonp_eq)) / (1.0 + epsilonp_eq*np.sum(nu_j))
+print y_j
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 0.0573226598476 0.0573226598476 0.885354680305
+: >>> >>> >>> [ 0.05732266  0.05732266  0.88535468]
+
+$K = \frac{a_P}{a_I a_B} = \frac{y_p P/P^\circ}{y_i P/P^\circ y_b P/P^\circ} = \frac{y_P}{y_i y_b}\frac{P^\circ}{P}$.
+
+We can express the equilibrium constant like this :$K = \prod\limits_j a_j^{\nu_j}$, and compute it with a single line of code.
+
+#+BEGIN_SRC python :session
+K = np.exp(-Grxn/R/T)
+print K
+print yp / (yi * yb) * P0 / P
+
+print np.prod((y_j * P / P0)**nu_j)
+#+END_SRC
+
+#+RESULTS:
+: 
+: 107.776294742
+: 107.776632714
+: >>> 107.776632714
+
+These results are very close, and only disagree because of the default tolerance used in identifying the minimum of our function. you could tighten the tolerances by setting options to the fminbnd function.
+
+*** Summary
+
+In this post we derived an equation for the Gibbs free energy of a reacting mixture and used it to find the equilibrium composition. In future posts we will examine some alternate forms of the equations that may be more useful in some circumstances.
+
+** Conservation of mass in chemical reactions
+[[http://matlab.cheme.cmu.edu/2011/12/18/conservation-of-mass-in-chemical-reactions/][Matlab post]]
+
+Atoms cannot be destroyed in non-nuclear chemical reactions, hence it follows that the same number of atoms entering a reactor must also leave the reactor. The atoms may leave the reactor in a different molecular configuration due to the reaction, but the total mass leaving the reactor must be the same. Here we look at a few ways to show this.
+
+We consider the water gas shift reaction : $CO + H_2O \rightleftharpoons H_2 + CO_2$. We can illustrate the conservation of mass with the following equation: $\bf{\nu}\bf{M}=\bf{0}$. Where $\bf{\nu}$ is the stoichiometric coefficient vector and $\bf{M}$ is a column vector of molecular weights. For simplicity, we use pure isotope molecular weights, and not the isotope-weighted molecular weights. This equation simply examines the mass on the right side of the equation and the mass on left side of the equation. 
+
+#+BEGIN_SRC python
+import numpy as np
+nu = [-1, -1, 1, 1];
+M = [28, 18, 2, 44];
+print np.dot(nu, M)
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+You can see that sum of the stoichiometric coefficients times molecular weights is zero. In other words a CO and H_2O have the same mass as H_2 and CO_2.
+
+For any balanced chemical equation, there are the same number of each kind of atom on each side of the equation. Since the mass of each atom is unchanged with reaction, that means the mass of all the species that are reactants must equal the mass of all the species that are products! Here we look at the number of C, O, and H on each side of the reaction. Now if we add the mass of atoms in the reactants and products, it should sum to zero (since we used the negative sign for stoichiometric coefficients of reactants).
+
+#+BEGIN_SRC python :session
+import numpy as np
+            # C   O   H
+reactants = [-1, -2, -2]
+products  = [ 1,  2,  2]
+
+atomic_masses = [12.011, 15.999, 1.0079]  # atomic masses
+
+print np.dot(reactants, atomic_masses) + np.dot(products, atomic_masses)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... >>> >>> >>> >>> >>> 0.0
+
+That’s all there is to mass conservation with reactions. Nothing changes if there are lots of reactions, as long as each reaction is properly balanced, and none of them are nuclear reactions!
+
 ** Water gas shift equilibria via the NIST Webbook
    :PROPERTIES:
-   :categories: [Miscellaneous, nonlinear algebra]
+   :categories: [miscellaneous, nonlinear-algebra]
    :tags:     [thermodynamics, reaction engineering]
    :date:     2013-02-01
-   :last-published: 2013-02-01
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/12/water-gas-shift-equilibria-via-the-nist-webbook/][Matlab post]]
 
@@ -4350,14 +5866,94 @@ The NIST Webbook provides a plethora of data for computing thermodynamic propert
 
 I noticed a different behavior in interpolation between scipy.interpolate.interp1d and Matlab's interp1. The scipy function returns an interpolating function, whereas the Matlab function directly interpolates new values, and returns the actual interpolated data. 
 
+** Numerically calculating an effectiveness factor for a porous catalyst bead
+   :PROPERTIES:
+   :categories: [reaction-engineering, BVP]
+   :date:     2013-02-13
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/][Matlab post]]
 
-** TODO http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/
-** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
-** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
-** TODO http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/
+If reaction rates are fast compared to diffusion in a porous catalyst pellet, then the observed kinetics will appear to be slower than they really are because not all of the catalyst surface area will be effectively used. For example, the reactants may all be consumed in the near surface area of a catalyst bead, and the inside of the bead will be unutilized because no reactants can get in due to the high reaction rates.
+
+References: Ch 12. Elements of Chemical Reaction Engineering, Fogler, 4th edition.
+
+A mole balance on the particle volume in spherical coordinates with a first order reaction leads to: $\frac{d^2Ca}{dr^2} + \frac{2}{r}\frac{dCa}{dr}-\frac{k}{D_e}C_A=0$ with boundary conditions $C_A(R) = C_{As}$ and $\frac{dCa}{dr}=0$ at $r=0$. We convert this equation to a system of first order ODEs by letting $W_A=\frac{dCa}{dr}$.
+
+We have a condition of no flux at r=0 and Ca(R) = CAs, which makes this a boundary value problem. We use the shooting method here, and guess what Ca(0) is and iterate the guess to get Ca(R) = CAs.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+De = 0.1    # diffusivity cm^2/s
+R  = 0.5    # particle radius, cm
+k  = 6.4    # rate constant (1/s)
+CAs = 0.2   # concentration of A at outer radius of particle (mol/L)
+
+def ode(Y, r):
+    Wa = Y[0] # molar rate of delivery of A to surface of particle
+    Ca = Y[1] # concentration of A in the particle at r
+
+    if r == 0:
+        dWadr = 0   #this solves the singularity at r = 0
+    else:
+        dWadr = -2*Wa/r + k/De*Ca
+
+    dCadr = Wa
+
+    return [dWadr, dCadr]
+
+# Initial conditions
+Ca0 = 0.029315 # Ca(0) (mol/L) guessed to satisfy Ca(R) = CAs
+Wa0 = 0        # no flux at r=0 (mol/m^2/s)
+
+rspan = np.linspace(0, R, 500)
+
+Y = odeint(ode, [Wa0, Ca0], rspan)
+
+Ca = Y[:,1]
+
+# here we check that Ca(R) = Cas
+print 'At r={0} Ca={1}'.format(rspan[-1],Ca[-1])
+
+plt.plot(rspan, Ca)
+plt.xlabel('Particle radius')
+plt.ylabel('$C_A$')
+plt.savefig('images/effectiveness-factor.png')
+
+r = rspan
+eta_numerical = np.trapz(k*Ca*4*np.pi*(r**2), r)/np.trapz(k*CAs*4*np.pi*(r**2), r)
+print eta_numerical
+
+phi = R*np.sqrt(k/De);
+eta_analytical = (3/phi**2)*(phi*(1.0 / np.tanh(phi))-1)
+print eta_analytical
+#+END_SRC
+
+#+RESULTS:
+: At r=0.5 Ca=0.200001488652
+: 0.563011348314
+: 0.563003362801
+
+[[./images/effectiveness-factor.png]]
+
+You can see the concentration of A inside the particle is significantly lower than outside the particle. That is because it is reacting away faster than it can diffuse into the particle. Hence, the overall reaction rate in the particle is lower than it would be without the diffusion limit.
+
+The effectiveness factor is the ratio of the actual reaction rate in the particle with diffusion limitation to the ideal rate in the particle if there was no concentration gradient:
+
+$$\eta = \frac{\int_0^R k'' a C_A(r) 4 \pi r^2 dr}{\int_0^R k'' a C_{As} 4 \pi r^2 dr}$$
+
+We will evaluate this numerically from our solution and compare it to the analytical solution. The results are in good agreement, and you can make the numerical estimate better by increasing the number of points in the solution so that the numerical integration is more accurate.
+
+Why go through the numerical solution when an analytical solution exists? The analytical solution here is only good for 1st order kinetics in a sphere. What would you do for a complicated rate law? You might be able to find some limiting conditions where the analytical equation above is relevant, and if you are lucky, they are appropriate for your problem. If not, it is a good thing you can figure this out numerically!
+
 ** Computing a pipe diameter
    :PROPERTIES:
-   :categories: [nonlinear algebra, fluids]
+   :categories: [nonlinear-algebra, fluids]
+   :date:     2013-02-12
+   :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Matlab post]]
 A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length of 100 m. The pressure drop cannot exceed 103 kPa at 25 degC. Compute the minimum pipe diameter required for this application.
@@ -4412,7 +6008,6 @@ plt.ylabel('fanning friction factor')
 # for these Re numbers.
 plt.savefig('images/pipe-diameter-1.png')
 
-
 def objective(D):
     v = Q / (np.pi * D**2 / 4)
     Re = D * v * rho(T) / mu(T)
@@ -4431,13 +6026,353 @@ print('The minimum pipe diameter is {0} m\n'.format(D))
 : 
 Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.
 
-** TODO http://matlab.cheme.cmu.edu/2011/09/15/calculating-a-bubble-point-pressure/
-** TODO http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/
+** Reading parameter database text files in python
+   :PROPERTIES:
+   :categories: [IO, thermodynamics]
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/10/reading-parameter-database-text-files-in-matlab/][Matlab post]]
+
+The datafile at http://terpconnect.umd.edu/~nsw/ench250/antoine.dat (dead link) contains data that can be used to estimate the vapor pressure of about 700 pure compounds using the Antoine equation
+
+The data file has the following contents:
+
+#+BEGIN_example
+Antoine Coefficients
+  log(P) = A-B/(T+C) where P is in mmHg and T is in Celsius
+Source of data: Yaws and Yang (Yaws, C.  L.  and Yang, H.  C.,
+"To estimate vapor pressure easily. antoine coefficients relate vapor pressure to temperature for almost 700 major organic compounds", Hydrocarbon Processing, 68(10), p65-68, 1989.
+
+ID  formula  compound name                  A       B       C     Tmin Tmax ??    ?
+-----------------------------------------------------------------------------------
+  1 CCL4     carbon-tetrachloride        6.89410 1219.580 227.170  -20  101 Y2    0
+  2 CCL3F    trichlorofluoromethane      6.88430 1043.010 236.860  -33   27 Y2    0
+  3 CCL2F2   dichlorodifluoromethane     6.68619  782.072 235.377 -119  -30 Y6    0
+#+END_example
+
+To use this data, you find the line that has the compound you want, and read off the data. You could do that manually for each component you want but that is tedious, and error prone. Today we will see how to retrieve the file, then read the data into python to create a database we can use to store and retrieve the data.
+
+We will use the data to find the temperature at which the vapor pressure of acetone is 400 mmHg. 
+
+We use numpy.loadtxt to read the file, and tell the function the format of each column. This creates a special kind of record array which we can access data by field name.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt('data/antoine_data.dat',
+                  dtype=[('id', np.int),
+                         ('formula', 'S8'),
+                         ('name', 'S28'),
+                         ('A', np.float),
+                         ('B', np.float),
+                         ('C', np.float),
+                         ('Tmin', np.float),
+                         ('Tmax', np.float),
+                         ('??', 'S4'),
+                         ('?', 'S4')],
+                  skiprows=7)
+
+names = data['name']
+
+acetone, = data[names == 'acetone']
+
+# for readability we unpack the array into variables
+id, formula, name, A, B, C, Tmin, Tmax, u1, u2 = acetone
+
+T = np.linspace(Tmin, Tmax)
+P = 10**(A - B / ( T + C))
+plt.plot(T, P)
+plt.xlabel('T ($^\circ$C)')
+plt.ylabel('P$_{vap}$ (mmHg)')
+
+# Find T at which Pvap = 400 mmHg
+# from our graph we might guess T ~ 40 ^{\circ}C
+
+def objective(T):
+    return 400 - 10**(A - B / (T + C))
+
+from scipy.optimize import fsolve
+Tsol, = fsolve(objective, 40)
+print Tsol
+print 'The vapor pressure is 400 mmHg at T = {0:1.1f} degC'.format(Tsol)
+
+#Plot CRC data http://en.wikipedia.org/wiki/Acetone_%28data_page%29#Vapor_pressure_of_liquid
+# We only include the data for the range where the Antoine fit is valid.
+
+Tcrc  = [-59.4, 	-31.1, 	-9.4, 	7.7, 	39.5, 	56.5]
+Pcrc = [	1, 	10, 	40, 	100, 	400, 	760]
+
+plt.plot(Tcrc, Pcrc, 'bo')
+plt.legend(['Antoine','CRC Handbook'], loc='best')
+plt.savefig('images/antoine-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 38.6138198197
+: The vapor pressure is 400 mmHg at T = 38.6 degC
+
+[[./images/antoine-1.png]]
+
+This result is close to the value reported [[http://en.wikipedia.org/wiki/Acetone_%28data_page%29#Vapor_pressure_of_liquid][ here]] (39.5 degC), from the CRC Handbook. The difference is probably that the value reported in the CRC is an actual experimental number.
+
+[[./images/antoine-2.png]]
+
+** Calculating a bubble point pressure of a mixture
+   :PROPERTIES:
+   :categories: [thermodynamics, nonlinear-algebra]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/15/calculating-a-bubble-point-pressure/][Matlab post]]
+
+Adapted from http://terpconnect.umd.edu/~nsw/ench250/bubpnt.htm (dead link)
+
+We previously learned to read a datafile containing lots of Antoine coefficients into a database, and use the coefficients to estimate vapor pressure of a single compound. Here we use those coefficents to compute a bubble point pressure of a mixture. 
+
+The bubble point is the temperature at which the sum of the component vapor pressures is equal to the the total pressure. This is where a bubble of vapor will first start forming, and the mixture starts to boil.
+
+Consider an equimolar mixture of benzene, toluene, chloroform, acetone and methanol. Compute the bubble point at 760 mmHg, and the gas phase composition. The gas phase composition is given by: $y_i = x_i*P_i/P_T$.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+
+# load our thermodynamic data
+data = np.loadtxt('data/antoine_data.dat',
+                  dtype=[('id', np.int),
+                         ('formula', 'S8'),
+                         ('name', 'S28'),
+                         ('A', np.float),
+                         ('B', np.float),
+                         ('C', np.float),
+                         ('Tmin', np.float),
+                         ('Tmax', np.float),
+                         ('??', 'S4'),
+                         ('?', 'S4')],
+                  skiprows=7)
+
+compounds = ['benzene', 'toluene', 'chloroform', 'acetone', 'methanol']
+
+# extract the data we want
+A = np.array([data[data['name'] == x]['A'][0] for x in compounds])
+B = np.array([data[data['name'] == x]['B'][0] for x in compounds])
+C = np.array([data[data['name'] == x]['C'][0] for x in compounds])
+Tmin = np.array([data[data['name'] == x]['Tmin'][0] for x in compounds])
+Tmax = np.array([data[data['name'] == x]['Tmax'][0] for x in compounds])
+
+
+# we have an equimolar mixture
+x = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
+
+# Given a T, we can compute the pressure of each species like this:
+
+T = 67 # degC
+P = 10**(A - B / (T + C))
+print P
+print np.dot(x, P)  # total mole-fraction weighted pressure
+
+Tguess = 67
+Ptotal = 760
+
+def func(T):
+    P = 10**(A - B / (T + C))
+    return Ptotal - np.dot(x, P)
+    
+Tbubble, = fsolve(func, Tguess)
+
+print 'The bubble point is {0:1.2f} degC'.format(Tbubble)
+
+# double check answer is in a valid T range
+if np.any(Tbubble < Tmin) or np.any(Tbubble > Tmax):
+    print 'T_bubble is out of range!'
+
+# print gas phase composition
+y = x * 10**(A - B / (Tbubble + C))/Ptotal
+
+for cmpd, yi in zip(compounds, y):
+    print 'y_{0:<10s} = {1:1.3f}'.format(cmpd, yi)
+#+END_SRC
+
+#+RESULTS:
+: [  498.4320267    182.16010994   898.31061294  1081.48181768   837.88860027]
+: 699.654633507
+: The bubble point is 69.46 degC
+: y_benzene    = 0.142
+: y_toluene    = 0.053
+: y_chloroform = 0.255
+: y_acetone    = 0.308
+: y_methanol   = 0.242
+
+
+** The equal area method for the van der Waals equation
+   :PROPERTIES:
+   :categories: [Thermodynamics, plotting]
+   :date:     2013-02-15
+   :last-published: 2013-02-15
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/][Matlab post]] 
+
+When a gas is below its Tc the van der Waal equation oscillates. In the portion of the isotherm where $\partial P_R/\partial V_r > 0$, the isotherm fails to describe real materials, which phase separate into a liquid and gas in this region.
+
+Maxwell proposed to replace this region by a flat line, where the area above and below the curves are equal. Today, we examine how to identify where that line should be.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+Tr = 0.9 # A Tr below Tc:  Tr = T/Tc
+# analytical equation for Pr. This is the reduced form of the van der Waal
+# equation.
+def Prfh(Vr):
+    return  8.0 / 3.0 * Tr / (Vr - 1.0 / 3.0) - 3.0 / (Vr**2)
+
+Vr = np.linspace(0.5, 4, 100)  # vector of reduced volume
+Pr = Prfh(Vr)                 # vector of reduced pressure
+
+plt.plot(Vr,Pr)
+plt.ylim([0, 2])
+plt.xlabel('$V_R$')
+plt.ylabel('$P_R$')
+plt.savefig('images/maxwell-eq-area-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> ... ... ... ... >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1f74b2d0>]
+: (0, 2)
+: <matplotlib.text.Text object at 0x1f3d97d0>
+: <matplotlib.text.Text object at 0x1f3de210>
+
+[[./images/maxwell-eq-area-1.png]]
+
+The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection.
+
+#+BEGIN_SRC python :session
+y = 0.65
+
+plt.plot([0.5, 4.0], [y, y], 'k--')
+plt.savefig('images/maxwell-eq-area-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x1f74bb90>]
+
+[[./images/maxwell-eq-area-2.png]]
+
+To find the areas, we need to know where the intersection of the vdW eqn with the horizontal line. This is the same as asking what are the roots of the vdW equation at that Pr. We need all three intersections so we can integrate from the first root to the middle root, and then the middle root to the third root. We take advantage of the polynomial nature of the vdW equation, which allows us to use the roots command to get all the roots at once. The polynomial is $V_R^3 - \frac{1}{3}(1+8 T_R/P_R) + 3/P_R - 1/P_R = 0$. We use the coefficients t0 get the roots like this.
+
+#+BEGIN_SRC python :session
+vdWp = [1.0, -1. / 3.0 * (1.0 + 8.0 * Tr / y), 3.0 / y, - 1.0 / y];
+v = np.roots(vdWp)
+v.sort()
+print v
+
+plt.plot(v[0], y, 'bo', v[1], y, 'bo', v[2], y, 'bo')
+plt.savefig('images/maxwell-eq-area-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [ 0.60286812  1.09743234  2.32534056]
+: >>> [<matplotlib.lines.Line2D object at 0x1f87efd0>, <matplotlib.lines.Line2D object at 0x1f74ea50>, <matplotlib.lines.Line2D object at 0x1f857410>]
+
+[[./images/maxwell-eq-area-3.png]]
+
+*** Compute areas
+
+for A1, we need the area under the line minus the area under the vdW curve. That is the area between the curves. For A2, we want the area under the vdW curve minus the area under the line. The area under the line between root 2 and root 1 is just the width (root2 – root1)*y
+
+#+BEGIN_SRC python :session
+from scipy.integrate import quad
+
+A1, e1 = (v[1] - v[0]) * y - quad(Prfh,  v[0], v[1])
+A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y
+
+print A1, A2
+print e1, e2  # interesting these look so large
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> 0.063225945606 0.0580212098122
+: 0.321466743765 -0.798140339268
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fsolve
+
+def equal_area(y):
+    Tr = 0.9
+    vdWp = [1, -1.0 / 3 * ( 1.0 + 8.0 * Tr / y), 3.0 / y,  -1.0 / y]
+    v = np.roots(vdWp)
+    v.sort()
+    A1 = (v[1] - v[0]) * y - quad(Prfh, v[0], v[1])
+    A2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y
+    return  A1 - A2
+
+y_eq, = fsolve(equal_area, 0.65)
+print y_eq
+
+A1, e1 = (v[1] - v[0]) * y_eq - quad(Prfh,  v[0], v[1])
+A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y_eq
+
+vdWp = [1.0, -1.0 / 3.0 * (1.0 + 8.0 * Tr / y_eq), 3.0 / y_eq, -1.0 / y_eq]
+v = np.roots(vdWp)
+v.sort()
+
+print v
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... 0.646998351872
+: >>> >>> >>> >>> >>> [ 0.6034019   1.09052663  2.34884238]
+
+Now let us plot the equal areas and indicate them by shading.
+
+#+BEGIN_SRC python :session
+fig = plt.figure()
+plt.clf()
+ax = fig.add_subplot(111)
+
+ax.plot(Vr,Pr)
+
+hline = np.ones(Vr.size) * y_eq
+
+ax.plot(Vr, hline)
+ax.fill_between(Vr, hline, Pr, where=(Vr >= v[0]) & (Vr <= v[1]), facecolor='gray')
+ax.fill_between(Vr, hline, Pr, where=(Vr >= v[1]) & (Vr <= v[2]), facecolor='gray')
+
+plt.text(v[0], 1, 'A1 = {0}'.format(A1))
+plt.text(v[2], 1, 'A2 = {0}'.format(A2))
+plt.xlabel('$V_R$')
+plt.ylabel('$P_R$')
+plt.title('$T_R$ = 0.9')
+
+plt.savefig('images/maxwell-eq-area-4.png')
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x1ffe6e50>]
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x1fd0e250>]
+<matplotlib.collections.PolyCollection object at 0x1ffe6e90>
+<matplotlib.collections.PolyCollection object at 0x1ffeae90>
+>>> <matplotlib.text.Text object at 0x1ffed290>
+<matplotlib.text.Text object at 0x1ffed3d0>
+<matplotlib.text.Text object at 0x200eb310>
+<matplotlib.text.Text object at 0x1ffc1250>
+<matplotlib.text.Text object at 0x1ffceb10>
+#+end_example
+
+[[./images/maxwell-eq-area-4.png]]
+
 ** Constrained minimization to find equilibrium compositions
    :PROPERTIES:
-   :categories: [Optimization, thermodynamics, reaction engineering]
+   :categories: [Optimization, thermodynamics, reaction-engineering]
    :date:     2013-02-05
-   :last-published: 2013-02-05
+   :last-published: 2013-02-18
    :END:
 
 adapated from Chemical Reactor analysis and design fundamentals, Rawlings and Ekerdt, appendix A.2.3.
@@ -4605,9 +6540,9 @@ I found setting up the constraints in this example to be more confusing than the
 
 ** Time dependent concentration in a first order reversible reaction in a batch reactor.
    :PROPERTIES:
-   :categories: [reaction engineering, ODEs]
+   :categories: [reaction-engineering, ODE]
    :date:     2013-02-05
-   :last-published: 2013-02-05
+   :last-published: 2013-02-18
    :END:
 
 [[http://matlab.cheme.cmu.edu/2011/08/07/first-order-reversible-reaction-in-batch-reactor/][Matlab post]]
@@ -4702,7 +6637,9 @@ print('The equilibrium conversion is X = {0:1.2f}'.format(Xe))
 
 ** Plug flow reactor with a pressure drop
    :PROPERTIES:
-   :categories: python reaction-engineering
+   :categories: [python, reaction-engineering]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
    :END:
 
 If there is a pressure drop in a plug flow reactor, [fn:2] there are two equations needed to determine the exit conversion: one for the conversion, and one from the pressure drop.
@@ -4758,8 +6695,10 @@ Here is the resulting figure.
 
 ** Solving CSTR design equations
   :PROPERTIES:
-  :categories: python,reaction-engineering
+  :categories: [python, reaction-engineering]
   :layout:   post
+  :date:     2013-02-18
+  :last-published: 2013-02-18
   :END:
 
 Given a continuously stirred tank reactor with a volume of 66,000 dm^3 where the reaction $A \rightarrow B$ occurs, at a rate of $-r_A = k C_A^2$ ($k=3$ L/mol/h), with an entering molar flow of F_{A0} = 5 mol/h and a volumetric flowrate of 10 L/h, what is the exit concentration of A?
@@ -4797,7 +6736,9 @@ It is a little confusing why it is necessary to put a comma after the CA_sol in 
 
 ** Integrating the batch reactor mole balance
    :PROPERTIES:
-   :categories: [python, reaction engineering, ODEs]
+   :categories: [python, reaction-engineering, ODE]
+   :date:     2013-02-18
+   :last-published: 2013-02-18
    :END:
 
 An alternative approach of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
@@ -4835,44 +6776,47 @@ plt.savefig('images/2013-01-06-batch-conversion.png')
 You can read off of this figure to find the time required to achieve a particular conversion.
 
 ** Using constrained optimization to find the amount of each phase present
+   :PROPERTIES:
+   :categories: [thermodynamics, optimization]
+   :date:     2013-02-12
+   :last-published: 2013-02-13
+   :END:
 The problem we solve here is that we have several compounds containing Ni and Al, and a bulk mixture of a particular composition of Ni and Al. We want to know which mixture of phases will minimize the total energy. The tricky part is that the optimization is constrained because the mixture of phases must have the overall stoichiometry we want.  We formulate the problem like this.
 
+Basically, we want to minimize the function $E = \sum w_i E_i$, where $w_i$ is the mass of phase $i$, and $E_i$ is the energy per unit mass of phase $i$. There are some constraints to ensure conservation of mass. Let us consider the following compounds: Al, NiAl, Ni3Al, and Ni, and consider a case where the bulk composition of our alloy is 93.8% Ni and balance Al. We want to know which phases are present, and in what proportions. There are some subtleties in considering the formula and molecular weight of an alloy. We consider the formula with each species amount normalized so the fractions all add up to one. For example, Ni_3Al is represented as Ni_{0.75}Al_{0.25}, and the molecular weight is computed as 0.75*MW_{Ni} + 0.25*MW_{Al}.
 
+We use scipy.optimize.fmin_slsqp to solve this problem, and define two equality constraint functions, and the bounds on each weight fraction.
 
-Basically, we want to minimize the function $E = \sum w_i E_i$, where $w_i$ is the mass of phase $i$, and $E_i$ is the energy per unit mass of phase $i$. There are some constraints to ensure conservation of mass. Let us consider the following compounds: Al, NiAl, Ni3Al, and Ni, and consider a case where the bulk composition of our alloy is 93.3% Ni and balance Al. We want to know which phases are present, and in what proportions.
-
-
-We use scipy.optimize.fmin_slsqp to solve this problem, and define two equality constraint functions, and the bounds on each fraction.
-
-Note: the energies in this example are totally made up.
+Note: the energies in this example were computed by density functional theory at 0K.
 
 #+BEGIN_SRC python
 import numpy as np
 from scipy.optimize import fmin_slsqp
 
+# these are atomic masses of each species
 Ni = 58.693
 Al = 26.982
 
-COMPOSITIONS = ['Al', 'NiAl', 'Ni3Al',  'Ni']
-MW = np.array(  [Al, Ni + Al, 3*Ni + Al, Ni])
-NNi = np.array([0.0, 1.0, 3.0, 1.0])  # number of Ni in each compd
-WNi = Ni*NNi / MW             # weight fraction of Ni in each cmpd
+COMPOSITIONS = ['Al', 'NiAl',              'Ni3Al',  'Ni']
+MW = np.array(  [Al,  (Ni + Al)/2.0, (3*Ni + Al)/4.0, Ni])
 
-ENERGIES = np.array([0.0, -2.1*2, -1.8*4, 0.0])*1000/MW # energy/kg
+xNi = np.array([0.0, 0.5, 0.75, 1.0])  # mole fraction of nickel in each compd
+WNi = xNi*Ni / MW                      # weight fraction of Ni in each cmpd
 
-BNi = 0.933  # bulk weight fraction
+ENERGIES = np.array([0.0, -0.7, -0.5, 0.0])
 
+BNi = 0.938
 
 def G(w):
-    'function to minimize'
+    'function to minimize. w is a vector of weight fractions, ENERGIES is defined above.'
     return np.dot(w, ENERGIES)
 
 def ec1(w):
-    'conservation of Ni'
+    'conservation of Ni constraint'
     return BNi - np.dot(w, WNi)
 
 def ec2(w):
-    'weight fractions sum to one'
+    'weight fractions sum to one constraint'
     return 1 - np.sum(w)
 
 w0 = np.array([0.0, 0.0, 0.5, 0.5]) # guess weight fractions
@@ -4884,25 +6828,20 @@ y = fmin_slsqp(G,
 
 for ci, wi in zip(COMPOSITIONS, y):
     print '{0:8s} {1:+8.2%}'.format(ci, wi)
-
-print G(y), ec1(y), ec2(y), np.dot(y, WNi)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-Optimization terminated successfully.    (Exit mode 0)
-            Current function value: -17.8785857228
-            Iterations: 2
-            Function evaluations: 12
-            Gradient evaluations: 2
-Al         -0.00%
-NiAl       +0.00%
-Ni3Al     +50.42%
-Ni        +49.58%
--17.8785857228 -5.58553203689e-12 0.0 0.933000000006
-#+end_example
+: Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -0.233299644373
+:             Iterations: 2
+:             Function evaluations: 12
+:             Gradient evaluations: 2
+: Al         -0.00%
+: NiAl       +0.00%
+: Ni3Al     +46.66%
+: Ni        +53.34%
 
-So, the sample will be about 50% /by weight/ of Ni3Al, and 50% /by weight/ on pure Ni.
+So, the sample will be about 47% /by weight/ of Ni3Al, and 53% /by weight/ of pure Ni.
 
 It may be convenient to formulate this in terms of moles.
 
@@ -4911,12 +6850,11 @@ import numpy as np
 from scipy.optimize import fmin_slsqp
 
 COMPOSITIONS = ['Al', 'NiAl', 'Ni3Al',  'Ni']
-xNi = np.array([0.0, 0.5, 0.75, 1.0])
+xNi = np.array([0.0, 0.5, 0.75, 1.0])   # define this in mole fractions
 
+ENERGIES = np.array([0.0, -0.7, -0.5, 0.0]) 
 
-ENERGIES = np.array([0.0, -2.1, -1.8, 0.0])
-
-xNiB = 0.2  # bulk Ni composition
+xNiB = 0.875  # bulk Ni composition
 
 def G(n):
     'function to minimize'
@@ -4931,35 +6869,68 @@ def ec2(n):
     'mole fractions sum to one'
     return 1 - np.sum(n)
 
-n0 = np.array([0.0, 0.0, 0.5, 0.5]) # initial guess
+n0 = np.array([0.0, 0.0, 0.45, 0.55]) # initial guess of mole fractions
 
 y = fmin_slsqp(G,   
                n0,
-               eqcons=[ec1, ec2], bounds=[(0, 1)]*(len(n0)))
+               eqcons=[ec1, ec2], 
+               bounds=[(0, 1)]*(len(n0)))
 
 for ci, xi in zip(COMPOSITIONS, y):
-    print '{0:8s} {1:+8.2}'.format(ci, xi)
-
+    print '{0:8s} {1:+8.2%}'.format(ci, xi)
 #+END_SRC
 
 #+RESULTS:
 : Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -0.84
+:             Current function value: -0.25
 :             Iterations: 2
 :             Function evaluations: 12
 :             Gradient evaluations: 2
-: Al           +0.6
-: NiAl         +0.4
-: Ni3Al    +1.1e-15
-: Ni       -7.8e-16
+: Al         +0.00%
+: NiAl       -0.00%
+: Ni3Al     +50.00%
+: Ni        +50.00%
 
+This means we have a 1:1 molar ratio of Ni and Ni_{0.75}Al_{0.25}. That works out to the overall bulk composition in this particular problem.
+
+Let us verify that these two approaches really lead to the same conclusions. On a weight basis we estimate 53.3%wt Ni and 46.7%wt Ni3Al, whereas we predict an equimolar mixture of the two phases. Below we compute the mole fraction of Ni in each case.
+
+#+BEGIN_SRC python
+# these are atomic masses of each species
+Ni = 58.693
+Al = 26.982
+
+# Molar case
+# 1 mol Ni + 1 mol Ni_{0.75}Al_{0.25}
+N1 = 1.0; N2 = 1.0
+mol_Ni = 1.0 * N1 + 0.75 * N2
+xNi = mol_Ni / (N1 + N2)
+print xNi
+
+# Mass case
+M1 = 0.533; M2 = 0.467
+MW1 = Ni; MW2 = 0.75*Ni + 0.25*Al
+
+xNi2 = (1.0 * M1/MW1 + 0.75 * M2 / MW2) / (M1/MW1 + M2/MW2)
+print xNi2
+#+END_SRC
+
+#+RESULTS:
+: 0.875
+: 0.874192746385
+
+You can see the overall mole fraction of Ni is practically the same in each case.
+
+** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
+** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
+** TODO http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/
 * Units
 ** TODO http://matlab.cheme.cmu.edu/2011/08/05/using-cmu-units-in-matlab-for-basic-calculations/
 ** Using units in python
   :PROPERTIES:
-  :categories: python units
+  :categories: [python, units]
   :date:     2013-01-19
-  :last-published: 2013-01-20
+  :last-published: 2013-02-18
   :END:
 
 I think an essential feature in an engineering computational environment is properly handling units and unit conversions. Mathcad supports that pretty well. I wrote a [[https://github.com/jkitchin/matlab-cmu][package]] for doing it in Matlab. Today I am going to explore units in python. Here are some of the packages that I have found which support units to some extent
