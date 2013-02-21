@@ -543,7 +543,8 @@ print '{0:1.3g}'.format(4./3.)
 We can also specify plus or minus signs. Compare the next two outputs.
 
 #+BEGIN_SRC python
-for x in [-1., 1.]: print '{0:1.2f}'.format(x)
+for x in [-1., 1.]: 
+    print '{0:1.2f}'.format(x)
 #+END_SRC
 
 #+RESULTS:
@@ -553,8 +554,11 @@ for x in [-1., 1.]: print '{0:1.2f}'.format(x)
 You can see the decimals do not align. That is because there is a minus sign in front of one number. We can specify to show the sign for positive and negative numbers, or to pad positive numbers to leave space for positive numbers.
 
 #+BEGIN_SRC python
-for x in [-1., 1.]: print '{0:+1.2f}'.format(x) # explicit sign
-for x in [-1., 1.]: print '{0: 1.2f}'.format(x) # pad positive numbers
+for x in [-1., 1.]: 
+    print '{0:+1.2f}'.format(x) # explicit sign
+
+for x in [-1., 1.]: 
+    print '{0: 1.2f}'.format(x) # pad positive numbers
 #+END_SRC
 
 #+RESULTS:
@@ -593,7 +597,101 @@ print 'the fraction {0} corresponds to {0:1.0%}'.format(0.78)
 
 There are many other options for formatting strings. See http://docs.python.org/2/library/string.html#formatstrings for a full specification of the options.
 
-** TODO Advanced string formatting
+** Advanced string formatting
+   :PROPERTIES:
+   :categories: python
+   :date:     2013-02-20
+   :last-published: 2013-02-20
+   :END:
+There are several more advanced ways to include formatted values in a string. In the previous case we examined replacing format specifiers by /positional/ arguments in the format command. We can instead use /keyword/ arguments. 
+
+#+BEGIN_SRC python
+s = 'The {speed} {color} fox'.format(color='brown', speed='quick')
+print s
+#+END_SRC
+
+#+RESULTS:
+: The quick brown fox
+
+If you have a lot of variables already defined in a script, it is convenient to use them in string formatting with the locals command:
+
+#+BEGIN_SRC python
+speed = 'slow'
+color= 'blue'
+
+print 'The {speed} {color} fox'.format(**locals())
+#+END_SRC
+
+#+RESULTS:
+: The slow blue fox
+
+If you want to access attributes on an object, you can specify them directly in the format identifier.
+#+BEGIN_SRC python
+class A:
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+
+mya = A(3,4,5)
+
+print 'a = {obj.a}, b = {obj.b}, c = {obj.c:1.2f}'.format(obj=mya)
+#+END_SRC
+
+#+RESULTS:
+: a = 3, b = 4, c = 5.00
+
+You can access values of a dictionary:
+#+BEGIN_SRC python
+d = {'a': 56, "test":'woohoo!'}
+
+print "the value of a in the dictionary is {obj[a]}. It works {obj[test]}".format(obj=d)
+#+END_SRC
+
+#+RESULTS:
+: the value of a in the dictionary is 56. It works woohoo!.
+
+And, you can access elements of a list. Note, however you cannot use -1 as an index in this case.
+
+#+BEGIN_SRC python
+L = [4, 5, 'cat']
+
+print 'element 0 = {obj[0]}, and the last element is {obj[2]}'.format(obj=L)
+#+END_SRC
+
+#+RESULTS:
+: element 0 = 4, and the last element is cat
+
+There are three different ways to "print" an object. If an object has a __format__ function, that is the default used in the format command. It may be helpful to use the =str= or =repr= of an object instead. We get this with !s for =str= and !r for =repr=.
+
+#+BEGIN_SRC python
+class A:
+    def __init__(self, a, b):
+        self.a = a; self.b = b
+
+    def __format__(self, format):
+        s = 'a={{0:{0}}} b={{1:{0}}}'.format(format)
+        return s.format(self.a, self.b)
+
+    def __str__(self):
+        return 'str: class A, a={0} b={1}'.format(self.a, self.b)
+
+    def __repr__(self):
+        return 'representing: class A, a={0}, b={1}'.format(self.a, self.b)
+
+mya = A(3, 4)
+
+print '{0}'.format(mya)   # uses __format__
+print '{0!s}'.format(mya) # uses __str__
+print '{0!r}'.format(mya) # uses __repr__
+#+END_SRC
+
+#+RESULTS:
+: a=3 b=4
+: str: class A, a=3 b=4
+: representing: class A, a=3, b=4
+
+This covers the majority of string formatting requirements I have come across. If there are more sophisticated needs, they can be met with various string templating python modules. the one I have used most is [[http://www.cheetahtemplate.org/][Cheetah]].
 ** Indexing vectors and arrays in Python
    :PROPERTIES:
    :categories: [basic]
@@ -2035,6 +2133,43 @@ This example seemed a little easier in Matlab, where the quad function seemed to
 ** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
 
 * Ordinary differential equations
+** Numerical solution to a simple ode
+[[http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/][Matlab post]]
+
+Integrate this ordinary differential equation (ode):
+
+$$\frac{dy}{dt} = y(t)$$
+
+over the time span of 0 to 2. The initial condition is y(0) = 1.
+
+to solve this equation, you need to create a function of the form: dydt = f(y, t) and then use one of the odesolvers, e.g. odeint.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def fprime(y,t):
+    return y
+
+tspan = np.linspace(0, 2)
+y0 = 1
+ysol = odeint(fprime, y0, tspan)
+
+plt.plot(tspan, ysol, label='numerical solution')
+plt.plot(tspan, np.exp(tspan), 'r--', label='analytical solution')
+plt.xlabel('time')
+plt.ylabel('y(t)')
+plt.legend(loc='best')
+plt.savefig('images/simple-ode.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/simple-ode.png]]
+
+The numerical and analytical solutions agree.
+
 ** Plotting ODE solutions in cylindrical coordinates
    :PROPERTIES:
    :categories: [ODE]
@@ -2084,8 +2219,62 @@ plt.savefig('images/ode-cylindrical.png')
 #+RESULTS:
 
 [[./images/ode-cylindrical.png]]
-** TODO http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/
-** TODO http://matlab.cheme.cmu.edu/2011/09/01/odes-with-discontinuous-forcing-functions/
+** ODEs with discontinuous forcing functions
+   :PROPERTIES:
+   :categories: ODE
+   :date:     2013-02-21
+   :last-published: 2013-02-21
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/09/01/odes-with-discontinuous-forcing-functions/][Matlab post]]
+
+Adapted from http://archives.math.utk.edu/ICTCM/VOL18/S046/paper.pdf
+
+A mixing tank initially contains 300 g of salt mixed into 1000 L of water. At t=0 min, a solution of 4 g/L salt enters the tank at 6 L/min. At t=10 min, the solution is changed to 2 g/L salt, still entering at 6 L/min. The tank is well stirred, and the tank solution leaves at a rate of 6 L/min. Plot the concentration of salt (g/L) in the tank as a function of time.
+
+A mass balance on the salt in the tank leads to this differential equation: $\frac{dM_S}{dt} = \nu C_{S,in}(t) - \nu M_S/V$ with the initial condition that $M_S(t=0)=300$. The wrinkle is that the inlet conditions are not constant.
+
+$$C_{S,in}(t) = \begin{array}{ll} 0 & t \le 0, \\ 4 & 0 < t \le 10, \\ 2 & t > 10. \end{array}$$
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+V = 1000.0 # L
+nu = 6.0  # L/min
+    
+def Cs_in(t):
+    'inlet concentration'
+    if t < 0:
+        Cs = 0.0 # g/L
+    elif (t > 0) and (t <= 10):
+        Cs = 4.0
+    else:
+        Cs = 2.0
+    return Cs
+
+def mass_balance(Ms, t):
+    '$\frac{dM_S}{dt} = \nu C_{S,in}(t) - \nu M_S/V$'
+    dMsdt = nu * Cs_in(t) - nu * Ms / V
+    return dMsdt
+
+tspan = np.linspace(0.0, 15.0, 50)
+
+M0 = 300.0 # gm salt
+Ms = odeint(mass_balance, M0, tspan)
+
+plt.plot(tspan, Ms/V, 'b.-')
+plt.xlabel('Time (min)')
+plt.ylabel('Salt concentration (g/L)')
+plt.savefig('images/ode-discont.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/ode-discont.png]]
+
+You can see the discontinuity in the salt concentration at 10 minutes due to the discontinous change in the entering salt concentration.
+
 ** Simulating the events feature of Matlab's ode solvers
 The ode solvers in Matlab allow you create functions that define events that can stop the integration, detect roots, etc... We will explore how to get a similar effect in python. Here is an example that somewhat does this, but it is only an approximation. We will manually integrate the ODE, adjusting the time step in each iteration to zero in on the solution. When the desired accuracy is reached, we stop the integration. 
 
@@ -2424,9 +2613,124 @@ plt.savefig('images/bessel.png')
 
 You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/09/phase-portraits-of-a-system-of-odes/
+** Phase portraits of a system of ODEs
+   :PROPERTIES:
+   :categories: [math, ODE]
+   :date:     2013-02-21
+   :last-published: 2013-02-21
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/09/phase-portraits-of-a-system-of-odes/][Matlab post]]
+An undamped pendulum with no driving force is described by
+
+$$ y'' + sin(y) = 0$$
+
+We reduce this to standard matlab form of a system of first order ODEs by letting $y_1 = y$ and $y_2=y_1'$. This leads to:
+
+$y_1' = y_2$
+
+$y_2' = -sin(y_1)$
+
+The phase portrait is a plot of a vector field which qualitatively shows how the solutions to these equations will go from a given starting point. here is our definition of the differential equations:
+
+To generate the phase portrait, we need to compute the derivatives $y_1'$ and $y_2'$ at $t=0$ on a grid over the range of values for $y_1$ and $y_2$ we are interested in. We will plot the derivatives as a vector at each (y1, y2) which will show us the initial direction from each point. We will examine the solutions over the range -2 < y1 < 8, and -2 < y2 < 2 for y2, and create a grid of 20×20 points.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(Y, t):
+    y1, y2 = Y
+    return [y2, -np.sin(y1)]
+
+y1 = np.linspace(-2.0, 8.0, 20)
+y2 = np.linspace(-2.0, 2.0, 20)
+
+Y1, Y2 = np.meshgrid(y1, y2)
+
+t = 0
+
+u, v = np.zeros(Y1.shape), np.zeros(Y2.shape)
+
+NI, NJ = Y1.shape
+
+for i in range(NI):
+    for j in range(NJ):
+        x = Y1[i, j]
+        y = Y2[i, j]
+        yprime = f([x, y], t)
+        u[i,j] = yprime[0]
+        v[i,j] = yprime[1]
+     
+
+Q = plt.quiver(Y1, Y2, u, v, color='r')
+
+plt.xlabel('$y_1$')
+plt.ylabel('$y_2$')
+plt.xlim([-2, 8])
+plt.ylim([-4, 4])
+plt.savefig('images/phase-portrait.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... >>> >>> >>> >>> >>> >>> ... ... ... >>> >>> <matplotlib.text.Text object at 0xbcfd290>
+: <matplotlib.text.Text object at 0xbd14750>
+: (-2, 8)
+: (-4, 4)
+
+[[./images/phase-portrait.png]]
+
+Let us plot a few solutions on the vector field. We will consider the solutions where y1(0)=0, and values of y2(0) = [0 0.5 1 1.5 2 2.5], in otherwords we start the pendulum at an angle of zero, with some angular velocity.
+
+#+BEGIN_SRC python :session
+from scipy.integrate import odeint
+
+for y20 in [0, 0.5, 1, 1.5, 2, 2.5]:
+    tspan = np.linspace(0, 50, 200)
+    y0 = [0.0, y20]
+    ys = odeint(f, y0, tspan)
+    plt.plot(ys[:,0], ys[:,1], 'b-') # path
+    plt.plot([ys[0,0]], [ys[0,1]], 'o') # start
+    plt.plot([ys[-1,0]], [ys[-1,1]], 's') # end
+    
+
+plt.xlim([-2, 8])
+plt.savefig('images/phase-portrait-2.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> ... ... ... [<matplotlib.lines.Line2D object at 0xbc0dbd0>]
+[<matplotlib.lines.Line2D object at 0xc135050>]
+[<matplotlib.lines.Line2D object at 0xbd1a450>]
+[<matplotlib.lines.Line2D object at 0xbd1a1d0>]
+[<matplotlib.lines.Line2D object at 0xb88aa10>]
+[<matplotlib.lines.Line2D object at 0xb88a5d0>]
+[<matplotlib.lines.Line2D object at 0xc14e410>]
+[<matplotlib.lines.Line2D object at 0xc14ed90>]
+[<matplotlib.lines.Line2D object at 0xc2c5290>]
+[<matplotlib.lines.Line2D object at 0xbea4bd0>]
+[<matplotlib.lines.Line2D object at 0xbea4d50>]
+[<matplotlib.lines.Line2D object at 0xbc401d0>]
+[<matplotlib.lines.Line2D object at 0xc2d1190>]
+[<matplotlib.lines.Line2D object at 0xc2f3e90>]
+[<matplotlib.lines.Line2D object at 0xc2f3bd0>]
+[<matplotlib.lines.Line2D object at 0xc2e4790>]
+[<matplotlib.lines.Line2D object at 0xc2e0a90>]
+[<matplotlib.lines.Line2D object at 0xc2c7390>]
+(-2, 8)
+#+end_example
+
+[[./images/phase-portrait-2.png]]
+
+What do these figures mean? For starting points near the origin, and small velocities, the pendulum goes into a stable limit cycle. For others, the trajectory appears to fly off into y1 space. Recall that y1 is an angle that has values from $-\pi$ to $\pi$. The y1 data in this case is not wrapped around to be in this range.
+
 ** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
+* Delay Differential Equations
 ** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
+* Differential algebraic systems of equations
 * Boundary value equations
 I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
 
@@ -4005,6 +4309,7 @@ plt.savefig('images/nonlin-curve-fit-ci.png')
 #+RESULTS:
 : p0: 1.32753141454 [1.3005365922  1.35452623688]
 : p1: 0.0264615569701 [0.0236076538292  0.0293154601109]
+: (array([ 1.32753141,  0.02646156]), [[1.3005365921998688, 1.3545262368760884], [0.023607653829234403, 0.029315460110926929]], [0.0097228006732683319, 0.0010278982773703883])
 
 [[./images/nonlin-curve-fit-ci.png]]
 
@@ -4736,9 +5041,9 @@ In the code above, we demonstrate that the point we find on the curve that minim
 * Programming
 ** Some of this, sum of that
    :PROPERTIES:
-   :categories: [miscellaneous, recursion]
+   :categories: [miscellaneous, recursive]
    :date:     2013-02-02
-   :last-published: 2013-02-18
+   :last-published: 2013-02-19
    :END:
 [[http://matlab.cheme.cmu.edu/2012/05/29/some-of-this-sum-of-that/][Matlab plot]]
 
@@ -6370,7 +6675,7 @@ plt.savefig('images/maxwell-eq-area-4.png')
 
 ** Constrained minimization to find equilibrium compositions
    :PROPERTIES:
-   :categories: [Optimization, thermodynamics, reaction-engineering]
+   :categories: [optimization, thermodynamics, reaction-engineering]
    :date:     2013-02-05
    :last-published: 2013-02-18
    :END:
