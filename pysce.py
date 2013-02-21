@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats.distributions import  t
+from scipy.optimize import curve_fit
 
 def regress(A, y, alpha=None):
     '''linear regression with conf intervals
@@ -30,10 +31,26 @@ def regress(A, y, alpha=None):
 
     return (b, bint, se)
 
-
-
-def nlinfit():
+def nlinfit(model, x, y, p0, alpha=0.05):
     '''nonlinear regression with conf intervals'''
+    pars, pcov = curve_fit(model, x, y, p0=p0)
+    n = len(y)    # number of data points
+    p = len(pars) # number of parameters
+
+    dof = max(0, n - p) # number of degrees of freedom
+
+    # student-t value for the dof and confidence level
+    tval = t.ppf(1.0-alpha/2., dof) 
+
+    SE = []
+    pint = []
+    for i, p,var in zip(range(n), pars, np.diag(pcov)):
+        sigma = var**0.5
+        SE.append(sigma)
+        pint.append([p - sigma*tval, p + sigma*tval])
+
+    return (pars, pint, SE)
 
 def odelay():
     '''ode wrapper with events'''
+    pass
