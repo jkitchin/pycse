@@ -1,11 +1,11 @@
-#+TITLE:     pycse - Python Computations in Science and Engineeringcomputations
+#+TITLE:     pycse - Python Computations in Science and Engineering
 #+AUTHOR:    John Kitchin
 #+EMAIL:     johnrkitchin@gmail.com
 #+DATE:      2013-01-21 Mon
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
@@ -13,6 +13,9 @@
 #+LINK_UP:   
 #+LINK_HOME: 
 #+XSLT:
+#+Latex_header: \usepackage{underscore}
+#+Latex_header: \usepackage{makeidx}
+#+Latex_header: \makeindex
 
 * Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
@@ -1038,42 +1041,222 @@ print A[:, 2].shape
 Note that even when we specify a column, it is returned as a 1D array.
 
 * Math
-** Integrating equations in python
-  :PROPERTIES:
-  :date:     2013-01-20
-  :last-published: 2013-01-20
-  :categories: [python, integration]
-  :END:
+** Numeric derivatives by differences
+numpy has a function called numpy.diff() that is similar to the one found in matlab. It calculates the differences between the elements in your list, and returns a list that is one element shorter, which makes it unsuitable for plotting the derivative of a function.
 
-A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
+Loops in python are pretty slow (relatively speaking) but they are usually trivial to understand. In this script we show some simple ways to construct derivative vectors using loops. It is implied in these formulas that the data points are equally spaced. If they are not evenly spaced, you need a different approach.
 
 #+BEGIN_SRC python
-import scipy
-from scipy.integrate import quad
+import numpy as np
+from pylab import *
+import time
 
-nu0 = 5     # L/min
-alpha = 1.0 # L/min
-def integrand(t):
-    return nu0 + alpha * t
+'''
+These are the brainless way to calculate numerical derivatives. They
+work well for very smooth data. they are surprisingly fast even up to
+10000 points in the vector.
+'''
 
-t0 = 0.0
-tfinal = 10.0
-V, estimated_error = quad(integrand, t0, tfinal)
-print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
+x = np.linspace(0.78,0.79,100)
+y = np.sin(x)
+dy_analytical = np.cos(x)
+'''
+lets use a forward difference method:
+that works up until the last point, where there is not
+a forward difference to use. there, we use a backward difference.
+'''
+
+tf1 = time.time()
+dyf = [0.0]*len(x)
+for i in range(len(y)-1):
+    dyf[i] = (y[i+1] - y[i])/(x[i+1]-x[i])
+#set last element by backwards difference
+dyf[-1] = (y[-1] - y[-2])/(x[-1] - x[-2])
+
+print ' Forward difference took %1.1f seconds' % (time.time() - tf1)
+
+'''and now a backwards difference'''
+tb1 = time.time()
+dyb = [0.0]*len(x)
+#set first element by forward difference
+dyb[0] = (y[0] - y[1])/(x[0] - x[1])
+for i in range(1,len(y)):
+    dyb[i] = (y[i] - y[i-1])/(x[i]-x[i-1])
+
+print ' Backward difference took %1.1f seconds' % (time.time() - tb1)
+
+'''and now, a centered formula'''
+tc1 = time.time()
+dyc = [0.0]*len(x)
+dyc[0] = (y[0] - y[1])/(x[0] - x[1])
+for i in range(1,len(y)-1):
+    dyc[i] = (y[i+1] - y[i-1])/(x[i+1]-x[i-1])
+dyc[-1] = (y[-1] - y[-2])/(x[-1] - x[-2])
+
+print ' Centered difference took %1.1f seconds' % (time.time() - tc1)
+
+'''
+the centered formula is the most accurate formula here
+'''
+
+plt.plot(x,dy_analytical,label='analytical derivative')
+plt.plot(x,dyf,'--',label='forward')
+plt.plot(x,dyb,'--',label='backward')
+plt.plot(x,dyc,'--',label='centered')
+
+plt.legend(loc='lower left')
+plt.savefig('images/simple-diffs.png')
+plt.show()
 #+END_SRC
 
 #+RESULTS:
-: 100.00 L flowed into the tank over 10 minutes
+:  Forward difference took 0.0 seconds
+:  Backward difference took 0.0 seconds
+:  Centered difference took 0.0 seconds
 
-That is all there is too it!
-** TODO http://matlab.cheme.cmu.edu/2011/12/24/a-novel-way-to-numerically-estimate-the-derivative-of-a-function-complex-step-derivative-approximation/
-** TODO http://matlab.cheme.cmu.edu/2011/11/05/vectorized-piecewise-functions/
+[[./images/simple-diffs.png]]
+
+** Vectorized numeric derivatives
+
+Loops are usually not great for performance. Numpy offers some vectorized methods that allow us to compute derivatives without loops, although this comes at the mental cost of harder to understand syntax
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi, 100)
+y = np.sin(x)
+dy_analytical = np.cos(x)
+
+
+# we need to specify the size of dy ahead because diff returns
+#an array of n-1 elements
+dy = np.zeros(y.shape, np.float) #we know it will be this size
+dy[0:-1] = np.diff(y) / np.diff(x)
+dy[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
+
+
+'''
+calculate dy by center differencing using array slices
+'''
+
+dy2 = np.zeros(y.shape,np.float) #we know it will be this size
+dy2[1:-1] = (y[2:] - y[0:-2]) / (x[2:] - x[0:-2])
+
+# now the end points
+dy2[0] = (y[1] - y[0]) / (x[1] - x[0])
+dy2[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
+
+plt.plot(x,y)
+plt.plot(x,dy_analytical,label='analytical derivative')
+plt.plot(x,dy,label='forward diff')
+plt.plot(x,dy2,'k--',lw=2,label='centered diff')
+plt.legend(loc='lower left')
+plt.savefig('images/vectorized-diffs.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/vectorized-diffs.png]]
+
+** 2-point vs. 4-point numerical derivatives
+If your data is very noisy, you will have a hard time getting good derivatives; derivatives tend to magnify noise. In these cases, you have to employ smoothing techniques, either implicitly by using a multipoint derivative formula, or explicitly by smoothing the data yourself, or taking the derivative of a function that has been fit to the data in the neighborhood you are interested in.
+
+Here is an example of a 4-point centered difference of some noisy data:
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x) + 0.1 * np.random.random(size=x.shape)
+dy_analytical = np.cos(x)
+
+#2-point formula
+dyf = [0.0] * len(x)
+for i in range(len(y)-1):
+    dyf[i] = (y[i+1] - y[i])/(x[i+1]-x[i])
+#set last element by backwards difference
+dyf[-1] = (y[-1] - y[-2])/(x[-1] - x[-2])
+
+'''
+calculate dy by 4-point center differencing using array slices
+
+\frac{y[i-2] - 8y[i-1] + 8[i+1] - y[i+2]}{12h}
+
+y[0] and y[1] must be defined by lower order methods
+and y[-1] and y[-2] must be defined by lower order methods
+'''
+
+dy = np.zeros(y.shape, np.float) #we know it will be this size
+h = x[1] - x[0] #this assumes the points are evenely spaced!
+dy[2:-2] = (y[0:-4] - 8 * y[1:-3] + 8 * y[3:-1] - y[4:]) / (12.0 * h)
+
+# simple differences at the end-points
+dy[0] = (y[1] - y[0])/(x[1] - x[0])
+dy[1] = (y[2] - y[1])/(x[2] - x[1])
+dy[-2] = (y[-2] - y[-3]) / (x[-2] - x[-3])
+dy[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
+
+
+plt.plot(x, y)
+plt.plot(x, dy_analytical, label='analytical derivative')
+plt.plot(x, dyf, 'r-', label='2pt-forward diff')
+plt.plot(x, dy, 'k--', lw=2, label='4pt-centered diff')
+plt.legend(loc='lower left')
+plt.savefig('images/multipt-diff.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/multipt-diff.png]]
+
+** Derivatives by FFT
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+N = 101 #number of points
+L = 2 * np.pi #interval of data
+
+x = np.arange(0.0, L, L/float(N)) #this does not include the endpoint
+
+#add some random noise
+y = np.sin(x) + 0.05 * np.random.random(size=x.shape)
+dy_analytical = np.cos(x)
+
+'''
+http://sci.tech-archive.net/Archive/sci.math/2008-05/msg00401.html
+
+you can use fft to calculate derivatives!
+'''
+
+if N % 2 == 0:
+    k = np.asarray(range(0, N / 2) + [0] + range(-N / 2 + 1,0))
+else:
+    k = np.asarray(range(0,(N - 1) / 2) + [0] + range(-(N - 1) / 2, 0))
+
+k *= 2 * np.pi / L
+
+fd = np.fft.ifft(1.0j * k * np.fft.fft(y))
+
+plt.plot(x, y, label='function')
+plt.plot(x,dy_analytical,label='analytical der')
+plt.plot(x,fd,label='fft der')
+plt.legend(loc='lower left')
+
+plt.savefig('images/fft-der.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
 ** A novel way to numerically estimate the derivative of a function - complex-step derivative approximation
    :PROPERTIES:
    :categories: [math]
    :END:
-
-[[http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/][Matlab post]]
+[[http://matlab.cheme.cmu.edu/2011/12/24/a-novel-way-to-numerically-estimate-the-derivative-of-a-function-complex-step-derivative-approximation/][Matlab post]]
 
 Adapted from http://biomedicalcomputationreview.org/2/3/8.pdf and
 http://dl.acm.org/citation.cfm?id=838250.838251
@@ -1184,7 +1367,128 @@ NameError: name 'dfdx' is not defined
 
 Interesting this fails.
 
-** Smooth transitions between discontinuous functions	     :fluids:example:
+** Vectorized piecewise functions
+   :PROPERTIES:
+   :categories: math
+   :date:     2013-02-23
+   :last-published: 2013-02-23
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/11/05/vectorized-piecewise-functions/][Matlab post]]
+Occasionally we need to define piecewise functions, e.g.
+
+\begin{eqnarray}
+f(x) &=&  0, x < 0 \\ 
+     &=&  x, 0 <= x < 1\\ 
+     &=&  2 - x, 1 < x <= 2\\ 
+     &=&  0, x > 2 
+\end{eqnarray} 
+
+Today we examine a few ways to define a function like this. A simple way is to use conditional statements.
+#+BEGIN_SRC python :session
+def f1(x):
+    if x < 0:
+        return 0
+    elif (x >= 0) & (x < 1):
+        return x
+    elif (x >= 1) & (x < 2):
+        return 2.0 - x
+    else:
+        return 0
+
+print f1(-1)
+print f1([0, 1, 2, 3])  # does not work!
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... ... ... >>> 0
+: 0
+
+This works, but the function is not vectorized, i.e. f([-1 0 2 3]) does not evaluate properly (it should give a list or array). You can get vectorized behavior by using list comprehension, or by writing your own loop. This does not fix all limitations, for example you cannot use the f1 function in the quad function to integrate it.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(-1, 3)
+y = [f1(xx) for xx in x]
+
+plt.plot(x, y)
+plt.savefig('images/vector-piecewise.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x048D6790>]
+
+[[./images/vector-piecewise.png]]
+
+Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.
+
+#+BEGIN_SRC python :session
+def f2(x):
+    'fully vectorized version'
+    x = np.asarray(x)
+    y = np.zeros(x.shape)
+    y += ((x >= 0) & (x < 1)) * x
+    y += ((x >= 1) & (x < 2)) * (2 - x)
+    return y
+
+print f2([-1, 0, 1, 2, 3, 4])
+x = np.linspace(-1,3);
+plt.plot(x,f2(x))
+plt.savefig('images/vector-piecewise-2.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... >>> [ 0.  0.  1.  0.  0.  0.]
+: >>> [<matplotlib.lines.Line2D object at 0x043A4910>]
+
+[[./images/vector-piecewise-2.png]]
+
+A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x >= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.
+
+#+BEGIN_SRC python :session
+def heaviside(x):
+    x = np.array(x)
+    if x.shape != ():
+        y = np.zeros(x.shape)
+        y[x > 0.0] = 1
+        y[x == 0.0] = 0.5
+    else: # special case for 0d array (a number)
+        if x > 0: y = 1
+        elif x == 0: y = 0.5
+        else: y = 0
+    return y
+
+def f3(x):
+    x = np.array(x)
+    y1 = (heaviside(x) - heaviside(x - 1)) * x # first interval
+    y2 = (heaviside(x - 1) - heaviside(x - 2)) * (2 - x) # second interval
+    return y1 + y2
+
+from scipy.integrate import quad
+print quad(f3, -1, 3)
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... ... ... ... ... >>> ... ... ... ... ... >>> >>> (1.0, 1.1102230246251565e-14)
+
+#+BEGIN_SRC python :session
+plt.plot(x, f3(x))
+plt.savefig('images/vector-piecewise-3.png')
+#+END_SRC
+
+#+RESULTS:
+: [<matplotlib.lines.Line2D object at 0x048F96F0>]
+
+[[./images/vector-piecewise-3.png]]
+
+There are many ways to define piecewise functions, and vectorization is not always necessary. The advantages of vectorization are usually notational simplicity and speed; loops in python are usually very slow compared to vectorized functions.
+
+** Smooth transitions between discontinuous functions	 
   :PROPERTIES:
   :categories: [miscellaneous, nonlinear-algebra]
   :date:     2013-01-31
@@ -1336,7 +1640,6 @@ plt.savefig('images/smooth-transitions-morrison.png')
 *** Summary
 
 The approach demonstrated here allows one to smoothly join two discontinuous functions that describe physics in different regimes, and that must transition over some range of data. It should be emphasized that the method has no physical basis, it simply allows one to create a mathematically smooth function, which could be necessary for some optimizers or solvers to work.
-
 ** Smooth transitions between two constants
 Suppose we have a parameter that has two different values depending on the value of a dimensionless number. For example when the dimensionless number is much less than 1, x = 2/3, and when x is much greater than 1, x = 1. We desire a smooth transition from 2/3 to 1  as a function of x to avoid discontinuities in functions of x. We will adapt the smooth transitions between functions to be a smooth transition between constants.
 
@@ -1503,9 +1806,6 @@ These approaches are very similar, and both rely on linear interpolation. The se
 trapz and quad are functions for getting integrals. Both can be used with numerical data if interpolation is used. The syntax for the quad and trapz function is different in scipy than in Matlab.
 
 Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equations/][post]] for an example of solving an integral equation using quad and fsolve.
-
-
-** TODO http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/
 ** Polynomials in python
    :PROPERTIES:
    :categories: [math, polynomials]
@@ -1607,8 +1907,89 @@ Note that only one root is real (and even then, we have to interpet 0.j as not b
 
 *** Summary
 Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
+** The trapezoidal method of integration
+   :PROPERTIES:
+   :categories: [math, integration]
+   :date:     2013-02-23
+   :last-published: 2013-02-23
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/][Matlab post]]
 
-** Integrating functions in python				       :math:
+See http://en.wikipedia.org/wiki/Trapezoidal_rule
+
+$$\int_a^b f(x) dx \approx \frac{1}{2}\displaystyle\sum\limits_{k=1}^N(x_{k+1}-x_k)(f(x_{k+1}) + f(x_k))$$
+
+Let us compute the integral of sin(x) from x=0 to $\pi$. To approximate the integral, we need to divide the interval from $a$ to $b$ into $N$ intervals. The analytical answer is 2.0.
+
+We will use this example to illustrate the difference in performance between loops and vectorized operations in python.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import time
+
+a = 0.0; b = np.pi;
+N = 1000; # this is the number of intervals
+
+h = (b - a)/N; # this is the width of each interval
+x = np.linspace(a, b, N) 
+y = np.sin(x); # the sin function is already vectorized
+
+t0 = time.time()
+f = 0.0
+for k in range(len(x) - 1):
+    f += 0.5 * ((x[k+1] - x[k]) * (y[k+1] + y[k]))
+
+tf = time.time() - t0
+print 'time elapsed = {0} sec'.format(tf)
+
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... >>> >>> time elapsed = 0.0780000686646 sec
+: >>> 1.99999835177
+
+#+BEGIN_SRC python :session
+t0 = time.time()
+Xk = x[1:-1] - x[0:-2] # vectorized version of (x[k+1] - x[k])
+Yk = y[1:-1] + y[0:-2] # vectorized version of (y[k+1] + y[k])
+
+f = 0.5 * np.sum(Xk * Yk) # vectorized version of the loop above
+tf = time.time() - t0
+print 'time elapsed = {0} sec'.format(tf)
+
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> time elapsed = 0.077999830246 sec
+: >>> 1.99999340709
+
+In the last example, there may be loop buried in the sum command. Let us do one final method, using linear algebra, in a single line. The key to understanding this is to recognize the sum is just the result of a dot product of the x differences and y sums. 
+
+#+BEGIN_SRC python :session
+t0 = time.time()
+f = 0.5 * np.dot(Xk, Yk)
+tf = time.time() - t0
+print 'time elapsed = {0} sec'.format(tf)
+
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> time elapsed = 0.0310001373291 sec
+: >>> 1.99999340709
+
+The loop method is straightforward to code, and looks alot like the formula that defines the trapezoid method. the vectorized methods are not as easy to read, and take fewer lines of code to write. However, the vectorized methods are much faster than the loop, so the loss of readability could be worth it for very large problems.
+
+The times here are considerably slower than in Matlab. I am not sure if that is a totally fair comparison. Here I am running python through emacs, which may result in slower performance. I also used a very crude way of timing the performance which lumps some system performance in too.
+
+** TODO simpsons rule
+http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html
+** Integrating functions in python				       
    :PROPERTIES:
    :categories: [python, math]
    :date:     2013-02-02
@@ -1709,7 +2090,37 @@ print ans
 
 *** Summary
 scipy.integrate offers the same basic functionality as Matlab does. The syntax differs significantly for these simple examples, but the use of functions for the limits enables freedom to integrate over non-constant limits.
+** Integrating equations in python
+  :PROPERTIES:
+  :date:     2013-01-20
+  :last-published: 2013-01-20
+  :categories: [python, integration]
+  :END:
 
+A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
+
+#+BEGIN_SRC python
+import scipy
+from scipy.integrate import quad
+
+nu0 = 5     # L/min
+alpha = 1.0 # L/min
+def integrand(t):
+    return nu0 + alpha * t
+
+t0 = 0.0
+tfinal = 10.0
+V, estimated_error = quad(integrand, t0, tfinal)
+print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
+#+END_SRC
+
+#+RESULTS:
+: 100.00 L flowed into the tank over 10 minutes
+
+That is all there is too it!
+** TODO Romberg integration
+http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html
+** TODO http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/
 * Linear algebra
 ** Sums, products and linear algebra notation - avoiding loops where possible
 
@@ -2102,16 +2513,16 @@ import matplotlib.pyplot as plt
 f = np.linspace(0.01, 1)
 plt.plot(f, vfunc(f))
 plt.xlabel('Molar flow rate')
-plt.savefig('images/integral_eqn_guess.png')
+plt.savefig('images/integral-eqn-guess.png')
 plt.show()
 #+END_SRC
 
 #+RESULTS:
 : 
-: >>> >>> [<matplotlib.lines.Line2D object at 0x12920750>]
-: <matplotlib.text.Text object at 0x12905050>
+: >>> >>> [<matplotlib.lines.Line2D object at 0x964a910>]
+: <matplotlib.text.Text object at 0x961fe50>
 
-[[./images/integral_eqn_guess.png]]
+[[./images/integral-eqn-guess.png]]
 
 Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.
 
@@ -2248,17 +2659,18 @@ $\frac{\partial g}{\partial x}\frac{\partial x}{\partial \lambda}+\frac{\partial
 
 Now, solve this for $\frac{\partial x}{\partial \lambda}$ and $\frac{\partial y}{\partial \lambda}$. You can use Cramer’s rule to solve for these to yield:
 
-\(\begin{eqnarray} \
+\begin{eqnarray} \
 \frac{\partial x}{\partial \lambda} &=& \frac{\partial f/\partial y \partial g/\partial \lambda - \partial f/\partial \lambda \partial g/\partial y}{\partial f/\partial x \partial g/\partial y - \partial f/\partial y \partial g/\partial x } \\\\
-\frac{\partial y}{\partial \lambda} &=& \frac{\partial f/\partial \lambda \partial g/\partial x - \partial f/\partial x \partial g/\partial \lambda}{\partial f/\partial x \partial g/\partial y - \partial f/\partial y \partial g/\partial x } \end{eqnarray} \)
+\frac{\partial y}{\partial \lambda} &=& \frac{\partial f/\partial \lambda \partial g/\partial x - \partial f/\partial x \partial g/\partial \lambda}{\partial f/\partial x \partial g/\partial y - \partial f/\partial y \partial g/\partial x } \end{eqnarray} 
 
 For this set of equations: 
 
-\(\begin{eqnarray} \
+\begin{eqnarray} \
 \partial f/\partial x &=& 1 - 2\lambda x + 8\lambda y \\\\ 
 \partial f/\partial y &=& 1 + 8 \lambda x + 3 \lambda y^2 \\\\
 \partial g/\partial x &=& 2 + 2 \lambda x + \lambda y - \lambda y e^x\\\\ 
-\partial g/\partial y &=& -3 + \lambda x - \lambda e^x \end{eqnarray} \)
+\partial g/\partial y &=& -3 + \lambda x - \lambda e^x 
+\end{eqnarray} 
 
 Now, we simply set up those two differential equations on $\frac{\partial x}{\partial \lambda}$ and $\frac{\partial y}{\partial \lambda}$, with the initial conditions at $\lambda = 0$ which is the solution of the simpler linear equations, and integrate to $\lambda = 1$, which is the final solution of the original equations!
 
@@ -2297,13 +2709,13 @@ You can see the solution is somewhat approximate; the true solution is x = -1, y
 
 This is a fair amount of work to get a solution! The idea is to solve a simple problem, and then gradually turn on the hard part by the lambda parameter. What happens if there are multiple solutions? The answer you finally get will depend on your $\lambda=0$  starting point, so it is possible to miss solutions this way. For problems with lots of variables, this would be a good approach if you can identify the easy problem.
 
-
 ** TODO http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/
 ** TODO http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/
 ** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
 
-* Ordinary differential equations
-** Numerical solution to a simple ode
+* Differential equations
+** Ordinary differential equations
+*** Numerical solution to a simple ode
 [[http://matlab.cheme.cmu.edu/2011/08/03/numerical-solution-to-a-simple-ode/][Matlab post]]
 
 Integrate this ordinary differential equation (ode):
@@ -2340,7 +2752,7 @@ plt.savefig('images/simple-ode.png')
 
 The numerical and analytical solutions agree.
 
-** Plotting ODE solutions in cylindrical coordinates
+*** Plotting ODE solutions in cylindrical coordinates
    :PROPERTIES:
    :categories: [ODE]
    :date:     2013-02-07
@@ -2389,7 +2801,7 @@ plt.savefig('images/ode-cylindrical.png')
 #+RESULTS:
 
 [[./images/ode-cylindrical.png]]
-** ODEs with discontinuous forcing functions
+*** ODEs with discontinuous forcing functions
    :PROPERTIES:
    :categories: ODE
    :date:     2013-02-21
@@ -2445,7 +2857,7 @@ plt.savefig('images/ode-discont.png')
 
 You can see the discontinuity in the salt concentration at 10 minutes due to the discontinous change in the entering salt concentration.
 
-** Simulating the events feature of Matlab's ode solvers
+*** Simulating the events feature of Matlab's ode solvers
 The ode solvers in Matlab allow you create functions that define events that can stop the integration, detect roots, etc... We will explore how to get a similar effect in python. Here is an example that somewhat does this, but it is only an approximation. We will manually integrate the ODE, adjusting the time step in each iteration to zero in on the solution. When the desired accuracy is reached, we stop the integration. 
 
 It does not appear that events are supported in scipy. A solution is at http://mail.scipy.org/pipermail/scipy-dev/2005-July/003078.html, but it does not appear integrated into scipy yet (8 years later ;).
@@ -2503,7 +2915,7 @@ I like the events integration in Matlab better, but this is actually pretty func
 
 ODE solving in Matlab is considerably more advanced in functionality than in scipy. There do seem to be some extra packages, e.g. pydstools, scikits.odes that add extra ode functionality.
 
-** Mimicking ode events in python
+*** Mimicking ode events in python
   :PROPERTIES:
   :date:     2013-01-28
   :last-published: 2013-01-29
@@ -2610,12 +3022,12 @@ plt.savefig('images/event-ode-1.png')
 [[./images/event-ode-1.png]]
 
 That was a lot of programming to do something like find the roots of the function!
-** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
-** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
-** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
-** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
-** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
-** Solving parameterized ODEs over and over conveniently
+*** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
+*** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
+*** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
+*** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
+*** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
+*** Solving parameterized ODEs over and over conveniently
    :PROPERTIES:
    :categories: [reaction-engineering, ODE]
    :date:     2013-02-07
@@ -2662,9 +3074,9 @@ plt.savefig('images/parameterized-ode1.png')
 [[./images/parameterized-ode1.png]]
 
 You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of $k$! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.   
-** TODO http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/
-** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
-** Solving a second order ode
+*** TODO http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/
+*** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
+*** Solving a second order ode
    :PROPERTIES:
    :categories: [ODE, math]
    :date:     2013-02-02
@@ -2728,7 +3140,7 @@ plt.savefig('images/vanderpol-2.png')
 Here is the phase portrait. You can see that a limit cycle is approached, indicating periodicity in the solution.
 
 [[./images/vanderpol-2.png]]
-** Solving Bessel's Equation numerically
+*** Solving Bessel's Equation numerically
    :PROPERTIES:
    :categories: [ODE, math]
    :date:     2013-02-07
@@ -2783,7 +3195,7 @@ plt.savefig('images/bessel.png')
 
 You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.
 
-** Phase portraits of a system of ODEs
+*** Phase portraits of a system of ODEs
    :PROPERTIES:
    :categories: [math, ODE]
    :date:     2013-02-21
@@ -2897,14 +3309,14 @@ plt.show()
 
 What do these figures mean? For starting points near the origin, and small velocities, the pendulum goes into a stable limit cycle. For others, the trajectory appears to fly off into y1 space. Recall that y1 is an angle that has values from $-\pi$ to $\pi$. The y1 data in this case is not wrapped around to be in this range.
 
-** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
-* Delay Differential Equations
-** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
-* Differential algebraic systems of equations
-* Boundary value equations
+*** TODO http://matlab.cheme.cmu.edu/2011/10/20/linear-algebra-approaches-to-solving-systems-of-constant-coefficient-odes
+** Delay Differential Equations
+*** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
+** Differential algebraic systems of equations
+** Boundary value equations
 I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
 
-** Plane Poiseuille flow - BVP solve by shooting method
+*** Plane Poiseuille flow - BVP solve by shooting method
    :PROPERTIES:
    :categories: [BVP]
    :date:     2013-02-15
@@ -2930,7 +3342,7 @@ with boundary conditions $u_1(y=0) = 0$ and $u_1(y=d) = 0$.
 
 for this problem we let the plate separation be d=0.1, the viscosity $\mu = 1$, and $\frac{\Delta P}{\Delta x} = -100$.
 
-*** First guess
+**** First guess
 
 We need u_1(0) and u_2(0), but we only have u_1(0). We need to guess a value for u_2(0) and see if the solution goes through the u_2(d)=0 boundary value.
 
@@ -2968,7 +3380,7 @@ plt.savefig('images/bvp-shooting-1.png')
 [[./images/bvp-shooting-1.png]]
 
 Here we have undershot the boundary condition. Let us try a larger guess.
-*** Second guess
+**** Second guess
 #+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
@@ -3054,7 +3466,7 @@ plt.savefig('images/bvp-shooting-3.png')
 
 You can see the agreement is excellent!
 
-** Plane poiseuelle flow solved by finite difference
+*** Plane poiseuelle flow solved by finite difference
    :PROPERTIES:
    :date:     2013-02-14
    :last-published: 2013-02-14
@@ -3166,14 +3578,14 @@ plt.show()
 [[./images/pp-bvp-fd.png]]
 
 You can see excellent agreement here between the numerical and analytical solution.
-** TODO http://matlab.cheme.cmu.edu/2011/08/11/plane-poiseuille-flow-bvp/
+*** TODO http://matlab.cheme.cmu.edu/2011/08/11/plane-poiseuille-flow-bvp/
 There is no equivalent of this Matlab function in scipy.
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/
+*** TODO http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/
 There is no equivalent of this Matlab function in scipy.
 
-* Partial differential equations
-** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
+** Partial differential equations
+*** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
 I do not think there is a way to do this in scipy.
 * Statistics
 ** Introduction to statistical data analysis
@@ -4662,7 +5074,7 @@ print x,y
    :date:     2013-02-02
    :last-published: 2013-02-18
    :END:
-
+index:interpolation 
 [[http://matlab.cheme.cmu.edu/2012/02/02/better-interpolate-than-never/][Matlab post]]
 
 We often have some data that we have obtained in the lab, and we want to solve some problem using the data. For example, suppose we have this data that describes the value of f at time t.
@@ -4715,7 +5127,7 @@ print np.exp(-2)
 : 0.135335283237
 
 *** improved interpolation?
-
+[[index:interpolation!cubic]]
 we can tell interp1d to use a different interpolation scheme such as cubic polynomial splines like this. For nonlinear functions, this may improve the accuracy of the interpolation, as it implicitly includes information about the curvature by fitting a cubic polynomial over neighboring points. 
 
 #+BEGIN_SRC python :session
@@ -4909,6 +5321,12 @@ plt.title('Max point = ({0:1.2f}, {1:1.2f})'.format(float(xmax),
 plt.savefig('images/splinefit.png')
 #+END_SRC
 
+#+RESULTS:
+: Optimization terminated successfully.
+:          Current function value: -0.575712
+:          Iterations: 12
+:          Function evaluations: 24
+
 #+caption: Illustration of a spline fit to data and finding the maximum point.
 #+attr_latex: placement=[H]
 [[./images/splinefit.png]]
@@ -4922,6 +5340,8 @@ There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutor
    :date:     2013-02-03
    :last-published: 2013-02-03
    :END:
+[[index:optimization:Lagrange multipliers]]
+index:fsolve
 [[http://matlab.cheme.cmu.edu/2011/12/24/using-lagrange-multipliers-in-optimization/][Matlab post]]  (adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.)
 
 Suppose we seek to maximize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We want the maximum value of the circle, on the plane. We plot these two functions here.
@@ -5018,6 +5438,8 @@ Three dimensional plots in matplotlib are a little more difficult than in Matlab
    :PROPERTIES:
    :categories: [optimization]
    :END:
+[[index:optimization!constrained]]
+index:fmin_slsqp 
 [[http://matlab.cheme.cmu.edu/2011/12/24/constrained-optimization/][Matlab post]]
 
 adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.
@@ -5055,6 +5477,7 @@ print X
    :last-published: 2013-02-18
    :categories: [linear-programming, optimization]
    :END:
+[[index:optimization:linear programming]]
 [[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][Matlab post]]
 
 adapted from http://www.matrixlab-examples.com/linear-programming.html which solves this problem with fminsearch.
@@ -5137,6 +5560,7 @@ This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/
    :date:     2013-02-14
    :last-published: 2013-02-14
    :END:
+[[index:optimization!constrained]]
 A problem that can be cast as a constrained minimization problem is to find the minimum distance from a point to a curve. Suppose we have $f(x) = x^2$, and the point (0.5, 2). what is the minimum distance from that point to $f(x)$?
 
 #+BEGIN_SRC python
@@ -5759,7 +6183,7 @@ import matplotlib.pyplot as plt
 
 #+RESULTS:
 
-Liquid water (http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=2#Thermo-Condensed)
+Liquid water (\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=2#Thermo-Condensed})
 #+BEGIN_SRC python :session
 # valid over 298-500
 
@@ -5777,7 +6201,7 @@ shomateL = [-203.6060,
 
 #+RESULTS:
 
-Gas phase water (http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1&Type=JANAFG&Table=on#JANAFG)
+Gas phase water (\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1&Type=JANAFG&Table=on#JANAFG})
 
 Interestingly, these parameters are listed as valid only above 500K. That means we have to extrapolate the values down to 298K. That is risky for polynomial models, as they can deviate substantially outside the region they were fitted to.
 
@@ -6086,7 +6510,8 @@ t = T/1000;
 
 #+RESULTS:
 
-*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Units=SI&Mask=1#Thermo-Gas][hydrogen]]
+*** hydrogen
+\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&Units=SI&Mask=1#Thermo-Gas}
 #+BEGIN_SRC python :session
 # T = 298-1000K valid temperature range
 A =  33.066178
@@ -6107,7 +6532,8 @@ S_H2 = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
 
 #+RESULTS:
 
-*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1#Thermo-Gas][H_2O]]
+*** H_{2}O
+\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=1#Thermo-Gas}
 
 Note these parameters limit the temperature range we can examine, as these parameters are not valid below 500K. There is another set of parameters for lower temperatures, but we do not consider them here.
 #+BEGIN_SRC python :session
@@ -6130,7 +6556,8 @@ S_H2O = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
 
 #+RESULTS:
 
-*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&Units=SI&Mask=1#Thermo-Gas][CO]]
+*** CO
+\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&Units=SI&Mask=1#Thermo-Gas}
 
 #+BEGIN_SRC python :session
 # 298. - 1300K valid temperature range
@@ -6152,7 +6579,9 @@ S_CO = (A*np.log(t) + B*t + C*t**2/2 + D*t**3/3 - E/(2*t**2) + G);
 
 #+RESULTS:
 
-*** [[http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&Units=SI&Mask=1#Thermo-Gas][CO_2]]
+*** CO_{2}
+\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&Units=SI&Mask=1#Thermo-Gas}
+
 #+BEGIN_SRC python :session
 # 298. - 1200.K valid temperature range
 A =   24.99735
@@ -6441,7 +6870,7 @@ For laminar flow, we estimate $f_F = 16/Re$, which is a linear equation, and for
 
 It is known that $\rho(T) = 46.048 + 9.418 T -0.0329 T^2 +4.882\times10^{-5}-2.895\times10^{-8}T^4$ and $\mu = \exp\left({-10.547 + \frac{541.69}{T-144.53}}\right)$ where $\rho$ is in kg/m^3 and $\mu$ is in kg/(m*s).
 
-The aim is to find $D$ that solves: $ \Delta p = \rho 2 f_F \frac{\Delta L v^2}{D}$. This is a nonlinear equation in $D$, since D affects the fluid velocity, the Re, and the Fanning friction factor. Here is the solution
+The aim is to find $D$ that solves: $\Delta p = \rho 2 f_F \frac{\Delta L v^2}{D}$. This is a nonlinear equation in $D$, since D affects the fluid velocity, the Re, and the Fanning friction factor. Here is the solution
 
 #+BEGIN_SRC python
 import numpy as np
@@ -7931,3 +8360,5 @@ provided the MMC is eligible for relicensing.
 * References
 
 http://scipy-lectures.github.com/index.html
+* Index
+\printindex
