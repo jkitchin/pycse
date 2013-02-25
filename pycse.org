@@ -1042,6 +1042,10 @@ Note that even when we specify a column, it is returned as a 1D array.
 
 * Math
 ** Numeric derivatives by differences
+index:derivative!numerical
+[[index:derivative!forward difference]]
+[[index:derivative!backward difference]]
+[[index:derivative!centered difference]]
 numpy has a function called numpy.diff() that is similar to the one found in matlab. It calculates the differences between the elements in your list, and returns a list that is one element shorter, which makes it unsuitable for plotting the derivative of a function.
 
 Loops in python are pretty slow (relatively speaking) but they are usually trivial to understand. In this script we show some simple ways to construct derivative vectors using loops. It is implied in these formulas that the data points are equally spaced. If they are not evenly spaced, you need a different approach.
@@ -1117,7 +1121,7 @@ plt.show()
 [[./images/simple-diffs.png]]
 
 ** Vectorized numeric derivatives
-
+[[index:derivative!vectorized]]
 Loops are usually not great for performance. Numpy offers some vectorized methods that allow us to compute derivatives without loops, although this comes at the mental cost of harder to understand syntax
 
 #+BEGIN_SRC python
@@ -1161,6 +1165,7 @@ plt.show()
 [[./images/vectorized-diffs.png]]
 
 ** 2-point vs. 4-point numerical derivatives
+[[index:derivative!4 point formula]]
 If your data is very noisy, you will have a hard time getting good derivatives; derivatives tend to magnify noise. In these cases, you have to employ smoothing techniques, either implicitly by using a multipoint derivative formula, or explicitly by smoothing the data yourself, or taking the derivative of a function that has been fit to the data in the neighborhood you are interested in.
 
 Here is an example of a 4-point centered difference of some noisy data:
@@ -1213,6 +1218,7 @@ plt.show()
 [[./images/multipt-diff.png]]
 
 ** Derivatives by FFT
+index:derivative:FFT
 #+BEGIN_SRC python
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1256,6 +1262,8 @@ plt.show()
    :PROPERTIES:
    :categories: [math]
    :END:
+[[index:derivative!complex step]]
+
 [[http://matlab.cheme.cmu.edu/2011/12/24/a-novel-way-to-numerically-estimate-the-derivative-of-a-function-complex-step-derivative-approximation/][Matlab post]]
 
 Adapted from http://biomedicalcomputationreview.org/2/3/8.pdf and
@@ -1367,6 +1375,8 @@ NameError: name 'dfdx' is not defined
 
 Interesting this fails.
 
+** TODO derivatives by polynomial fitting
+** TODO derivatives by fitting
 ** Vectorized piecewise functions
    :PROPERTIES:
    :categories: math
@@ -1677,7 +1687,8 @@ This is a nice trick to get an analytical function with continuous derivatives f
    :date:     2013-02-02
    :last-published: 2013-02-02
    :END:
-
+[[index:integration!trapezoid ]]
+index:integration!quad
 [[http://matlab.cheme.cmu.edu/2011/09/12/on-the-quad-or-trapzd-in-cheme-heaven/][Matlab post]]
 
 What is the difference between quad and trapz? The short answer is that quad integrates functions (via a function handle) using numerical quadrature, and trapz performs integration of arrays of data using the trapezoid method.
@@ -1914,7 +1925,7 @@ Polynomials in numpy are even better than in Matlab, because you get a polynomia
    :last-published: 2013-02-23
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/14/the-trapezoidal-method-of-integration/][Matlab post]]
-
+index:integration:trapz
 See http://en.wikipedia.org/wiki/Trapezoidal_rule
 
 $$\int_a^b f(x) dx \approx \frac{1}{2}\displaystyle\sum\limits_{k=1}^N(x_{k+1}-x_k)(f(x_{k+1}) + f(x_k))$$
@@ -2285,7 +2296,7 @@ algebra errors due to matrix size mismatches.
 
 ** TODO http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/
 ** Rules for transposition 
-
+index:transpose
 [[http://matlab.cheme.cmu.edu/2011/08/01/illustrating-matrix-transpose-rules-in-matrix-multiplication/][Matlab comparison]]
 
 Here are the four rules for matrix multiplication and transposition
@@ -5778,8 +5789,123 @@ Recursive functions have a special niche in mathematical programming. There is o
 
 ** TODO regular expressions
 http://matlab.cheme.cmu.edu/2012/05/07/1701/
-** TODO http://matlab.cheme.cmu.edu/2011/11/12/unique-entries-in-a-vector/
-** TODO http://matlab.cheme.cmu.edu/2011/11/12/sorting-in-matlab/
+** Unique entries in a vector
+[[http://matlab.cheme.cmu.edu/2011/11/12/unique-entries-in-a-vector/][Matlab post]]
+
+It is surprising how often you need to know only the unique entries in a vector of entries. In python, we create a "set" from a list, which only contains unique entries. Then we convert the set back to a list.
+
+#+BEGIN_SRC python
+a = [1, 1, 2, 3, 4, 5, 3, 5]
+
+b = list(set(a))
+print b
+#+END_SRC
+
+#+RESULTS:
+: [1, 2, 3, 4, 5]
+
+#+BEGIN_SRC python
+a = ['a',
+    'b',
+    'abracadabra',
+    'b',
+    'c',
+    'd',
+    'b']
+
+print list(set(a))
+#+END_SRC
+
+#+RESULTS:
+: ['a', 'c', 'b', 'abracadabra', 'd']
+
+** Sorting in python
+   :PROPERTIES:
+   :categories: python
+   :END:
+index:sort
+[[http://matlab.cheme.cmu.edu/2011/11/12/sorting-in-matlab/][Matlab post]]
+
+Occasionally it is important to have sorted data. Python has a few sorting options. 
+
+#+BEGIN_SRC python
+a = [4, 5, 1, 6, 8, 3, 2]
+print a
+a.sort()  # inplace sorting
+print a
+
+a.sort(reverse=True)
+print a
+#+END_SRC
+
+#+RESULTS:
+: [4, 5, 1, 6, 8, 3, 2]
+: [1, 2, 3, 4, 5, 6, 8]
+: [8, 6, 5, 4, 3, 2, 1]
+
+If you do not want to modify your list, but rather get a copy of a sorted list, use the sorted command.
+#+BEGIN_SRC python
+a = [4, 5, 1, 6, 8, 3, 2]
+print 'sorted a = ',sorted(a)  # no change to a
+print 'sorted a = ',sorted(a, reverse=True)  # no change to a
+print 'a        = ',a
+#+END_SRC
+
+#+RESULTS:
+: sorted a =  [1, 2, 3, 4, 5, 6, 8]
+: sorted a =  [8, 6, 5, 4, 3, 2, 1]
+: a        =  [4, 5, 1, 6, 8, 3, 2]
+
+This works for strings too:
+
+#+BEGIN_SRC python
+a = ['b', 'a', 'c', 'tree']
+print sorted(a)
+#+END_SRC
+
+#+RESULTS:
+: ['a', 'b', 'c', 'tree']
+
+Here is a subtle point though. A capitalized letter comes before a lowercase letter. We can pass a function to the sorted command that is called on each element prior to the sort. Here we make each word lower case before sorting.
+
+#+BEGIN_SRC python
+a = ['B', 'a', 'c', 'tree']
+print sorted(a)
+
+# sort by lower case letter
+print sorted(a, key=str.lower)
+#+END_SRC
+
+#+RESULTS:
+: ['B', 'a', 'c', 'tree']
+: ['a', 'B', 'c', 'tree']
+
+Here is a more complex sorting problem. We have a list of tuples with group names and the letter grade. We want to sort the list by the letter grades. We do this by creating a function that maps the letter grades to the position of the letter grades in a sorted list. We use the list.index function to find the index of the letter grade, and then sort on that.
+
+#+BEGIN_SRC python
+
+groups = [('group1', 'B'),
+          ('group2', 'A+'),
+          ('group3', 'A')]
+
+def grade_key(gtup):
+    '''gtup is a tuple of ('groupname', 'lettergrade')'''
+    lettergrade = gtup[1]
+
+    grades = ['A++', 'A+', 'A', 'A-', 'A/B'
+              'B+', 'B', 'B-', 'B/C',
+              'C+', 'C', 'C-', 'C/D',
+              'D+', 'D', 'D-', 'D/R',
+              'R+', 'R', 'R-', 'R--']
+    
+    return grades.index(lettergrade)
+
+print sorted(groups, key=grade_key)
+#+END_SRC
+
+#+RESULTS:
+: [('group2', 'A+'), ('group3', 'A'), ('group1', 'B')]
+
 ** TODO http://matlab.cheme.cmu.edu/2011/10/23/using-java-inside-matlab/
 ** TODO http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/
 ** TODO http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/
