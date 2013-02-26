@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats.distributions import  t
 from scipy.optimize import curve_fit
+from scipy.integrate import odeint
 
 def regress(A, y, alpha=None):
     '''linear regression with conf intervals
@@ -51,8 +52,8 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-from scipy.integrate import odeint
-def odelay(func, y0, xspan, event=[], **kwargs):
+
+def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     '''ode wrapper with events
     func is callable, with signature func(Y, x, *args)
     y0 are the initial conditions
@@ -60,8 +61,16 @@ def odelay(func, y0, xspan, event=[], **kwargs):
 
     events is a list of callable functions with signature event(Y, t, *args).
     These functions return zero when an event has happend.
+    
+    [value, isterminal, direction] = events(t,y)
+    value(i) is the value of the ith event function.
 
-    We integrate manually each step.
+    isterminal(i) = 1 if the integration is to terminate at a zero of
+    this event function, otherwise, 0.
+
+    direction(i) = 0 if all zeros are to be located (the default), +1
+    if only zeros where the event function is increasing, and -1 if
+    only zeros where the event function is decreasing.  
     '''
 
     x0 = xspan[0]
@@ -71,73 +80,107 @@ def odelay(func, y0, xspan, event=[], **kwargs):
 
     X = [x0]
     sol = [y0]
-    
-    e = [event(y0, x0)]
-    events = []
 
+    e = np.zeros((len(events), len(xspan)))
+    for i,event in enumerate(events):
+        e[i,0], isterminal, direction = event(y0, x0)
+
+    TE, YE, IE = [], [], []
+
+    # now we step through the integration
     for i, x1 in enumerate(xspan[0:-2]):
         x2 = xspan[i + 1]
-
         f1 = sol[i]
 
         f2 = odeint(func, f1, [x1, x2])
         X += [x2]
         sol += [f2[-1][0]]
 
-        # Now evaluate each event
-        e += [event(sol[-1], X[-1])]
+        # check event functions
+        for j,event in enumerate(events):
+            e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
+    
+            if e[j, i + 1] * e[j, i] < 0:
+                # change in sign detected Event detected where the sign of
+                # the event has changed. The event is between xPt = X[-2]
+                # and xLt = X[-1]. run a modified bisect function to
+                # narrow down to find where event = 0
+                xLt = X[-1]
+                fLt = sol[-1]
+                eLt = e[j, i+1]
 
-        if e[-1] * e[-2] < 0:
-            # change in sign detected Event detected where the sign of
-            # the event has changed. The event is between xPt = X[-2]
-            # and xLt = X[-1]. run a modified bisect function to
-            # narrow down to find where event = 0
-            xLt = X[-1]
-            fLt = sol[-1]
-            eLt = e[-1]
+                xPt = X[-2]
+                fPt = sol[-2]
+                ePt = e[j, i]
 
-            xPt = X[-2]
-            fPt = sol[-2]
-            ePt = e[-2]
+                k = 0
+                while k < 100: # max iterations
+                    if np.abs(xLt - xPt) < TOLERANCE:
+                        # we know the interval to a prescribed precision now.
+                        # check if direction is satisfied.
+                        # e[j, i + 1] is the last value calculated
+                        # e[j, i] is the previous to last
+                        
+                        COLLECTEVENT = False
+                        # get all events
+                        if direction == 0:
+                            COLLECTEVENT = True
+                        # only get event if event function is decreasing
+                        elif (e[j, i + 1] > e[j, i] ) and direction == 1:
+                            COLLECTEVENT = True
+                        # only get event if event function is increasing
+                        elif (e[j, i + 1] < e[j, i] ) and direction == -1:
+                            COLLECTEVENT = True
+                            
+                        if COLLECTEVENT:
+                            TE.append(xLt)
+                            YE.append(fLt)
+                            IE.append(j)
 
-            j = 0
-            while j < 100:
-                if np.abs(xLt - xPt) < 1e-6:
-                    # we know the interval to a prescribed precision now.
-                    # print 'Event found between {0} and {1}'.format(x1t, x2t)
-                    print 'x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt)
-                    events += [(xLt, fLt)]
-                    break # and return to integrating
+                            ISTERMINAL = isterminal
+                        else:
+                            ISTERMINAL = False
+                                                    
+                        break # and return to integrating
 
-                m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
-                                            #bracketing zero
+                    m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
+                                                #bracketing zero
 
-                #estimated x where the zero is      
-                new_x = -ePt / m + xPt
+                    #estimated x where the zero is      
+                    new_x = -ePt / m + xPt
 
-                # now get the new value of the integrated solution at
-                # that new x
-                f  = odeint(func, fPt, [xPt, new_x])
-                new_f = f[-1][-1]
-                new_e = event(new_f, new_x)
+                    # now get the new value of the integrated solution at
+                    # that new x
+                    f  = odeint(func, fPt, [xPt, new_x])
+                    new_f = f[-1][-1]
+                    new_e, isterminal, direction = event(new_f, new_x)
 
-                # now check event sign change
-                if eLt * new_e > 0:
-                    xPt = new_x
-                    fPt = new_f
-                    ePt = new_e
-                else:
-                    xLt = new_x
-                    fLt = new_f
-                    eLt = new_e
+                    # now check event sign change
+                    if eLt * new_e > 0:
+                        xPt = new_x
+                        fPt = new_f
+                        ePt = new_e
+                    else:
+                        xLt = new_x
+                        fLt = new_f
+                        eLt = new_e
 
-                j += 1
+                    k += 1
+
+                # if the last value of isterminal is true, break out of this loop too
+                
+                if ISTERMINAL:
+                    # make last data point the last event
+                    del X[-1], sol[-1]
+                    X.append(TE[-1])
+                    sol.append(YE[-1])
+                    
+                    return X, sol, TE, YE, IE
+                
+    return X, sol, TE, YE, IE
 
 
-    return X, sol, events
 
-         
-            
-        
+
 
     
