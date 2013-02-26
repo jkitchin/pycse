@@ -3304,10 +3304,245 @@ print tsol3
 : 
 : ... ... ... >>> >>> 2.45746688202
 
-*** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
-*** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
-*** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
-*** TODO http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/
+*** A simple first order ode evaluated at specific points
+    :PROPERTIES:
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/][Matlab post]]
+
+We have integrated an ODE over a specific time span. Sometimes it is desirable to get the solution at specific points, e.g. at t = [0 0.2 0.4 0.8]; This could be desirable to compare with experimental measurements at those time points. This example demonstrates how to do that.
+
+$$\frac{dy}{dt} = y(t)$$
+
+The initial condition is y(0) = 1.
+
+#+BEGIN_SRC python
+from scipy.integrate import odeint
+
+y0 = 1
+tspan = [0, 0.2, 0.4, 0.8]
+
+def dydt(y, t):
+    return y
+
+Y = odeint(dydt, y0, tspan)
+print Y[:,0]
+#+END_SRC
+
+#+RESULTS:
+: [ 1.          1.22140275  1.49182469  2.22554103]
+
+*** Stopping the integration of an ODE at some condition
+    :PROPERTIES:
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/][Matlab post]]
+index:ODE!event
+In Post 968 we learned how to get the numerical solution to an ODE, and then to use the deval function to solve the solution for a particular value. The deval function uses interpolation to evaluate the solution at other valuse. An alternative approach would be to stop the ODE integration when the solution has the value you want. That can be done in Matlab by using an “event”. You setup an event function and tell the ode solver to use it by setting an option.
+
+Given that the concentration of a species A in a constant volume, batch reactor obeys this differential equation $\frac{dC_A}{dt}=- k C_A^2$ with the initial condition $C_A(t=0) = 2.3$ mol/L and $k = 0.23$ L/mol/s, compute the time it takes for $C_A$ to be reduced to 1 mol/L.
+
+#+BEGIN_SRC python
+from pycse import *
+import numpy as np
+
+k = 0.23
+Ca0 = 2.3
+
+def dCadt(Ca, t):
+    return -k * Ca**2
+
+def stop(Ca, t):
+    isterminal = True
+    direction = 0
+    value = 1.0 - Ca
+    return value, isterminal, direction
+
+tspan = np.linspace(0.0, 10.0)
+
+t, CA, TE, YE, IE = odelay(dCadt, Ca0, tspan, events=[stop], full_output=1)
+
+print 'At t = {0:1.2f} seconds the concentration of A is {1:1.2f} mol/L.'.format(t[-1], CA[-1])
+#+END_SRC
+
+#+RESULTS:
+: At t = 2.46 seconds the concentration of A is 1.00 mol/L.
+
+*** Finding minima and maxima in ODE solutions with events
+[[http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events][Matlab post]]
+index:ODE!event
+Today we look at another way to use events in an ode solver. We use an events function to find minima and maxima, by evaluating the ODE in the event function to find conditions where the first derivative is zero, and approached from the right direction. A maximum is when the fisrt derivative is zero and increasing, and a minimum is when the first derivative is zero and decreasing.
+
+We use a simple ODE, $y’ = sin(x)*e^{-0.05x}$, which has minima and maxima.
+
+#+BEGIN_SRC python
+from pycse import *
+import numpy as np
+
+def ode(y, x):
+    return np.sin(x) * np.exp(-0.05 * x)
+
+def minima(y, x):
+    '''Approaching a minumum, dydx is negatime and going to zero. our event function is increasing'''
+    value = ode(y, x)
+    direction = 1
+    isterminal = False
+    return value,  isterminal, direction
+
+def maxima(y, x):
+    '''Approaching a maximum, dydx is positive and going to zero. our event function is decreasing'''
+    value = ode(y, x)
+    direction = -1
+    isterminal = False
+    return value,  isterminal, direction
+
+xspan = np.linspace(0, 20, 100)
+
+y0 = 0
+
+X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[minima, maxima])
+print IE
+import matplotlib.pyplot as plt
+plt.plot(X, Y)
+
+# blue is maximum, red is minimum
+colors = 'rb'
+for xe, ye, ie in zip(XE, YE, IE):
+    plt.plot([xe], [ye], 'o', color=colors[ie])
+
+plt.savefig('./images/ode-events-min-max.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: [1, 0, 1, 0, 1, 0]
+
+[[./images/ode-events-min-max.png]]
+
+*** Error tolerance in numerical solutions to ODEs
+    :PROPERTIES:
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/][Matlab post]]
+index:ODE:tolerance
+Usually, the numerical ODE solvers in python work well with the standard settings. Sometimes they do not, and it is not always obvious they have not worked! Part of using a tool like python is checking how well your solution really worked. We use an example of integrating an ODE that defines the van der Waal equation of an ideal gas here.
+
+we plot the analytical solution to the van der waal equation in reduced form here.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+Tr = 0.9
+Vr = np.linspace(0.34,4,1000)
+
+#analytical equation for Pr
+Prfh = lambda Vr: 8.0 / 3.0 * Tr / (Vr - 1.0 / 3.0) - 3.0 / (Vr**2)
+Pr = Prfh(Vr) # evaluated on our reduced volume vector.
+
+# Plot the EOS
+plt.plot(Vr,Pr)
+plt.ylim([0, 2])
+plt.xlabel('$V_R$')
+plt.ylabel('$P_R$')
+plt.savefig('images/ode-vw-1.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> ... >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x1c5a3550>]
+: (0, 2)
+: <matplotlib.text.Text object at 0x1c22f750>
+: <matplotlib.text.Text object at 0x1d4e0750>
+
+[[./images/ode-vw-1.png]]
+
+we want an equation for dPdV, which we will integrate we use symbolic math to do the derivative for us.
+
+#+BEGIN_SRC python :session
+from sympy import diff, Symbol
+Vrs = Symbol('Vrs')
+
+Prs = 8.0 / 3.0 * Tr / (Vrs - 1.0/3.0) - 3.0/(Vrs**2) 
+print diff(Prs,Vrs)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> -2.4/(Vrs - 0.333333333333333)**2 + 6.0/Vrs**3
+
+Now, we solve the ODE. We will specify a large relative tolerance criteria (Note the default is much smaller than what we show here).
+#+BEGIN_SRC python :session
+from scipy.integrate import odeint
+
+def myode(Pr, Vr):
+    dPrdVr = -2.4/(Vr - 0.333333333333333)**2 + 6.0/Vr**3
+    return dPrdVr
+
+Vspan = np.linspace(0.334, 4)
+Po = Prfh(Vspan[0])
+P = odeint(myode, Po, Vspan, rtol=1e-4)
+
+# Plot the EOS
+plt.plot(Vr,Pr) # analytical solution
+plt.plot(Vspan, P[:,0], 'r.')
+plt.ylim([0, 2])
+plt.xlabel('$V_R$')
+plt.ylabel('$P_R$')
+plt.savefig('images/ode-vw-2.png')
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... >>> >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x1d4f3b90>]
+: [<matplotlib.lines.Line2D object at 0x2ac47518e710>]
+: (0, 2)
+: <matplotlib.text.Text object at 0x1c238fd0>
+: <matplotlib.text.Text object at 0x1c22af10>
+
+[[./images/ode-vw-2.png]]
+
+You can see there is disagreement between the analytical solution and numerical solution. The origin of this problem is accuracy at the initial condition, where the derivative is extremely large.
+
+#+BEGIN_SRC python :session
+print myode(Po, 0.34)
+#+END_SRC
+
+#+RESULTS:
+: -53847.3437818
+
+We can increase the tolerance criteria to get a better answer. The defaults in odeint are actually set to 1.49012e-8.
+
+#+BEGIN_SRC python :session
+Vspan = np.linspace(0.334, 4)
+Po = Prfh(Vspan[0])
+P = odeint(myode, Po, Vspan)
+
+# Plot the EOS
+plt.plot(Vr,Pr) # analytical solution
+plt.plot(Vspan, P[:,0], 'r.')
+plt.ylim([0, 2])
+plt.xlabel('$V_R$')
+plt.ylabel('$P_R$')
+plt.savefig('images/ode-vw-3.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... [<matplotlib.lines.Line2D object at 0x1d4dbf10>]
+: [<matplotlib.lines.Line2D object at 0x1c6e5550>]
+: (0, 2)
+: <matplotlib.text.Text object at 0x1d4e31d0>
+: <matplotlib.text.Text object at 0x1d9d3710>
+
+[[./images/ode-vw-3.png]]
+
+The problem here was the derivative value varied by four orders of magnitude over the integration range, so the default tolerances were insufficient to accurately estimate the numerical derivatives over that range. Tightening the tolerances helped resolve that problem. Another approach might be to split the integration up into different regions. For instance, if instead of starting at Vr = 0.34, which is very close to a sigularity in the van der waal equation at Vr = 1/3, if you start at Vr = 0.5, the solution integrates just fine with the standard tolerances.
+
 *** Solving parameterized ODEs over and over conveniently
    :PROPERTIES:
    :categories: [reaction-engineering, ODE]
@@ -3315,6 +3550,7 @@ print tsol3
    :last-published: 2013-02-18
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/16/parameterized-odes/][Matlab post]]
+index:ODE!parameterized
 Sometimes we have an ODE that depends on a parameter, and we want to solve the ODE for several parameter values. It is inconvenient to write an ode function for each parameter case. Here we examine a convenient way to solve this problem; we pass the parameter to the ODE at runtime. We consider the following ODE:
 
 $$\frac{dCa}{dt} = -k Ca(t)$$
@@ -3355,8 +3591,92 @@ plt.savefig('images/parameterized-ode1.png')
 [[./images/parameterized-ode1.png]]
 
 You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of $k$! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.   
-*** TODO http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/
-*** TODO http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/
+*** Yet another way to parameterize an ODE
+    :PROPERTIES:
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/11/06/yet-another-way-to-parameterize-an-ode/][Matlab post]]
+index:ODE!parameterized
+We previously examined a way to parameterize an ODE. In those methods, we either used an anonymous function to parameterize an ode function, or we used a nested function that used variables from the shared workspace.
+
+We want a convenient way to solve $dCa/dt = -k Ca$ for multiple values of $k$. Here we use a trick to pass a parameter to an ODE through the initial conditions. We expand the ode function definition to include this parameter, and set its derivative to zero, effectively making it a constant.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def ode(F, t):
+    Ca, k = F
+    dCadt = -k * Ca
+    dkdt = 0.0
+    return [dCadt, dkdt]
+
+tspan = np.linspace(0, 4)
+
+Ca0 = 1;
+K = [2.0, 3.0]
+for k in K:
+    F = odeint(ode, [Ca0, k], tspan)
+    Ca = F[:,0]
+    plt.plot(tspan, Ca, label='k={0}'.format(k))
+plt.xlabel('time')
+plt.ylabel('$C_A$')
+plt.legend(loc='best')
+plt.savefig('images/ode-parameterized-1.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/ode-parameterized-1.png]]
+
+I do not think this is a very elegant way to pass parameters around compared to the previous methods, but it nicely illustrates that there is more than one way to do it. And who knows, maybe it will be useful in some other context one day!
+
+*** Another way to parameterize an ODE - nested function
+    :PROPERTIES:
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/09/18/another-way-to-parameterize-an-ode-nested-function/][Matlab post]]
+index:ODE!parameterized
+We saw one method to parameterize an ODE, by creating an ode function that takes an extra parameter argument, and then making a function handle that has the syntax required for the solver, and passes the parameter the ode function. 
+
+Here we define the ODE function in a loop. Since the nested function is in the namespace of the main function, it can “see” the values of the variables in the main function. We will use this method to look at the solution to the van der Pol equation for several different values of mu.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+MU = [0.1, 1, 2, 5]
+tspan = np.linspace(0, 100, 5000)
+Y0 = [0, 3]
+
+for mu in MU:
+    # define the ODE
+    def vdpol(Y, t):
+        x,y = Y
+        dxdt = y
+        dydt = -x + mu * (1 - x**2) * y
+        return  [dxdt, dydt]
+    
+    Y = odeint(vdpol, Y0, tspan)
+    
+    x = Y[:,0]; y = Y[:,1]
+    plt.plot(x, y, label='mu={0:1.2f}'.format(mu))
+
+plt.axis('equal')
+plt.legend(loc='best')
+plt.savefig('images/ode-nested-parameterization.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/ode-nested-parameterization.png]]
+
+You can see the solution changes dramatically for different values of mu. The point here is not to understand why, but to show an easy way to study a parameterize ode with a nested function. Nested functions can be a great way to "share" variables between functions especially for ODE solving, and nonlinear algebra solving, or any other application where you need a lot of parameters defined in one function in another function.
+
 *** Solving a second order ode
    :PROPERTIES:
    :categories: [ODE, math]
