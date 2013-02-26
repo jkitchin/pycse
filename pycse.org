@@ -21,7 +21,123 @@
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
 * Basic python usage
-** TODO http://matlab.cheme.cmu.edu/2011/09/26/some-basic-data-structures-in-matlab/
+** Some basic data structures in python
+[[http://matlab.cheme.cmu.edu/2011/09/26/some-basic-data-structures-in-matlab/][Matlab post]]
+
+We often have a need to organize data into structures when solving problems.
+*** the list
+A list in python is data separated by commas in square brackets. Here, we might store the following data in a variable to describe the Antoine coefficients for benzene and the range they are relevant for [Tmin Tmax]. Lists are flexible, you can put anything in them, including other lists. We access the elements of the list by indexing:
+#+BEGIN_SRC python
+c = ['benzene', 6.9056, 1211.0, 220.79, [-16, 104]]
+print c[0]
+print c[-1]
+
+a,b = c[0:2]
+print a,b
+
+name, A, B, C, Trange = c
+print Trange
+#+END_SRC
+
+#+RESULTS:
+: benzene
+: [-16, 104]
+: benzene 6.9056
+: [-16, 104]
+
+Lists are "mutable", which means you can change their values.
+
+#+BEGIN_SRC python :session
+a = [3, 4, 5, [7, 8], 'cat']
+print a[0], a[-1]
+a[-1] = 'dog'
+print a
+#+END_SRC
+
+#+RESULTS:
+: 
+: 3 cat
+: >>> [3, 4, 5, [7, 8], 'dog']
+
+*** tuples
+Tuples are /immutable/; you cannot change their values. This is handy in cases where it is an error to change the value. A tuple is like a list but it is enclosed in parentheses.
+
+#+BEGIN_SRC python :session
+a = (3, 4, 5, [7, 8], 'cat')
+print a[0], a[-1]
+a[-1] = 'dog'
+#+END_SRC
+
+#+RESULTS:
+: 
+: 3 cat
+: Traceback (most recent call last):
+:   File "<stdin>", line 1, in <module>
+: TypeError: 'tuple' object does not support item assignment
+
+*** struct
+Python does not exactly have the same thing as a struct in Matlab. You can achieve something like it by defining an empty class and then defining attributes of the class. You can check if an object has a particular attribute using hasattr.
+
+#+BEGIN_SRC python
+class Antoine:
+    pass
+
+a = Antoine()
+a.name = 'benzene'
+a.Trange = [-16, 104]
+
+print a.name
+print hasattr(a, 'Trange')
+print hasattr(a, 'A')
+#+END_SRC
+
+#+RESULTS:
+: benzene
+: True
+: False
+
+*** dictionaries
+The analog of the containers.Map in Matlab is the dictionary in python. Dictionaries are enclosed in curly brackets, and are composed of key:value pairs.
+
+#+BEGIN_SRC python
+s = {'name':'benzene',
+     'A':6.9056,
+     'B':1211.0}
+
+s['C'] = 220.79
+s['Trange'] = [-16, 104]
+
+print s
+print s['Trange']
+#+END_SRC
+
+#+RESULTS:
+: {'A': 6.9056, 'C': 220.79, 'B': 1211.0, 'name': 'benzene', 'Trange': [-16, 104]}
+: [-16, 104]
+
+#+BEGIN_SRC python
+s = {'name':'benzene',
+     'A':6.9056,
+     'B':1211.0}
+
+print 'C' in s
+# default value for keys not in the dictionary
+print s.get('C', None)
+
+print s.keys()
+print s.values()
+#+END_SRC
+
+#+RESULTS:
+: False
+: None
+: ['A', 'B', 'name']
+: [6.9056, 1211.0, 'benzene']
+
+
+*** Summary
+We have examined four data structures in python. Note that none of these types are arrays/vectors with defined mathematical operations. For those, you need to consider numpy.array.
+
 ** Basic math
 Python is a basic calculator out of the box. Here we consider the most basic mathematical operations: addition, subtraction, multiplication, division and exponenetiation. we use the func:print to get the output. For now we consider integers and float numbers. An integer is a plain number like 0, 10 or -2345. A float number has a decimal in it. The following are all floats: 1.0, -9., and 3.56. Note the trailing zero is not required, although it is good style.
 
@@ -1823,7 +1939,7 @@ Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equa
    :date:     2013-01-22
    :last-published: 2013-01-22
    :END:
-This was originally posted at [[ http://matlab.cheme.cmu.edu/2011/08/01/polynomials-in-matlab/][Polynomials in Matlab]].
+[[http://matlab.cheme.cmu.edu/2011/08/01/polynomials-in-matlab/][Matlab post]]
 
 Polynomials can be represented as a list of coefficients. For example, the polynomial $4*x^3 + 3*x^2 -2*x + 10 = 0$ can be represented as [4, 3, -2, 10]. Here are some ways to create a polynomial object, and evaluate it.
 
@@ -3032,8 +3148,162 @@ plt.savefig('images/event-ode-1.png')
 
 [[./images/event-ode-1.png]]
 
-That was a lot of programming to do something like find the roots of the function!
-*** TODO http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/
+That was a lot of programming to do something like find the roots of the function! Below is an example of using a function coded into pycse to solve the same problem. It is a bit more sophisticated because you can define whether an event is terminal, and the direction of the approach to zero for each event.
+
+#+BEGIN_SRC python
+from pycse import *
+import numpy as np
+
+def myode(f, x):
+    return 3*x**2 + 12*x -4
+
+def event1(f, x):
+    'an event is when f = 0 and event is decreasing'
+    isterminal = True
+    direction = -1
+    return f, isterminal, direction
+
+def event2(f, x):
+    'an event is when f = 0 and increasing'
+    isterminal = False
+    direction = 1
+    return f, isterminal, direction
+
+f0 = -120
+
+xspan = np.linspace(-8, 4)
+X, F, TE, YE, IE = odelay(myode, f0, xspan, events=[event1, event2])
+
+import matplotlib.pyplot as plt
+plt.plot(X, F, '.-')
+
+# plot the event locations.use a different color for each event
+colors = 'rg'
+
+for x,y,i in zip(TE, YE, IE):
+    plt.plot([x], [y], 'o', color=colors[i])
+    
+plt.savefig('images/event-ode-2.png')
+plt.show()
+print TE, YE, IE
+#+END_SRC
+
+#+RESULTS:
+: [-6.0000001083101306, -1.9999999635550625] [-3.0871138978483259e-14, -7.7715611723760958e-16] [1, 0]
+
+[[./images/event-ode-2.png]]
+
+*** Solving an ode for a specific solution value
+    :PROPERTIES:
+    :date:     8/31/2011 09:00:00
+    :categories: ODE
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/08/31/solving-an-ode-for-a-specific-solution-value/][Matlab post]]
+The analytical solution to an ODE is a function, which can be solved to get a particular value, e.g. if the solution to an ODE is y(x) = exp(x), you can solve the solution to find the value of x that makes $y(x)=2$. In a numerical solution to an ODE we get a vector of independent variable values, and the corresponding function values at those values. To solve for a particular function value we need a different approach. This post will show one way to do that in python.
+
+Given that the concentration of a species A in a constant volume, batch reactor obeys this differential equation $\frac{dC_A}{dt}=- k C_A^2$ with the initial condition $C_A(t=0) = 2.3$ mol/L and $k = 0.23$ L/mol/s, compute the time it takes for $C_A$ to be reduced to 1 mol/L.
+
+We will get a solution, then create an interpolating function and use fsolve to get the answer. index:interpolation!ODE
+
+#+BEGIN_SRC python :session
+from scipy.integrate import odeint
+from scipy.interpolate import interp1d
+from scipy.optimize import fsolve
+import numpy as np
+import matplotlib.pyplot as plt
+
+k = 0.23
+Ca0 = 2.3
+
+def dCadt(Ca, t):
+    return -k * Ca**2
+
+tspan = np.linspace(0, 10)
+
+sol = odeint(dCadt, Ca0, tspan)
+Ca = sol[:,0]
+
+plt.plot(tspan, Ca)
+plt.xlabel('Time (s)')
+plt.ylabel('$C_A$ (mol/L)')
+plt.savefig('images/ode-specific-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> ... >>> [<matplotlib.lines.Line2D object at 0x1b710d50>]
+: <matplotlib.text.Text object at 0x1b2f8410>
+: <matplotlib.text.Text object at 0x1b2fae10>
+
+[[./images/ode-specific-1.png]]
+
+You can see the solution is near two seconds. Now we create an interpolating function to evaluate the solution. We will plot the interpolating function on a finer grid to make sure it seems reasonable.
+
+#+BEGIN_SRC python :session
+ca_func = interp1d(tspan, Ca, 'cubic')
+
+itime = np.linspace(0, 10, 200)
+
+plt.figure()
+plt.plot(tspan, Ca, '.')
+plt.plot(itime, ca_func(itime), 'b-')
+
+plt.xlabel('Time (s)')
+plt.ylabel('$C_A$ (mol/L)')
+plt.legend(['solution','interpolated'])
+plt.savefig('images/ode-specific-2.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> <matplotlib.figure.Figure object at 0x1b2dfed0>
+: [<matplotlib.lines.Line2D object at 0x1c103b90>]
+: [<matplotlib.lines.Line2D object at 0x1c107050>]
+: >>> <matplotlib.text.Text object at 0x1c0e65d0>
+: <matplotlib.text.Text object at 0x1b95bfd0>
+: <matplotlib.legend.Legend object at 0x1c107550>
+
+[[./images/ode-specific-2.png]]
+
+that loos pretty reasonable. Now we solve the problem.
+
+#+BEGIN_SRC python :session
+tguess = 2.0
+tsol, = fsolve(lambda t: 1.0 - ca_func(t), tguess)
+print tsol
+
+# you might prefer an explicit function
+def func(t):
+    return 1.0 - ca_func(t)
+
+tsol2, = fsolve(func, tguess)
+print tsol2
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> 2.4574668235
+: >>> ... ... >>> 2.4574668235
+
+That is it. Interpolation can provide a simple way to evaluate the numerical solution of an ODE at other values.
+
+For completeness we examine a final way to construct the function. We can actually integrate the ODE in the function to evaluate the solution at the point of interest. If it is not computationally expensive to evaluate the ODE solution this works fine. Note, however, that the ODE will get integrated from 0 to the value t for each iteration of fsolve.
+
+#+BEGIN_SRC python :session
+def func(t):
+    tspan = [0, t]
+    sol = odeint(dCadt, Ca0, tspan)
+    return 1.0 - sol[-1]
+
+tsol3, = fsolve(func, tguess)
+print tsol3
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... >>> >>> 2.45746688202
+
 *** TODO http://matlab.cheme.cmu.edu/2011/08/05/a-simple-first-order-ode-evaluated-at-specific-points/
 *** TODO http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/
 *** TODO http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events/
@@ -5295,7 +5565,58 @@ You can see that the 1/interpolated f(x) underestimates the value, while interpo
 
 So which is the best to interpolate? I think you should interpolate the quantity that is linear in the problem you want to solve, so in this case I think interpolating 1/f(x) is better. When you use an interpolated function in a nonlinear function, strange, unintuitive things can happen. That is why the blue curve looks odd. Between data points are linear segments in the original interpolation, but when you invert them, you cause the curvature to form.
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/01/interpolation-of-data/
+** Interpolation of data
+[[http://matlab.cheme.cmu.edu/2011/08/01/interpolation-of-data/][Matlab post]]
+
+When we have data at two points but we need data in between them we use interpolation. Suppose we have the points (4,3) and (6,2) and we want to know the value of y at x=4.65, assuming y varies linearly between these points. we use the interp1d command to achieve this. The syntax in python is slightly different than in matlab.
+
+#+BEGIN_SRC python
+from scipy.interpolate import interp1d
+
+x = [4, 6]
+y = [3, 2]
+
+ifunc = interp1d(x, y)
+
+print ifunc(4.65)
+
+
+ifunc = interp1d(x, y, bounds_error=False) # do not raise error on out of bounds
+print ifunc([4.65, 5.01, 4.2, 9])
+#+END_SRC
+
+#+RESULTS:
+: 2.675
+: [ 2.675  2.495  2.9      nan]
+
+The default interpolation method is simple linear interpolation between points. Other methods exist too, such as fitting a cubic spline to the data and using the spline representation to interpolate from.
+
+#+BEGIN_SRC python
+from scipy.interpolate import interp1d
+
+x = [1, 2, 3, 4];
+y = [1, 4, 9, 16]; # y = x^2
+
+xi = [ 1.5, 2.5, 3.5]; # we want to interpolate on these values
+y1 = interp1d(x,y)
+
+print y1(xi)
+
+y2 = interp1d(x,y,'cubic')
+print y2(xi)
+
+import numpy as np
+print np.array(xi)**2
+#+END_SRC
+
+#+RESULTS:
+: [  2.5   6.5  12.5]
+: [  2.25   6.25  12.25]
+: [  2.25   6.25  12.25]
+
+In this case the cubic spline interpolation is  more accurate than the linear interpolation. That is because the underlying data was polynomial in nature, and a spline is like a polynomial. That may not always be the case, and you need some engineering judgement to know which method is best.
+
+
 ** Interpolation with splines
    :PROPERTIES:
    :categories: [interpolation]
