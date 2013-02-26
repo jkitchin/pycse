@@ -52,7 +52,6 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-
 def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     '''ode wrapper with events
     func is callable, with signature func(Y, x, *args)
@@ -73,26 +72,32 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     only zeros where the event function is decreasing.  
     '''
 
-    x0 = xspan[0]
-    xf = xspan[-1]
+    x0 = xspan[0]  # initial point
+    xf = xspan[-1] # final point
 
-    f0 = func(y0, x0)
+    f0 = func(y0, x0) # value of ode at initial point
 
     X = [x0]
     sol = [y0]
-
+    TE, YE, IE = [], [], [] # where events occur
+    
+    # initial value of events
     e = np.zeros((len(events), len(xspan)))
     for i,event in enumerate(events):
         e[i,0], isterminal, direction = event(y0, x0)
-
-    TE, YE, IE = [], [], []
 
     # now we step through the integration
     for i, x1 in enumerate(xspan[0:-2]):
         x2 = xspan[i + 1]
         f1 = sol[i]
 
-        f2 = odeint(func, f1, [x1, x2])
+        if 'full_output' in kwargs:
+            f2, output = odeint(func, f1, [x1, x2], **kwargs)
+            if output['message'] != 'Integration successful.':
+                print output
+        else:
+            f2 = odeint(func, f1, [x1, x2], **kwargs)
+        
         X += [x2]
         sol += [f2[-1][0]]
 
@@ -114,6 +119,8 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                 ePt = e[j, i]
 
                 k = 0
+                ISTERMINAL = False # assume this is the case
+                
                 while k < 100: # max iterations
                     if np.abs(xLt - xPt) < TOLERANCE:
                         # we know the interval to a prescribed precision now.
@@ -149,18 +156,32 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                     #estimated x where the zero is      
                     new_x = -ePt / m + xPt
 
+                    # check if new_x is sufficiently different from xPt
+                    if np.abs(new_x - xPt) < TOLERANCE:
+                        # it is not different, so we do not go forward
+                        xLt = new_x
+                        continue                        
+
                     # now get the new value of the integrated solution at
                     # that new x
-                    f  = odeint(func, fPt, [xPt, new_x])
+                    if 'full_output' in kwargs:
+                        f, output  = odeint(func, fPt, [xPt, new_x], **kwargs)
+                        if output['message'] != 'Integration successful.':
+                            print output
+                    else:
+                        f  = odeint(func, fPt, [xPt, new_x], **kwargs)
+                        
                     new_f = f[-1][-1]
                     new_e, isterminal, direction = event(new_f, new_x)
 
                     # now check event sign change
                     if eLt * new_e > 0:
+                        # no sign change
                         xPt = new_x
                         fPt = new_f
                         ePt = new_e
                     else:
+                        # there was a sign change
                         xLt = new_x
                         fLt = new_f
                         eLt = new_e
