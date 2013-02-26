@@ -201,7 +201,61 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     return X, sol, TE, YE, IE
 
 
+def deriv(x, y, method='two-point'):
+    '''compute the numerical derivate dydx
+    method = 'two-point': centered difference
+             'four-point': centered 4-point difference
+    '''
+    if method == 'two-point':
+        dydx = np.zeros(y.shape,np.float) #we know it will be this size
+        dydx[1:-1] = (y[2:] - y[0:-2]) / (x[2:] - x[0:-2])
 
+        # now the end points
+        dydx[0] = (y[1] - y[0]) / (x[1] - x[0])
+        dydx[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
+        return dydx
 
+    elif method == 'four-point':
+        dydx = np.zeros(y.shape, np.float) #we know it will be this size
+        h = x[1] - x[0] #this assumes the points are evenely spaced!
+        dydx[2:-2] = (y[0:-4] - 8 * y[1:-3] + 8 * y[3:-1] - y[4:]) / (12.0 * h)
 
-    
+        # simple differences at the end-points
+        dydx[0] = (y[1] - y[0])/(x[1] - x[0])
+        dydx[1] = (y[2] - y[1])/(x[2] - x[1])
+        dydx[-2] = (y[-2] - y[-3]) / (x[-2] - x[-3])
+        dydx[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
+        return dydx
+
+    elif method == 'fft':
+        # for this method, we have to start at zero.
+        # we translate our variable to zero, perform the calculation, and then
+        # translate back
+        xp = np.array(x)
+        xp -= x[0]
+        
+        N = len(xp)
+        L = xp[-1]
+        
+        if N % 2 == 0:
+            k = np.asarray(range(0, N / 2) + [0] + range(-N / 2 + 1,0))
+        else:
+            k = np.asarray(range(0,(N - 1) / 2) + [0] + range(-(N - 1) / 2, 0))
+
+        k *= 2 * np.pi / L
+
+        fd = np.fft.ifft(1.0j * k * np.fft.fft(y))
+        return fd
+
+if __name__ == '__main__':
+    N = 101 #number of points
+    L = 2 * np.pi #interval of data
+
+    x = np.arange(0.0, L, L/float(N)) #this does not include the endpoint
+    y = np.sin(x) + 0.05 * np.random.random(size=x.shape)
+
+    dydx = deriv(x, y, 'fft')
+
+    import matplotlib.pyplot as plt
+    plt.plot(x, dydx)
+    plt.show()
