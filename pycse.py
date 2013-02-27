@@ -245,7 +245,7 @@ def deriv(x, y, method='two-point'):
         k *= 2 * np.pi / L
 
         fd = np.fft.ifft(1.0j * k * np.fft.fft(y))
-        return fd
+        return np.real(fd)
 
 if __name__ == '__main__':
     N = 101 #number of points
@@ -257,5 +257,5 @@ if __name__ == '__main__':
     dydx = deriv(x, y, 'fft')
 
     import matplotlib.pyplot as plt
-    plt.plot(x, dydx)
+    plt.plot(x, dydx, x, np.cos(x))
     plt.show()
