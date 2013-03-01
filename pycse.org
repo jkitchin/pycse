@@ -20,7 +20,7 @@
 * Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
-* Basic python usage
+* DONE Basic python usage
 ** Some basic data structures in python
    :PROPERTIES:
    :categories: python
@@ -3007,7 +3007,7 @@ for te, ye in zip(TE, YE):
 
 ** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
 
-* Differential equations
+* DONE Differential equations
 ** Ordinary differential equations
 *** Numerical solution to a simple ode
     :PROPERTIES:
@@ -4469,7 +4469,7 @@ There is no equivalent of this Matlab function in scipy.
 ** Partial differential equations
 *** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
 I do not think there is a way to do this in scipy.
-* Statistics
+* DONE Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
    :categories: statistics
@@ -5271,7 +5271,7 @@ print '{0:%} of samples are within +- 2standard deviations of the mean'.format(b
 *** Summary
 We only considered the numpy.random functions here, and not all of them. There are many distributions of random numbers to choose from. There are also random numbers in the python random module. Remember these are only [[http://en.wikipedia.org/wiki/Pseudorandom_number_generator][pseudorandom]] numbers, but they are still useful for many applications.
 
-* Data analysis
+* DONE Data analysis
 ** Fit a line to numerical data
    :PROPERTIES:
    :categories: data analysis
@@ -5956,7 +5956,7 @@ print x,y
 #+RESULTS:
 : [ 1.  3.  5.  4.] [ 3.  4.  6.  8.]
 
-* Interpolation
+* DONE Interpolation
 ** Better interpolate than never
    :PROPERTIES:
    :categories: interpolation
@@ -6229,7 +6229,6 @@ print np.array(xi)**2
 
 In this case the cubic spline interpolation is  more accurate than the linear interpolation. That is because the underlying data was polynomial in nature, and a spline is like a polynomial. That may not always be the case, and you need some engineering judgement to know which method is best.
 
-
 ** Interpolation with splines
    :PROPERTIES:
    :categories: interpolation
@@ -6280,7 +6279,7 @@ plt.savefig('images/splinefit.png')
 
 There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html
 
-* Optimization
+* DONE Optimization
 ** Using Lagrange multipliers in optimization
    :PROPERTIES:
    :categories: optimization
@@ -7359,8 +7358,299 @@ plt.savefig('images/boiling-water.png')
 
 The answer we get us 0.05 K too high, which is not bad considering we estimated it using parameters that were fitted to thermodynamic data and that had finite precision and extrapolated the steam properties below the region the parameters were stated to be valid for.
 
-** TODO http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/
-** TODO http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/
+** Gibbs energy minimization and the NIST webbook
+   :PROPERTIES:
+   :categories: thermodynamics, optimization
+   :date:     2013/03/01 13:11:58
+   :updated:  2013/03/01 13:11:58
+   :permalink: http://jkitchin.github.com/blog/2013-03-01-gibbs-energy-minimization-and-the-nist-webbook/index.html
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/][Matlab post]]
+In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs energy of reaction, and then used a reaction extent variable to compute the equilibrium concentrations of each species for the water gas shift reaction.
+
+Today, we look at the direct minimization of the Gibbs free energy of the species, with no assumptions about stoichiometry of reactions. We only apply the constraint of conservation of atoms. We use the NIST Webbook to provide the data for the Gibbs energy of each species.
+
+As a reminder we consider equilibrium between the species $CO$, $H_2O$, $CO_2$ and $H_2$, at 1000K, and 10 atm total pressure with an initial equimolar molar flow rate of $CO$ and $H_2O$.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+T = 1000  # K
+R = 8.314e-3 # kJ/mol/K
+
+P = 10.0 # atm, this is the total pressure in the reactor
+Po = 1.0 # atm, this is the standard state pressure
+#+END_SRC
+
+#+RESULTS:
+
+We are going to store all the data and calculations in vectors, so we need to assign each position in the vector to a species. Here are the definitions we use in this work.
+
+#+BEGIN_EXAMPLE
+1  CO
+2  H2O
+3  CO2
+4  H2
+#+END_EXAMPLE
+
+#+BEGIN_SRC python :session
+species = ['CO', 'H2O', 'CO2', 'H2']
+
+# Heats of formation at 298.15 K
+
+Hf298 = [
+    -110.53,  # CO
+    -241.826, # H2O
+    -393.51,  # CO2
+       0.0]   # H2
+
+# Shomate parameters for each species
+#           A          B           C          D          E            F          G       H
+WB = [[25.56759,  6.096130,     4.054656,  -2.671301,  0.131021, -118.0089, 227.3665,   -110.5271],  # CO
+      [30.09200,  6.832514,     6.793435,  -2.534480,  0.082139, -250.8810, 223.3967,   -241.8264],  # H2O
+      [24.99735,  55.18696,   -33.69137,    7.948387, -0.136638, -403.6075, 228.2431,   -393.5224],  # CO2
+      [33.066178, -11.363417,  11.432816,  -2.772874, -0.158558, -9.980797, 172.707974,    0.0]]     # H2
+
+WB = np.array(WB)
+
+# Shomate equations
+t = T/1000
+T_H = np.array([t,  t**2 / 2.0, t**3 / 3.0, t**4 / 4.0, -1.0 / t, 1.0, 0.0, -1.0])
+T_S = np.array([np.log(t), t,  t**2 / 2.0,  t**3 / 3.0, -1.0 / (2.0 * t**2), 0.0, 1.0, 0.0])
+
+H = np.dot(WB, T_H)        # (H - H_298.15) kJ/mol
+S = np.dot(WB, T_S/1000.0) # absolute entropy kJ/mol/K
+
+Gjo = Hf298 + H - T*S      # Gibbs energy of each component at 1000 K
+#+END_SRC
+
+#+RESULTS:
+
+Now, construct the Gibbs free energy function, accounting for the change in activity due to concentration changes (ideal mixing).
+#+BEGIN_SRC python :session
+def func(nj):
+    nj = np.array(nj)
+    Enj = np.sum(nj);
+    Gj =  Gjo / (R * T) + np.log(nj / Enj * P / Po)
+    return np.dot(nj, Gj)
+#+END_SRC
+
+#+RESULTS:
+
+We impose the constraint that all atoms are conserved from the initial conditions to the equilibrium distribution of species. These constraints are in the form of $A_{eq} n = b_{eq}$, where $n$ is the vector of mole numbers for each species.
+
+#+BEGIN_SRC python :session
+Aeq = np.array([[ 1,    0,    1,    0],  # C balance
+                [ 1,    1,    2,    0],  # O balance
+                [ 0,    2,    0,    2]]) # H balance
+
+# equimolar feed of 1 mol H2O and 1 mol CO
+beq = np.array([1,  # mol C fed
+                2,  # mol O fed
+                2]) # mol H fed
+
+def ec1(nj):
+    'conservation of atoms constraint'
+    return np.dot(Aeq, nj) - beq
+#+END_SRC
+
+#+RESULTS:
+
+Now we are ready to solve the problem. 
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fmin_slsqp
+
+n0 = [0.5, 0.5, 0.5, 0.5]  # initial guesses
+N = fmin_slsqp(func, n0, f_eqcons=ec1)
+print N
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -91.204832308
+:             Iterations: 2
+:             Function evaluations: 13
+:             Gradient evaluations: 2
+: [ 0.45502309  0.45502309  0.54497691  0.54497691]
+
+*** Compute mole fractions and partial pressures
+
+The pressures here are in good agreement with the pressures found by other methods. The minor disagreement (in the third or fourth decimal place) is likely due to convergence tolerances in the different algorithms used.
+
+#+BEGIN_SRC python :session
+yj = N / np.sum(N)
+Pj = yj * P
+
+for s, y, p in zip(species, yj, Pj):
+    print '{0:10s}: {1:1.2f} {2:1.2f}'.format(s, y, p)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> ... ... CO        : 0.23 2.28
+: H2O       : 0.23 2.28
+: CO2       : 0.27 2.72
+: H2        : 0.27 2.72
+
+*** Computing equilibrium constants
+
+We can compute the equilibrium constant for the reaction $CO + H_2O \rightleftharpoons CO_2 + H_2$. Compared to the value of K = 1.44 we found at the end of Post 1536 , the agreement is excellent. Note, that to define an equilibrium constant it is necessary to specify a reaction, even though it is not necessary to even consider a reaction to obtain the equilibrium distribution of species!
+
+#+BEGIN_SRC python :session
+nuj = np.array([-1, -1, 1, 1])  # stoichiometric coefficients of the reaction
+K = np.prod(yj**nuj)
+print K
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> 1.43446295961
+
+** Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
+   :PROPERTIES:
+   :date:     2013/03/01 12:27:48
+   :updated:  2013/03/01 12:27:48
+   :permalink: http://jkitchin.github.com/blog/2013-03-01-finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/index.html
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/][Matlab post]]
+Adapted from problem 4.5 in Cutlip and Shacham
+Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 1000K at a ratio of 4 mol H2O to 1 mol ethane. Estimate the equilibrium distribution of products (CH4, C2H4, C2H2, CO2, CO, O2, H2, H2O, and C2H6).
+
+Solution method: We will construct a Gibbs energy function for the mixture, and obtain the equilibrium composition by minimization of the function subject to elemental mass balance constraints.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+R = 0.00198588 # kcal/mol/K
+T = 1000 # K
+
+species = ['CH4', 'C2H4', 'C2H2', 'CO2', 'CO', 'O2', 'H2', 'H2O', 'C2H6']
+
+# $G_^\circ for each species. These are the heats of formation for each
+# species.
+Gjo = np.array([4.61, 28.249, 40.604, -94.61, -47.942, 0, 0, -46.03, 26.13]) # kcal/mol
+#+END_SRC
+
+#+RESULTS:
+
+*** The Gibbs energy of a mixture
+
+We start with $G=\sum\limits_j n_j \mu_j$. Recalling that we define $\mu_j = G_j^\circ + RT \ln a_j$, and in the ideal gas limit, $a_j = y_j P/P^\circ$, and that $y_j = \frac{n_j}{\sum n_j}$. Since in this problem, P = 1 atm, this leads to the function $\frac{G}{RT} = \sum\limits_{j=1}^n n_j\left(\frac{G_j^\circ}{RT} + \ln \frac{n_j}{\sum n_j}\right)$.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+def func(nj):
+    nj = np.array(nj)
+    Enj = np.sum(nj);
+    G = np.sum(nj * (Gjo / R / T + np.log(nj / Enj)))
+    return G
+#+END_SRC
+
+#+RESULTS:
+
+*** Linear equality constraints for atomic mass conservation
+
+The total number of each type of atom must be the same as what entered the reactor. These form equality constraints on the equilibrium composition. We express these constraints as: $A_{eq} n = b$ where $n$ is a vector of the moles of each species present in the mixture. CH4 C2H4 C2H2 CO2 CO O2 H2 H2O C2H6
+
+#+BEGIN_SRC python :session
+Aeq = np.array([[0,   0,    0,   2,   1,  2,  0,  1,   0],      # oxygen balance
+                [4,   4,    2,   0,   0,  0,  2,  2,   6],      # hydrogen balance
+                [1,   2,    2,   1,   1,  0,  0,  0,   2]])     # carbon balance
+
+# the incoming feed was 4 mol H2O and 1 mol ethane
+beq = np.array([4,  # moles of oxygen atoms coming in
+                14, # moles of hydrogen atoms coming in
+                2]) # moles of carbon atoms coming in
+
+def ec1(n):
+    'equality constraint'
+    return np.dot(Aeq, n) - beq
+
+#+END_SRC
+
+#+RESULTS:
+
+Now we solve the problem.
+
+#+BEGIN_SRC python :session
+# initial guess suggested in the example
+n0 = [1e-3, 1e-3, 1e-3, 0.993, 1.0, 1e-4, 5.992, 1.0, 1e-3] 
+
+from scipy.optimize import fmin_slsqp
+
+X = fmin_slsqp(func, n0, f_eqcons=ec1, iter=300, acc=1e-12)
+
+for s,x in zip(species, X):
+    print '{0:10s} {1:1.4g}'.format(s, x)
+
+# check that constraints were met
+print np.dot(Aeq, X) - beq
+print np.all( np.abs( np.dot(Aeq, X) - beq) < 1e-12)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> >>> >>> >>> Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -104.403947663
+            Iterations: 217
+            Function evaluations: 2937
+            Gradient evaluations: 217
+>>> ... ... CH4        0.06694
+C2H4       8.108e-08
+C2H2       5.174e-08
+CO2        0.5441
+CO         1.389
+O2         1.222e-14
+H2         5.343
+H2O        1.523
+C2H6       8.44e-08
+... [ -1.66977543e-13   1.77635684e-15   4.44089210e-16]
+True
+#+end_example
+
+I found it necessary to tighten the accuracy parameter to get pretty good matches to the solutions found in Matlab. It was also necessary to increase the number of iterations. Even still, not all of the numbers match well, especially the very small numbers. You can, however, see that the constraints were satisfied pretty well.
+
+
+Interestingly there is a distribution of products! That is interesting because only steam and ethane enter the reactor, but a small fraction of methane is formed! The main product is hydrogen. The stoichiometry of steam reforming is ideally $C_2H_6 + 4H_2O \rightarrow 2CO_2 + 7 H2$. Even though nearly all the ethane is consumed, we do not get the full yield of hydrogen. It appears that another equilibrium, one between CO, CO2, H2O and H2, may be limiting that, since the rest of the hydrogen is largely in the water. It is also of great importance that we have not said anything about reactions, i.e. how these products were formed. 
+
+The water gas shift reaction is: $CO + H_2O \rightleftharpoons CO_2 + H_2$. We can compute the Gibbs free energy of the reaction from the heats of formation of each species. Assuming these are the formation energies at 1000K, this is the reaction free energy at 1000K.
+
+#+BEGIN_SRC python :session
+G_wgs = Gjo[3] + Gjo[6] - Gjo[4] - Gjo[7]
+print G_wgs
+
+K = np.exp(-G_wgs / (R*T))
+print K
+#+END_SRC
+
+#+RESULTS:
+: 
+: -0.638
+: >>> >>> 1.37887528109
+
+*** Equilibrium constant based on mole numbers
+
+One normally uses activities to define the equilibrium constant. Since there are the same number of moles on each side of the reaction all factors that convert mole numbers to activity, concentration or pressure cancel, so we simply consider the ratio of mole numbers here.
+
+#+BEGIN_SRC python :session
+print (X[3] * X[6]) / (X[4] * X[7])
+#+END_SRC
+
+#+RESULTS:
+: 1.37450039394
+
+This is close, but not exactly the same as the equilibrium constant computed above. I think they should be exactly the same, and the difference is due to convergence errors in the solution to the problem.
+
+Clearly, there is an equilibrium between these species that prevents the complete reaction of steam reforming.
+
+*** Summary
+
+This is an appealing way to minimize the Gibbs energy of a mixture. No assumptions about reactions are necessary, and the constraints are easy to identify. The Gibbs energy function is especially easy to code.
+
 ** The Gibbs free energy of a reacting mixture and the equilibrium composition
    :PROPERTIES:
    :categories: optimization, thermodynamics, reaction engineering
@@ -8186,7 +8476,6 @@ for cmpd, yi in zip(compounds, y):
 : y_acetone    = 0.308
 : y_methanol   = 0.242
 
-
 ** The equal area method for the van der Waals equation
    :PROPERTIES:
    :categories: Thermodynamics, plotting
@@ -8912,7 +9201,216 @@ You can see the overall mole fraction of Ni is practically the same in each case
 
 ** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
 ** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
-** TODO http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/
+** Meet the steam tables
+   :PROPERTIES:
+   :categories: thermodynamics, steam
+   :date:     2013/02/28 22:09:29
+   :updated:  2013/02/28 22:19:03
+   :permalink: http://jkitchin.github.com/blog/2013-02-28-meet-the-steam-tables/index.html
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/][Matlab post]]
+
+We will use the [[https://pypi.python.org/pypi/iapws][iapws]] module. Install it like this:
+
+#+BEGIN_SRC sh
+pip install iapws
+#+END_SRC
+
+Problem statement: A Rankine cycle operates using steam with the condenser at 100 degC, a pressure of 3.0 MPa and temperature of 600 degC in the boiler. Assuming the compressor and turbine operate reversibly, estimate the efficiency of the cycle.
+
+Starting point in the Rankine cycle in condenser.
+
+we have saturated liquid here, and we get the thermodynamic properties for the given temperature. In this python module, these properties are all in attributes of an IAPWS object created at a set of conditions.
+
+*** Starting point in the Rankine cycle in condenser.
+
+we have saturated liquid here, and we get the thermodynamic properties for the given temperature.
+
+#+BEGIN_SRC python :session
+from iapws import IAPWS97
+
+T1 = 100 + 273.15 #in K
+
+sat_liquid1  = IAPWS97(T=T1, x=0) # x is the steam quality. 0 = liquid
+
+P1 = sat_liquid1.P
+s1 = sat_liquid1.s
+h1 = sat_liquid1.h
+v1 = sat_liquid1.v
+#+END_SRC
+
+#+RESULTS:
+
+*** Isentropic compression of liquid to point 2
+
+The final pressure is given, and we need to compute the new temperatures, and enthalpy.
+
+#+BEGIN_SRC python :session
+P2 = 3.0 # MPa
+s2 = s1 # this is what isentropic means
+
+sat_liquid2 = IAPWS97(P=P2, s=s1)
+T2, = sat_liquid2.T
+h2 = sat_liquid2.h
+
+# work done to compress liquid. This is an approximation, since the
+# volume does change a little with pressure, but the overall work here
+# is pretty small so we neglect the volume change.
+WdotP = v1*(P2 - P1);
+print
+print('The compressor work is: {0:1.4f} kJ/kg'.format(WdotP))
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> ... ... ... >>>
+: The compressor work is: 0.0030 kJ/kg
+
+The compression work is almost negligible. This number is 1000 times smaller than we computed with Xsteam. I wonder what the units of v1 actually are.
+
+*** Isobaric heating to T3 in boiler where we make steam
+
+#+BEGIN_SRC python :session
+T3 = 600 + 273.15 # K
+P3 = P2 # definition of isobaric
+steam = IAPWS97(P=P3, T=T3)
+
+h3 = steam.h
+s3 = steam.s
+
+Qb, = h3 - h2 # heat required to make the steam
+
+print
+print 'The boiler heat duty is: {0:1.2f} kJ/kg'.format(Qb)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>>
+: The boiler heat duty is: 3260.69 kJ/kg
+
+*** Isentropic expansion through turbine to point 4
+#+BEGIN_SRC python :session
+steam =  IAPWS97(P=P1, s=s3)
+T4, = steam.T
+h4 = steam.h
+s4 = s3 # isentropic
+Qc, = h4 - h1 # work required to cool from T4 to T1
+print 
+print 'The condenser heat duty is {0:1.2f} kJ/kg'.format(Qc)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>>
+: The condenser heat duty is 2317.00 kJ/kg
+
+*** To get from point 4 to point 1
+#+BEGIN_SRC python :session
+WdotTurbine, = h4 - h3 # work extracted from the expansion
+print('The turbine work is: {0:1.2f} kJ/kg'.format(WdotTurbine))
+#+END_SRC
+
+#+RESULTS:
+: 
+: The turbine work is: -946.71 kJ/kg
+
+*** Efficiency
+
+This is a ratio of the work put in to make the steam, and the net work obtained from the turbine. The answer here agrees with the efficiency calculated in Sandler on page 135.
+
+#+BEGIN_SRC python :session
+eta = -(WdotTurbine - WdotP) / Qb
+print('The overall efficiency is {0:1.2%}.'.format(eta))
+#+END_SRC
+
+#+RESULTS:
+: 
+: The overall efficiency is 29.03%.
+
+*** Entropy-temperature chart
+
+The IAPWS module makes it pretty easy to generate figures of the steam tables. Here we generate an entropy-Temperature graph. We do this to illustrate the path of the Rankine cycle. We need to compute the values of steam entropy for a range of pressures and temperatures.
+
+#+BEGIN_SRC python  :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.figure()
+plt.clf()
+T = np.linspace(300, 372+273, 200) # range of temperatures
+for P in [0.1, 1, 2, 5, 10, 20]: #MPa
+    steam = [IAPWS97(T=t, P=P) for t in T]
+    S = [s.s for s in steam]
+    plt.plot(S, T, 'k-')
+
+# saturated vapor and liquid entropy lines
+svap = [s.s for s in [IAPWS97(T=t, x=1) for t in T]]
+sliq = [s.s for s in [IAPWS97(T=t, x=0) for t in T]]
+
+plt.plot(svap, T, 'r-')
+plt.plot(sliq, T, 'b-')
+
+plt.xlabel('Entropy (kJ/(kg K)')
+plt.ylabel('Temperature (K)')
+plt.savefig('images/iawps-steam.png')
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> >>> <matplotlib.figure.Figure object at 0x0000000008504F60>
+>>> >>> ... ... ... ... [<matplotlib.lines.Line2D object at 0x00000000084F2320>]
+[<matplotlib.lines.Line2D object at 0x00000000084F0DD8>]
+[<matplotlib.lines.Line2D object at 0x00000000084CC470>]
+[<matplotlib.lines.Line2D object at 0x000000000879AD68>]
+[<matplotlib.lines.Line2D object at 0x00000000087A3208>]
+[<matplotlib.lines.Line2D object at 0x00000000087A3668>]
+... >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000008504D30>]
+[<matplotlib.lines.Line2D object at 0x00000000087A3AC8>]
+>>> <matplotlib.text.Text object at 0x000000000878D4E0>
+<matplotlib.text.Text object at 0x000000000878EC50>
+#+end_example
+
+
+[[./images/iawps-steam.png]]
+
+
+We can plot our Rankine cycle path like this. We compute the entropies along the non-isentropic paths.
+
+#+BEGIN_SRC python :session
+T23 = np.linspace(T2, T3)
+S23 = [s.s for s in [IAPWS97(P=P2, T=t) for t in T23]]
+
+T41 = np.linspace(T4, T1 - 0.01) # subtract a tiny bit to make sure we get a liquid
+S41 = [s.s for s in [IAPWS97(P=P1, T=t) for t in T41]]
+#+END_SRC
+
+#+RESULTS:
+
+And then we plot the paths.
+
+#+BEGIN_SRC python :session
+plt.plot([s1, s2], [T1, T2], 'r-', lw=4) # Path 1 to 2
+plt.plot(S23, T23, 'b-', lw=4) # path from 2 to 3 is isobaric
+plt.plot([s3, s4], [T3, T4], 'g-', lw=4) # path from 3 to 4 is isentropic
+plt.plot(S41, T41, 'k-', lw=4) # and from 4 to 1 is isobaric
+plt.savefig('images/iawps-steam-2.png')
+#+END_SRC
+
+#+RESULTS:
+: [<matplotlib.lines.Line2D object at 0x0000000008787438>]
+: [<matplotlib.lines.Line2D object at 0x00000000087A3F28>]
+: [<matplotlib.lines.Line2D object at 0x00000000087BA400>]
+: [<matplotlib.lines.Line2D object at 0x00000000087BA6D8>]
+
+[[./images/iawps-steam-2.png]]
+
+*** Summary
+
+This was an interesting exercise. On one hand, the tedium of interpolating the steam tables is gone. On the other hand, you still have to know exactly what to ask for to get an answer that is correct. The iapws interface is a little clunky, and takes some getting used to. It does not seem as robust as the Xsteam module I used in Matlab.
+
 * Units
 ** TODO http://matlab.cheme.cmu.edu/2011/08/05/using-cmu-units-in-matlab-for-basic-calculations/
 ** Using units in python
