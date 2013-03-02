@@ -16,7 +16,7 @@
 #+Latex_header: \usepackage{underscore}
 #+Latex_header: \usepackage{makeidx}
 #+Latex_header: \makeindex
-
+ 
 * Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
@@ -163,7 +163,7 @@ print 8.1 - 5
 Multiplication is equally straightforward.
 #+BEGIN_SRC python
 print 5 * 4
-print 3.1*2
+print 3.1 * 2
 #+END_SRC
 
 #+RESULTS:
@@ -1383,7 +1383,7 @@ plt.show()
    :date:     2013/02/26 09:00:00
    :updated:  2013/02/27 14:51:24
    :END:
-index:derivative:FFT
+index:derivative!FFT
 
 #+BEGIN_SRC python 
 import numpy as np
@@ -2305,8 +2305,97 @@ print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
 That is all there is too it!
 ** TODO Romberg integration
 http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html
-** TODO http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/
-* Linear algebra
+** Symbolic math in python
+   :PROPERTIES:
+   :categories: symbolic, math
+   :date:     2013/03/01 19:07:48
+   :updated:  2013/03/01 19:07:48
+   :permalink: http://jkitchin.github.com/blog/2013/03/01-symbolic-math-in-python/index.html
+   :END:
+ [[http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/][Matlab post]]
+Python has capability to do symbolic math through the sympy package. 
+*** Solve the quadratic equation
+#+BEGIN_SRC python :session
+from sympy import solve, symbols, pprint
+
+a,b,c,x = symbols('a,b,c,x')
+
+f = a*x**2 + b*x + c
+
+solution = solve(f, x)
+print solution
+pprint(solution)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> [(-b + (-4*a*c + b**2)**(1/2))/(2*a), -(b + (-4*a*c + b**2)**(1/2))/(2*a)]
+: _____________   /       _____________\ 
+:         /           2    |      /           2 | 
+:  -b + \/  -4*a*c + b    -\b + \/  -4*a*c + b  / 
+: [---------------------, -----------------------]
+:           2*a                     2*a
+
+The solution you should recognize in the form of $\frac{b \pm \sqrt{b^2 - 4 a c}}{2 a}$ although python does not print it this nicely!
+
+*** differentiation
+
+you might find this helpful!
+
+#+BEGIN_SRC python :session
+from sympy import diff
+
+print diff(f, x)
+print diff(f, x, 2)
+
+print diff(f, a)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> 2*a*x + b
+: 2*a
+: >>> x**2
+
+*** integration
+#+BEGIN_SRC python :session
+from sympy import integrate
+
+print integrate(f, x)          # indefinite integral
+print integrate(f, (x, 0, 1))  # definite integral from x=0..1
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> a*x**3/3 + b*x**2/2 + c*x
+: a/3 + b/2 + c
+
+*** Analytically solve a simple ODE
+#+BEGIN_SRC python :session
+from sympy import Function, Symbol, dsolve
+f = Function('f')
+x = Symbol('x')
+fprime = f(x).diff(x) - f(x) # f' = f(x)
+
+y = dsolve(fprime, f(x))
+
+print y
+print y.subs(x,4)
+print [y.subs(x, X) for X in [0, 0.5, 1]] # multiple values
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> f(x) == exp(C1 + x)
+: f(4) == exp(C1 + 4)
+: [f(0) == exp(C1), f(0.5) == exp(C1 + 0.5), f(1) == exp(C1 + 1)]
+
+It is not clear you can solve the initial value problem to get C1.
+
+The symbolic math in sympy is pretty good. It is not up to the capability of Maple or Mathematica, (but neither is Matlab) but it continues to be developed, and could be helpful in some situations.
+
+* DONE Linear algebra
+  CLOSED: [2013-03-01 Fri 18:07]
 ** Sums products and linear algebra notation - avoiding loops where possible
    :PROPERTIES:
    :categories: Linear algebra
@@ -2474,7 +2563,158 @@ errors in the code. Admittedly, it introduces the opportunity for
 new types of errors, like using the wrong relationship, or linear
 algebra errors due to matrix size mismatches.
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/
+** Determining linear independence of a set of vectors
+   :PROPERTIES:
+   :categories: Linear algebra, reaction engineering
+   :date:     2013/03/01 16:44:46
+   :updated:  2013/03/01 16:44:46
+   :permalink: http://jkitchin.github.com/blog/2013/03/01-determining-linear-independence-of-a-set-of-vectors/index.html
+   :END:
+ [[http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/][Matlab post]]
+Occasionally we have a set of vectors and we need to determine whether the vectors are linearly independent of each other. This may be necessary to determine if the vectors form a basis, or to determine how many independent equations there are, or to determine how many independent reactions there are.
+
+Reference: Kreysig, Advanced Engineering Mathematics, sec. 7.4
+
+Matlab provides a rank command which gives you the number of singular values greater than some tolerance. The numpy.rank function, unfortunately, does not do that. It returns the number of dimensions in the array. We will just compute the rank from singular value decomposition.
+
+The default tolerance used in Matlab is max(size(A))*eps(norm(A)). Let us break that down. eps(norm(A)) is the positive distance from abs(X) to the next larger in magnitude floating point number of the same precision as X. Basically, the smallest significant number. We multiply that by the size of A, and take the largest number. We have to use some judgment in what the tolerance is, and what "zero" means.
+
+#+BEGIN_SRC python :session
+import numpy as np
+v1 = [6, 0, 3, 1, 4, 2];
+v2 = [0, -1, 2, 7, 0, 5];
+v3 = [12, 3, 0, -19, 8, -11];
+
+A = np.row_stack([v1, v2, v3])
+
+# matlab definition
+eps = np.finfo(np.linalg.norm(A).dtype).eps
+TOLERANCE = max(eps * np.array(A.shape))
+
+U, s, V = np.linalg.svd(A)
+print s
+print np.sum(s > TOLERANCE)
+
+TOLERANCE = 1e-14
+print np.sum(s > TOLERANCE)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> ... >>> >>> >>> >>> [  2.75209239e+01   9.30584482e+00   1.42425400e-15]
+: 3
+: >>> >>> 2
+
+You can see if you choose too small a TOLERANCE, nothing looks like zero. the result with TOLERANCE=1e-14 suggests the rows are not linearly independent. Let us show that one row can be expressed as a linear combination of the other rows. 
+
+The number of rows is greater than the rank, so these vectors are not
+independent. Let's demonstrate that one vector can be defined as a linear
+combination of the other two vectors. Mathematically we represent this
+as:
+
+$x_1 \mathit{v1} + x_2 \mathit{v2} = v3%
+
+or
+
+$[x_1 x_2][v1; v2] = v3$
+
+This is not the usual linear algebra form of Ax = b. To get there, we
+transpose each side of the equation to get:
+
+ [v1.T v2.T][x_1; x_2] = v3.T
+
+which is the form Ax = b. We solve it in a least-squares sense.
+
+#+BEGIN_SRC python :session
+A = np.column_stack([v1, v2])
+x = np.linalg.lstsq(A, v3)
+print x[0]
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [ 2. -3.]
+
+This shows that v3 = 2*v1 - 3*v2
+
+*** another example
+#+BEGIN_SRC python
+#Problem set 7.4 #17
+import numpy as np
+
+v1 = [0.2, 1.2, 5.3, 2.8, 1.6]
+v2 = [4.3, 3.4, 0.9, 2.0, -4.3]
+
+A = np.row_stack([v1, v2])
+U, s, V = np.linalg.svd(A)
+print s
+#+END_SRC
+
+#+RESULTS:
+: [ 7.57773162  5.99149259]
+
+You can tell by inspection the rank is 2 because there are no near-zero singular values. 
+
+*** Near deficient rank
+
+the rank command roughly works in the following way: the matrix is converted to a reduced row echelon form, and then the number of rows that are not all equal to zero are counted. Matlab uses a tolerance to determine what is equal to zero. If there is uncertainty in the numbers, you may have to define what zero is, e.g. if the absolute value of a number is less than 1e-5, you may consider that close enough to be zero. The default tolerance is usually very small, of order 1e-15. If we believe that any number less than 1e-5 is practically equivalent to zero, we can use that information to compute the rank like this.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = [[1, 2, 3],
+     [0, 2, 3],
+     [0, 0, 1e-6]]
+
+U, s, V = np.linalg.svd(A)
+print s
+print np.sum(np.abs(s) > 1e-15)
+print np.sum(np.abs(s) > 1e-5)
+#+END_SRC
+
+#+RESULTS:
+: [  5.14874857e+00   7.00277208e-01   5.54700196e-07]
+: 3
+: 2
+
+*** Application to independent chemical reactions.
+
+reference: Exercise 2.4 in Chemical Reactor Analysis and Design Fundamentals by Rawlings and Ekerdt.
+
+The following reactions are proposed in the hydrogenation of bromine:
+
+Let this be our species vector: v = [H2 H Br2 Br HBr]^T
+
+the reactions are then defined by M*v where M is a stoichometric matrix in which each row represents a reaction with negative stoichiometric coefficients for reactants, and positive stoichiometric coefficients for products. A stoichiometric coefficient of 0 is used for species not participating in the reaction.
+
+#+BEGIN_SRC python
+import numpy as np
+
+#    [H2  H Br2 Br HBr]
+M = [[-1,  0, -1,  0,  2],  # H2 + Br2 == 2HBR
+     [ 0,  0, -1,  2,  0],  # Br2 == 2Br
+     [-1,  1,  0, -1,  1],  # Br + H2 == HBr + H
+     [ 0, -1, -1,  1,  1],  # H + Br2 == HBr + Br
+     [ 1, -1,  0,  1,  -1], # H + HBr == H2 + Br
+     [ 0,  0,  1, -2,  0]]  # 2Br == Br2
+
+U, s, V = np.linalg.svd(M)
+print s
+print np.sum(np.abs(s) > 1e-15)
+#+END_SRC
+
+#+RESULTS:
+: [  3.84742803e+00   3.32555975e+00   1.46217301e+00   2.04165560e-16
+:    4.75081557e-17]
+: 3
+
+6 reactions are given, but the rank of the matrix is only 3. so there
+are only four independent reactions. You can see that reaction 6 is just
+the opposite of reaction 2, so it is clearly not independent. Also,
+reactions 3 and 5 are just the reverse of each other, so one of them can
+also be eliminated. finally, reaction 4 is equal to reaction 1 minus
+reaction 3.
+
 ** Rules for transposition
    :PROPERTIES:
    :categories: Linear algebra
@@ -2669,8 +2909,9 @@ print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
 
 [[http://matlab.cheme.cmu.edu/2011/08/01/solving-linear-equations/][Matlab comparison]]
 
-* Nonlinear algebra
-**  Solving integral equations with fsolve
+* DONE Nonlinear algebra
+  CLOSED: [2013-03-01 Fri 19:31]
+** Solving integral equations with fsolve
    :PROPERTIES:
    :categories: Nonlinear algebra, reaction engineering
    :date:     2013/01/23 09:00:00
@@ -2910,7 +3151,74 @@ You can see the solution is somewhat approximate; the true solution is x = -1, y
 
 This is a fair amount of work to get a solution! The idea is to solve a simple problem, and then gradually turn on the hard part by the lambda parameter. What happens if there are multiple solutions? The answer you finally get will depend on your $\lambda=0$  starting point, so it is possible to miss solutions this way. For problems with lots of variables, this would be a good approach if you can identify the easy problem.
 
-** TODO http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/
+** Method of continuity for solving nonlinear equations - Part II
+   :PROPERTIES:
+   :categories: Nonlinear algebra
+   :date:     2013/03/01 18:17:16
+   :updated:  2013/03/01 18:17:16
+   :permalink: http://jkitchin.github.com/blog/2013/03/01-method-of-continuity-for-solving-nonlinear-equations---part-ii/index.html
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/][Matlab post]]
+Yesterday in Post 1324 we looked at a way to solve nonlinear equations that takes away some of the burden of initial guess generation. The idea was to reformulate the equations with a new variable $\lambda$, so that at $\lambda=0$ we have a simpler problem we know how to solve, and at $\lambda=1$ we have the original set of equations. Then, we derive a set of ODEs on how the solution changes with $\lambda$, and solve them.
+
+Today we look at a simpler example and explain a little more about what is going on. Consider the equation: $f(x) = x^2 - 5x + 6 = 0$, which has two roots, $x=2$ and $x=3$. We will use the method of continuity to solve this equation to illustrate a few ideas. First, we introduce a new variable $\lambda$ as: $f(x; \lambda) = 0$. For example, we could write $f(x;\lambda) = \lambda x^2 - 5x + 6 = 0$. Now, when $\lambda=0$, we hve the simpler equation $- 5x + 6 = 0$, with the solution $x=6/5$. The question now is, how does $x$ change as $\lambda$ changes? We get that from the total derivative of how $f(x,\lambda)$ changes with $\lambda$. The total derivative is:
+
+$$\frac{df}{d\lambda} = \frac{\partial f}{\partial \lambda} + \frac{\partial f}{\partial x}\frac{\partial x}{\partial \lambda}=0$$
+
+We can calculate two of those quantities: $\frac{\partial f}{\partial \lambda}$ and $\frac{\partial f}{\partial x}$ analytically from our equation and solve for $\frac{\partial x}{\partial \lambda}$ as
+
+$$ \frac{\partial x}{\partial \lambda} = -\frac{\partial f}{\partial \lambda}/\frac{\partial f}{\partial x}$$
+
+That defines an ordinary differential equation that we can solve by integrating from $\lambda=0$ where we know the solution to $\lambda=1$ which is the solution to the real problem. For this problem: $\frac{\partial f}{\partial \lambda}=x^2$ and $\frac{\partial f}{\partial x}=-5 + 2\lambda x$.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def dxdL(x, Lambda):
+    return -x**2 / (-5.0 + 2 * Lambda * x)
+
+x0 = 6.0/5.0
+Lspan = np.linspace(0, 1)
+x = odeint(dxdL, x0, Lspan)
+
+plt.plot(Lspan, x)
+plt.xlabel('$\lambda$')
+plt.ylabel('x')
+plt.savefig('images/nonlin-contin-II-1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/nonlin-contin-II-1.png]]
+
+We found one solution at x=2. What about the other solution? To get that we have to introduce $\lambda$ into the equations in another way. We could try: $f(x;\lambda) = x^2 + \lambda(-5x + 6)$, but this leads to an ODE that is singular at the initial starting point. Another approach is $f(x;\lambda) = x^2 + 6 + \lambda(-5x)$, but now the solution at $\lambda=0$ is imaginary, and we do not have a way to integrate that! What we can do instead is add and subtract a number like this: $f(x;\lambda) = x^2 - 4 + \lambda(-5x + 6 + 4)$. Now at $\lambda=0$, we have a simple equation with roots at $\pm 2$, and we already know that $x=2$ is a solution. So, we create our ODE on $dx/d\lambda$ with initial condition $x(0) = -2$.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def dxdL(x, Lambda):
+    return (5 * x - 10) / (2 * x - 5 * Lambda)
+
+x0 = -2
+Lspan = np.linspace(0, 1)
+x = odeint(dxdL, x0, Lspan)
+
+plt.plot(Lspan, x)
+plt.xlabel('$\lambda$')
+plt.ylabel('x')
+plt.savefig('images/nonlin-contin-II-2.png')
+
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/nonlin-contin-II-2.png]]
+
+Now we have the other solution. Note if you choose the other root, $x=2$, you find that 2 is a root, and learn nothing new. You could choose other values to add, e.g., if you chose to add and subtract 16, then you would find that one starting point leads to one root, and the other starting point leads to the other root. This method does not solve all problems associated with nonlinear root solving, namely, how many roots are there, and which one is "best" or physically reasonable? But it does give a way to solve an equation where you have no idea what an initial guess should be. You can see, however, that just like you can get different answers from different initial guesses, here you can get different answers by setting up the equations differently.
 ** Counting roots
    :PROPERTIES:
    :categories: Nonlinear algebra
@@ -3005,7 +3313,80 @@ for te, ye in zip(TE, YE):
 : root found at x = -2.000, f=-0.000
 : root found at x =  2.000, f= 0.000
 
-** TODO http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/
+** Know your tolerance
+[[http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/][Matlab post]]
+$$V = \frac{\nu (C_{Ao} - C_A)}{k C_A^2}$$
+
+with the information given below, solve for the exit concentration. This should be simple. 
+
+#+BEGIN_EXAMPLE
+Cao = 2*u.mol/u.L;
+V = 10*u.L;
+nu = 0.5*u.L/u.s;
+k = 0.23 * u.L/u.mol/u.s;
+#+END_EXAMPLE
+
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+# unit definitions
+m = 1.0
+L = m**3 / 1000.0
+mol = 1.0
+s = 1.0
+
+# provide data
+Cao = 2.0 * mol / L
+V = 10.0 * L
+nu = 0.5 * L / s
+k = 0.23 * L / mol / s
+
+def func(Ca):
+    return V - nu * (Cao - Ca)/(k * Ca**2)
+#+END_SRC
+
+#+RESULTS:
+
+Let us plot the function to estimate the solution.
+
+#+BEGIN_SRC python :session
+c = np.linspace(0.001, 2) * mol / L
+
+plt.plot(c, func(c))
+plt.xlabel('C (mol/m^3)')
+plt.ylim([-0.1, 0.1])
+plt.savefig('images/nonlin-tolerance.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x000000000832A6A0>]
+: <matplotlib.text.Text object at 0x00000000083012E8>
+: (-0.1, 0.1)
+
+[[./images/nonlin-tolerance.png]]
+
+Now let us solve the equation. It looks like an answer is near C=500. 
+
+#+BEGIN_SRC python :session
+from scipy.optimize import fsolve
+
+cguess = 500
+c, = fsolve(func, cguess)
+print c
+print func(c)
+print func(c) / (mol / L)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 559.583745606
+: -1.73472347598e-18
+: -1.73472347598e-21
+
+Interesting. In Matlab, the default tolerance was not sufficient to get a good solution. Here it is. 
 
 * DONE Differential equations
 ** Ordinary differential equations
@@ -3609,7 +3990,7 @@ plt.show()
     :updated:  2013/02/27 14:31:18
     :END:
 [[http://matlab.cheme.cmu.edu/2011/09/18/error-tolerance-in-numerical-solutions-to-odes/][Matlab post]]
-index:ODE:tolerance
+index:ODE!tolerance
 Usually, the numerical ODE solvers in python work well with the standard settings. Sometimes they do not, and it is not always obvious they have not worked! Part of using a tool like python is checking how well your solution really worked. We use an example of integrating an ODE that defines the van der Waal equation of an ideal gas here.
 
 we plot the analytical solution to the van der waal equation in reduced form here.
@@ -4050,7 +4431,7 @@ plt.savefig('images/phase-portrait.png')
 : (-2, 8)
 : (-4, 4)
 
-[[./images/phase-portrait.png]]
+[[file:./images/phase-portrait.png]]
 
 Let us plot a few solutions on the vector field. We will consider the solutions where y1(0)=0, and values of y2(0) = [0 0.5 1 1.5 2 2.5], in otherwords we start the pendulum at an angle of zero, with some angular velocity.
 
@@ -6286,7 +6667,7 @@ There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutor
    :date:     2013/02/03 09:00:00
    :updated:  2013/02/27 14:43:27
    :END:
-[[index:optimization:Lagrange multipliers]]
+[[index:optimization!Lagrange multipliers]]
 index:fsolve
 [[http://matlab.cheme.cmu.edu/2011/12/24/using-lagrange-multipliers-in-optimization/][Matlab post]]  (adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.)
 
@@ -6425,7 +6806,7 @@ print X
    :categories: linear programming, optimization
    :updated:  2013/02/27 14:44:03
    :END:
-[[index:optimization:linear programming]]
+[[index:optimization!linear programming]]
 [[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][Matlab post]]
 
 adapted from http://www.matrixlab-examples.com/linear-programming.html which solves this problem with fminsearch.
@@ -6850,7 +7231,74 @@ print sorted(groups, key=grade_key)
 : [('group2', 'A+'), ('group3', 'A'), ('group1', 'B')]
 
 ** TODO http://matlab.cheme.cmu.edu/2011/10/23/using-java-inside-matlab/
-** TODO http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/
+** Making word files in python
+ [[http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/][Matlab post]]
+
+We can use COM automation in python to create Microsoft Word documents. This only works on windows, and Word must be installed.
+#+BEGIN_SRC python
+from win32com.client import constants, Dispatch
+import os
+
+word = Dispatch('Word.Application')
+word.Visible = True
+
+document = word.Documents.Add()
+selection = word.Selection
+
+selection.TypeText('Hello world. \n')
+selection.TypeText('My name is Professor Kitchin\n')
+selection.TypeParagraph
+selection.TypeText('How are you today?\n')
+selection.TypeParagraph
+selection.Style='Normal'
+
+
+selection.TypeText('Big Finale\n')
+selection.Style='Heading 1'
+selection.TypeParagraph
+
+H1 = document.Styles.Item('Heading 1')
+H1.Font.Name = 'Garamond'
+H1.Font.Size = 20
+H1.Font.Bold = 1
+H1.Font.TextColor.RGB=60000 # some ugly color green
+
+selection.TypeParagraph
+selection.TypeText('That is all for today!')
+
+
+document.SaveAs2(os.getcwd() + '/test.docx')
+word.Quit()
+#+END_SRC
+
+#+RESULTS:
+
+msx:./test.docx
+
+That is it! I would not call this extra convenient, but if you have a need to automate the production of Word documents from a program, this is an approach that you can use. You may find http://msdn.microsoft.com/en-us/library/kw65a0we%28v=vs.80%29.aspx a helpful link for documentation of what you can do.
+
+
+I was going to do this by docx, which does not require windows, but it appears broken. It is missing a template directory, and it does not match the github code. docx is not actively maintained anymore either. 
+
+#+BEGIN_SRC python
+from docx import *
+
+# Make a new document tree - this is the main part of a Word document
+document = Docx()
+
+document.append(paragraph('Hello world. '
+'My name is Professor Kitchin'
+'How are you today?'))
+
+document.append(heading("Big Finale", 1))
+
+document.append(paragraph('That is all for today.'))
+
+document.save('test.doc')
+#+END_SRC
+
+#+RESULTS:
+
 ** TODO http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/
 ** TODO http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/
 * Worked examples
