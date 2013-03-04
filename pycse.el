@@ -29,6 +29,7 @@ c/numpy/reference/generated/numpy.%s.html\">%s</a>" keyword keyword))
 	 :base-directory "~/Dropbox/pycse/"
 	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|dat\\|mat\\|txt"
 	 :publishing-directory "~/Dropbox/pycse/gh-pages/"
+         :exclude "gh-pages"
 	 :recursive t
 	 :publishing-function org-publish-attachment
 	 )
