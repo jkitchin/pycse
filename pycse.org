@@ -13,10 +13,13 @@
 #+LINK_UP:   
 #+LINK_HOME: 
 #+XSLT:
+#+STYLE: <link rel="stylesheet" type="text/css" href="pycse.css" />
 #+Latex_header: \usepackage{underscore}
 #+Latex_header: \usepackage{makeidx}
 #+Latex_header: \makeindex
-   
+  
+[[./pycse.png]]
+ 
 * Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
@@ -2309,8 +2312,7 @@ http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html
    :PROPERTIES:
    :categories: symbolic, math
    :date:     2013/03/01 19:07:48
-   :updated:  2013/03/01 19:07:48
-   :permalink: http://jkitchin.github.com/blog/2013/03/01-symbolic-math-in-python/index.html
+   :updated:  2013/03/03 12:21:36
    :END:
  [[http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/][Matlab post]]
 Python has capability to do symbolic math through the sympy package. 
@@ -2567,8 +2569,7 @@ algebra errors due to matrix size mismatches.
    :PROPERTIES:
    :categories: Linear algebra, reaction engineering
    :date:     2013/03/01 16:44:46
-   :updated:  2013/03/01 16:44:46
-   :permalink: http://jkitchin.github.com/blog/2013/03/01-determining-linear-independence-of-a-set-of-vectors/index.html
+   :updated:  2013/03/03 12:21:54
    :END:
  [[http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/][Matlab post]]
 Occasionally we have a set of vectors and we need to determine whether the vectors are linearly independent of each other. This may be necessary to determine if the vectors form a basis, or to determine how many independent equations there are, or to determine how many independent reactions there are.
@@ -2612,7 +2613,7 @@ independent. Let's demonstrate that one vector can be defined as a linear
 combination of the other two vectors. Mathematically we represent this
 as:
 
-$x_1 \mathit{v1} + x_2 \mathit{v2} = v3%
+$x_1 \mathit{v1} + x_2 \mathit{v2} = v3$
 
 or
 
@@ -2683,7 +2684,7 @@ reference: Exercise 2.4 in Chemical Reactor Analysis and Design Fundamentals by 
 
 The following reactions are proposed in the hydrogenation of bromine:
 
-Let this be our species vector: v = [H2 H Br2 Br HBr]^T
+Let this be our species vector: v = [H2 H Br2 Br HBr].T
 
 the reactions are then defined by M*v where M is a stoichometric matrix in which each row represents a reaction with negative stoichiometric coefficients for reactants, and positive stoichiometric coefficients for products. A stoichiometric coefficient of 0 is used for species not participating in the reaction.
 
@@ -3155,8 +3156,7 @@ This is a fair amount of work to get a solution! The idea is to solve a simple p
    :PROPERTIES:
    :categories: Nonlinear algebra
    :date:     2013/03/01 18:17:16
-   :updated:  2013/03/01 18:17:16
-   :permalink: http://jkitchin.github.com/blog/2013/03/01-method-of-continuity-for-solving-nonlinear-equations---part-ii/index.html
+   :updated:  2013/03/03 12:22:06
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/02/method-of-continuity-for-solving-nonlinear-equations-part-ii-2/][Matlab post]]
 Yesterday in Post 1324 we looked at a way to solve nonlinear equations that takes away some of the burden of initial guess generation. The idea was to reformulate the equations with a new variable $\lambda$, so that at $\lambda=0$ we have a simpler problem we know how to solve, and at $\lambda=1$ we have the original set of equations. Then, we derive a set of ODEs on how the solution changes with $\lambda$, and solve them.
@@ -4238,6 +4238,7 @@ for mu in MU:
 plt.axis('equal')
 plt.legend(loc='best')
 plt.savefig('images/ode-nested-parameterization.png')
+plt.savefig('images/ode-nested-parameterization.svg')
 plt.show()
 #+END_SRC
 
@@ -4426,8 +4427,8 @@ plt.savefig('images/phase-portrait.png')
 
 #+RESULTS:
 : 
-: >>> ... >>> >>> >>> >>> >>> >>> ... ... ... >>> >>> <matplotlib.text.Text object at 0xbcfd290>
-: <matplotlib.text.Text object at 0xbd14750>
+: >>> >>> ... ... ... >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... ... ... ... ... ... ... >>> >>> >>> <matplotlib.text.Text object at 0x00000000075C7588>
+: <matplotlib.text.Text object at 0x00000000075CACF8>
 : (-2, 8)
 : (-4, 4)
 
@@ -4449,6 +4450,7 @@ for y20 in [0, 0.5, 1, 1.5, 2, 2.5]:
 
 plt.xlim([-2, 8])
 plt.savefig('images/phase-portrait-2.png')
+plt.savefig('images/phase-portrait-2.svg')
 plt.show()
 #+END_SRC
 
@@ -6948,19 +6950,653 @@ plt.savefig('images/min-dist-p-func.png')
 In the code above, we demonstrate that the point we find on the curve that minimizes the distance satisfies the property that a vector from that point to our other point is normal to the tangent of the curve at that point. This is shown by the fact that the dot product of the two vectors is very close to zero. It is not zero because of the accuracy criteria that is used to stop the minimization is not high enough.
 
 * Plotting
-** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
-** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
-** TODO http://matlab.cheme.cmu.edu/2011/11/21/interacting-with-the-steam-entropy-temperature-chart/
-** TODO http://matlab.cheme.cmu.edu/2011/12/07/interacting-with-graphs-with-keypresses/
+** TODO http://matlab.cheme.cmu.edu/2011/08/01/basic-plotting-tutorial/
+** plotting two datasets with very different scales
+   :PROPERTIES:
+   :categories: plotting
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/25/plotting-two-datasets-with-very-different-scales/][Matlab plot]]
+
+Sometimes you will have two datasets you want to plot together, but the scales will be so different it is hard to seem them both in the same plot. Here we examine a few strategies to plotting this kind of data.
+
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2*np.pi)
+y1 = np.sin(x);
+y2 = 0.01 * np.cos(x);
+
+plt.plot(x, y1, x, y2)
+plt.legend(['y1', 'y2'])
+plt.savefig('images/two-scales-1.png')
+# in this plot y2 looks almost flat!
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000006089128>, <matplotlib.lines.Line2D object at 0x000000000766B2E8>]
+: <matplotlib.legend.Legend object at 0x0000000007661668>
+
+[[./images/two-scales-1.png]]
+
+*** Make two plots!
+
+this certainly solves the problem, but you have two full size plots, which can take up a lot of space in a presentation and report. Often your goal in plotting both data sets is to compare them, and it is easiest to compare plots when they are perfectly lined up. Doing that manually can be tedious.
+
+#+BEGIN_SRC python :session
+
+plt.figure()
+plt.plot(x,y1)
+plt.legend(['y1'])
+plt.savefig('images/two-scales-2.png')
+
+plt.figure()
+plt.plot(x,y2)
+plt.legend(['y2'])
+plt.savefig('images/two-scales-3.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: <matplotlib.figure.Figure object at 0x0000000007D45438>
+: [<matplotlib.lines.Line2D object at 0x00000000081C61D0>]
+: <matplotlib.legend.Legend object at 0x0000000007FA1CF8>
+: >>> >>> <matplotlib.figure.Figure object at 0x00000000081C63C8>
+: [<matplotlib.lines.Line2D object at 0x00000000081C8F60>]
+: <matplotlib.legend.Legend object at 0x00000000081D7278>
+
+[[./images/two-scales-2.png]]
+
+[[./images/two-scales-3.png]]
+
+*** Scaling the results
+
+Sometimes you can scale one dataset so it has a similar magnitude as the other data set. Here we could multiply y2 by 100, and then it will be similar in size to y1. Of course, you need to indicate that y2 has been scaled in the graph somehow. Here we use the legend.
+
+#+BEGIN_SRC python :session
+plt.figure()
+plt.plot(x, y1, x, 100 * y2)
+plt.legend(['y1', '100*y2'])
+plt.savefig('images/two-scales-4.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x0000000007FA7908>
+: [<matplotlib.lines.Line2D object at 0x000000000B0285C0>, <matplotlib.lines.Line2D object at 0x000000000B0287B8>]
+: <matplotlib.legend.Legend object at 0x000000000B028C88>
+
+[[./images/two-scales-4.png]]
+
+*** Double-y axis plot
+[[index:plot!double y-axis]]
+
+Using two separate y-axes can solve your scaling problem. Note that each y-axis is color coded to the data. It can be difficult to read these graphs when printed in black and white
+
+#+BEGIN_SRC python :session
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+ax1.plot(x, y1)
+ax1.set_ylabel('y1')
+
+ax2 = ax1.twinx()
+ax2.plot(x, y2, 'r-')
+ax2.set_ylabel('y2', color='r')
+for tl in ax2.get_yticklabels():
+    tl.set_color('r')
+
+plt.savefig('images/two-scales-5.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> [<matplotlib.lines.Line2D object at 0x000000000BA34208>]
+: <matplotlib.text.Text object at 0x000000000BA37C50>
+: >>> >>> [<matplotlib.lines.Line2D object at 0x000000000BA4DEF0>]
+: <matplotlib.text.Text object at 0x000000000BA594A8>
+
+
+[[./images/two-scales-5.png]]
+
+*** Subplots
+index:plot!subplot
+An alternative approach to double y axes is to use subplots. 
+
+#+BEGIN_SRC python :session
+plt.figure()
+f, axes = plt.subplots(2, 1)
+axes[0].plot(x, y1)
+axes[0].set_ylabel('y1')
+
+axes[1].plot(x, y2)
+axes[1].set_ylabel('y2')
+plt.savefig('images/two-scales-6.png')
+#+END_SRC
+
+#+RESULTS:
+: <matplotlib.figure.Figure object at 0x000000000BDC47B8>
+: >>> [<matplotlib.lines.Line2D object at 0x000000000BDE2F28>]
+: <matplotlib.text.Text object at 0x000000000BDD74E0>
+: >>> [<matplotlib.lines.Line2D object at 0x000000000D05E748>]
+: <matplotlib.text.Text object at 0x000000000BDEC438>
+
+[[./images/two-scales-6.png]]
+
+** Plot customizations - Modifying line, text and figure properties
+[[http://matlab.cheme.cmu.edu/2011/08/01/plot-customizations-modifying-line-text-and-figure-properties/][Matlab post]]
+
+Here is a vanilla plot.
+#+BEGIN_SRC python :session
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi)
+plt.plot(x, np.sin(x))
+plt.savefig('images/plot-customization-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x000000000771D860>]
+
+[[./images/plot-customization-1.png]]
+
+Lets increase the line thickness, change the line color to red, and make the markers red circles with black outlines. I also like figures in presentations to be 6 inches high, and 4 inches wide.
+
+#+BEGIN_SRC python 
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi)
+
+plt.figure(figsize=(4, 6))
+plt.plot(x, np.sin(x), lw=2, color='r', marker='o', mec='k', mfc='b')
+
+plt.xlabel('x data', fontsize=12, fontweight='bold')
+plt.ylabel('y data', fontsize=12, fontstyle='italic', color='b')
+plt.tight_layout() # auto-adjust position of axes to fit figure.
+plt.savefig('images/plot-customization-2.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+*** setting all the text properties in a figure.
+
+You may notice the axis tick labels are not consistent with the labels now. If you have many plots it can be tedious to try setting each text property. Python to the rescue! With these commands you can find all the text instances, and change them all at one time! Likewise, you can change all the lines, and all the axes.
+
+
+#+BEGIN_SRC python 
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi)
+
+plt.figure(figsize=(4, 6))
+plt.plot(x, np.sin(x), lw=2, color='r', marker='o', mec='k', mfc='b')
+
+plt.xlabel('x data', fontsize=12, fontweight='bold')
+plt.ylabel('y data', fontsize=12, fontstyle='italic', color='b')
+
+# set all font properties
+fig = plt.gcf()
+for o in  fig.findobj(lambda x:hasattr(x, 'set_fontname') 
+                      or hasattr(x, 'set_fontweight')
+                      or hasattr(x, 'set_fontsize')):
+    o.set_fontname('Arial')
+    o.set_fontweight('bold')
+    o.set_fontsize(14)
+
+# make anything you can set linewidth to be lw=2
+def myfunc(x):
+    return hasattr(x, 'set_linewidth')
+
+for o in  fig.findobj(myfunc):
+    o.set_linewidth(2)
+
+plt.tight_layout() # auto-adjust position of axes to fit figure.
+plt.savefig('images/plot-customization-3.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/plot-customization-3.png]]
+
+There are many other things you can do!
+
+** Customizing plots after the fact
+[[http://matlab.cheme.cmu.edu/2011/09/16/customizing-plots-after-the-fact/][Matlab post]]
+Sometimes it is desirable to make a plot that shows the data you want to present, and to customize the details, e.g. font size/type and line thicknesses afterwards. It can be tedious to try to add the customization code to the existing code that makes the plot. Today, we look at a way to do the customization after the plot is created.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0,2)
+y1 = x
+y2 = x**2
+y3 = x**3
+
+plt.plot(x, y1, x, y2, x, y3)
+xL = plt.xlabel('x')
+yL = plt.ylabel('f(x)')
+plt.title('plots of y = x^n')
+plt.legend(['x', 'x^2', 'x^3'], loc='best')
+plt.savefig('images/after-customization-1.png')
+
+fig = plt.gcf()
+
+plt.setp(fig, 'size_inches', (4, 6))
+plt.savefig('images/after-customization-2.png')
+
+
+# set lines to dashed
+from matplotlib.lines import Line2D
+for o in fig.findobj(Line2D):
+    o.set_linestyle('--')
+
+#set(allaxes,'FontName','Arial','FontWeight','Bold','LineWidth',2,'FontSize',14);
+
+import matplotlib.text as text
+for o in fig.findobj(text.Text):
+    plt.setp(o, 'fontname','Arial', 'fontweight','bold', 'fontsize', 14)
+
+plt.setp(xL, 'fontstyle', 'italic')
+plt.setp(yL, 'fontstyle', 'italic')
+plt.savefig('images/after-customization-3.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/after-customization-1.png]]
+
+[[./images/after-customization-2.png]]
+
+[[./images/after-customization-3.png]]
+
 ** TODO http://matlab.cheme.cmu.edu/2011/11/24/turkeyfy-your-plots/
 ** TODO http://matlab.cheme.cmu.edu/2011/11/22/3d-plots-of-the-steam-tables/
-** TODO http://matlab.cheme.cmu.edu/2011/11/11/interacting-with-labeled-data-points/
-** TODO http://matlab.cheme.cmu.edu/2011/09/13/check-out-the-new-fall-colors/
-** TODO http://matlab.cheme.cmu.edu/2011/09/14/picassos-short-lived-blue-period-with-matlab/
-** TODO http://matlab.cheme.cmu.edu/2011/09/16/customizing-plots-after-the-fact/
-** TODO http://matlab.cheme.cmu.edu/2011/08/25/plotting-two-datasets-with-very-different-scales/
-** TODO http://matlab.cheme.cmu.edu/2011/08/01/basic-plotting-tutorial/
-** TODO http://matlab.cheme.cmu.edu/2011/08/01/plot-customizations-modifying-line-text-and-figure-properties/
+** Fancy, built-in colors in Matlab
+[[http://matlab.cheme.cmu.edu/2011/09/13/check-out-the-new-fall-colors/][Matlab post]]
+
+Matplotlib has a lot of built-in colors. Here is a list of them, and an example of using them.
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+from matplotlib.colors import cnames
+print cnames.keys()
+
+plt.plot([1, 2, 3, 4], lw=2, color='moccasin', marker='o', mfc='lightblue', mec='seagreen')
+plt.savefig('images/fall-colors.png')
+#+END_SRC
+
+#+RESULTS:
+: ['indigo', 'gold', 'hotpink', 'firebrick', 'indianred', 'yellow', 'mistyrose', 'darkolivegreen', 'olive', 'darkseagreen', 'pink', 'tomato', 'lightcoral', 'orangered', 'navajowhite', 'lime', 'palegreen', 'darkslategrey', 'greenyellow', 'burlywood', 'seashell', 'mediumspringgreen', 'fuchsia', 'papayawhip', 'blanchedalmond', 'chartreuse', 'dimgray', 'black', 'peachpuff', 'springgreen', 'aquamarine', 'white', 'orange', 'lightsalmon', 'darkslategray', 'brown', 'ivory', 'dodgerblue', 'peru', 'darkgrey', 'lawngreen', 'chocolate', 'crimson', 'forestgreen', 'slateblue', 'lightseagreen', 'cyan', 'mintcream', 'silver', 'antiquewhite', 'mediumorchid', 'skyblue', 'gray', 'darkturquoise', 'goldenrod', 'darkgreen', 'floralwhite', 'darkviolet', 'darkgray', 'moccasin', 'saddlebrown', 'grey', 'darkslateblue', 'lightskyblue', 'lightpink', 'mediumvioletred', 'slategrey', 'deeppink', 'limegreen', 'darkmagenta', 'palegoldenrod', 'plum', 'turquoise', 'lightgrey', 'lightgoldenrodyellow', 'darkgoldenrod', 'lavender', 'maroon', 'yellowgreen', 'sandybrown', 'thistle', 'violet', 'navy', 'magenta', 'dimgrey', 'tan', 'rosybrown', 'olivedrab', 'blue', 'lightblue', 'ghostwhite', 'honeydew', 'cornflowerblue', 'linen', 'darkblue', 'powderblue', 'seagreen', 'darkkhaki', 'snow', 'sienna', 'mediumblue', 'royalblue', 'lightcyan', 'green', 'mediumpurple', 'midnightblue', 'cornsilk', 'red', 'bisque', 'slategray', 'darkcyan', 'khaki', 'wheat', 'teal', 'darkorchid', 'deepskyblue', 'salmon', 'darkred', 'steelblue', 'palevioletred', 'lightslategray', 'aliceblue', 'lightslategrey', 'lightgreen', 'orchid', 'gainsboro', 'mediumseagreen', 'lightgray', 'mediumturquoise', 'lemonchiffon', 'cadetblue', 'lightyellow', 'lavenderblush', 'coral', 'purple', 'aqua', 'whitesmoke', 'mediumslateblue', 'darkorange', 'mediumaquamarine', 'darksalmon', 'beige', 'blueviolet', 'azure', 'lightsteelblue', 'oldlace']
+
+[[./images/fall-colors.png]]
+
+** Picasso's short lived blue period with Matlab
+[[http://matlab.cheme.cmu.edu/2011/09/14/picassos-short-lived-blue-period-with-matlab/][Matlab post]]
+
+It is an unknown fact that Picasso had a brief blue plotting period with Matlab before moving on to his more famous paintings. It started from irritation with the default colors available in Matlab for plotting. After watching his friend van Gogh cut off his own ear out of frustration with the ugly default colors, Picasso had to do something different.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+#this plots horizontal lines for each y value of m.
+for m in np.linspace(1, 50, 100):
+    plt.plot([0, 50], [m, m])
+
+plt.savefig('images/blues-1.png')
+#+END_SRC 
+
+#+RESULTS:
+
+[[./images/blues-1.png]]
+
+Picasso copied the table availabe at http://en.wikipedia.org/wiki/List_of_colors and parsed it into a dictionary of hex codes for new colors. That allowed him to specify a list of beautiful blues for his graph. Picasso eventually gave up on python as an artform, and moved on to painting.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+c = {}
+with open('color.table') as f:
+    for line in f:
+        fields = line.split('\t')
+        colorname = fields[0].lower()
+        hexcode = fields[1]
+        c[colorname] = hexcode
+
+names = c.keys()
+names.sort()
+print names
+
+blues = [c['alice blue'],
+         c['light blue'],
+         c['baby blue'],
+         c['light sky blue'],
+         c['maya blue'],
+         c['cornflower blue'],
+         c['bleu de france'],
+         c['azure'],
+         c['blue sapphire'],
+         c['cobalt'],
+         c['blue'],
+         c['egyptian blue'],
+         c['duke blue']]
+
+ax = plt.gca()
+ax.set_color_cycle(blues)
+
+#this plots horizontal lines for each y value of m.
+for i, m in enumerate(np.linspace(1, 50, 100)):
+    plt.plot([0, 50], [m, m])
+
+plt.savefig('images/blues-2.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: ['aero', 'aero blue', 'african violet', 'air force blue (raf)', 'air force blue (usaf)', 'air superiority blue', 'alabama crimson', 'alice blue', 'alizarin crimson', 'alloy orange', 'almond', 'amaranth', 'amazon', 'amber', 'american rose', 'amethyst', 'android green', 'anti-flash white', 'antique brass', 'antique bronze', 'antique fuchsia', 'antique ruby', 'antique white', 'ao (english)', 'apple green', 'apricot', 'aqua', 'aquamarine', 'army green', 'arsenic', 'arylide yellow', 'ash grey', 'asparagus', 'atomic tangerine', 'auburn', 'aureolin', 'aurometalsaurus', 'avocado', 'azure', 'azure mist/web', "b'dazzled blue", 'baby blue', 'baby blue eyes', 'baby pink', 'baby powder', 'baker-miller pink', 'ball blue', 'banana mania', 'banana yellow', 'barbie pink', 'barn red', 'battleship grey', 'bazaar', 'beau blue', 'beaver', 'beige', 'big dip o\xe2\x80\x99ruby', 'bisque', 'bistre', 'bistre brown', 'bitter lemon', 'bitter lime', 'bittersweet', 'bittersweet shimmer', 'black', 'black bean', 'black leather jacket', 'black olive', 'blanched almond', 'blast-off bronze', 'bleu de france', 'blizzard blue', 'blond', 'blue', 'blue (crayola)', 'blue (munsell)', 'blue (ncs)', 'blue (pigment)', 'blue (ryb)', 'blue bell', 'blue sapphire', 'blue yonder', 'blue-gray', 'blue-green', 'blue-violet', 'blueberry', 'bluebonnet', 'blush', 'bole', 'bondi blue', 'bone', 'boston university red', 'bottle green', 'boysenberry', 'brandeis blue', 'brass', 'brick red', 'bright cerulean', 'bright green', 'bright lavender', 'bright maroon', 'bright pink', 'bright turquoise', 'bright ube', 'brilliant lavender', 'brilliant rose', 'brink pink', 'british racing green', 'bronze', 'bronze yellow', 'brown (traditional)', 'brown (web)', 'brown-nose', 'brunswick green', 'bubble gum', 'bubbles', 'buff', 'bulgarian rose', 'burgundy', 'burlywood', 'burnt orange', 'burnt sienna', 'burnt umber', 'byzantine', 'byzantium', 'cadet', 'cadet blue', 'cadet grey', 'cadmium green', 'cadmium orange', 'cadmium red', 'cadmium yellow', 'caf\xc3\xa9 au lait', 'caf\xc3\xa9 noir', 'cal poly green', 'cambridge blue', 'camel', 'cameo pink', 'camouflage green', 'canary yellow', 'candy apple red', 'candy pink', 'capri', 'caput mortuum', 'cardinal', 'caribbean green', 'carmine', 'carmine (m&p)', 'carmine pink', 'carmine red', 'carnation pink', 'carnelian', 'carolina blue', 'carrot orange', 'castleton green', 'catalina blue', 'catawba', 'cedar chest', 'ceil', 'celadon', 'celadon blue', 'celadon green', 'celeste (colour)', 'celestial blue', 'cerise', 'cerise pink', 'cerulean', 'cerulean blue', 'cerulean frost', 'cg blue', 'cg red', 'chamoisee', 'champagne', 'charcoal', 'charleston green', 'charm pink', 'chartreuse (traditional)', 'chartreuse (web)', 'cherry', 'cherry blossom pink', 'chestnut', 'china pink', 'china rose', 'chinese red', 'chinese violet', 'chocolate (traditional)', 'chocolate (web)', 'chrome yellow', 'cinereous', 'cinnabar', 'cinnamon', 'citrine', 'citron', 'claret', 'classic rose', 'cobalt', 'cocoa brown', 'coconut', 'coffee', 'columbia blue', 'congo pink', 'cool black', 'cool grey', 'copper', 'copper (crayola)', 'copper penny', 'copper red', 'copper rose', 'coquelicot', 'coral', 'coral pink', 'coral red', 'cordovan', 'corn', 'cornell red', 'cornflower blue', 'cornsilk', 'cosmic latte', 'cotton candy', 'cream', 'crimson', 'crimson glory', 'cyan', 'cyan (process)', 'cyber grape', 'cyber yellow', 'daffodil', 'dandelion', 'dark blue', 'dark blue-gray', 'dark brown', 'dark byzantium', 'dark candy apple red', 'dark cerulean', 'dark chestnut', 'dark coral', 'dark cyan', 'dark electric blue', 'dark goldenrod', 'dark gray', 'dark green', 'dark imperial blue', 'dark jungle green', 'dark khaki', 'dark lava', 'dark lavender', 'dark liver', 'dark liver (horses)', 'dark magenta', 'dark midnight blue', 'dark moss green', 'dark olive green', 'dark orange', 'dark orchid', 'dark pastel blue', 'dark pastel green', 'dark pastel purple', 'dark pastel red', 'dark pink', 'dark powder blue', 'dark raspberry', 'dark red', 'dark salmon', 'dark scarlet', 'dark sea green', 'dark sienna', 'dark sky blue', 'dark slate blue', 'dark slate gray', 'dark spring green', 'dark tan', 'dark tangerine', 'dark taupe', 'dark terra cotta', 'dark turquoise', 'dark vanilla', 'dark violet', 'dark yellow', 'dartmouth green', "davy's grey", 'debian red', 'deep carmine', 'deep carmine pink', 'deep carrot orange', 'deep cerise', 'deep champagne', 'deep chestnut', 'deep coffee', 'deep fuchsia', 'deep jungle green', 'deep lemon', 'deep lilac', 'deep magenta', 'deep mauve', 'deep moss green', 'deep peach', 'deep pink', 'deep ruby', 'deep saffron', 'deep sky blue', 'deep space sparkle', 'deep taupe', 'deep tuscan red', 'deer', 'denim', 'desert', 'desert sand', 'diamond', 'dim gray', 'dirt', 'dodger blue', 'dogwood rose', 'dollar bill', 'donkey brown', 'drab', 'duke blue', 'dust storm', 'earth yellow', 'ebony', 'ecru', 'eggplant', 'eggshell', 'egyptian blue', 'electric blue', 'electric crimson', 'electric cyan', 'electric green', 'electric indigo', 'electric lavender', 'electric lime', 'electric purple', 'electric ultramarine', 'electric violet', 'electric yellow', 'emerald', 'english green', 'english lavender', 'english red', 'english violet', 'eton blue', 'eucalyptus', 'fallow', 'falu red', 'fandango', 'fandango pink', 'fashion fuchsia', 'fawn', 'feldgrau', 'feldspar', 'fern green', 'ferrari red', 'field drab', 'fire engine red', 'firebrick', 'flame', 'flamingo pink', 'flattery', 'flavescent', 'flax', 'flirt', 'floral white', 'fluorescent orange', 'fluorescent pink', 'fluorescent yellow', 'folly', 'forest green (traditional)', 'forest green (web)', 'french beige', 'french bistre', 'french blue', 'french lilac', 'french lime', 'french mauve', 'french raspberry', 'french rose', 'french sky blue', 'french wine', 'fresh air', 'fuchsia', 'fuchsia (crayola)', 'fuchsia pink', 'fuchsia rose', 'fulvous', 'fuzzy wuzzy', 'gainsboro', 'gamboge', 'ghost white', 'giants orange', 'ginger', 'glaucous', 'glitter', 'go green', 'gold (metallic)', 'gold (web) (golden)', 'gold fusion', 'golden brown', 'golden poppy', 'golden yellow', 'goldenrod', 'granny smith apple', 'grape', 'gray', 'gray (html/css gray)', 'gray (x11 gray)', 'gray-asparagus', 'gray-blue', 'green (color wheel) (x11 green)', 'green (crayola)', 'green (html/css color)', 'green (munsell)', 'green (ncs)', 'green (pigment)', 'green (ryb)', 'green-yellow', 'grullo', 'guppie green', 'halay\xc3\xa0 \xc3\xbabe', 'han blue', 'han purple', 'hansa yellow', 'harlequin', 'harvard crimson', 'harvest gold', 'heart gold', 'heliotrope', 'hollywood cerise', 'honeydew', 'honolulu blue', "hooker's green", 'hot magenta', 'hot pink', 'hunter green', 'iceberg', 'icterine', 'illuminating emerald', 'imperial', 'imperial blue', 'imperial purple', 'imperial red', 'inchworm', 'india green', 'indian red', 'indian yellow', 'indigo', 'indigo (dye)', 'indigo (web)', 'international klein blue', 'international orange (aerospace)', 'international orange (engineering)', 'international orange (golden gate bridge)', 'iris', 'irresistible', 'isabelline', 'islamic green', 'italian sky blue', 'ivory', 'jade', 'japanese indigo', 'japanese violet', 'jasmine', 'jasper', 'jazzberry jam', 'jelly bean', 'jet', 'jonquil', 'june bud', 'jungle green', 'kelly green', 'kenyan copper', 'keppel', 'khaki (html/css) (khaki)', 'khaki (x11) (light khaki)', 'kobe', 'kobi', 'ku crimson', 'la salle green', 'languid lavender', 'lapis lazuli', 'laser lemon', 'laurel green', 'lava', 'lavender (floral)', 'lavender (web)', 'lavender blue', 'lavender blush', 'lavender gray', 'lavender indigo', 'lavender magenta', 'lavender mist', 'lavender pink', 'lavender purple', 'lavender rose', 'lawn green', 'lemon', 'lemon chiffon', 'lemon curry', 'lemon glacier', 'lemon lime', 'lemon meringue', 'lemon yellow', 'licorice', 'light apricot', 'light blue', 'light brown', 'light carmine pink', 'light coral', 'light cornflower blue', 'light crimson', 'light cyan', 'light fuchsia pink', 'light goldenrod yellow', 'light gray', 'light green', 'light khaki', 'light medium orchid', 'light moss green', 'light orchid', 'light pastel purple', 'light pink', 'light red ochre', 'light salmon', 'light salmon pink', 'light sea green', 'light sky blue', 'light slate gray', 'light steel blue', 'light taupe', 'light thulian pink', 'light yellow', 'lilac', 'lime (color wheel)', 'lime (web) (x11 green)', 'lime green', 'limerick', 'lincoln green', 'linen', 'lion', 'little boy blue', 'liver', 'liver (dogs)', 'liver (organ)', 'liver chestnut', 'lumber', 'lust', 'magenta', 'magenta (crayola)', 'magenta (dye)', 'magenta (pantone)', 'magenta (process)', 'magic mint', 'magnolia', 'mahogany', 'maize', 'majorelle blue', 'malachite', 'manatee', 'mango tango', 'mantis', 'mardi gras', 'maroon (crayola)', 'maroon (html/css)', 'maroon (x11)', 'mauve', 'mauve taupe', 'mauvelous', 'maya blue', 'meat brown', 'medium aquamarine', 'medium blue', 'medium candy apple red', 'medium carmine', 'medium champagne', 'medium electric blue', 'medium jungle green', 'medium lavender magenta', 'medium orchid', 'medium persian blue', 'medium purple', 'medium red-violet', 'medium ruby', 'medium sea green', 'medium sky blue', 'medium slate blue', 'medium spring bud', 'medium spring green', 'medium taupe', 'medium turquoise', 'medium tuscan red', 'medium vermilion', 'medium violet-red', 'mellow apricot', 'mellow yellow', 'melon', 'metallic seaweed', 'metallic sunburst', 'mexican pink', 'midnight blue', 'midnight green (eagle green)', 'midori', 'mikado yellow', 'mint', 'mint cream', 'mint green', 'misty rose', 'moccasin', 'mode beige', 'moonstone blue', 'mordant red 19', 'moss green', 'mountain meadow', 'mountbatten pink', 'msu green', 'mughal green', 'mulberry', 'mustard', 'myrtle green', 'sae/ece amber (color)']
+
+[[./images/blues-2.png]]
+
+** Interactive plotting
+*** Basic mouse clicks
+One basic event a figure can react to is a mouse click. 
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.plot(np.random.rand(10))
+ax.set_title('Click somewhere')
+
+def onclick(event):
+    ax = plt.gca()
+    ax.set_title('x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata))
+    ax.plot([event.xdata], [event.ydata], 'ro')
+    ax.figure.canvas.draw()  # this line is critical to change the title
+    plt.savefig('images/interactive-basic-click.png')
+
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+Here is the result from one click.
+
+[[./images/interactive-basic-click.png]]
+
+We can even do different things with different mouse clicks. A left click corresponds to event.button = 1, a middle click is event.button = 2, and a right click is event.button = 3. You can detect if a double click occurs too. Here is an example of 
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.plot(np.random.rand(10))
+ax.set_title('Click somewhere')
+
+def onclick(event):   
+    ax.set_title('x={0:1.2f} y={1:1.2f} button={2}'.format(event.xdata, event.ydata, event.button))
+    colors = ' rbg'
+    print 'button={0} (dblclick={2}). making a {1} dot'.format(event.button,
+                                                               colors[event.button],
+                                                               event.dblclick)
+   
+    ms=5 # marker size
+    if event.dblclick: #make marker bigger
+        ms = 10
+
+    ax.plot([event.xdata], [event.ydata], 'o', color=colors[event.button], ms=ms)
+    ax.figure.canvas.draw()  # this line is critical to change the title
+    plt.savefig('images/interactive-button-click.png')
+
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: button=1 (dblclick=False). making a r dot
+: button=1 (dblclick=False). making a r dot
+: button=1 (dblclick=True). making a r dot
+: button=2 (dblclick=False). making a b dot
+: button=2 (dblclick=False). making a b dot
+: button=2 (dblclick=True). making a b dot
+: button=3 (dblclick=False). making a g dot
+: button=3 (dblclick=False). making a g dot
+: button=3 (dblclick=True). making a g dot
+
+[[./images/interactive-button-click.png]]
+
+Finally, you may want to have key modifiers for your clicks, e.g. Ctrl-click is different than a click.
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.plot(np.random.rand(10))
+ax.set_title('Click somewhere')
+
+def onclick(event):
+    print event.key
+    ax = plt.gca()
+    ax.set_title('x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata))
+    if event.key == 'ctrl+control':
+        color = 'red'
+    elif event.key == 'shift':
+        color = 'yellow'
+    else:
+        color = 'blue'
+
+    ax.plot([event.xdata], [event.ydata], 'o', color=color)
+    ax.figure.canvas.draw()  # this line is critical to change the title
+    plt.savefig('images/interactive-button-key-click.png')
+
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: ctrl+control
+: shift
+: alt+alt
+
+[[./images/interactive-button-key-click.png]]
+
+You can have almost every key-click combination imaginable. This allows you to have many different things that can happen when you click on a graph. With this method, you can get the coordinates close to a data point, but you do not get the properties of the point. For that, we need another mechanism.
+
+*** Mouse movement
+In this example, we will let the mouse motion move a point up and down a curve. This might be helpful to explore a function graph, for example. We use interpolation to estimate the curve between data points. 
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.interpolate import interp1d
+
+# the "data"
+x = np.linspace(0, np.pi)
+y = np.sin(x)
+
+# interpolating function between points
+p = interp1d(x, y, 'cubic')
+
+# make the figure
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+line, = ax.plot(x, y, 'ro-')
+marker, = ax.plot([0.5], [0.5],'go',  ms=15)
+
+ax.set_title('Move the mouse around')
+
+def onmove(event):
+    
+    xe = event.xdata
+    ye = event.ydata
+
+    ax.set_title('at x={0}  y={1}'.format(xe, p(xe)))   
+    marker.set_xdata(xe)
+    marker.set_ydata(p(xe))
+
+    ax.figure.canvas.draw()  # this line is critical to change the title
+    
+cid = fig.canvas.mpl_connect('motion_notify_event', onmove)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+*** key press events
+Pressing a key is different than pressing a mouse button. We can do different things with different key presses. You can access the coordinates of the mouse when you press a key.
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111)
+ax.plot(np.random.rand(10))
+ax.set_title('Move the mouse somewhere and press a key')
+
+def onpress(event):
+    print event.key
+    ax = plt.gca()
+    ax.set_title('key={2} at x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata, event.key))
+    if event.key == 'r':
+        color = 'red'
+    elif event.key == 'y':
+        color = 'yellow'
+    else:
+        color = 'blue'
+
+    ax.plot([event.xdata], [event.ydata], 'o', color=color)
+    ax.figure.canvas.draw()  # this line is critical to change the title
+    plt.savefig('images/interactive-key-press.png')
+
+cid = fig.canvas.mpl_connect('key_press_event', onpress)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+ctrl+control
+ctrl+a
+ctrl+control
+ctrl+a
+shift
+K
+shift
+shift
+shift
+shift
+shift
+shift
+shift
+L
+alt+alt
+alt+s
+alt+alt
+alt+alt
+alt+alt
+alt+alt
+alt+s
+ctrl+control
+ctrl+r
+r
+ctrl+control
+ctrl+y
+y
+#+end_example
+
+*** Picking lines
+Instead of just getting the points in a figure, let us interact with lines on the graph. We want to make the line we click on thicker. We use a "pick_event" event and bind a function to that event that does something.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.set_title('click on a line')
+
+x = np.linspace(0, 2*np.pi)
+
+L1, = ax.plot(x, np.sin(x), picker=5)
+L2, = ax.plot(x, np.cos(x), picker=5)
+
+def onpick(event):
+    thisline = event.artist
+
+    # reset all lines to thin
+    for line in [L1, L2]:
+        line.set_lw(1)
+
+    thisline.set_lw(5) # make selected line thick 
+    ax.figure.canvas.draw()  # this line is critical to change the linewidth
+
+fig.canvas.mpl_connect('pick_event', onpick)
+
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+*** Picking data points
+In this example we show how to click on a data point, and show which point was selected with a transparent marker, and show a label which refers to the point. 
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.set_title('click on a point')
+
+x = [0, 1, 2, 3, 4, 5]
+labels = ['a', 'b', 'c', 'd', 'e', 'f']
+ax.plot(x, 'bo', picker=5)
+
+# this is the transparent marker for the selected data point
+marker, = ax.plot([0], [0], 'yo', visible=False, alpha=0.8, ms=15)
+
+def onpick(event):
+    ind = event.ind
+    ax.set_title('Data point {0} is labeled "{1}"'.format(ind, labels[ind]))
+    
+    marker.set_visible(True)
+    marker.set_xdata(x[ind])
+    marker.set_ydata(x[ind])
+
+    ax.figure.canvas.draw()  # this line is critical to change the linewidth
+    plt.savefig('images/interactive-labeled-points.png')
+
+fig.canvas.mpl_connect('pick_event', onpick)
+
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/interactive-labeled-points.png]]
+
+*** TODO http://matlab.cheme.cmu.edu/2011/11/11/interacting-with-labeled-data-points/
+*** TODO http://matlab.cheme.cmu.edu/2011/11/21/interacting-with-the-steam-entropy-temperature-chart/
+*** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
+*** TODO http://matlab.cheme.cmu.edu/2011/12/07/interacting-with-graphs-with-keypresses/
+*** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
 * Programming
 ** Some of this, sum of that
    :PROPERTIES:
@@ -7105,8 +7741,73 @@ There are some significant differences in this example than in Matlab.
 
 Recursive functions have a special niche in mathematical programming. There is often another way to accomplish the same goal. That is not always true though, and in a future post we will examine cases where recursion is the only way to solve a problem.
 
-** TODO regular expressions
-http://matlab.cheme.cmu.edu/2012/05/07/1701/
+** Brief intro to regular expressions
+   :PROPERTIES:
+   :categories: regular expressions
+   :date:     2013/03/03 15:04:31
+   :updated:  2013/03/03 15:04:31
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/07/1701/][Matlab post]]
+
+This example shows how to use a regular expression to find strings matching the pattern :cmd:`datastring`. We want to find these strings, and then replace them with something that depends on what cmd is, and what datastring is.
+
+Let us define some commands that will take datasring as an argument, and return the modified text. The idea is to find all the cmds, and then run them. We use python's =eval= command to get the function handle from a string, and the cmd functions all take a datastring argument (we define them that way). We will create commands to replace :cmd:`datastring` with html code for a light gray background, and :red:`some text` with html code making the text red. 
+
+#+BEGIN_SRC python :session
+text = r'''Here is some text. use the :cmd:`open` to get the text into
+          a variable. It might also be possible to get a multiline
+            :red:`line     
+     2` directive.'''
+
+print text
+print '---------------------------------'
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... >>> >>> Here is some text. use the :cmd:`open` to get the text into
+:           a variable. It might also be possible to get a multiline
+:             :red:`line     
+:      2` directive.
+: ---------------------------------
+
+Now, we define our functions.
+#+BEGIN_SRC python :session
+def cmd(datastring):
+    ' replace :cmd:`datastring` with html code with light gray background'
+    s = '<FONT style="BACKGROUND-COLOR: LightGray">%{0}</FONT>';
+    html = s.format(datastring)
+    return html
+
+def red(datastring):
+    'replace :red:`datastring` with html code to make datastring in red font'
+    html = '<font color=red>{0}</font>'.format(datastring)
+    return html
+#+END_SRC
+
+#+RESULTS:
+
+Finally, we do the regular expression. Regular expressions are hard. There are whole books on them. The point of this post is to alert you to the possibilities. I will break this regexp down as follows. 1. we want everything between :*: as the directive. =([^:]*)= matches everything not a :. =:([^:]*):= matches the stuff between two :. 2. then we want everything between `*`. =([^`]*)= matches everything not a `. 3. The () makes a group that python stores so we can refer to them later.
+#+BEGIN_SRC python :session
+import re
+regex = ':([^:]*):`([^`]*)`'
+matches = re.findall(regex, text)
+for directive, datastring in matches:
+    directive = eval(directive) # get the function
+    text = re.sub(regex, directive(datastring), text)
+
+print 'Modified text:'
+print text
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> ... ... ... >>> Modified text:
+: Here is some text. use the <FONT style="BACKGROUND-COLOR: LightGray">%open</FONT> to get the text into
+:           a variable. It might also be possible to get a multiline
+:             <FONT style="BACKGROUND-COLOR: LightGray">%open</FONT> directive.
+
 ** Unique entries in a vector
    :PROPERTIES:
    :date:     2013/02/27 14:45:18
@@ -7230,7 +7931,6 @@ print sorted(groups, key=grade_key)
 #+RESULTS:
 : [('group2', 'A+'), ('group3', 'A'), ('group1', 'B')]
 
-** TODO http://matlab.cheme.cmu.edu/2011/10/23/using-java-inside-matlab/
 ** Making word files in python
  [[http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/][Matlab post]]
 
@@ -7810,8 +8510,7 @@ The answer we get us 0.05 K too high, which is not bad considering we estimated 
    :PROPERTIES:
    :categories: thermodynamics, optimization
    :date:     2013/03/01 13:11:58
-   :updated:  2013/03/01 13:11:58
-   :permalink: http://jkitchin.github.com/blog/2013-03-01-gibbs-energy-minimization-and-the-nist-webbook/index.html
+   :updated:  2013/03/03 12:22:19
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/][Matlab post]]
 In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs energy of reaction, and then used a reaction extent variable to compute the equilibrium concentrations of each species for the water gas shift reaction.
@@ -7959,8 +8658,7 @@ print K
 ** Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
    :PROPERTIES:
    :date:     2013/03/01 12:27:48
-   :updated:  2013/03/01 12:27:48
-   :permalink: http://jkitchin.github.com/blog/2013-03-01-finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/index.html
+   :updated:  2013/03/03 12:22:30
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/][Matlab post]]
 Adapted from problem 4.5 in Cutlip and Shacham
@@ -8958,10 +9656,10 @@ plt.savefig('images/maxwell-eq-area-1.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> ... ... ... ... >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1f74b2d0>]
+: >>> >>> >>> ... ... ... ... >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000007720240>]
 : (0, 2)
-: <matplotlib.text.Text object at 0x1f3d97d0>
-: <matplotlib.text.Text object at 0x1f3de210>
+: <matplotlib.text.Text object at 0x00000000075C8630>
+: <matplotlib.text.Text object at 0x00000000075CADA0>
 
 [[./images/maxwell-eq-area-1.png]]
 
@@ -8976,14 +9674,14 @@ plt.savefig('images/maxwell-eq-area-2.png')
 
 #+RESULTS:
 : 
-: >>> [<matplotlib.lines.Line2D object at 0x1f74bb90>]
+: >>> [<matplotlib.lines.Line2D object at 0x0000000007720048>]
 
 [[./images/maxwell-eq-area-2.png]]
 
 To find the areas, we need to know where the intersection of the vdW eqn with the horizontal line. This is the same as asking what are the roots of the vdW equation at that Pr. We need all three intersections so we can integrate from the first root to the middle root, and then the middle root to the third root. We take advantage of the polynomial nature of the vdW equation, which allows us to use the roots command to get all the roots at once. The polynomial is $V_R^3 - \frac{1}{3}(1+8 T_R/P_R) + 3/P_R - 1/P_R = 0$. We use the coefficients t0 get the roots like this.
 
 #+BEGIN_SRC python :session
-vdWp = [1.0, -1. / 3.0 * (1.0 + 8.0 * Tr / y), 3.0 / y, - 1.0 / y];
+vdWp = [1.0, -1. / 3.0 * (1.0 + 8.0 * Tr / y), 3.0 / y, - 1.0 / y]
 v = np.roots(vdWp)
 v.sort()
 print v
@@ -8995,7 +9693,7 @@ plt.savefig('images/maxwell-eq-area-3.png')
 #+RESULTS:
 : 
 : >>> >>> [ 0.60286812  1.09743234  2.32534056]
-: >>> [<matplotlib.lines.Line2D object at 0x1f87efd0>, <matplotlib.lines.Line2D object at 0x1f74ea50>, <matplotlib.lines.Line2D object at 0x1f857410>]
+: >>> [<matplotlib.lines.Line2D object at 0x0000000007728630>, <matplotlib.lines.Line2D object at 0x00000000078B0080>, <matplotlib.lines.Line2D object at 0x00000000078B0588>]
 
 [[./images/maxwell-eq-area-3.png]]
 
@@ -9015,7 +9713,7 @@ print e1, e2  # interesting these look so large
 
 #+RESULTS:
 : 
-: >>> 0.063225945606 0.0580212098122
+: >>> >>> >>> >>> 0.063225945606 0.0580212098122
 : 0.321466743765 -0.798140339268
 
 #+BEGIN_SRC python :session
@@ -9045,14 +9743,12 @@ print v
 
 #+RESULTS:
 : 
-: ... ... ... ... 0.646998351872
-: >>> >>> >>> >>> >>> [ 0.6034019   1.09052663  2.34884238]
+: >>> ... ... ... ... ... ... ... ... >>> >>> 0.646998351872
+: >>> >>> >>> >>> >>> >>> >>> >>> [ 0.6034019   1.09052663  2.34884238]
 
 Now let us plot the equal areas and indicate them by shading.
 
 #+BEGIN_SRC python :session
-fig = plt.figure()
-plt.clf()
 ax = fig.add_subplot(111)
 
 ax.plot(Vr,Pr)
@@ -9070,20 +9766,22 @@ plt.ylabel('$P_R$')
 plt.title('$T_R$ = 0.9')
 
 plt.savefig('images/maxwell-eq-area-4.png')
+plt.savefig('images/maxwell-eq-area-4.svg')
 #+END_SRC
+
 
 #+RESULTS:
 #+begin_example
 
->>> >>> >>> [<matplotlib.lines.Line2D object at 0x1ffe6e50>]
->>> >>> >>> [<matplotlib.lines.Line2D object at 0x1fd0e250>]
-<matplotlib.collections.PolyCollection object at 0x1ffe6e90>
-<matplotlib.collections.PolyCollection object at 0x1ffeae90>
->>> <matplotlib.text.Text object at 0x1ffed290>
-<matplotlib.text.Text object at 0x1ffed3d0>
-<matplotlib.text.Text object at 0x200eb310>
-<matplotlib.text.Text object at 0x1ffc1250>
-<matplotlib.text.Text object at 0x1ffceb10>
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000007CD0D68>]
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x00000000075B14E0>]
+<matplotlib.collections.PolyCollection object at 0x0000000007CF3D68>
+<matplotlib.collections.PolyCollection object at 0x0000000007CF9C88>
+>>> <matplotlib.text.Text object at 0x0000000007CFE0F0>
+<matplotlib.text.Text object at 0x0000000007CFE208>
+<matplotlib.text.Text object at 0x0000000007CD89E8>
+<matplotlib.text.Text object at 0x0000000007CE1198>
+<matplotlib.text.Text object at 0x0000000007CEC470>
 #+end_example
 
 [[./images/maxwell-eq-area-4.png]]
@@ -9127,6 +9825,8 @@ def gibbs(E):
          yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
     return G
 #+END_SRC
+
+#+RESULTS:
 
 The equilibrium constants for these reactions are known, and we seek to find the equilibrium reaction extents so we can determine equilibrium compositions. The equilibrium reaction extents are those that minimize the Gibbs free energy.  We have the following constraints, written in standard less than or equal to form:
 
@@ -9227,6 +9927,7 @@ plt.colorbar()
 plt.plot([ 0.1330313],   [0.35101555], 'ro')
 
 plt.savefig('images/gibbs-minimization-1.png')
+plt.savefig('images/gibbs-minimization-1.svg')
 plt.show()
 #+END_SRC
 
@@ -9258,11 +9959,12 @@ print('y_I = {0:1.3f} y_B = {1:1.3f} y_P1 = {2:1.3f} y_P2 = {3:1.3f}'.format(yI,
 *** summary
 I found setting up the constraints in this example to be more confusing than the Matlab syntax.
 
-** Time dependent concentration in a first order reversible reaction in a batch reactor.
+** Time dependent concentration in a first order reversible reaction in a batch reactor
    :PROPERTIES:
-   :categories: Reaction engineering, ODE
+   :categories: ODE
+   :tags: Reaction engineering
    :date:     2013/02/05 09:00:00
-   :updated:  2013/02/27 14:47:16
+   :updated:  2013/03/03 12:24:17
    :END:
 
 [[http://matlab.cheme.cmu.edu/2011/08/07/first-order-reversible-reaction-in-batch-reactor/][Matlab post]]
@@ -9459,11 +10161,46 @@ print 'The exit concentration is {0} mol/L'.format(CA_sol)
 
 It is a little confusing why it is necessary to put a comma after the CA_sol in the fsolve command. If you do not put it there, you get brackets around the answer.
 
+** Integrating a batch reactor design equation
+   :PROPERTIES:
+   :date:     2013/01/06 09:00:00
+   :categories: integration
+   :tags:     Reaction engineering
+   :updated:  2013/03/03 12:20:46
+   :END:
+For a constant volume batch reactor where $A \rightarrow B$ at a rate of $-r_A = k C_A^2$, we derive the following design equation for the length of time required to achieve a particular level of conversion :
+
+$t(X) = \frac{1}{k C_{A0}} \int_{X=0}^X \frac{dX}{(1-X)^2}$
+
+if $k = 10^{-3}$ L/mol/s and $C_{A0}$ = 1 mol/L, estimate the time to achieve 90% conversion.
+
+We could analytically solve the integral and evaluate it, but instead we will numerically evaluate it using scipy.integrate.quad. This function returns two values: the evaluated integral, and an estimate of the absolute error in the answer.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+
+def integrand(X):
+    k = 1.0e-3
+    Ca0 = 1.0  # mol/L
+    return 1./(k*Ca0)*(1./(1-X)**2)
+
+sol, abserr = quad(integrand, 0, 0.9)
+print 't = {0} seconds ({1} hours)'.format(sol, sol/3600)
+print 'Estimated absolute error = {0}'.format(abserr)
+#+END_SRC
+
+#+RESULTS:
+: t = 9000.0 seconds (2.5 hours)
+: Estimated absolute error = 2.12203274482e-07
+
+
+You can see the estimate error is very small compared to the solution.
+
 ** Integrating the batch reactor mole balance
    :PROPERTIES:
    :categories: Reaction engineering, ODE
-   :date:     2013/02/18 09:00:00
-   :updated:  2013/02/27 14:47:46
+   :date:     2013/01/06 09:00:00
+   :updated:  2013/03/03 12:21:00
    :END:
 
 An alternative approach of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
@@ -9648,13 +10385,11 @@ print xNi2
 You can see the overall mole fraction of Ni is practically the same in each case.
 
 ** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
-** TODO http://matlab.cheme.cmu.edu/2011/11/13/control_cstr-m/
 ** Meet the steam tables
    :PROPERTIES:
    :categories: thermodynamics, steam
    :date:     2013/02/28 22:09:29
-   :updated:  2013/02/28 22:19:03
-   :permalink: http://jkitchin.github.com/blog/2013-02-28-meet-the-steam-tables/index.html
+   :updated:  2013/03/03 12:21:13
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/][Matlab post]]
 
@@ -9808,17 +10543,17 @@ plt.savefig('images/iawps-steam.png')
 #+RESULTS:
 #+begin_example
 
->>> >>> <matplotlib.figure.Figure object at 0x0000000008504F60>
->>> >>> ... ... ... ... [<matplotlib.lines.Line2D object at 0x00000000084F2320>]
-[<matplotlib.lines.Line2D object at 0x00000000084F0DD8>]
-[<matplotlib.lines.Line2D object at 0x00000000084CC470>]
-[<matplotlib.lines.Line2D object at 0x000000000879AD68>]
-[<matplotlib.lines.Line2D object at 0x00000000087A3208>]
-[<matplotlib.lines.Line2D object at 0x00000000087A3668>]
-... >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000008504D30>]
-[<matplotlib.lines.Line2D object at 0x00000000087A3AC8>]
->>> <matplotlib.text.Text object at 0x000000000878D4E0>
-<matplotlib.text.Text object at 0x000000000878EC50>
+>>> >>> <matplotlib.figure.Figure object at 0x00000000027ED6A0>
+>>> >>> ... ... ... ... [<matplotlib.lines.Line2D object at 0x00000000084CAAC8>]
+[<matplotlib.lines.Line2D object at 0x00000000084CACC0>]
+[<matplotlib.lines.Line2D object at 0x00000000084D01D0>]
+[<matplotlib.lines.Line2D object at 0x00000000084D0630>]
+[<matplotlib.lines.Line2D object at 0x00000000084D0A90>]
+[<matplotlib.lines.Line2D object at 0x00000000084D0EF0>]
+... >>> >>> >>> [<matplotlib.lines.Line2D object at 0x000000000236FEB8>]
+[<matplotlib.lines.Line2D object at 0x00000000084D1390>]
+>>> <matplotlib.text.Text object at 0x00000000082DD8D0>
+<matplotlib.text.Text object at 0x00000000084B6080>
 #+end_example
 
 
@@ -9845,13 +10580,14 @@ plt.plot(S23, T23, 'b-', lw=4) # path from 2 to 3 is isobaric
 plt.plot([s3, s4], [T3, T4], 'g-', lw=4) # path from 3 to 4 is isentropic
 plt.plot(S41, T41, 'k-', lw=4) # and from 4 to 1 is isobaric
 plt.savefig('images/iawps-steam-2.png')
+plt.savefig('images/iawps-steam-2.svg')
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x0000000008787438>]
-: [<matplotlib.lines.Line2D object at 0x00000000087A3F28>]
-: [<matplotlib.lines.Line2D object at 0x00000000087BA400>]
-: [<matplotlib.lines.Line2D object at 0x00000000087BA6D8>]
+: [<matplotlib.lines.Line2D object at 0x00000000084ED630>]
+: [<matplotlib.lines.Line2D object at 0x00000000081F9518>]
+: [<matplotlib.lines.Line2D object at 0x00000000087A9DD8>]
+: [<matplotlib.lines.Line2D object at 0x00000000087A9CF8>]
 
 [[./images/iawps-steam-2.png]]
 
@@ -10385,7 +11121,7 @@ under CC-BY-SA on the same site at any time before August 1, 2009,
 provided the MMC is eligible for relicensing.
 #+end_example
 
-
+  
 * References
 
 http://scipy-lectures.github.com/index.html
