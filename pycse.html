@@ -347,7 +347,8 @@ for the JavaScript code below.
 <li><a href="#sec-5-4-3">5.4.3 Method 2</a></li>
 </ul>
 </li>
-<li><a href="#sec-5-5">5.5 Know your tolerance</a></li>
+<li><a href="#sec-5-5">5.5 Finding the nth root of a periodic function</a></li>
+<li><a href="#sec-5-6">5.6 Know your tolerance</a></li>
 </ul>
 </li>
 <li><a href="#sec-6">6 Differential equations</a>
@@ -496,7 +497,7 @@ for the JavaScript code below.
 <li><a href="#sec-11-5">11.5 http://matlab.cheme.cmu.edu/2011/11/24/turkeyfy-your-plots/</a></li>
 <li><a href="#sec-11-6">11.6 http://matlab.cheme.cmu.edu/2011/11/22/3d-plots-of-the-steam-tables/</a></li>
 <li><a href="#sec-11-7">11.7 Fancy, built-in colors in Matlab</a></li>
-<li><a href="#sec-11-8">11.8 Picasso's short lived blue period with Matlab</a></li>
+<li><a href="#sec-11-8">11.8 Picasso's short lived blue period with Python</a></li>
 <li><a href="#sec-11-9">11.9 Interactive plotting</a>
 <ul>
 <li><a href="#sec-11-9-1">11.9.1 Basic mouse clicks</a></li>
@@ -5266,8 +5267,111 @@ root found at x =  2.000, f= 0.000
 </div>
 
 <div id="outline-container-5-5" class="outline-3">
-<h3 id="sec-5-5"><span class="section-number-3">5.5</span> Know your tolerance</h3>
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> Finding the nth root of a periodic function</h3>
 <div class="outline-text-3" id="text-5-5">
+
+
+<p>
+There is a heat transfer problem where one needs to find the n^th root of the following equation: \(x J_1(x) - Bi J_0(x)=0\) where \(J_0\) and \(J_1\) are the Bessel functions of zero and first order, and \(Bi\) is the Biot number. We examine an approach to finding these roots. 
+</p>
+<p>
+First,  we plot the function.
+</p>
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">from</span> scipy.special <span style="color: #ff0000; font-weight: bold;">import</span> jn, jn_zeros
+<span style="color: #ff0000; font-weight: bold;">import</span> matplotlib.pyplot <span style="color: #ff0000; font-weight: bold;">as</span> plt
+<span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+
+Bi = 1
+
+<span style="color: #ff0000; font-weight: bold;">def</span> <span style="color: #ff0000; font-weight: bold;">f</span>(x):
+    <span style="color: #ff0000; font-weight: bold;">return</span> x * jn(1, x) - Bi * jn(0, x)
+
+X = np.linspace(0, 30, 200)
+plt.plot(X, f(X))
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/heat-transfer-roots-1.png'</span>)
+</pre>
+
+
+
+<p>
+<img src="./images/heat-transfer-roots-1.png"  alt="./images/heat-transfer-roots-1.png" />
+</p>
+<p>
+You can see there are many roots to this equation, and we want to be sure we get the n^{th} root. This function is pretty well behaved, so if you make a good guess about the solution you will get an answer, but if you make a bad guess, you may get the wrong root. We examine next a way to do it without guessing the solution. What we want is the solution to \(f(x) = 0\), but we want all the solutions in a given interval. We derive a new equation, \(f'(x) = 0\), with initial condition \(f(0) = f0\), and integrate the ODE with an event function that identifies all zeros of \(f\) for us. The derivative of our function is \(df/dx = d/dx(x J_1(x)) - Bi J'_0(x)\). It is known (<a href="http://www.markrobrien.com/besselfunct.pdf">http://www.markrobrien.com/besselfunct.pdf</a>) that \(d/dx(x J_1(x)) = x J_0(x)\), and \(J'_0(x) = -J_1(x)\). All we have to do now is set up the problem and run it.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">from</span> pycse <span style="color: #ff0000; font-weight: bold;">import</span> *  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">contains the ode integrator with events</span>
+
+<span style="color: #ff0000; font-weight: bold;">from</span> scipy.special <span style="color: #ff0000; font-weight: bold;">import</span> jn, jn_zeros
+<span style="color: #ff0000; font-weight: bold;">import</span> matplotlib.pyplot <span style="color: #ff0000; font-weight: bold;">as</span> plt
+<span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+
+Bi = 1
+
+<span style="color: #ff0000; font-weight: bold;">def</span> <span style="color: #ff0000; font-weight: bold;">f</span>(x):
+    <span style="color: #00ff00; font-style: italic;">"function we want roots for"</span>
+    <span style="color: #ff0000; font-weight: bold;">return</span> x * jn(1, x) - Bi * jn(0, x)
+
+<span style="color: #ff0000; font-weight: bold;">def</span> <span style="color: #ff0000; font-weight: bold;">fprime</span>(f, x):
+    <span style="color: #00ff00; font-style: italic;">"df/dx"</span>
+    <span style="color: #ff0000; font-weight: bold;">return</span> x * jn(0, x) - Bi * (-jn(1, x))
+
+<span style="color: #ff0000; font-weight: bold;">def</span> <span style="color: #ff0000; font-weight: bold;">e1</span>(f, x):
+    <span style="color: #00ff00; font-style: italic;">"event function to find zeros of f"</span>
+    isterminal = <span style="color: #ff0000; font-weight: bold;">False</span>
+    value = f
+    direction = 0
+    <span style="color: #ff0000; font-weight: bold;">return</span> value, isterminal, direction
+
+f0 = f(0)
+xspan = np.linspace(0, 30, 200)
+
+x, fsol, XE, FE, IE = odelay(fprime, f0, xspan, events=[e1])
+
+plt.plot(x, fsol, <span style="color: #00ff00; font-style: italic;">'.-'</span>, label=<span style="color: #00ff00; font-style: italic;">'Numerical solution'</span>)
+plt.plot(xspan, f(xspan), <span style="color: #00ff00; font-style: italic;">'--'</span>, label=<span style="color: #00ff00; font-style: italic;">'Analytical function'</span>)
+plt.plot(XE, FE, <span style="color: #00ff00; font-style: italic;">'ro'</span>, label=<span style="color: #00ff00; font-style: italic;">'roots'</span>)
+plt.legend(loc=<span style="color: #00ff00; font-style: italic;">'best'</span>)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/heat-transfer-roots-2.png'</span>)
+
+<span style="color: #ff0000; font-weight: bold;">for</span> i, root <span style="color: #ff0000; font-weight: bold;">in</span> <span style="color: #ff0000; font-weight: bold;">enumerate</span>(XE):
+    <span style="color: #ff0000; font-weight: bold;">print</span> <span style="color: #00ff00; font-style: italic;">'root {0} is at {1}'</span>.format(i, root)
+
+plt.show()
+</pre>
+
+
+
+<pre class="example">root 0 is at 1.25578377377
+root 1 is at 4.07947743741
+root 2 is at 7.15579904465
+root 3 is at 10.2709851256
+root 4 is at 13.3983973869
+root 5 is at 16.5311587137
+root 6 is at 19.6667276775
+root 7 is at 22.8039503455
+root 8 is at 25.9422288192
+root 9 is at 29.081221492
+</pre>
+
+
+<p>
+<img src="./images/heat-transfer-roots-2.png"  alt="./images/heat-transfer-roots-2.png" />
+</p>
+<p>
+You can work this out once, and then you have all the roots in the interval and you can select the one you want.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-5-6" class="outline-3">
+<h3 id="sec-5-6"><span class="section-number-3">5.6</span> Know your tolerance</h3>
+<div class="outline-text-3" id="text-5-6">
 
 <p><a href="http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/">Matlab post</a>
 $$V = \frac{\nu (C_{Ao} - C_A)}{k C_A^2}$$
@@ -10443,7 +10547,7 @@ plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/fall-color
 </div>
 
 <div id="outline-container-11-8" class="outline-3">
-<h3 id="sec-11-8"><span class="section-number-3">11.8</span> Picasso's short lived blue period with Matlab</h3>
+<h3 id="sec-11-8"><span class="section-number-3">11.8</span> Picasso's short lived blue period with Python</h3>
 <div class="outline-text-3" id="text-11-8">
 
 <p><a href="http://matlab.cheme.cmu.edu/2011/09/14/picassos-short-lived-blue-period-with-matlab/">Matlab post</a>
@@ -10761,34 +10865,11 @@ plt.show()
 </pre>
 
 
-
-<pre class="example">ctrl+control
-ctrl+a
-ctrl+control
-ctrl+a
-shift
-K
-shift
-shift
-shift
-shift
-shift
-shift
-shift
-L
-alt+alt
-alt+s
-alt+alt
-alt+alt
-alt+alt
-alt+alt
-alt+s
-ctrl+control
-ctrl+r
+<pre class="example">
 r
-ctrl+control
-ctrl+y
+t
 y
+ 
 </pre>
 
 
