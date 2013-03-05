@@ -29,7 +29,7 @@ def build_html(target, source, env):
     print 'building html file!!!!'
     cmd = (EMACS + ' ' 
            + ' '.join(EMACS_OPTIONS)
-           + ' --visit=pycse.org --eval "(org-publish \"pycse\")"')
+           + ' --visit=pycse.org')
    
     status, output = commands.getstatusoutput(cmd)
     print output
