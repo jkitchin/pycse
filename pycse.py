@@ -101,30 +101,34 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
         X += [x2]
         sol += [f2[-1][0]]
 
+        #print X[-1], sol[-1], events[0](sol[-1], X[-1])
+
         # check event functions
-        for j,event in enumerate(events):
+        for j, event in enumerate(events):
             e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
-    
-            if e[j, i + 1] * e[j, i] < 0:
+                
+            if ((e[j, i + 1] * e[j, i] < 0) 
+                or np.abs(e[j, i + 1]) < TOLERANCE # this point is practically 0
+                or np.abs(e[j, i]) < TOLERANCE):
                 # change in sign detected Event detected where the sign of
                 # the event has changed. The event is between xPt = X[-2]
                 # and xLt = X[-1]. run a modified bisect function to
                 # narrow down to find where event = 0
-                xLt = X[-1]
+                xLt = X[-1]  # Last point
                 fLt = sol[-1]
                 eLt = e[j, i+1]
 
-                xPt = X[-2]
+                xPt = X[-2]  # previous point
                 fPt = sol[-2]
                 ePt = e[j, i]
 
-                k = 0
+                k = 0 # bisection counter
                 ISTERMINAL = False # assume this is the case
-                
+                # bisection loop
                 while k < 100: # max iterations
                     if np.abs(xLt - xPt) < TOLERANCE:
                         # we know the interval to a prescribed precision now.
-                        # check if direction is satisfied.
+                        # check if direction is satisfied, and collect event if needed.
                         # e[j, i + 1] is the last value calculated
                         # e[j, i] is the previous to last
                         
@@ -138,20 +142,22 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                         # only get event if event function is increasing
                         elif (e[j, i + 1] < e[j, i] ) and direction == -1:
                             COLLECTEVENT = True
+                        else:
+                            raise Exception, 'unexpected collectevent happened'
                             
                         if COLLECTEVENT:
-                            TE.append(xLt)
-                            YE.append(fLt)
+                            TE.append(xPt)
+                            YE.append(fPt)
                             IE.append(j)
 
-                            ISTERMINAL = isterminal
-                        else:
-                            ISTERMINAL = False
-                                                    
+                            if isterminal:
+                                return X, sol, TE, YE, IE
+
                         break # and return to integrating
 
-                    m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
-                                                #bracketing zero
+                    # slope of line connecting last and previous point
+                    m = (ePt - eLt)/(xPt - xLt) # slope of line connecting points
+                                                # bracketing zero
 
                     #estimated x where the zero is      
                     new_x = -ePt / m + xPt
@@ -159,7 +165,7 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                     # check if new_x is sufficiently different from xPt
                     if np.abs(new_x - xPt) < TOLERANCE:
                         # it is not different, so we do not go forward
-                        xLt = new_x
+                        xPt = xLt = new_x
                         continue                        
 
                     # now get the new value of the integrated solution at
@@ -175,29 +181,18 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                     new_e, isterminal, direction = event(new_f, new_x)
 
                     # now check event sign change
-                    if eLt * new_e > 0:
-                        # no sign change
+                    if ePt * new_e > 0:
                         xPt = new_x
                         fPt = new_f
                         ePt = new_e
                     else:
-                        # there was a sign change
                         xLt = new_x
                         fLt = new_f
                         eLt = new_e
 
                     k += 1
-
-                # if the last value of isterminal is true, break out of this loop too
-                
-                if ISTERMINAL:
-                    # make last data point the last event
-                    del X[-1], sol[-1]
-                    X.append(TE[-1])
-                    sol.append(YE[-1])
                     
-                    return X, sol, TE, YE, IE
-                
+              
     return X, sol, TE, YE, IE
 
 
