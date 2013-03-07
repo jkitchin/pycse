@@ -215,7 +215,8 @@ Other types of mathematical operations require us to import functionality from p
 ** Advanced mathematical operators
    :PROPERTIES:
    :date:     2013/02/27 14:49:13
-   :updated:  2013/02/27 14:49:13
+   :updated:  2013/03/06 18:29:46
+   :categories: python
    :END:
 The primary library we will consider is mod:numpy, which provides many mathematical functions, statistics as well as support for linear algebra. For a complete listing of the functions available, see http://docs.scipy.org/doc/numpy/reference/routines.math.html. We begin with the simplest functions.
 
@@ -254,7 +255,8 @@ There are many other intrinsic functions available in mod:numpy which we will ev
 ** Creating your own functions
    :PROPERTIES:
    :date:     2013/02/27 14:49:18
-   :updated:  2013/02/27 14:49:18
+   :updated:  2013/03/06 18:29:24
+   :categories: python
    :END:
 We can combine operations to evaluate complex equations. Consider the value of the equation $x^3 - \log(x)$ for the value $x=4.1$.
 
@@ -286,7 +288,8 @@ It may not seem like we did much there, but this is the foundation for solving e
 ** Defining functions in python
    :PROPERTIES:
    :date:     2013/02/27 14:49:41
-   :updated:  2013/02/27 14:49:41
+   :updated:  2013/03/06 18:28:55
+   :categories: python
    :END:
 
 Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-got-two-turntables-and-a-microphone/][Matlab implementation. ]]
@@ -414,75 +417,11 @@ plt.savefig('images/funcs-ode.png')
 #+RESULTS:
 
 [[./images/funcs-ode.png]]
-
-** Functions on arrays of values
-   :PROPERTIES:
-   :date:     2013/02/27 14:49:49
-   :updated:  2013/02/27 14:49:49
-   :END:
-It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
-
-#+BEGIN_SRC python
-import numpy as np
-print np.linspace(0, np.pi, 10)
-#+END_SRC
-
-#+RESULTS:
-: [ 0.          0.34906585  0.6981317   1.04719755  1.3962634   1.74532925
-:   2.0943951   2.44346095  2.7925268   3.14159265]
-
-The main point of using the mod:numpy functions is that they work element-wise on elements of an array. In this example, we compute the $\cos(x)$ for each element of $x$.
-
-#+BEGIN_SRC python
-import numpy as np
-x = np.linspace(0, np.pi, 10)
-print np.cos(x)
-#+END_SRC
-
-#+RESULTS:
-: [ 1.          0.93969262  0.76604444  0.5         0.17364818 -0.17364818
-:  -0.5        -0.76604444 -0.93969262 -1.        ]
-
-You can already see from this output that there is a root to the equation $\cos(x) = 0$, because there is a change in sign in the output. This is not a very convenient way to view the results; a graph would be better.  We use mod:matplotlib to make figures. Here is an example.
-
-#+BEGIN_SRC python
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.linspace(0, np.pi, 10)
-plt.plot(x, np.cos(x))
-plt.xlabel('x')
-plt.ylabel('cos(x)')
-plt.savefig('images/plot-cos.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/plot-cos.png]]
-
-This figure illustrates graphically what the numbers above show. The function crosses zero at approximately $x = 1.5$. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation $f(x) = \cos(x) = 0$. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.
-
-#+BEGIN_SRC python
-from scipy.optimize import fsolve 
-import numpy as np
-
-def f(x):
-    return np.cos(x)
-
-sol, = fsolve(f, x0=1.5) # the comma after sol makes it return a float
-print sol
-print np.pi / 2
-#+END_SRC
-
-#+RESULTS:
-: 1.57079632679
-: 1.57079632679
-
-We know the solution is \pi/2. 
 ** Advanced function creation
    :PROPERTIES:
    :date:     2013/02/27 14:49:54
-   :updated:  2013/02/27 14:49:54
+   :updated:  2013/03/06 18:28:13
+   :categories: python
    :END:
 Python has some nice features in creating functions. You can create default values for variables, have optional variables and optional keyword variables.
 In this function f(a,b), =a= and =b= are called positional arguments, and they are required, and must be provided in the same order as the function defines.
@@ -620,6 +559,422 @@ print func(2, 3, 4, 5, mysillykw='hahah')
 #+RESULTS:
 : kw: mysillykw = hahah
 : 17
+
+** Creating arrays in python
+   :PROPERTIES:
+   :date:     2013/02/26 09:00:00
+   :updated:  2013/03/06 19:39:27
+   :categories: python
+   :END:
+Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+
+print np.column_stack([a, b])
+
+# this means stack the arrays vertically, e.g. on top of each other
+print np.vstack([a, b]).T
+#+END_SRC
+
+#+RESULTS:
+: [[1 4]
+:  [2 5]
+:  [3 6]]
+: [[1 4]
+:  [2 5]
+:  [3 6]]
+
+Or rows:
+
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+
+print np.row_stack([a, b])
+
+# this means stack the arrays vertically, e.g. on top of each other
+print np.vstack([a, b])
+#+END_SRC
+
+#+RESULTS:
+: [[1 2 3]
+:  [4 5 6]]
+: [[1 2 3]
+:  [4 5 6]]
+
+The opposite operation is to extract the rows or columns of a 2D array into smaller arrays. We might want to do that to extract a row or column from a calculation for further analysis, or plotting for example. There are splitting functions in numpy. They are somewhat confusing, so we examine some examples. The numpy.hsplit command splits an array "horizontally". The best way to think about it is that the "splits" move horizontally across the array. In other words, you draw a vertical split, move over horizontally, draw another vertical split, etc... You must specify the number of splits that you want, and the array must be evenly divisible by the number of splits.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2 = np.hsplit(A, 2)
+print p1
+print p2
+
+#split into 4 parts
+p1, p2, p3, p4 = np.hsplit(A, 4)
+print p1
+print p2
+print p3
+print p4
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+[[1 2]
+ [4 5]]
+[[3 5]
+ [6 9]]
+[[1]
+ [4]]
+[[2]
+ [5]]
+[[3]
+ [6]]
+[[5]
+ [9]]
+#+end_example
+
+In the numpy.vsplit command the "splits" go "vertically" down the array. Note that the split commands return 2D arrays.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2 = np.vsplit(A, 2)
+print p1
+print p2
+print p2.shape
+#+END_SRC
+
+#+RESULTS:
+: [[1 2 3 5]]
+: [[4 5 6 9]]
+: (1, 4)
+
+An alternative approach is array unpacking. In this example, we unpack the array into two variables. The array unpacks by row.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2 = A
+print p1
+print p2
+#+END_SRC
+
+#+RESULTS:
+: [1 2 3 5]
+: [4 5 6 9]
+
+To get the columns, just transpose the array.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# split into two parts
+p1, p2, p3, p4 = A.T
+print p1
+print p2
+print p3
+print p4
+print p4.shape
+#+END_SRC
+
+#+RESULTS:
+: [1 4]
+: [2 5]
+: [3 6]
+: [5 9]
+: (2,)
+
+Note that now, we have 1D arrays.
+
+You can also access rows and columns by indexing. We index an array by [row, column]. To get a row, we specify the row number, and all the columns in that row like this [row, :]. Similarly, to get a column, we specify that we want all rows in that column like this: [:, column]. This approach is useful when you only want a few columns or rows.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[1, 2, 3, 5], 
+              [4, 5, 6, 9]])
+
+# get row 1
+print A[1]
+print A[1, :]  # row 1, all columns
+
+print A[:, 2]  # get third column 
+print A[:, 2].shape
+#+END_SRC
+
+#+RESULTS:
+: [4 5 6 9]
+: [4 5 6 9]
+: [3 6]
+: (2,)
+
+Note that even when we specify a column, it is returned as a 1D array.
+** Indexing vectors and arrays in Python
+   :PROPERTIES:
+   :categories: basic
+   :date:     2013/02/27 14:50:40
+   :updated:  2013/03/06 18:27:44
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/][Matlab post]]
+There are times where you have a lot of data in a vector or array and you want to extract a portion of the data for some analysis. For example, maybe you want to plot column 1 vs column 2, or you want the integral of data between x = 4 and x = 6, but your vector covers 0 < x < 10. Indexing is the way to do these things.
+
+A key point to remember is that in python array/vector indices start at 0. Unlike Matlab, which uses parentheses to index a array, we use brackets in python.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+x = np.linspace(-np.pi, np.pi, 10)
+print x
+
+print x[0]  # first element
+print x[2]  # third element
+print x[-1] # last element
+print x[-2] # second to last element
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+:   1.04719755  1.74532925  2.44346095  3.14159265]
+: >>> -3.14159265359
+: -1.74532925199
+: 3.14159265359
+: 2.44346095279
+
+We can select a range of elements too. The syntax a:b extracts the a^{th} to (b-1)^{th} elements. The syntax a:b:n starts at a, skips nelements up to the index b.
+
+#+BEGIN_SRC python :session
+print x[1:4]     # second to fourth element. Element 5 is not included
+print x[0:-1:2]  # every other element
+print x[:]       # print the whole vector
+print x[-1:0:-1] # reverse the vector!
+#+END_SRC
+
+#+RESULTS:
+: [-2.44346095 -1.74532925 -1.04719755]
+: [-3.14159265 -1.74532925 -0.34906585  1.04719755  2.44346095]
+: [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+:   1.04719755  1.74532925  2.44346095  3.14159265]
+: [ 3.14159265  2.44346095  1.74532925  1.04719755  0.34906585 -0.34906585
+:  -1.04719755 -1.74532925 -2.44346095]
+
+Suppose we want the part of the vector where x > 2. We could do that by inspection, but there is a better way. We can create a mask of boolean (0 or 1) values that specify whether x > 2 or not, and then use the mask as an index.
+
+#+BEGIN_SRC python :session
+print x[x > 2]
+#+END_SRC
+
+#+RESULTS:
+: [ 2.44346095  3.14159265]
+
+You can use this to analyze subsections of data, for example to integrate the function y = sin(x) where x > 2.
+
+#+BEGIN_SRC python :session
+y = np.sin(x)
+
+print np.trapz( x[x > 2], y[x > 2])
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> -1.79500162881
+
+*** 2d arrays
+In 2d arrays, we use  row, column notation. We use a : to indicate all rows or all columns.
+
+#+BEGIN_SRC python :session
+a = np.array([[1, 2, 3], 
+              [4, 5, 6], 
+              [7, 8, 9]])
+
+print a[0, 0]
+print a[-1, -1]
+
+print a[0, :] # row one
+print a[:, 0] # column one
+print a[:]
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... >>> >>> 1
+: 9
+: >>> [1 2 3]
+: [1 4 7]
+: [[1 2 3]
+:  [4 5 6]
+:  [7 8 9]]
+
+*** Using indexing to assign values to rows and columns
+
+#+BEGIN_SRC python :session
+b = np.zeros((3, 3))
+print b
+
+b[:, 0] = [1, 2, 3] # set column 0
+b[2, 2] = 12        # set a single element
+print b
+
+b[2] = 6  # sets everything in row 2 to 6!
+print b
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+[[ 0.  0.  0.]
+ [ 0.  0.  0.]
+ [ 0.  0.  0.]]
+>>> >>> >>> [[  1.   0.   0.]
+ [  2.   0.   0.]
+ [  3.   0.  12.]]
+>>> >>> [[ 1.  0.  0.]
+ [ 2.  0.  0.]
+ [ 6.  6.  6.]]
+#+end_example
+
+Python does not have the linear assignment method like Matlab does. You can achieve something like that as follows. We flatten the array to 1D, do the linear assignment, and reshape the result back to the 2D array.
+
+#+BEGIN_SRC python :session
+c = b.flatten()
+c[2] = 34
+b[:] = c.reshape(b.shape)
+print b
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> [[  1.   0.  34.]
+:  [  2.   0.   0.]
+:  [  6.   6.   6.]]
+
+*** 3D arrays
+The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think about the indexing like this: (row, column, page)
+
+#+BEGIN_SRC python :session
+M = np.random.uniform(size=(3,3,3))  # a 3x3x3 array
+print M
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+[[[ 0.78557795  0.36454381  0.96090072]
+  [ 0.76133373  0.03250485  0.08517174]
+  [ 0.96007909  0.08654002  0.29693648]]
+
+ [[ 0.58270738  0.60656083  0.47703339]
+  [ 0.62551477  0.62244626  0.11030327]
+  [ 0.2048839   0.83081982  0.83660668]]
+
+ [[ 0.12489176  0.20783996  0.38481792]
+  [ 0.05234762  0.03989146  0.09731516]
+  [ 0.67427208  0.51793637  0.89016255]]]
+#+end_example
+
+#+BEGIN_SRC python :session
+print M[:, :, 0]  # 2d array on page 0
+print M[:, 0, 0]  # column 0 on page 0
+print M[1, :, 2]  # row 1 on page 2
+#+END_SRC
+
+#+RESULTS:
+: [[ 0.78557795  0.76133373  0.96007909]
+:  [ 0.58270738  0.62551477  0.2048839 ]
+:  [ 0.12489176  0.05234762  0.67427208]]
+: [ 0.78557795  0.58270738  0.12489176]
+: [ 0.47703339  0.11030327  0.83660668]
+
+
+*** Summary
+The most common place to use indexing is probably when a function returns an array with the independent variable in column 1 and solution in column 2, and you want to plot the solution. Second is when you want to analyze one part of the solution. There are also applications in numerical methods, for example in assigning values to the elements of a matrix or vector.
+** Functions on arrays of values
+   :PROPERTIES:
+   :date:     2013/02/27 14:49:49
+   :updated:  2013/03/06 19:38:28
+   :categories: python
+   :END:
+It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
+
+#+BEGIN_SRC python
+import numpy as np
+print np.linspace(0, np.pi, 10)
+#+END_SRC
+
+#+RESULTS:
+: [ 0.          0.34906585  0.6981317   1.04719755  1.3962634   1.74532925
+:   2.0943951   2.44346095  2.7925268   3.14159265]
+
+The main point of using the mod:numpy functions is that they work element-wise on elements of an array. In this example, we compute the $\cos(x)$ for each element of $x$.
+
+#+BEGIN_SRC python
+import numpy as np
+x = np.linspace(0, np.pi, 10)
+print np.cos(x)
+#+END_SRC
+
+#+RESULTS:
+: [ 1.          0.93969262  0.76604444  0.5         0.17364818 -0.17364818
+:  -0.5        -0.76604444 -0.93969262 -1.        ]
+
+You can already see from this output that there is a root to the equation $\cos(x) = 0$, because there is a change in sign in the output. This is not a very convenient way to view the results; a graph would be better.  We use mod:matplotlib to make figures. Here is an example.
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, np.pi, 10)
+plt.plot(x, np.cos(x))
+plt.xlabel('x')
+plt.ylabel('cos(x)')
+plt.savefig('images/plot-cos.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/plot-cos.png]]
+
+This figure illustrates graphically what the numbers above show. The function crosses zero at approximately $x = 1.5$. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation $f(x) = \cos(x) = 0$. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.
+
+#+BEGIN_SRC python
+from scipy.optimize import fsolve 
+import numpy as np
+
+def f(x):
+    return np.cos(x)
+
+sol, = fsolve(f, x0=1.5) # the comma after sol makes it return a float
+print sol
+print np.pi / 2
+#+END_SRC
+
+#+RESULTS:
+: 1.57079632679
+: 1.57079632679
+
+We know the solution is \pi/2. 
 
 ** Controlling the format of printed variables
    :PROPERTIES:
@@ -844,362 +1199,13 @@ print '{0!r}'.format(mya) # uses __repr__
 : representing: class A, a=3, b=4
 
 This covers the majority of string formatting requirements I have come across. If there are more sophisticated needs, they can be met with various string templating python modules. the one I have used most is [[http://www.cheetahtemplate.org/][Cheetah]].
-** Indexing vectors and arrays in Python
-   :PROPERTIES:
-   :categories: [basic]
-   :date:     2013/02/27 14:50:40
-   :updated:  2013/02/27 14:50:40
-   :END:
-[[http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/][Matlab post]]
-There are times where you have a lot of data in a vector or array and you want to extract a portion of the data for some analysis. For example, maybe you want to plot column 1 vs column 2, or you want the integral of data between x = 4 and x = 6, but your vector covers 0 < x < 10. Indexing is the way to do these things.
-
-A key point to remember is that in python array/vector indices start at 0. Unlike Matlab, which uses parentheses to index a array, we use brackets in python.
-
-#+BEGIN_SRC python :session
-import numpy as np
-
-x = np.linspace(-np.pi, np.pi, 10)
-print x
-
-print x[0]  # first element
-print x[2]  # third element
-print x[-1] # last element
-print x[-2] # second to last element
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> >>> [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
-:   1.04719755  1.74532925  2.44346095  3.14159265]
-: >>> -3.14159265359
-: -1.74532925199
-: 3.14159265359
-: 2.44346095279
-
-We can select a range of elements too. The syntax a:b extracts the a^{th} to (b-1)^{th} elements. The syntax a:b:n starts at a, skips nelements up to the index b.
-
-#+BEGIN_SRC python :session
-print x[1:4]     # second to fourth element. Element 5 is not included
-print x[0:-1:2]  # every other element
-print x[:]       # print the whole vector
-print x[-1:0:-1] # reverse the vector!
-#+END_SRC
-
-#+RESULTS:
-: [-2.44346095 -1.74532925 -1.04719755]
-: [-3.14159265 -1.74532925 -0.34906585  1.04719755  2.44346095]
-: [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
-:   1.04719755  1.74532925  2.44346095  3.14159265]
-: [ 3.14159265  2.44346095  1.74532925  1.04719755  0.34906585 -0.34906585
-:  -1.04719755 -1.74532925 -2.44346095]
-
-Suppose we want the part of the vector where x > 2. We could do that by inspection, but there is a better way. We can create a mask of boolean (0 or 1) values that specify whether x > 2 or not, and then use the mask as an index.
-
-#+BEGIN_SRC python :session
-print x[x > 2]
-#+END_SRC
-
-#+RESULTS:
-: [ 2.44346095  3.14159265]
-
-You can use this to analyze subsections of data, for example to integrate the function y = sin(x) where x > 2.
-
-#+BEGIN_SRC python :session
-y = np.sin(x)
-
-print np.trapz( x[x > 2], y[x > 2])
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> -1.79500162881
-
-*** 2d arrays
-In 2d arrays, we use  row, column notation. We use a : to indicate all rows or all columns.
-
-#+BEGIN_SRC python :session
-a = np.array([[1, 2, 3], 
-              [4, 5, 6], 
-              [7, 8, 9]])
-
-print a[0, 0]
-print a[-1, -1]
-
-print a[0, :] # row one
-print a[:, 0] # column one
-print a[:]
-#+END_SRC
-
-#+RESULTS:
-: 
-: ... >>> >>> 1
-: 9
-: >>> [1 2 3]
-: [1 4 7]
-: [[1 2 3]
-:  [4 5 6]
-:  [7 8 9]]
-
-*** Using indexing to assign values to rows and columns
-
-#+BEGIN_SRC python :session
-b = np.zeros((3, 3))
-print b
-
-b[:, 0] = [1, 2, 3] # set column 0
-b[2, 2] = 12        # set a single element
-print b
-
-b[2] = 6  # sets everything in row 2 to 6!
-print b
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-
-[[ 0.  0.  0.]
- [ 0.  0.  0.]
- [ 0.  0.  0.]]
->>> >>> >>> [[  1.   0.   0.]
- [  2.   0.   0.]
- [  3.   0.  12.]]
->>> >>> [[ 1.  0.  0.]
- [ 2.  0.  0.]
- [ 6.  6.  6.]]
-#+end_example
-
-Python does not have the linear assignment method like Matlab does. You can achieve something like that as follows. We flatten the array to 1D, do the linear assignment, and reshape the result back to the 2D array.
-
-#+BEGIN_SRC python :session
-c = b.flatten()
-c[2] = 34
-b[:] = c.reshape(b.shape)
-print b
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> >>> [[  1.   0.  34.]
-:  [  2.   0.   0.]
-:  [  6.   6.   6.]]
-
-*** 3D arrays
-The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think about the indexing like this: (row, column, page)
-
-#+BEGIN_SRC python :session
-M = np.random.uniform(size=(3,3,3))  # a 3x3x3 array
-print M
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-
-[[[ 0.78557795  0.36454381  0.96090072]
-  [ 0.76133373  0.03250485  0.08517174]
-  [ 0.96007909  0.08654002  0.29693648]]
-
- [[ 0.58270738  0.60656083  0.47703339]
-  [ 0.62551477  0.62244626  0.11030327]
-  [ 0.2048839   0.83081982  0.83660668]]
-
- [[ 0.12489176  0.20783996  0.38481792]
-  [ 0.05234762  0.03989146  0.09731516]
-  [ 0.67427208  0.51793637  0.89016255]]]
-#+end_example
-
-#+BEGIN_SRC python :session
-print M[:, :, 0]  # 2d array on page 0
-print M[:, 0, 0]  # column 0 on page 0
-print M[1, :, 2]  # row 1 on page 2
-#+END_SRC
-
-#+RESULTS:
-: [[ 0.78557795  0.76133373  0.96007909]
-:  [ 0.58270738  0.62551477  0.2048839 ]
-:  [ 0.12489176  0.05234762  0.67427208]]
-: [ 0.78557795  0.58270738  0.12489176]
-: [ 0.47703339  0.11030327  0.83660668]
-
-
-*** Summary
-The most common place to use indexing is probably when a function returns an array with the independent variable in column 1 and solution in column 2, and you want to plot the solution. Second is when you want to analyze one part of the solution. There are also applications in numerical methods, for example in assigning values to the elements of a matrix or vector.
-
-** Creating arrays in python
-   :PROPERTIES:
-   :date:     2013/02/26 09:00:00
-   :updated:  2013/02/27 14:50:56
-   :END:
-Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
-#+BEGIN_SRC python
-import numpy as np
-
-a = np.array([1, 2, 3])
-b = np.array([4, 5, 6])
-
-print np.column_stack([a, b])
-
-# this means stack the arrays vertically, e.g. on top of each other
-print np.vstack([a, b]).T
-#+END_SRC
-
-#+RESULTS:
-: [[1 4]
-:  [2 5]
-:  [3 6]]
-: [[1 4]
-:  [2 5]
-:  [3 6]]
-
-Or rows:
-
-#+BEGIN_SRC python
-import numpy as np
-
-a = np.array([1, 2, 3])
-b = np.array([4, 5, 6])
-
-print np.row_stack([a, b])
-
-# this means stack the arrays vertically, e.g. on top of each other
-print np.vstack([a, b])
-#+END_SRC
-
-#+RESULTS:
-: [[1 2 3]
-:  [4 5 6]]
-: [[1 2 3]
-:  [4 5 6]]
-
-The opposite operation is to extract the rows or columns of a 2D array into smaller arrays. We might want to do that to extract a row or column from a calculation for further analysis, or plotting for example. There are splitting functions in numpy. They are somewhat confusing, so we examine some examples. The numpy.hsplit command splits an array "horizontally". The best way to think about it is that the "splits" move horizontally across the array. In other words, you draw a vertical split, move over horizontally, draw another vertical split, etc... You must specify the number of splits that you want, and the array must be evenly divisible by the number of splits.
-
-#+BEGIN_SRC python
-import numpy as np
-
-A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
-
-# split into two parts
-p1, p2 = np.hsplit(A, 2)
-print p1
-print p2
-
-#split into 4 parts
-p1, p2, p3, p4 = np.hsplit(A, 4)
-print p1
-print p2
-print p3
-print p4
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-[[1 2]
- [4 5]]
-[[3 5]
- [6 9]]
-[[1]
- [4]]
-[[2]
- [5]]
-[[3]
- [6]]
-[[5]
- [9]]
-#+end_example
-
-In the numpy.vsplit command the "splits" go "vertically" down the array. Note that the split commands return 2D arrays.
-
-#+BEGIN_SRC python
-import numpy as np
-
-A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
-
-# split into two parts
-p1, p2 = np.vsplit(A, 2)
-print p1
-print p2
-print p2.shape
-#+END_SRC
-
-#+RESULTS:
-: [[1 2 3 5]]
-: [[4 5 6 9]]
-: (1, 4)
-
-An alternative approach is array unpacking. In this example, we unpack the array into two variables. The array unpacks by row.
-
-#+BEGIN_SRC python
-import numpy as np
-
-A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
-
-# split into two parts
-p1, p2 = A
-print p1
-print p2
-#+END_SRC
-
-#+RESULTS:
-: [1 2 3 5]
-: [4 5 6 9]
-
-To get the columns, just transpose the array.
-
-#+BEGIN_SRC python
-import numpy as np
-
-A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
-
-# split into two parts
-p1, p2, p3, p4 = A.T
-print p1
-print p2
-print p3
-print p4
-print p4.shape
-#+END_SRC
-
-#+RESULTS:
-: [1 4]
-: [2 5]
-: [3 6]
-: [5 9]
-: (2,)
-
-Note that now, we have 1D arrays.
-
-You can also access rows and columns by indexing. We index an array by [row, column]. To get a row, we specify the row number, and all the columns in that row like this [row, :]. Similarly, to get a column, we specify that we want all rows in that column like this: [:, column]. This approach is useful when you only want a few columns or rows.
-
-#+BEGIN_SRC python
-import numpy as np
-
-A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
-
-# get row 1
-print A[1]
-print A[1, :]  # row 1, all columns
-
-print A[:, 2]  # get third column 
-print A[:, 2].shape
-#+END_SRC
-
-#+RESULTS:
-: [4 5 6 9]
-: [4 5 6 9]
-: [3 6]
-: (2,)
-
-Note that even when we specify a column, it is returned as a 1D array.
 
 * Math
 ** Numeric derivatives by differences
    :PROPERTIES:
    :date:     2013/02/27 14:51:06
-   :updated:  2013/02/27 14:51:06
+   :updated:  2013/03/06 18:27:16
+   :categories: math
    :END:
 index:derivative!numerical
 [[index:derivative!forward difference]]
@@ -1282,7 +1288,8 @@ plt.show()
 ** Vectorized numeric derivatives
    :PROPERTIES:
    :date:     2013/02/27 14:51:11
-   :updated:  2013/02/27 14:51:11
+   :updated:  2013/03/06 18:26:55
+   :categories: math
    :END:
 [[index:derivative!vectorized]]
 Loops are usually not great for performance. Numpy offers some vectorized methods that allow us to compute derivatives without loops, although this comes at the mental cost of harder to understand syntax
@@ -1431,9 +1438,9 @@ plt.show()
 
 ** A novel way to numerically estimate the derivative of a function - complex-step derivative approximation
    :PROPERTIES:
-   :categories: [math]
+   :categories: math
    :date:     2013/02/27 14:51:38
-   :updated:  2013/02/27 14:51:38
+   :updated:  2013/03/06 18:26:30
    :END:
 [[index:derivative!complex step]]
 
@@ -1673,9 +1680,9 @@ There are many ways to define piecewise functions, and vectorization is not alwa
 
 ** Smooth transitions between discontinuous functions	 
   :PROPERTIES:
-  :categories: miscellaneous, nonlinear-algebra
+  :categories: miscellaneous, nonlinear algebra
   :date:     2013/01/31 09:00:00
-  :updated:  2013/02/27 14:53:12
+  :updated:  2013/03/06 18:25:00
   :END:
 
 [[http://matlab.cheme.cmu.edu/2011/10/30/smooth-transitions-between-discontinuous-functions/][original post]]
@@ -1826,7 +1833,8 @@ The approach demonstrated here allows one to smoothly join two discontinuous fun
 ** Smooth transitions between two constants
    :PROPERTIES:
    :date:     2013/02/27 14:53:22
-   :updated:  2013/02/27 14:53:22
+   :updated:  2013/03/06 18:26:02
+   :categories: math
    :END:
 Suppose we have a parameter that has two different values depending on the value of a dimensionless number. For example when the dimensionless number is much less than 1, x = 2/3, and when x is much greater than 1, x = 1. We desire a smooth transition from 2/3 to 1  as a function of x to avoid discontinuities in functions of x. We will adapt the smooth transitions between functions to be a smooth transition between constants.
 
@@ -2567,9 +2575,10 @@ algebra errors due to matrix size mismatches.
 
 ** Determining linear independence of a set of vectors
    :PROPERTIES:
-   :categories: Linear algebra, reaction engineering
+   :categories: Linear algebra
    :date:     2013/03/01 16:44:46
-   :updated:  2013/03/03 12:21:54
+   :updated:  2013/03/06 16:26:47
+   :tags:     reaction engineering
    :END:
  [[http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/][Matlab post]]
 Occasionally we have a set of vectors and we need to determine whether the vectors are linearly independent of each other. This may be necessary to determine if the vectors form a basis, or to determine how many independent equations there are, or to determine how many independent reactions there are.
@@ -2914,9 +2923,10 @@ print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
   CLOSED: [2013-03-01 Fri 19:31]
 ** Solving integral equations with fsolve
    :PROPERTIES:
-   :categories: Nonlinear algebra, reaction engineering
+   :categories: Nonlinear algebra
+   :tags: reaction engineering
    :date:     2013/01/23 09:00:00
-   :updated:  2013/02/27 14:25:48
+   :updated:  2013/03/06 16:26:42
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equations/][Original post in Matlab]]
 
@@ -3479,8 +3489,8 @@ print func(c) / (mol / L)
 
 Interesting. In Matlab, the default tolerance was not sufficient to get a good solution. Here it is. 
 
-* DONE Differential equations
-** Ordinary differential equations
+* Differential equations
+** DONE Ordinary differential equations
 *** Numerical solution to a simple ode
     :PROPERTIES:
     :categories: ODE
@@ -3525,9 +3535,9 @@ The numerical and analytical solutions agree.
 
 *** Plotting ODE solutions in cylindrical coordinates
    :PROPERTIES:
-   :categories: [ODE]
+   :categories: ODE
    :date:     2013/02/07 09:00:00
-   :updated:  2013/02/27 14:28:20
+   :updated:  2013/03/06 18:33:12
    :END:
 
 [[http://matlab.cheme.cmu.edu/2011/11/08/plot-the-solution-to-an-ode-in-cylindrical-coordinates-2/][Matlab post]]
@@ -3690,7 +3700,8 @@ ODE solving in Matlab is considerably more advanced in functionality than in sci
 *** Mimicking ode events in python
   :PROPERTIES:
   :date:     2013/01/28 09:00:00
-  :updated:  2013/02/27 14:29:57
+  :updated:  2013/03/06 18:34:22
+  :categories: ODE
   :END:
 The ODE functions in scipy.integrate do not directly support events like the functions in Matlab do. We can achieve something like it though, by digging into the guts of the solver, and writing a little code. In  previous [[http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/][example]] I used an event to count the number of roots in a function by integrating the derivative of the function. 
 
@@ -4202,9 +4213,10 @@ The problem here was the derivative value varied by four orders of magnitude ove
 
 *** Solving parameterized ODEs over and over conveniently
    :PROPERTIES:
-   :categories: [reaction-engineering, ODE]
+   :categories:  ODE
    :date:     2013/02/07 09:00:00
-   :updated:  2013/02/27 14:31:36
+   :updated:  2013/03/06 16:38:10
+   :tags:     reaction engineering
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/16/parameterized-odes/][Matlab post]]
 index:ODE!parameterized
@@ -4405,9 +4417,9 @@ Here is the phase portrait. You can see that a limit cycle is approached, indica
 [[./images/vanderpol-2.png]]
 *** Solving Bessel's Equation numerically
    :PROPERTIES:
-   :categories: [ODE, math]
+   :categories: ODE, math
    :date:     2013/02/07 09:00:00
-   :updated:  2013/02/27 14:32:42
+   :updated:  2013/03/06 18:33:34
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/08/solving-bessels-equation-numerically/][Matlab post]]
 
@@ -4666,17 +4678,20 @@ plt.show()
 
 [[./images/ode-la.png]]
 
-** Delay Differential Equations
-*** TODO http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/
-** Differential algebraic systems of equations
-** Boundary value equations
+** DONE Delay Differential Equations
+In Matlab you can solve Delay Differential equations (DDE) ([[http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/][Matlab post]]). I do not know of a solver in scipy at this time that can do this.
+** DONE Differential algebraic systems of equations
+There is not a builtin solver for DAE systems in scipy. It looks like [[http://pysundials.sourceforge.net/][pysundials]] may do it, but it must be compiled and installed.
+
+** DONE Boundary value equations
 I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
 
 *** Plane Poiseuille flow - BVP solve by shooting method
    :PROPERTIES:
-   :categories: [BVP]
+   :categories: BVP
    :date:     2013/02/15 09:00:00
-   :updated:  2013/02/27 14:33:36
+   :updated:  2013/03/06 18:31:48
+   :tags:     fluids
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/08/plane-poiseuille-flow-bvp-solve-by-shooting-method/][Matlab post]]
 
@@ -4825,7 +4840,9 @@ You can see the agreement is excellent!
 *** Plane poiseuelle flow solved by finite difference
    :PROPERTIES:
    :date:     2013/02/14 09:00:00
-   :updated:  2013/02/27 14:34:22
+   :updated:  2013/03/06 18:32:14
+   :categories: BVP
+   :tags:     fluids
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/30/plane-poiseuelle-flow-solved-by-finite-difference/][Matlab post]]
 
@@ -4934,15 +4951,338 @@ plt.show()
 [[./images/pp-bvp-fd.png]]
 
 You can see excellent agreement here between the numerical and analytical solution.
-*** TODO http://matlab.cheme.cmu.edu/2011/08/11/plane-poiseuille-flow-bvp/
-There is no equivalent of this Matlab function in scipy.
+*** Boundary value problem in heat conduction
+    :PROPERTIES:
+    :categories: BVP
+    :tags:     heat transfer
+    :date:     2013/03/06 19:35:39
+    :updated:  2013/03/06 19:37:37
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/][Matlab post]]
 
-*** TODO http://matlab.cheme.cmu.edu/2011/08/11/boundary-value-problem-in-heat-conduction/
-There is no equivalent of this Matlab function in scipy.
+For steady state heat conduction the temperature distribution in one-dimension is governed by the Laplace equation:
+
+$$ \nabla^2 T = 0$$
+
+with boundary conditions that at $T(x=a) = T_A$ and $T(x=L) = T_B$.
+
+The analytical solution is not difficult here: $T = T_A-\frac{T_A-T_B}{L}x$, but we will solve this by finite differences.
+
+For this problem, lets consider a slab that is defined by x=0 to x=L, with $T(x=0) = 100$, and $T(x=L) = 200$. We want to find the function T(x) inside the slab.
+
+We approximate the second derivative by finite differences as
+
+\( f''(x) \approx \frac{f(x-h) - 2 f(x) + f(x+h)}{h^2} \)
+
+Since the second derivative in this case is equal to zero, we have at each discretized node $0 = T_{i-1} - 2 T_i + T_{i+1}$. We know the values of $T_{x=0} = \alpha$ and $T_{x=L} = \beta$.
+
+\[A = \left [ \begin{array}{ccccc} %
+ -2         & 1 & 0                    & 0 & 0 \\
+1           & -2& 1 & 0 & 0 \\
+0                    & \ddots               & \ddots               & \ddots & 0 \\
+0                    & 0                    & 1 & -2 & 1 \\
+0                    & 0                    & 0  & 1  & -2  \end{array} \right ] \]
+
+\[ x = \left [ \begin{array}{c} T_1 \\ \vdots \\ T_N \end{array} \right ] \]
+
+\[ b = \left [ \begin{array}{c} -T(x=0) \\
+0 \\
+\vdots \\
+0 \\
+-T(x=L) \end{array} \right] \]
+
+These are linear equations in the unknowns $x$ that we can easily solve. Here, we evaluate the solution.
+
+#+BEGIN_SRC python
+import numpy as np
+
+#we use the notation T(x1) = alpha and T(x2) = beta
+x1 = 0; alpha = 100
+x2 = 5; beta = 200
+
+npoints = 100
+
+# preallocate and shape the b vector and A-matrix
+b = np.zeros((npoints, 1));
+b[0] = -alpha
+b[-1] = -beta
+
+A = np.zeros((npoints, npoints));
+
+#now we populate the A-matrix and b vector elements
+for i in range(npoints ):
+    for j in range(npoints):
+        if j == i: # the diagonal
+            A[i,j] = -2
+        elif j == i - 1: # left of the diagonal
+            A[i,j] = 1
+        elif j == i + 1: # right of the diagonal
+            A[i,j] = 1
+ 
+# solve the equations A*y = b for Y
+Y = np.linalg.solve(A,b)
+
+x = np.linspace(x1, x2, npoints + 2)
+y = np.hstack([alpha, Y[:,0], beta])
+
+import matplotlib.pyplot as plt
+
+plt.plot(x, y)
+
+plt.plot(x, alpha + (beta - alpha)/(x2 - x1) * x, 'r--')
+
+plt.xlabel('X')
+plt.ylabel('T(X)')
+plt.legend(('finite difference', 'analytical soln'), loc='best')
+plt.savefig('images/bvp-heat-conduction-1d.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/bvp-heat-conduction-1d.png]]
+
 
 ** Partial differential equations
-*** TODO http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/
-I do not think there is a way to do this in scipy.
+*** Modeling a transient plug flow reactor
+   :PROPERTIES:
+   :categories: PDE, animation
+   :tags:     reaction engineering
+   :date:     2013/03/06 15:51:44
+   :updated:  2013/03/06 16:23:32
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor][Matlab post]]
+[[index:PDE!method of lines]]
+index:plotting!animation
+index:animation
+
+The PDE that describes the transient behavior of a plug flow reactor with constant volumetric flow rate is:
+
+\( \frac{\partial C_A}{\partial dt} = -\nu_0 \frac{\partial C_A}{\partial dV} + r_A \).
+
+To solve this numerically in python, we will utilize the method of lines. The idea is to discretize the reactor in volume, and approximate the spatial derivatives by finite differences. Then we will have a set of coupled ordinary differential equations that can be solved in the usual way. Let us simplify the notation with $C = C_A$, and let $r_A = -k C^2$. Graphically this looks like this:
+
+[[./images/pde-method-of-lines.png]]
+
+This leads to the following set of equations:
+
+\begin{eqnarray}
+\frac{dC_0}{dt} &=& 0 \text{ (entrance concentration never changes)} \\
+\frac{dC_1}{dt} &=& -\nu_0 \frac{C_1 - C_0}{V_1 - V_0} - k C_1^2 \\
+\frac{dC_2}{dt} &=& -\nu_0 \frac{C_2 - C_1}{V_2 - V_1} - k C_2^2 \\
+\vdots
+\frac{dC_4}{dt} &=& -\nu_0 \frac{C4 - C_3}{V_4 - V_3} - k C_4^2 
+\end{eqnarray}
+
+Last, we need initial conditions for all the nodes in the discretization. Let us assume the reactor was full of empty solvent, so that $C_i = 0$ at $t=0$. In the next block of code, we get the transient solutions, and the steady state solution.
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.integrate import odeint
+
+Ca0 = 2     # Entering concentration
+vo = 2      # volumetric flow rate
+volume = 20 # total volume of reactor, spacetime = 10
+k = 1       # reaction rate constant
+
+N = 100     # number of points to discretize the reactor volume on
+
+init = np.zeros(N)    # Concentration in reactor at t = 0
+init[0] = Ca0         # concentration at entrance
+
+V = np.linspace(0, volume, N) # discretized volume elements
+tspan = np.linspace(0, 25)    # time span to integrate over
+
+def method_of_lines(C, t):
+    'coupled ODES at each node point'
+    D = -vo * np.diff(C) / np.diff(V) - k * C[1:]**2
+    return np.concatenate([[0], #C0 is constant at entrance
+                            D])
+
+
+sol = odeint(method_of_lines, init, tspan)
+
+# steady state solution
+def pfr(C, V):
+    return 1.0 / vo * (-k * C**2)
+
+ssol = odeint(pfr, Ca0, V)
+#+END_SRC
+
+#+RESULTS:
+
+The transient solution contains the time dependent behavior of each node in the discretized reactor. Each row contains the concentration as a function of volume at a specific time point. For example, we can plot the concentration of A at the exit vs. time (that is, the last entry of each row) as:
+
+#+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+plt.plot(tspan, sol[:, -1])
+plt.xlabel('time')
+plt.ylabel('$C_A$ at exit')
+plt.savefig('images/transient-pfr-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: [<matplotlib.lines.Line2D object at 0x05A18830>]
+: <matplotlib.text.Text object at 0x059FE1D0>
+: <matplotlib.text.Text object at 0x05A05270>
+
+
+[[./images/transient-pfr-1.png]]
+
+After approximately one space time, the steady state solution is reached at the exit. For completeness, we also examine the steady state solution.
+#+BEGIN_SRC python :session
+plt.figure()
+plt.plot(V, ssol, label='Steady state')
+plt.plot(V, sol[-1], label='t = {}'.format(tspan[-1]))
+plt.xlabel('Volume')
+plt.ylabel('$C_A$')
+plt.legend(loc='best')
+plt.savefig('images/transient-pfr-2.png')
+#+END_SRC
+
+[[./images/transient-pfr-2.png]]
+
+There is some minor disagreement between the final transient solution and the steady state solution. That is due to the approximation in discretizing the reactor volume. In this example we used 100 nodes. You get better agreement with a larger number of nodes, say 200 or more. Of course, it takes slightly longer to compute then, since the number of coupled odes is equal to the number of nodes.
+
+We can also create an animated gif to show how the concentration of A throughout the reactor varies with time. Note, I had to install ffmpeg (http://ffmpeg.org/) to save the animation.
+
+#+BEGIN_SRC python :session
+from matplotlib import animation
+
+# make empty figure
+fig = plt.figure()
+ax = plt.axes(xlim=(0, 20), ylim=(0, 2))
+line, = ax.plot(V, init, lw=2)
+
+def animate(i):
+    line.set_xdata(V)
+    line.set_ydata(sol[i])
+    ax.set_title('t = {0}'.format(tspan[i]))
+    ax.figure.canvas.draw() 
+    return line,
+    
+
+anim = animation.FuncAnimation(fig, animate, frames=50,  blit=True)
+
+anim.save('images/transient_pfr.mp4', fps=10)
+#+END_SRC
+
+#+RESULTS:
+
+http://jkitchin.github.com/media/transient_pfr.mp4
+
+You can see from the animation that after about 10 time units, the solution is not changing further, suggesting steady state has been reached.
+
+*** Transient heat conduction - partial differential equations
+    :PROPERTIES:
+    :categories: PDE
+    :tags:     heat transfer
+    :date:     2013/03/07 15:54:08
+    :updated:  2013/03/07 16:25:52
+    :END:
+[[http://matlab.cheme.cmu.edu/2011/08/21/transient-heat-conduction-partial-differential-equations/][Matlab post]]
+adapated from http://msemac.redwoods.edu/~darnold/math55/DEproj/sp02/AbeRichards/slideshowdefinal.pdf
+[[index:PDE!method of lines]]
+
+We solved a steady state BVP modeling heat conduction. Today we examine the transient behavior of a rod at constant T put between two heat reservoirs at different temperatures, again T1 = 100, and T2 = 200. The rod will start at 150. Over time, we should expect a solution that approaches the steady state solution: a linear temperature profile from one side of the rod to the other.
+
+$\frac{\partial u}{\partial t} = k \frac{\partial^2 u}{\partial x^2}$
+
+at $t=0$, in this example we have $u_0(x) = 150$ as an initial condition. with boundary conditions $u(0,t)=100$ and $u(L,t)=200$.
+
+In Matlab there is the pdepe command. There is not yet a PDE solver in scipy. Instead, we will utilze the method of lines to solve this problem. We discretize the rod into segments, and approximate the second derivative in the spatial dimension as $\frac{\partial^2 u}{\partial x^2} = (u(x + h) - 2 u(x) + u(x-h))/ h^2$ at each node. This leads to a set of coupled ordinary differential equations that is easy to solve.
+
+Let us say the rod has a length of 1, $k=0.02$, and solve for the time-dependent temperature profiles.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+N = 100  # number of points to discretize
+L = 1.0
+X = np.linspace(0, L, N) # position along the rod
+h = L / (N - 1)
+
+k = 0.02
+
+def odefunc(u, t):
+    dudt = np.zeros(X.shape)
+
+    dudt[0] = 0 # constant at boundary condition
+    dudt[-1] = 0
+
+    # now for the internal nodes
+    for i in range(1, N-1):
+        dudt[i] = k * (u[i + 1] - 2*u[i] + u[i - 1]) / h**2
+
+    return dudt
+
+init = 150.0 * np.ones(X.shape) # initial temperature
+init[0] = 100.0  # one boundary condition
+init[-1] = 200.0 # the other boundary condition
+
+tspan = np.linspace(0.0, 5.0, 100)
+sol = odeint(odefunc, init, tspan)
+
+
+for i in range(0, len(tspan), 5):
+    plt.plot(X, sol[i], label='t={0:1.2f}'.format(tspan[i]))
+
+# put legend outside the figure
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.xlabel('X position')
+plt.ylabel('Temperature')
+
+# adjust figure edges so the legend is in the figure
+plt.subplots_adjust(top=0.89, right=0.77)
+plt.savefig('images/pde-transient-heat-1.png')
+
+
+# Make a 3d figure
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+SX, ST = np.meshgrid(X, tspan)
+ax.plot_surface(SX, ST, sol, cmap='jet')
+ax.set_xlabel('X')
+ax.set_ylabel('time')
+ax.set_zlabel('T')
+ax.view_init(elev=15, azim=-124) # adjust view so it is easy to see
+plt.savefig('images/pde-transient-heat-3d.png')
+
+# animated solution. We will use imagemagick for this
+
+# we save each frame as an image, and use the imagemagick convert command to 
+# make an animated gif
+for i in range(len(tspan)):
+    plt.clf()
+    plt.plot(X, sol[i])
+    plt.xlabel('X')
+    plt.ylabel('T(X)')
+    plt.title('t = {0}'.format(tspan[i]))
+    plt.savefig('___t{0:03d}.png'.format(i))
+
+import commands
+print commands.getoutput('convert -quality 100 ___t*.png images/transient_heat.gif')
+print commands.getoutput('rm ___t*.png') #remove temp files
+#+END_SRC
+
+#+RESULTS:
+: 
+: 
+
+This version of the graphical solution is not that easy to read, although with some study you can see the solution evolves from the initial condition which is flat, to the steady state solution which is a linear temperature ramp.
+[[./images/pde-transient-heat-1.png]]
+
+The 3d version may be easier to interpret. The temperature profile starts out flat, and gradually changes to the linear ramp.
+[[./images/pde-transient-heat-3d.png]]
+
+Finally, the animated solution.
+
+[[./images/transient_heat.gif]]
+
+
 * DONE Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
@@ -5049,9 +5389,9 @@ We are 95% certain the next measurement will fall in the interval above.
 
 ** Confidence interval on an average
    :PROPERTIES:
-   :categories: [statistics]
+   :categories: statistics
    :date:     2013/02/10 09:00:00
-   :updated:  2013/02/27 14:35:25
+   :updated:  2013/03/06 18:32:38
    :END:
 mod:scipy has a statistical package available for getting statistical distributions. This is useful for computing confidence intervals using the student-t tables. Here is an example of computing a 95% confidence interval on an average.
 #+BEGIN_SRC python :results output :exports both
@@ -5179,9 +5519,9 @@ print f
 
 ** Model selection
    :PROPERTIES:
-   :categories: statistics, data-analysis
+   :categories: statistics, data analysis
    :date:     2013/02/18 09:00:00
-   :updated:  2013/02/27 14:36:12
+   :updated:  2013/03/06 16:36:13
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/01/model-selection/][Matlab post]]
 
@@ -5474,17 +5814,17 @@ You can see a slight trend of decreasing value of the residuals as the Temperatu
 
 In the end, it is hard to justify a model more complex than a line in this case. 
 
-** Numerical propogation of errors
+** Numerical propagation of errors
    :PROPERTIES:
    :categories: statistics
    :date:     2013/02/16 09:00:00
-   :updated:  2013/02/27 14:36:33
+   :updated:  2013/03/07 08:46:42
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/05/numerical-propogation-of-errors/][Matlab post]]
 
-Propagation of errors is essential to understanding how the uncertainty in a parameter affects computations that use that parameter. The uncertainty propogates by a set of rules into your solution. These rules are not easy to remember, or apply to complicated situations, and are only approximate for equations that are nonlinear in the parameters.
+Propagation of errors is essential to understanding how the uncertainty in a parameter affects computations that use that parameter. The uncertainty propagates by a set of rules into your solution. These rules are not easy to remember, or apply to complicated situations, and are only approximate for equations that are nonlinear in the parameters.
 
-We will use a Monte Carlo simulation to illustrate error propogation. The idea is to generate a distribution of possible parameter values, and to evaluate your equation for each parameter value. Then, we perform statistical analysis on the results to determine the standard error of the results.
+We will use a Monte Carlo simulation to illustrate error propagation. The idea is to generate a distribution of possible parameter values, and to evaluate your equation for each parameter value. Then, we perform statistical analysis on the results to determine the standard error of the results.
 
 We will assume all parameters are defined by a normal distribution with known mean and standard deviation.
 
@@ -5559,7 +5899,7 @@ A_mu = 16.07; A_sigma = 0.06;
 t = np.random.normal(t_mu, t_sigma, size=(1, N))
 A = np.random.normal(A_mu, A_sigma, size=(1, N))
 
-# Compute t^5 and sqrt(A) with error propogation
+# Compute t^5 and sqrt(A) with error propagation
 print np.std(t**5)
 print (5 * t_sigma / t_mu) * t_mu**5
 #+END_SRC
@@ -5578,7 +5918,7 @@ print 1.0 / 2.0 * A_sigma / A_mu * np.sqrt(A_mu)
 : 0.00748903477329
 : 0.00748364738749
 
-*** the chain rule in error propogation
+*** the chain rule in error propagation
 
 let v = v0 + a*t, with uncertainties in vo,a and t
 
@@ -5608,21 +5948,165 @@ print np.sqrt(vo_sigma**2 + t_mu**2 * a_sigma**2 + a_mu**2 * t_sigma**2)
     :last-published: 2013-02-16
     :END:
 
-You can numerically perform error propogation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propogation is you do not have to remember the error propogation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
+You can numerically perform error propagation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propogation is you do not have to remember the error propagation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
 
     1. You have to know the distribution of the errors in the parameters
     2. You have to assume the errors in parameters are uncorrelated.
 
+** Another approach to error propagation
+   :PROPERTIES:
+   :categories: statistics
+   :date:     2013/03/07 09:26:06
+   :updated:  2013/03/07 09:26:06
+   :END:
+In the previous section we examined an analytical approach to error propagation, and a simulation based approach. There is another approach to error propagation, using the uncertainties module (https://pypi.python.org/pypi/uncertainties/). You have to install this package, e.g. =pip install uncertainties=. After that, the module provides new classes of numbers and functions that incorporate uncertainty and propagate the uncertainty through the functions. In the examples that follow, we repeat the calculations from the previous section using the uncertainties module. 
+
+_Addition and subtraction_
+#+BEGIN_SRC python :session
+import uncertainties as u
+
+A = u.ufloat((2.5, 0.4))
+B = u.ufloat((4.1, 0.3))
+print A + B
+print A - B
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 6.6+/-0.5
+: -1.6+/-0.5
+
+_Multiplication and division_
+#+BEGIN_SRC python :session
+F = u.ufloat((25, 1))
+x = u.ufloat((6.4, 0.4))
+
+t = F * x
+print t
+
+d = F / x
+print d
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> 160.0+/-11.8726576637
+: >>> >>> 3.90625+/-0.289859806243
+
+_Exponentiation_
+#+BEGIN_SRC python :session
+t = u.ufloat((2.03, 0.0203))
+print t**5
+
+from uncertainties.umath import sqrt
+A = u.ufloat((16.07, 0.06))
+print sqrt(A)
+# print np.sqrt(A) # this does not work
+
+from uncertainties import unumpy as unp
+print unp.sqrt(A)
+#+END_SRC
+
+#+RESULTS:
+: 
+: 34.4730881243+/-1.72365440621
+: >>> >>> >>> >>> 4.00874045057+/-0.00748364738749
+: ... >>> >>> 4.00874045057+/-0.00748364738749
+
+Note in the last example, we had to either import a function from uncertainties.umath or import a special version of numpy that handles uncertainty. This may be a limitation of teh uncertainties package as not all functions in arbitrary modules can be covered. Note, however, that you can wrap a function to make it handle uncertainty like this.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+wrapped_sqrt = u.wrap(np.sqrt)
+print wrapped_sqrt(A)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> 4.00874045057+/-0.00748364738774
+
+_Propagation of errors in an integral_
+#+BEGIN_SRC python :session
+import numpy as np
+import uncertainties as u
+
+x = np.array([u.ufloat((1, 0.01)), 
+              u.ufloat((2, 0.1)),
+              u.ufloat((3, 0.1))])
+
+y = 2 * x
+
+print np.trapz(x, y)
+
+#+END_SRC
+#+RESULTS:
+: 
+: >>> >>> ... ... >>> >>> >>> >>> 8.0+/-0.600333240792
+
+_Chain rule in error propagation_
+#+BEGIN_SRC python :session
+v0 = u.ufloat((1.2, 0.02))
+a = u.ufloat((3.0, 0.3))
+t = u.ufloat((12.0, 0.12))
+
+v = v0 + a * t
+print v
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> 37.2+/-3.61801050303
+
+_A real example?_
+This is what I would setup for a real working example. Unfortunately, it does not work, and it is not clear why.
+#+BEGIN_SRC python :session
+from scipy.optimize import fsolve
+
+Fa0 = u.ufloat((5.0, 0.05))
+v0 = u.ufloat((10., 0.1))
+
+V = u.ufloat((66000.0, 100))  # reactor volume L^3
+k = u.ufloat((3.0, 0.2))      # rate constant L/mol/h
+
+def func(Ca):
+    "Mole balance for a CSTR. Solve this equation for func(Ca)=0"
+    Fa = v0 * Ca     # exit molar flow of A
+    ra = -k * Ca**2  # rate of reaction of A L/mol/h
+    return Fa0 - Fa + V * ra
+
+# CA guess that that 90 % is reacted away
+CA_guess = 0.1 * Fa0 / v0
+
+wrapped_fsolve = u.wrap(fsolve)
+CA_sol = wrapped_fsolve(func, CA_guess)
+
+print 'The exit concentration is {0} mol/L'.format(CA_sol)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> ... ... ... ... ... >>> ... >>> >>> >>> <function fsolve at 0x148f25f0>
+: >>> >>> The exit concentration is NotImplemented mol/L
+
+
+
+
+*** Summary
+The uncertainties module is pretty amazing. It automatically propagates errors through a pretty broad range of computations. I was not able to use it on a nonlinear algebra solution, and it was not clear why. Maybe there is a better approach to that.
+
+Read more about the package at http://pythonhosted.org/uncertainties/index.html.
+
 ** Random thoughts
    :PROPERTIES:
-   :categories: [math, statistics]
+   :categories: math, statistics
    :date:     2013/02/18 09:00:00
    :last-published: 2013-02-18
-   :updated:  2013/02/27 14:36:45
+   :updated:  2013/03/07 08:46:35
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/04/random-thoughts/][Matlab post]]
 
-Random numbers are used in a variety of simulation methods, most notably Monte Carlo simulations. In another later example, we will see how we can use random numbers for error propogation analysis. First, we discuss two types of pseudorandom numbers we can use in python: uniformly distributed and normally distributed numbers.
+Random numbers are used in a variety of simulation methods, most notably Monte Carlo simulations. In another later example, we will see how we can use random numbers for error propagation analysis. First, we discuss two types of pseudorandom numbers we can use in python: uniformly distributed and normally distributed numbers.
 
 Say you are the gambling type, and bet your friend $5 the next random number will be greater than 0.49. Let us ask Python to roll the random number generator for us.
 
@@ -7594,6 +8078,10 @@ plt.show()
 : y
 :  
 
+
+
+#+RESULTS:
+
 *** Picking lines
 Instead of just getting the points in a figure, let us interact with lines on the graph. We want to make the line we click on thicker. We use a "pick_event" event and bind a function to that event that does something.
 
@@ -7883,7 +8371,8 @@ print text
 ** Unique entries in a vector
    :PROPERTIES:
    :date:     2013/02/27 14:45:18
-   :updated:  2013/02/27 14:45:18
+   :updated:  2013/03/06 19:39:10
+   :categories: python
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/12/unique-entries-in-a-vector/][Matlab post]]
 
@@ -8073,7 +8562,8 @@ document.save('test.doc')
 
 ** TODO http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/
 ** TODO http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/
-* Worked examples
+* DONE Worked examples
+  CLOSED: [2013-03-06 Wed 18:39]
 ** Peak finding in Raman spectroscopy
    :PROPERTIES:
    :categories: data analysis
@@ -8460,9 +8950,9 @@ In the end, the overlap of the peaks is pretty small, but it is still difficult 
 3. The scipy.optimize.curve_fit function expects a fitting function that has all parameters as arguments, where Matlab expects a vector of parameters.
 ** Estimating the boiling point of water
    :PROPERTIES:
-   :categories: thermodynamics
+   :tags: thermodynamics
    :date:     2013/02/04 09:00:00
-   :updated:  2013/02/27 14:45:55
+   :updated:  2013/03/06 16:30:56
    :END:
 [[http://matlab.cheme.cmu.edu/2012/01/01/estimating-the-boiling-point-of-water/][Matlab post]]
 
@@ -8580,9 +9070,10 @@ The answer we get us 0.05 K too high, which is not bad considering we estimated 
 
 ** Gibbs energy minimization and the NIST webbook
    :PROPERTIES:
-   :categories: thermodynamics, optimization
+   :categories: optimization
    :date:     2013/03/01 13:11:58
-   :updated:  2013/03/03 12:22:19
+   :updated:  2013/03/06 16:31:14
+   :tags:     thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/25/gibbs-energy-minimization-and-the-nist-webbook/][Matlab post]]
 In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs energy of reaction, and then used a reaction extent variable to compute the equilibrium concentrations of each species for the water gas shift reaction.
@@ -8730,7 +9221,9 @@ print K
 ** Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
    :PROPERTIES:
    :date:     2013/03/01 12:27:48
-   :updated:  2013/03/03 12:22:30
+   :updated:  2013/03/06 18:24:21
+   :categories: optimization
+   :tags:     thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/][Matlab post]]
 Adapted from problem 4.5 in Cutlip and Shacham
@@ -8871,9 +9364,10 @@ This is an appealing way to minimize the Gibbs energy of a mixture. No assumptio
 
 ** The Gibbs free energy of a reacting mixture and the equilibrium composition
    :PROPERTIES:
-   :categories: optimization, thermodynamics, reaction engineering
+   :categories: optimization
    :date:     2013/02/18 09:00:00
-   :updated:  2013/02/27 14:46:04
+   :updated:  2013/03/06 16:27:09
+   :tags:     thermodynamics, reaction engineering
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/][Matlab post]]
 
@@ -9018,9 +9512,10 @@ In this post we derived an equation for the Gibbs free energy of a reacting mixt
 
 ** Conservation of mass in chemical reactions
    :PROPERTIES:
-   :categories: reaction engineering
+   :categories: linear algebra
+   :tags: reaction engineering
    :date:     2013/02/27 10:54:08
-   :updated:  2013/02/27 14:46:11
+   :updated:  2013/03/06 16:27:40
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/18/conservation-of-mass-in-chemical-reactions/][Matlab post]]
 
@@ -9357,9 +9852,10 @@ I noticed a different behavior in interpolation between scipy.interpolate.interp
 
 ** Numerically calculating an effectiveness factor for a porous catalyst bead
    :PROPERTIES:
-   :categories: reaction engineering, BVP
+   :categories: BVP
    :date:     2013/02/13 09:00:00
-   :updated:  2013/02/27 14:46:27
+   :updated:  2013/03/06 18:23:23
+   :tags:     reaction engineering
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/][Matlab post]]
 
@@ -9440,9 +9936,10 @@ Why go through the numerical solution when an analytical solution exists? The an
 
 ** Computing a pipe diameter
    :PROPERTIES:
-   :categories: nonlinear algebra, fluids
+   :categories: nonlinear algebra
    :date:     2013/02/12 09:00:00
-   :updated:  2013/02/27 14:46:35
+   :updated:  2013/03/06 16:38:59
+   :tags:     fluids
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Matlab post]]
 A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length of 100 m. The pressure drop cannot exceed 103 kPa at 25 degC. Compute the minimum pipe diameter required for this application.
@@ -9517,9 +10014,10 @@ Any pipe diameter smaller than that value will result in a larger pressure drop 
 
 ** Reading parameter database text files in python
    :PROPERTIES:
-   :categories: IO, thermodynamics
+   :categories: IO
    :date:     2013/02/27 10:52:22
-   :updated:  2013/02/27 14:46:42
+   :updated:  2013/03/06 16:31:32
+   :tags:     thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/10/reading-parameter-database-text-files-in-matlab/][Matlab post]]
 
@@ -9610,9 +10108,10 @@ This result is close to the value reported [[http://en.wikipedia.org/wiki/Aceton
 
 ** Calculating a bubble point pressure of a mixture
    :PROPERTIES:
-   :categories: thermodynamics, nonlinear algebra
+   :categories: nonlinear algebra
    :date:     2013/02/18 09:00:00
-   :updated:  2013/02/27 14:46:49
+   :updated:  2013/03/06 16:32:06
+   :tags:     thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/15/calculating-a-bubble-point-pressure/][Matlab post]]
 
@@ -9696,9 +10195,10 @@ for cmpd, yi in zip(compounds, y):
 
 ** The equal area method for the van der Waals equation
    :PROPERTIES:
-   :categories: Thermodynamics, plotting
+   :categories: plotting
    :date:     2013/02/15 09:00:00
-   :updated:  2013/02/27 14:46:58
+   :updated:  2013/03/06 16:32:25
+   :tags:     Thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/][Matlab post]] 
 
@@ -9860,9 +10360,10 @@ plt.savefig('images/maxwell-eq-area-4.svg')
 
 ** Constrained minimization to find equilibrium compositions
    :PROPERTIES:
-   :categories: optimization, thermodynamics, Reaction engineering
+   :categories: optimization
    :date:     2013/02/05 09:00:00
-   :updated:  2013/02/27 14:47:07
+   :updated:  2013/03/06 16:28:41
+   :tags:     thermodynamics, reaction engineering
    :END:
 
 adapated from Chemical Reactor analysis and design fundamentals, Rawlings and Ekerdt, appendix A.2.3.
@@ -10034,9 +10535,9 @@ I found setting up the constraints in this example to be more confusing than the
 ** Time dependent concentration in a first order reversible reaction in a batch reactor
    :PROPERTIES:
    :categories: ODE
-   :tags: Reaction engineering
+   :tags: reaction engineering
    :date:     2013/02/05 09:00:00
-   :updated:  2013/03/03 12:24:17
+   :updated:  2013/03/06 16:28:57
    :END:
 
 [[http://matlab.cheme.cmu.edu/2011/08/07/first-order-reversible-reaction-in-batch-reactor/][Matlab post]]
@@ -10136,9 +10637,10 @@ print('The equilibrium conversion is X = {0:1.2f}'.format(Xe))
 
 ** Plug flow reactor with a pressure drop
    :PROPERTIES:
-   :categories: Reaction engineering, ODE
+   :categories: ODE
+   :tags: reaction engineering, fluids
    :date:     2013/02/18 09:00:00
-   :updated:  2013/02/27 14:47:32
+   :updated:  2013/03/06 16:39:36
    :END:
 
 If there is a pressure drop in a plug flow reactor, [fn:2] there are two equations needed to determine the exit conversion: one for the conversion, and one from the pressure drop.
@@ -10194,10 +10696,11 @@ Here is the resulting figure.
 
 ** Solving CSTR design equations
   :PROPERTIES:
-  :categories: Reaction engineering
+  :categories: nonlinear algebra
   :layout:   post
   :date:     2013/02/18 09:00:00
-  :updated:  2013/02/27 14:47:39
+  :updated:  2013/03/06 16:29:49
+  :tags:     reaction engineering
   :END:
 
 Given a continuously stirred tank reactor with a volume of 66,000 dm^3 where the reaction $A \rightarrow B$ occurs, at a rate of $-r_A = k C_A^2$ ($k=3$ L/mol/h), with an entering molar flow of F_{A0} = 5 mol/h and a volumetric flowrate of 10 L/h, what is the exit concentration of A?
@@ -10237,8 +10740,8 @@ It is a little confusing why it is necessary to put a comma after the CA_sol in 
    :PROPERTIES:
    :date:     2013/01/06 09:00:00
    :categories: integration
-   :tags:     Reaction engineering
-   :updated:  2013/03/03 12:20:46
+   :tags:     reaction engineering
+   :updated:  2013/03/06 16:30:20
    :END:
 For a constant volume batch reactor where $A \rightarrow B$ at a rate of $-r_A = k C_A^2$, we derive the following design equation for the length of time required to achieve a particular level of conversion :
 
@@ -10270,9 +10773,10 @@ You can see the estimate error is very small compared to the solution.
 
 ** Integrating the batch reactor mole balance
    :PROPERTIES:
-   :categories: Reaction engineering, ODE
+   :categories: ODE
    :date:     2013/01/06 09:00:00
-   :updated:  2013/03/03 12:21:00
+   :updated:  2013/03/06 16:30:14
+   :tags:     Reaction engineering
    :END:
 
 An alternative approach of evaluating an integral is to integrate a differential equation. For the batch reactor, the differential equation that describes conversion as a function of time is:
@@ -10456,12 +10960,11 @@ print xNi2
 
 You can see the overall mole fraction of Ni is practically the same in each case.
 
-** TODO http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor/
 ** Meet the steam tables
    :PROPERTIES:
-   :categories: thermodynamics, steam
    :date:     2013/02/28 22:09:29
-   :updated:  2013/03/03 12:21:13
+   :updated:  2013/03/06 16:37:18
+   :tags:     thermodynamics, steam
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/][Matlab post]]
 
@@ -11198,6 +11701,10 @@ provided the MMC is eligible for relicensing.
 
 http://scipy-lectures.github.com/index.html
 * Index
+  :PROPERTIES:
+  :date:     2013/03/06 16:21:44
+  :updated:  2013/03/06 16:21:44
+  :END:
 #+BEGIN_LaTeX
 \printindex
 #+END_LaTeX
