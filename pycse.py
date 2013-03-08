@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats.distributions import  t
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, fsolve
 from scipy.integrate import odeint
 
 def regress(A, y, alpha=None):
@@ -241,6 +241,107 @@ def deriv(x, y, method='two-point'):
 
         fd = np.fft.ifft(1.0j * k * np.fft.fft(y))
         return np.real(fd)
+
+
+
+def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
+    '''solve the linear BVP with constant boundary conditions
+    y'' + p(x)y' +q(x)y = r(x)
+    y(x0) = alpha
+    y(xL) = beta
+
+    npoints is the number of discretizations. Two points count as the
+    boundary values.
+    '''
+
+    h = (xL - x0) / (npoints - 3)
+    X = np.linspace(x0 + h, xL - h, npoints - 2)
+    
+    # we do not do endpoints on A
+    A = np.zeros((npoints - 2, npoints - 2))
+
+    # special end point cases
+    A[0][0] = -2.0 + h **2 * q(X[0])
+    A[0][1] = 1.0 + h / 2.0 * p(X[0])
+    A[-1][-2] = 1.0 - h / 2.0 * p(X[-1])
+    A[-1][-1] = -2.0 + h**2 * q(X[-1])
+
+    b = np.zeros(npoints - 2)
+    b[0] = h**2 * r(X[0]) - alpha * (1.0 - h / 2.0 * p (X[0]))
+    b[-1] =  h**2 * r(X[-1]) - beta * (1.0 - h / 2.0 * p (X[-1]))
+
+    # now fill in the matrix
+    for i in range(1, npoints - 3):          
+        A[i][i-1] = 1.0 - h / 2.0 * p(X[i])
+        A[i][i] = -2.0 + h**2 * q(X[i])
+        A[i][i + 1] = 1 + h / 2.0 * p(X[i])
+
+        b[i] = h**2 * r(X[i])
+
+    # solve the equations
+    y = np.linalg.solve(A, b)
+
+    # add the boundary values back to the solution.
+    return np.hstack([x0, X, xL]), np.hstack([alpha, y, beta])
+
+def BVP_sh(F, x1, x2, alpha, beta, init):
+    '''A shooting method to solve odes
+    solve y'(x) = f(x, y)
+    y(x1) = alpha
+    y(x2) = beta
+
+    y' is a system of ODES
+    y1' = f(x, y1, y2)
+    y2' = g(x, y1, y2)
+
+    we know y1(0) = alpha
+
+    init is your guess for y2(0)
+    '''
+
+    X = np.linspace(x1, x2)
+    
+    def objective(y20):
+        y = odeint(F, [alpha, y20], X)
+        y2 = y[:, 0]
+        return beta - y2[-1]
+
+    y20, = fsolve(objective, init)
+
+    Y = odeint(F, [alpha, y20], X)
+    return X, Y
+
+def BVP_nl(F, x1, x2, alpha, beta, init, N):
+    '''solve nonlinear BVP y''(x) = F(x, y, y')
+    y(x1) = alpha
+    y(x2) = beta
+
+    init is a function f(x) that returns an initial guess.
+    N is the number of points in the discretization.
+    '''
+
+    X = np.linspace(x1, x2, N)
+    h = (x2 - x1) / (N - 1)
+
+    def residuals(y):
+        '''When we have the right values of y, this function will be zero.'''
+
+        res = np.zeros(y.shape)
+
+        res[0] = y[0] - alpha
+
+        for i in range(1, N - 1):
+            x = X[i]
+            YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
+            YP = (y[i + 1] - y[i - 1]) / (2 * h)
+            res[i] = YPP - F(x, y[i], YP)
+
+        res[-1] = y[-1] - beta
+        return res
+
+    Y = fsolve(residuals, init(X))
+
+    return X, Y
 
 if __name__ == '__main__':
     N = 101 #number of points
