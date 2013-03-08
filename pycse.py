@@ -246,7 +246,7 @@ def deriv(x, y, method='two-point'):
 
 def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     '''solve the linear BVP with constant boundary conditions
-    y'' + p(x)y' +q(x)y = r(x)
+    y'' + p(x)y' + q(x)y = r(x)
     y(x0) = alpha
     y(xL) = beta
 
