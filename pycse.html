@@ -257,10 +257,10 @@ for the JavaScript code below.
 <li><a href="#sec-3-1">3.1 Numeric derivatives by differences</a></li>
 <li><a href="#sec-3-2">3.2 Vectorized numeric derivatives</a></li>
 <li><a href="#sec-3-3">3.3 2-point vs. 4-point numerical derivatives</a></li>
-<li><a href="#sec-3-4">3.4 Derivatives by FFT</a></li>
-<li><a href="#sec-3-5">3.5 A novel way to numerically estimate the derivative of a function - complex-step derivative approximation</a></li>
-<li><a href="#sec-3-6">3.6 derivatives by polynomial fitting</a></li>
-<li><a href="#sec-3-7">3.7 derivatives by fitting</a></li>
+<li><a href="#sec-3-4">3.4 Derivatives by polynomial fitting</a></li>
+<li><a href="#sec-3-5">3.5 Derivatives by fitting a function and taking the analytical derivative</a></li>
+<li><a href="#sec-3-6">3.6 Derivatives by FFT</a></li>
+<li><a href="#sec-3-7">3.7 A novel way to numerically estimate the derivative of a function - complex-step derivative approximation</a></li>
 <li><a href="#sec-3-8">3.8 Vectorized piecewise functions</a></li>
 <li><a href="#sec-3-9">3.9 Smooth transitions between discontinuous functions</a>
 <ul>
@@ -281,7 +281,7 @@ for the JavaScript code below.
 </ul>
 </li>
 <li><a href="#sec-3-13">3.13 The trapezoidal method of integration</a></li>
-<li><a href="#sec-3-14">3.14 simpsons rule</a></li>
+<li><a href="#sec-3-14">3.14 Numerical Simpsons rule</a></li>
 <li><a href="#sec-3-15">3.15 Integrating functions in python</a>
 <ul>
 <li><a href="#sec-3-15-1">3.15.1 double integrals</a></li>
@@ -289,7 +289,7 @@ for the JavaScript code below.
 </ul>
 </li>
 <li><a href="#sec-3-16">3.16 Integrating equations in python</a></li>
-<li><a href="#sec-3-17">3.17 Romberg integration</a></li>
+<li><a href="#sec-3-17">3.17 Function integration by the Romberg method</a></li>
 <li><a href="#sec-3-18">3.18 Symbolic math in python</a>
 <ul>
 <li><a href="#sec-3-18-1">3.18.1 Solve the quadratic equation</a></li>
@@ -382,6 +382,7 @@ for the JavaScript code below.
 <ul>
 <li><a href="#sec-6-4-1-1">6.4.1.1 First guess</a></li>
 <li><a href="#sec-6-4-1-2">6.4.1.2 Second guess</a></li>
+<li><a href="#sec-6-4-1-3">6.4.1.3 Let fsolve do the work</a></li>
 </ul>
 </li>
 <li><a href="#sec-6-4-2">6.4.2 Plane poiseuelle flow solved by finite difference</a></li>
@@ -537,8 +538,12 @@ for the JavaScript code below.
 <li><a href="#sec-12-4">12.4 Unique entries in a vector</a></li>
 <li><a href="#sec-12-5">12.5 Sorting in python</a></li>
 <li><a href="#sec-12-6">12.6 Making word files in python</a></li>
-<li><a href="#sec-12-7">12.7 http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/</a></li>
-<li><a href="#sec-12-8">12.8 http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/</a></li>
+<li><a href="#sec-12-7">12.7 Interacting with Excel in python</a>
+<ul>
+<li><a href="#sec-12-7-1">12.7.1 Writing Excel workbooks</a></li>
+<li><a href="#sec-12-7-2">12.7.2 Updating an existing Excel workbook</a></li>
+<li><a href="#sec-12-7-3">12.7.3 Summary</a></li>
+</ul></li>
 </ul>
 </li>
 <li><a href="#sec-13">13 Worked examples</a>
@@ -655,7 +660,7 @@ for the JavaScript code below.
 <p>This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 </p>
 <p>
-I recommend the Enthought python distribution (<a href="http://www.enthought.com">http://www.enthought.com</a>).
+I recommend the Enthought python distribution (<a href="http://www.enthought.com">http://www.enthought.com</a>). This distribution is free for academic use, and cheap otherwise. It is pretty complete in terms of mathematical, scientific and plotting modules. All of the examples in this book were created with the Enthought python distribution. 
 </p>
 </div>
 
@@ -2535,8 +2540,122 @@ plt.show()
 </div>
 
 <div id="outline-container-3-4" class="outline-3">
-<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Derivatives by FFT</h3>
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Derivatives by polynomial fitting</h3>
 <div class="outline-text-3" id="text-3-4">
+
+
+<p> 
+One way to reduce the noise inherent in derivatives of noisy data is to fit a smooth function through the data, and analytically take the derivative of the curve. Polynomials are especially convenient for this. The challenge is to figure out what an appropriate polynomial order is. This requires judgment and experience.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+<span style="color: #ff0000; font-weight: bold;">import</span> matplotlib.pyplot <span style="color: #ff0000; font-weight: bold;">as</span> plt
+<span style="color: #ff0000; font-weight: bold;">from</span> pycse <span style="color: #ff0000; font-weight: bold;">import</span> deriv
+
+tspan = [0, 0.1, 0.2, 0.4, 0.8, 1]
+Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
+
+p = np.polyfit(tspan, Ca_data, 3)
+plt.figure()
+plt.plot(tspan, Ca_data)
+plt.plot(tspan, np.polyval(p, tspan), <span style="color: #00ff00; font-style: italic;">'g-'</span>)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/deriv-fit-1.png'</span>)
+
+<span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">compute derivatives</span>
+dp = np.polyder(p)
+
+dCdt_fit = np.polyval(dp, tspan)
+
+dCdt_numeric = deriv(tspan, Ca_data) <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">2-point deriv</span>
+
+plt.figure()
+plt.plot(tspan, dCdt_numeric, label=<span style="color: #00ff00; font-style: italic;">'numeric derivative'</span>)
+plt.plot(tspan, dCdt_fit, label=<span style="color: #00ff00; font-style: italic;">'fitted derivative'</span>)
+
+t = np.linspace(<span style="color: #ff0000; font-weight: bold;">min</span>(tspan), <span style="color: #ff0000; font-weight: bold;">max</span>(tspan))
+plt.plot(t, np.polyval(dp, t), label=<span style="color: #00ff00; font-style: italic;">'resampled derivative'</span>)
+plt.legend(loc=<span style="color: #00ff00; font-style: italic;">'best'</span>)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/deriv-fit-2.png'</span>)
+</pre>
+
+
+
+<p>
+<img src="./images/deriv-fit-1.png"  alt="./images/deriv-fit-1.png" />
+</p>
+<p>
+You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have "resampled" the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error. 
+</p>
+<p>
+<img src="./images/deriv-fit-2.png"  alt="./images/deriv-fit-2.png" />
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Derivatives by fitting a function and taking the analytical derivative</h3>
+<div class="outline-text-3" id="text-3-5">
+
+
+<p>
+A variation of a polynomial fit is to fit a model with reasonable physics. Here we fit a nonlinear function to the noisy data. The model is for the concentration vs. time in a batch reactor for a first order irreversible reaction. Once we fit the data, we take the analytical derivative of the fitted function.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+<span style="color: #ff0000; font-weight: bold;">import</span> matplotlib.pyplot <span style="color: #ff0000; font-weight: bold;">as</span> plt
+<span style="color: #ff0000; font-weight: bold;">from</span> scipy.optimize <span style="color: #ff0000; font-weight: bold;">import</span> curve_fit
+<span style="color: #ff0000; font-weight: bold;">from</span> pycse <span style="color: #ff0000; font-weight: bold;">import</span> deriv
+
+tspan = np.array([0, 0.1, 0.2, 0.4, 0.8, 1])
+Ca_data = np.array([2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495])
+
+<span style="color: #ff0000; font-weight: bold;">def</span> <span style="color: #ff0000; font-weight: bold;">func</span>(t, Ca0, k):
+    <span style="color: #ff0000; font-weight: bold;">return</span> Ca0 * np.exp(-k * t)
+
+ 
+pars, pcov = curve_fit(func, tspan, Ca_data, p0=[2, 2.3])
+
+plt.plot(tspan, Ca_data)
+plt.plot(tspan, func(tspan, *pars), <span style="color: #00ff00; font-style: italic;">'g-'</span>)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/deriv-funcfit-1.png'</span>)
+
+<span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">analytical derivative</span>
+k, Ca0 = pars
+dCdt = -k * Ca0 * np.exp(-k * tspan)
+t = np.linspace(0, 2)
+dCdt_res =  -k * Ca0 * np.exp(-k * t)
+
+plt.figure()
+plt.plot(tspan, deriv(tspan, Ca_data), label=<span style="color: #00ff00; font-style: italic;">'numerical derivative'</span>)
+plt.plot(tspan, dCdt, label=<span style="color: #00ff00; font-style: italic;">'analytical derivative of fit'</span>)
+plt.plot(t, dCdt_res, label=<span style="color: #00ff00; font-style: italic;">'extrapolated'</span>)
+plt.legend(loc=<span style="color: #00ff00; font-style: italic;">'best'</span>)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/deriv-funcfit-2.png'</span>)
+</pre>
+
+
+
+<p>
+<img src="./images/deriv-funcfit-1.png"  alt="./images/deriv-funcfit-1.png" />
+</p>
+<p>
+Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.
+</p>
+<p>
+<img src="./images/deriv-funcfit-2.png"  alt="./images/deriv-funcfit-2.png" />
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3-6" class="outline-3">
+<h3 id="sec-3-6"><span class="section-number-3">3.6</span> Derivatives by FFT</h3>
+<div class="outline-text-3" id="text-3-6">
 
 
 
@@ -2588,9 +2707,9 @@ plt.show()
 
 </div>
 
-<div id="outline-container-3-5" class="outline-3">
-<h3 id="sec-3-5"><span class="section-number-3">3.5</span> A novel way to numerically estimate the derivative of a function - complex-step derivative approximation</h3>
-<div class="outline-text-3" id="text-3-5">
+<div id="outline-container-3-7" class="outline-3">
+<h3 id="sec-3-7"><span class="section-number-3">3.7</span> A novel way to numerically estimate the derivative of a function - complex-step derivative approximation</h3>
+<div class="outline-text-3" id="text-3-7">
 
 
 
@@ -2720,24 +2839,7 @@ NameError: name 'dfdx' is not defined
 
 <p>
 Interesting this fails.
-</p>
-</div>
-
-</div>
-
-<div id="outline-container-3-6" class="outline-3">
-<h3 id="sec-3-6"><span class="section-number-3">3.6</span> derivatives by polynomial fitting</h3>
-<div class="outline-text-3" id="text-3-6">
-
-</div>
-
-</div>
-
-<div id="outline-container-3-7" class="outline-3">
-<h3 id="sec-3-7"><span class="section-number-3">3.7</span> derivatives by fitting</h3>
-<div class="outline-text-3" id="text-3-7">
-
-</div>
+</p></div>
 
 </div>
 
@@ -3588,11 +3690,49 @@ The times here are considerably slower than in Matlab. I am not sure if that is 
 </div>
 
 <div id="outline-container-3-14" class="outline-3">
-<h3 id="sec-3-14"><span class="section-number-3">3.14</span> simpsons rule</h3>
+<h3 id="sec-3-14"><span class="section-number-3">3.14</span> Numerical Simpsons rule</h3>
 <div class="outline-text-3" id="text-3-14">
 
-<p><a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html">http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html</a>
-</p></div>
+
+<p>
+A more accurate numerical integration than the trapezoid method is <a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html">Simpson's rule</a>. The syntax is similar to trapz, but the method is in scipy.integrate.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+<span style="color: #ff0000; font-weight: bold;">from</span> scipy.integrate <span style="color: #ff0000; font-weight: bold;">import</span> simps, romb
+
+a = 0.0; b = np.pi / 4.0;
+N = 10  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">this is the number of intervals</span>
+
+x = np.linspace(a, b, N)
+y = np.cos(x)
+
+t = np.trapz(y, x)
+s = simps(y, x)
+a = np.sin(b) - np.sin(a)
+
+<span style="color: #ff0000; font-weight: bold;">print</span>
+<span style="color: #ff0000; font-weight: bold;">print</span> <span style="color: #00ff00; font-style: italic;">'trapz = {0} ({1:%} error)'</span>.format(t, (t - a)/a)
+<span style="color: #ff0000; font-weight: bold;">print</span> <span style="color: #00ff00; font-style: italic;">'simps = {0} ({1:%} error)'</span>.format(s, (s - a)/a)
+<span style="color: #ff0000; font-weight: bold;">print</span> <span style="color: #00ff00; font-style: italic;">'analy = {0}'</span>.format(a)
+</pre>
+
+
+<pre class="example">
+
+&gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt; &gt;&gt;&gt;
+trapz = 0.70665798038 (-0.063470% error)
+simps = 0.707058914216 (-0.006769% error)
+analy = 0.707106781187
+</pre>
+
+
+<p>
+You can see the Simpson's method is more accurate than the trapezoid method.
+</p>
+</div>
 
 </div>
 
@@ -3781,11 +3921,34 @@ That is all there is too it!
 </div>
 
 <div id="outline-container-3-17" class="outline-3">
-<h3 id="sec-3-17"><span class="section-number-3">3.17</span> Romberg integration</h3>
+<h3 id="sec-3-17"><span class="section-number-3">3.17</span> Function integration by the Romberg method</h3>
 <div class="outline-text-3" id="text-3-17">
 
-<p><a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html">http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html</a>
-</p></div>
+
+<p>
+An alternative to the scipy.integrate.quad function is the <a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html">Romberg method</a>. This method is not likely to be more accurate than quad, and it does not give you an error estimate. 
+</p>
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+
+<span style="color: #ff0000; font-weight: bold;">from</span> scipy.integrate <span style="color: #ff0000; font-weight: bold;">import</span> quad, romberg
+
+a = 0.0
+b = np.pi / 4.0
+
+<span style="color: #ff0000; font-weight: bold;">print</span> quad(np.sin, a, b)
+<span style="color: #ff0000; font-weight: bold;">print</span> romberg(np.sin, a, b)
+</pre>
+
+
+<pre class="example">
+(0.2928932188134524, 3.2517679528326894e-15)
+0.292893218813
+</pre>
+
+
+</div>
 
 </div>
 
@@ -7090,6 +7253,15 @@ plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/bvp-shooti
 <p>
 Now we have clearly overshot. Let us now make a function that will iterate for us to find the right value.
 </p>
+</div>
+
+</div>
+
+<div id="outline-container-6-4-1-3" class="outline-5">
+<h5 id="sec-6-4-1-3"><span class="section-number-5">6.4.1.3</span> Let fsolve do the work</h5>
+<div class="outline-text-5" id="text-6-4-1-3">
+
+
 
 
 
@@ -12367,17 +12539,119 @@ document.save(<span style="color: #00ff00; font-style: italic;">'test.doc'</span
 </div>
 
 <div id="outline-container-12-7" class="outline-3">
-<h3 id="sec-12-7"><span class="section-number-3">12.7</span> <a href="http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/">http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/</a></h3>
+<h3 id="sec-12-7"><span class="section-number-3">12.7</span> Interacting with Excel in python</h3>
 <div class="outline-text-3" id="text-12-7">
 
+<p><a href="http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/">Matlab post</a>
+</p>
+<p>
+There will be times it is convenient to either read data from Excel, or write data to Excel. This is possible in python (<a href="http://www.python-excel.org/">http://www.python-excel.org/</a>). You may also look at (<a href="https://bitbucket.org/ericgazoni/openpyxl/wiki/Home">https://bitbucket.org/ericgazoni/openpyxl/wiki/Home</a>).
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> xlrd
+
+wb = xlrd.open_workbook(<span style="color: #00ff00; font-style: italic;">'data/example.xlsx'</span>)
+sh1 = wb.sheet_by_name(u<span style="color: #00ff00; font-style: italic;">'Sheet1'</span>)
+
+<span style="color: #ff0000; font-weight: bold;">print</span> sh1.col_values(0)  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">column 0</span>
+<span style="color: #ff0000; font-weight: bold;">print</span> sh1.col_values(1)  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">column 1</span>
+
+sh2 = wb.sheet_by_name(u<span style="color: #00ff00; font-style: italic;">'Sheet2'</span>)
+
+x = sh2.col_values(0)  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">column 0</span>
+y = sh2.col_values(1)  <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">column 1</span>
+
+<span style="color: #ff0000; font-weight: bold;">import</span> matplotlib.pyplot <span style="color: #ff0000; font-weight: bold;">as</span> plt
+plt.plot(x, y)
+plt.savefig(<span style="color: #00ff00; font-style: italic;">'images/excel-1.png'</span>)
+</pre>
+
+
+<pre class="example">
+[u'value', u'function']
+[2.0, 3.0]
+</pre>
+
+
+<p>
+<img src="./images/excel-1.png"  alt="./images/excel-1.png" />
+</p>
+
+</div>
+
+<div id="outline-container-12-7-1" class="outline-4">
+<h4 id="sec-12-7-1"><span class="section-number-4">12.7.1</span> Writing Excel workbooks</h4>
+<div class="outline-text-4" id="text-12-7-1">
+
+<p>Writing data to Excel sheets is pretty easy. Note, however, that this overwrites the worksheet if it already exists.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">import</span> xlwt
+<span style="color: #ff0000; font-weight: bold;">import</span> numpy <span style="color: #ff0000; font-weight: bold;">as</span> np
+
+x = np.linspace(0, 2)
+y = np.sqrt(x)
+
+<span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">save the data</span>
+book = xlwt.Workbook()
+
+sheet1 = book.add_sheet(<span style="color: #00ff00; font-style: italic;">'Sheet 1'</span>)
+
+<span style="color: #ff0000; font-weight: bold;">for</span> i <span style="color: #ff0000; font-weight: bold;">in</span> <span style="color: #ff0000; font-weight: bold;">range</span>(len(x)):
+    sheet1.write(i, 0, x[i])
+    sheet1.write(i, 1, y[i])
+
+book.save(<span style="color: #00ff00; font-style: italic;">'data/example2.xls'</span>) <span style="color: #ff0000; font-weight: bold; font-style: italic;"># </span><span style="color: #ff0000; font-weight: bold; font-style: italic;">maybe can only write .xls format</span>
+</pre>
+
+
+
 </div>
 
 </div>
 
-<div id="outline-container-12-8" class="outline-3">
-<h3 id="sec-12-8"><span class="section-number-3">12.8</span> <a href="http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/">http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/</a></h3>
-<div class="outline-text-3" id="text-12-8">
+<div id="outline-container-12-7-2" class="outline-4">
+<h4 id="sec-12-7-2"><span class="section-number-4">12.7.2</span> Updating an existing Excel workbook</h4>
+<div class="outline-text-4" id="text-12-7-2">
 
+<p>It turns out you have to make a copy of an existing workbook, modify the copy and then write out the results using the <code>xlwt</code> module.
+</p>
+
+
+
+<pre class="src src-python"><span style="color: #ff0000; font-weight: bold;">from</span> xlrd <span style="color: #ff0000; font-weight: bold;">import</span> open_workbook
+
+<span style="color: #ff0000; font-weight: bold;">from</span> xlutils.copy <span style="color: #ff0000; font-weight: bold;">import</span> copy
+
+rb = open_workbook(<span style="color: #00ff00; font-style: italic;">'data/example2.xls'</span>,formatting_info=<span style="color: #ff0000; font-weight: bold;">True</span>)
+rs = rb.sheet_by_index(0)
+
+wb = copy(rb)
+
+ws = wb.add_sheet(<span style="color: #00ff00; font-style: italic;">'Sheet 2'</span>)
+ws.write(0, 0, <span style="color: #00ff00; font-style: italic;">"Appended"</span>)
+
+wb.save(<span style="color: #00ff00; font-style: italic;">'data/example2.xls'</span>)
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-12-7-3" class="outline-4">
+<h4 id="sec-12-7-3"><span class="section-number-4">12.7.3</span> Summary</h4>
+<div class="outline-text-4" id="text-12-7-3">
+
+<p>Matlab has better support for interacting with Excel than python does right now. You could get better Excel interaction via COM, but that is Windows specific, and requires you to have Excel installed on your computer. 
+If you only need to read or write data, then xlrd/xlwt or the openpyxl modules will server you well.
+</p>
+</div>
 </div>
 </div>
 
