@@ -201,6 +201,8 @@ def deriv(x, y, method='two-point'):
     method = 'two-point': centered difference
              'four-point': centered 4-point difference
     '''
+    x = np.array(x)
+    y = np.array(y)
     if method == 'two-point':
         dydx = np.zeros(y.shape,np.float) #we know it will be this size
         dydx[1:-1] = (y[2:] - y[0:-2]) / (x[2:] - x[0:-2])

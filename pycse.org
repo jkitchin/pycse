@@ -20,10 +20,10 @@
   
 [[./pycse.png]]
  
-* Overview
+* DONE Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
-I recommend the Enthought python distribution (http://www.enthought.com).
+I recommend the Enthought python distribution (http://www.enthought.com). This distribution is free for academic use, and cheap otherwise. It is pretty complete in terms of mathematical, scientific and plotting modules. All of the examples in this book were created with the Enthought python distribution. 
 
 * DONE Basic python usage
 ** Some basic data structures in python
@@ -1202,7 +1202,7 @@ print '{0!r}'.format(mya) # uses __repr__
 
 This covers the majority of string formatting requirements I have come across. If there are more sophisticated needs, they can be met with various string templating python modules. the one I have used most is [[http://www.cheetahtemplate.org/][Cheetah]].
 
-* Math
+* DONE Math
 ** Numeric derivatives by differences
    :PROPERTIES:
    :date:     2013/02/27 14:51:06
@@ -1389,6 +1389,100 @@ plt.show()
 
 [[./images/multipt-diff.png]]
 
+** Derivatives by polynomial fitting
+   :PROPERTIES:
+   :categories: math
+   :END:
+index:derivative!polynomial 
+One way to reduce the noise inherent in derivatives of noisy data is to fit a smooth function through the data, and analytically take the derivative of the curve. Polynomials are especially convenient for this. The challenge is to figure out what an appropriate polynomial order is. This requires judgment and experience.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+from pycse import deriv
+
+tspan = [0, 0.1, 0.2, 0.4, 0.8, 1]
+Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
+
+p = np.polyfit(tspan, Ca_data, 3)
+plt.figure()
+plt.plot(tspan, Ca_data)
+plt.plot(tspan, np.polyval(p, tspan), 'g-')
+plt.savefig('images/deriv-fit-1.png')
+
+# compute derivatives
+dp = np.polyder(p)
+
+dCdt_fit = np.polyval(dp, tspan)
+
+dCdt_numeric = deriv(tspan, Ca_data) # 2-point deriv
+
+plt.figure()
+plt.plot(tspan, dCdt_numeric, label='numeric derivative')
+plt.plot(tspan, dCdt_fit, label='fitted derivative')
+
+t = np.linspace(min(tspan), max(tspan))
+plt.plot(t, np.polyval(dp, t), label='resampled derivative')
+plt.legend(loc='best')
+plt.savefig('images/deriv-fit-2.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/deriv-fit-1.png]]
+
+You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have "resampled" the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error. 
+
+[[./images/deriv-fit-2.png]]
+
+** Derivatives by fitting a function and taking the analytical derivative
+   :PROPERTIES:
+   :categories: math
+   :END:
+index:derivative!fitting
+A variation of a polynomial fit is to fit a model with reasonable physics. Here we fit a nonlinear function to the noisy data. The model is for the concentration vs. time in a batch reactor for a first order irreversible reaction. Once we fit the data, we take the analytical derivative of the fitted function.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from pycse import deriv
+
+tspan = np.array([0, 0.1, 0.2, 0.4, 0.8, 1])
+Ca_data = np.array([2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495])
+
+def func(t, Ca0, k):
+    return Ca0 * np.exp(-k * t)
+
+ 
+pars, pcov = curve_fit(func, tspan, Ca_data, p0=[2, 2.3])
+
+plt.plot(tspan, Ca_data)
+plt.plot(tspan, func(tspan, *pars), 'g-')
+plt.savefig('images/deriv-funcfit-1.png')
+
+# analytical derivative
+k, Ca0 = pars
+dCdt = -k * Ca0 * np.exp(-k * tspan)
+t = np.linspace(0, 2)
+dCdt_res =  -k * Ca0 * np.exp(-k * t)
+
+plt.figure()
+plt.plot(tspan, deriv(tspan, Ca_data), label='numerical derivative')
+plt.plot(tspan, dCdt, label='analytical derivative of fit')
+plt.plot(t, dCdt_res, label='extrapolated')
+plt.legend(loc='best')
+plt.savefig('images/deriv-funcfit-2.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/deriv-funcfit-1.png]]
+
+Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.
+
+[[./images/deriv-funcfit-2.png]]
+
 ** Derivatives by FFT
    :PROPERTIES:
    :categories: Differentiation
@@ -1556,9 +1650,6 @@ NameError: name 'dfdx' is not defined
 #+end_example
 
 Interesting this fails.
-
-** TODO derivatives by polynomial fitting
-** TODO derivatives by fitting
 ** Vectorized piecewise functions
    :PROPERTIES:
    :categories: math
@@ -2185,8 +2276,44 @@ The loop method is straightforward to code, and looks alot like the formula that
 
 The times here are considerably slower than in Matlab. I am not sure if that is a totally fair comparison. Here I am running python through emacs, which may result in slower performance. I also used a very crude way of timing the performance which lumps some system performance in too.
 
-** TODO simpsons rule
-http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html
+** Numerical Simpsons rule
+   :PROPERTIES:
+   :categories: math, integration
+   :date:     2013/03/08 18:18:55
+   :updated:  2013/03/08 18:18:55
+   :END:
+[[index:integration!Simpson's rule]]
+A more accurate numerical integration than the trapezoid method is [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html][Simpson's rule]]. The syntax is similar to trapz, but the method is in scipy.integrate.
+
+#+BEGIN_SRC python :session
+import numpy as np
+from scipy.integrate import simps, romb
+
+a = 0.0; b = np.pi / 4.0;
+N = 10  # this is the number of intervals
+
+x = np.linspace(a, b, N)
+y = np.cos(x)
+
+t = np.trapz(y, x)
+s = simps(y, x)
+a = np.sin(b) - np.sin(a)
+
+print
+print 'trapz = {0} ({1:%} error)'.format(t, (t - a)/a)
+print 'simps = {0} ({1:%} error)'.format(s, (s - a)/a)
+print 'analy = {0}'.format(a)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>>
+: trapz = 0.70665798038 (-0.063470% error)
+: simps = 0.707058914216 (-0.006769% error)
+: analy = 0.707106781187
+
+You can see the Simpson's method is more accurate than the trapezoid method.
+
 ** Integrating functions in python				       
    :PROPERTIES:
    :categories: python, math
@@ -2316,8 +2443,25 @@ print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
 : 100.00 L flowed into the tank over 10 minutes
 
 That is all there is too it!
-** TODO Romberg integration
-http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html
+** Function integration by the Romberg method
+
+An alternative to the scipy.integrate.quad function is the [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html][Romberg method]]. This method is not likely to be more accurate than quad, and it does not give you an error estimate. 
+#+BEGIN_SRC python
+import numpy as np
+
+from scipy.integrate import quad, romberg
+
+a = 0.0
+b = np.pi / 4.0
+
+print quad(np.sin, a, b)
+print romberg(np.sin, a, b)
+#+END_SRC
+
+#+RESULTS:
+: (0.2928932188134524, 3.2517679528326894e-15)
+: 0.292893218813
+
 ** Symbolic math in python
    :PROPERTIES:
    :categories: symbolic, math
@@ -4692,7 +4836,7 @@ I am unaware of dedicated BVP solvers in scipy. In the following examples we imp
    :PROPERTIES:
    :categories: BVP
    :date:     2013/02/15 09:00:00
-   :updated:  2013/03/06 18:31:48
+   :updated:  2013/03/08 10:08:42
    :tags:     fluids
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/08/plane-poiseuille-flow-bvp-solve-by-shooting-method/][Matlab post]]
@@ -4754,10 +4898,6 @@ plt.savefig('images/bvp-shooting-1.png')
 
 Here we have undershot the boundary condition. Let us try a larger guess.
 **** Second guess
-     :PROPERTIES:
-     :date:     2013/03/08 09:33:13
-     :updated:  2013/03/08 09:33:13
-     :END:
 #+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
@@ -4792,6 +4932,8 @@ plt.savefig('images/bvp-shooting-2.png')
 [[./images/bvp-shooting-2.png]]
 
 Now we have clearly overshot. Let us now make a function that will iterate for us to find the right value.
+
+**** Let fsolve do the work
 
 #+BEGIN_SRC python 
 import numpy as np
@@ -8360,7 +8502,7 @@ plt.show()
 *** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
 *** TODO http://matlab.cheme.cmu.edu/2011/12/07/interacting-with-graphs-with-keypresses/
 *** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
-* Programming
+* DONE Programming
 ** Some of this, sum of that
    :PROPERTIES:
    :categories: miscellaneous, recursive
@@ -8763,8 +8905,90 @@ document.save('test.doc')
 
 #+RESULTS:
 
-** TODO http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/
-** TODO http://matlab.cheme.cmu.edu/2011/08/04/introduction-to-debugging-in-matlab/
+** Interacting with Excel in python
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/03/08 14:39:29
+   :updated:  2013/03/08 14:39:29
+   :END: 
+[[http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/][Matlab post]]
+
+There will be times it is convenient to either read data from Excel, or write data to Excel. This is possible in python (http://www.python-excel.org/). You may also look at (https://bitbucket.org/ericgazoni/openpyxl/wiki/Home).
+
+#+BEGIN_SRC python
+import xlrd
+
+wb = xlrd.open_workbook('data/example.xlsx')
+sh1 = wb.sheet_by_name(u'Sheet1')
+
+print sh1.col_values(0)  # column 0
+print sh1.col_values(1)  # column 1
+
+sh2 = wb.sheet_by_name(u'Sheet2')
+
+x = sh2.col_values(0)  # column 0
+y = sh2.col_values(1)  # column 1
+
+import matplotlib.pyplot as plt
+plt.plot(x, y)
+plt.savefig('images/excel-1.png')
+#+END_SRC
+
+#+RESULTS:
+: [u'value', u'function']
+: [2.0, 3.0]
+
+[[./images/excel-1.png]]
+
+*** Writing Excel workbooks
+Writing data to Excel sheets is pretty easy. Note, however, that this overwrites the worksheet if it already exists.
+
+#+BEGIN_SRC python
+import xlwt
+import numpy as np
+
+x = np.linspace(0, 2)
+y = np.sqrt(x)
+
+# save the data
+book = xlwt.Workbook()
+
+sheet1 = book.add_sheet('Sheet 1')
+
+for i in range(len(x)):
+    sheet1.write(i, 0, x[i])
+    sheet1.write(i, 1, y[i])
+
+book.save('data/example2.xls') # maybe can only write .xls format
+#+END_SRC
+
+#+RESULTS:
+
+*** Updating an existing Excel workbook
+It turns out you have to make a copy of an existing workbook, modify the copy and then write out the results using the =xlwt= module.
+
+#+BEGIN_SRC python
+from xlrd import open_workbook
+
+from xlutils.copy import copy
+
+rb = open_workbook('data/example2.xls',formatting_info=True)
+rs = rb.sheet_by_index(0)
+
+wb = copy(rb)
+
+ws = wb.add_sheet('Sheet 2')
+ws.write(0, 0, "Appended")
+
+wb.save('data/example2.xls')
+#+END_SRC
+
+#+RESULTS:
+
+*** Summary
+Matlab has better support for interacting with Excel than python does right now. You could get better Excel interaction via COM, but that is Windows specific, and requires you to have Excel installed on your computer. 
+If you only need to read or write data, then xlrd/xlwt or the openpyxl modules will server you well.
+
 * DONE Worked examples
   CLOSED: [2013-03-06 Wed 18:39]
 ** Peak finding in Raman spectroscopy
