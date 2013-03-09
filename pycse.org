@@ -5629,7 +5629,6 @@ Finally, the animated solution.
 
 [[./images/transient_heat.gif]]
 
-*** TODO time-dependent heat transfer in a cylinder
 * DONE Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
@@ -7871,8 +7870,7 @@ plt.savefig('images/min-dist-p-func.png')
 
 In the code above, we demonstrate that the point we find on the curve that minimizes the distance satisfies the property that a vector from that point to our other point is normal to the tangent of the curve at that point. This is shown by the fact that the dot product of the two vectors is very close to zero. It is not zero because of the accuracy criteria that is used to stop the minimization is not high enough.
 
-* Plotting
-** TODO http://matlab.cheme.cmu.edu/2011/08/01/basic-plotting-tutorial/
+* DONE Plotting
 ** Plotting two datasets with very different scales
    :PROPERTIES:
    :categories: plotting
@@ -8231,24 +8229,51 @@ plt.show()
 
 [[./images/blues-2.png]]
 
-** TODO http://matlab.cheme.cmu.edu/2011/11/22/3d-plots-of-the-steam-tables/
 ** Interactive plotting
 *** Basic mouse clicks
-One basic event a figure can react to is a mouse click. 
+    :PROPERTIES:
+    :categories: plotting
+    :date:     2013/03/09 13:27:14
+    :updated:  2013/03/09 13:27:14
+    :END:
+[[index:plotting!interactive mouse click]]
+[[index:plotting!interactive key press]]
+One basic event a figure can react to is a mouse click. Let us make a graph with a parabola in it, and draw the shortest line from a point clicked on to the graph. Here is an example of doing that. 
+
 #+BEGIN_SRC python
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import fmin_cobyla
 
 fig = plt.figure()
 
+def f(x):
+    return x**2
+
+x = np.linspace(-2, 2)
+y = f(x)
+
 ax = fig.add_subplot(111)
-ax.plot(np.random.rand(10))
+ax.plot(x, y)
 ax.set_title('Click somewhere')
 
 def onclick(event):
     ax = plt.gca()
+
+    P = (event.xdata, event.ydata)
+
+    def objective(X):
+        x,y = X
+        return np.sqrt((x - P[0])**2 + (y - P[1])**2)
+
+    def c1(X):
+        x,y = X
+        return f(x) - y
+
+    X = fmin_cobyla(objective, x0=[P[0], f(P[0])], cons=[c1])
+
     ax.set_title('x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata))
-    ax.plot([event.xdata], [event.ydata], 'ro')
+    ax.plot([event.xdata, X[0]], [event.ydata, X[1]], 'ro-')
     ax.figure.canvas.draw()  # this line is critical to change the title
     plt.savefig('images/interactive-basic-click.png')
 
@@ -8257,12 +8282,25 @@ plt.show()
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
 
-Here is the result from one click.
+   Normal return from subroutine COBYLA
+
+   NFVALS =   43   F = 4.598867E-01    MAXCV = 0.000000E+00
+   X =-1.467536E+00   2.153663E+00
+
+   Normal return from subroutine COBYLA
+
+   NFVALS =   47   F = 4.913005E-01    MAXCV = 0.000000E+00
+   X = 5.251398E-01   2.757718E-01
+#+end_example
+
+Here is the result from two clicks. For some reason, this only works when you click inside the parabola. It does not work outside the parabola.
 
 [[./images/interactive-basic-click.png]]
 
-We can even do different things with different mouse clicks. A left click corresponds to event.button = 1, a middle click is event.button = 2, and a right click is event.button = 3. You can detect if a double click occurs too. Here is an example of 
+We can even do different things with different mouse clicks. A left click corresponds to event.button = 1, a middle click is event.button = 2, and a right click is event.button = 3. You can detect if a double click occurs too. Here is an example of these different options.
+
 #+BEGIN_SRC python
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8497,11 +8535,6 @@ plt.show()
 
 [[./images/interactive-labeled-points.png]]
 
-*** TODO http://matlab.cheme.cmu.edu/2011/11/11/interacting-with-labeled-data-points/
-*** TODO http://matlab.cheme.cmu.edu/2011/11/21/interacting-with-the-steam-entropy-temperature-chart/
-*** TODO http://matlab.cheme.cmu.edu/2011/11/22/interacting-with-your-graph-through-mouse-clicks/
-*** TODO http://matlab.cheme.cmu.edu/2011/12/07/interacting-with-graphs-with-keypresses/
-*** TODO http://matlab.cheme.cmu.edu/2011/12/15/interacting-with-graphs-with-context-menus/
 * DONE Programming
 ** Some of this, sum of that
    :PROPERTIES:
@@ -11390,7 +11423,7 @@ You can see the overall mole fraction of Ni is practically the same in each case
 ** Meet the steam tables
    :PROPERTIES:
    :date:     2013/02/28 22:09:29
-   :updated:  2013/03/06 16:37:18
+   :updated:  2013/03/09 13:16:48
    :tags:     thermodynamics, steam
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/][Matlab post]]
@@ -11409,7 +11442,7 @@ we have saturated liquid here, and we get the thermodynamic properties for the g
 
 *** Starting point in the Rankine cycle in condenser.
 
-we have saturated liquid here, and we get the thermodynamic properties for the given temperature.
+We have saturated liquid here, and we get the thermodynamic properties for the given temperature.
 
 #+BEGIN_SRC python :session
 from iapws import IAPWS97
@@ -11545,17 +11578,24 @@ plt.savefig('images/iawps-steam.png')
 #+RESULTS:
 #+begin_example
 
->>> >>> <matplotlib.figure.Figure object at 0x00000000027ED6A0>
->>> >>> ... ... ... ... [<matplotlib.lines.Line2D object at 0x00000000084CAAC8>]
-[<matplotlib.lines.Line2D object at 0x00000000084CACC0>]
-[<matplotlib.lines.Line2D object at 0x00000000084D01D0>]
-[<matplotlib.lines.Line2D object at 0x00000000084D0630>]
-[<matplotlib.lines.Line2D object at 0x00000000084D0A90>]
-[<matplotlib.lines.Line2D object at 0x00000000084D0EF0>]
-... >>> >>> >>> [<matplotlib.lines.Line2D object at 0x000000000236FEB8>]
-[<matplotlib.lines.Line2D object at 0x00000000084D1390>]
->>> <matplotlib.text.Text object at 0x00000000082DD8D0>
-<matplotlib.text.Text object at 0x00000000084B6080>
+>>> >>> <matplotlib.figure.Figure object at 0x03C60730>
+>>> >>> ... ... ... ... Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+NameError: name 'IAPWS97' is not defined
+... Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+NameError: name 'IAPWS97' is not defined
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'IAPWS97' is not defined
+>>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'svap' is not defined
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'sliq' is not defined
+>>> <matplotlib.text.Text object at 0x040F1AB0>
+<matplotlib.text.Text object at 0x04108B70>
 #+end_example
 
 
