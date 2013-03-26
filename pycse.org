@@ -12443,6 +12443,105 @@ plt.savefig('images/ode-coupled-units-pdrpo.png')
 
 That is not too bad. This is another example of a function you would want to save in a module for reuse. There is one bad feature of the wrapped odeint function, and that is that it changes the solution for coupled ODEs from an ndarray to a list. That is necessary because you apparently cannot have mixed units in an ndarray. It is fine, however, to have a list of mixed units. This is not a huge problem, but it changes the syntax for plotting results for the wrapped odeint function compared to the unwrapped function without units. 
 
+** Handling units with dimensionless equations
+   :PROPERTIES:
+   :categories: units
+   :date:     2013/03/26 16:47:39
+   :updated:  2013/03/26 16:47:39
+   :END:
+As we have seen, handling units with third party functions is fragile, and often requires additional code to wrap the function to handle the units. An alternative approach that avoids the wrapping is to rescale the equations so they are dimensionless. Then, we should be able to use all the standard external functions without modification. We obtain the final solutions by rescaling back to the answers we want.
+
+Before doing the examples, let us consider how the quantities package handles dimensionless numbers.
+
+#+BEGIN_SRC python
+import quantities as u
+
+a = 5 * u.m
+L = 10 * u.m # characteristic length
+
+print a/L
+print type(a/L)
+#+END_SRC
+
+#+RESULTS:
+: 0.5 dimensionless
+: <class 'quantities.quantity.Quantity'>
+
+As you can see, the dimensionless number is scaled properly, and is listed as dimensionless. The result is still an instance of a quantities object though. That is not likely to be a problem.
+
+Now, we consider using fsolve with dimensionless equations. Our goal is to solve $C_A = C_{A0} \exp(-k t)$ for the time required to reach a desired $C_A$. We let $X = Ca / Ca0$ and $\tau = t * k$, which leads to $X = \exp{-\tau}$ in dimensionless terms.
+
+#+BEGIN_SRC python
+import quantities as u
+import numpy as np
+from scipy.optimize import fsolve
+
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L  # desired exit concentration
+k = 1.0 / u.s
+
+# we need new dimensionless variables
+# let X = Ca / Ca0
+# so, Ca = Ca0 * X
+
+# let tau = t * k
+# so t = tau / k
+
+X = CA / CA0 # desired exit dimensionless concentration
+
+def func(tau):
+    return X - np.exp(-tau)
+
+tauguess = 2
+
+print func(tauguess) # confirm we have a dimensionless function
+
+tau_sol, = fsolve(func, tauguess)
+t = tau_sol / k
+print t
+#+END_SRC
+
+#+RESULTS:
+: -0.125335283237 dimensionless
+: 4.60517018599 s
+
+Now consider the ODE $\frac{dCa}{dt} = -k Ca$. We let $X = Ca/Ca0$, so $Ca0 dX = dCa$. Let $\tau = t * k$ which in this case is dimensionless. That means $d\tau = k dt$. Substitution of these new variables leads to:
+
+\(Ca0*k \frac{dX}{d\tau} = -k Ca0 X \)
+
+or equivalently:
+\(\frac{dX}{d\tau} = -X \)
+
+#+BEGIN_SRC python
+import quantities as u
+
+k = 0.23 / u.s
+Ca0 = 1 * u.mol / u.L
+
+# Let X = Ca/Ca0  -> Ca = Ca0 * X  dCa = dX/Ca0
+# let tau = t * k -> dt = 1/k dtau
+
+
+def dXdtau(X, tau):
+    return -X
+
+import numpy as np
+from scipy.integrate import odeint
+
+tspan = np.linspace(0, 5) * u.s
+tauspan = tspan * k
+
+X0 = 1
+X_sol = odeint(dXdtau, X0, tauspan)
+
+print 'Ca at t = {0} = {1}'.format(tspan[-1], X_sol.flatten()[-1] * Ca0)
+#+END_SRC
+
+#+RESULTS:
+: Ca at t = 5.0 s = 0.316636777351 mol/L
+
+That is pretty much it. Using dimensionless quantities simplifies the need to write wrapper code, although it does increase the effort to rederive your equations (with corresponding increased opportunities to make mistakes). Using units to confirm your dimensionless derivation reduces those opportunities.
+
 * GNU Free Documentation License
 #+begin_example
                 GNU Free Documentation License
