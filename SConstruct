@@ -10,7 +10,7 @@ import commands, os
 env=Environment(ENV=os.environ, PDFLATEXFLAGS='-shell-escape')
 
 EMACS = 'emacs'
-EMACS_OPTIONS = ['--batch',
+EMACS_OPTIONS = [
                  '-l ~/Dropbox/.emacs.d/init.el',
                  '-l ~/Dropbox/pycse/pycse.el']
 
@@ -20,10 +20,10 @@ def build_tex(target, source, env):
     print 'building tex file!!!!'
     cmd = (EMACS + ' ' 
            + ' '.join(EMACS_OPTIONS)
-           + ' --visit=pycse.org --funcall org-export-as-latex')
+           + ' --visit=pycse.org --funcall=org-latex-export-to-latex')
    
     status, output = commands.getstatusoutput(cmd)
-    print output
+    print status, output
 
 def build_html(target, source, env): 
     print 'building html file!!!!'
