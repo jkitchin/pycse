@@ -523,6 +523,8 @@ def units(base_unit_input=None):
 
     UNITS = U()
 
+    # here we loop through the units, and make them attributes of the
+    # UNITS instance above
     for i,category in enumerate(ALL_UNITS):
         for baseunit in Unit.BASE_UNITS:
             if baseunit in category:
