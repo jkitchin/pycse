@@ -1,11 +1,11 @@
-#+TITLE:     pycse - Python Computations in Science and Engineering
+#+TITLE:    pycse - Python Computations in Science and Engineering
 #+AUTHOR:    John Kitchin
 #+EMAIL:     johnrkitchin@gmail.com
 #+DATE:      2013-01-21 Mon
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
+#+OPTIONS:   H:5 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
@@ -14,18 +14,16 @@
 #+LINK_HOME: 
 #+XSLT:
 #+STYLE: <link rel="stylesheet" typxe="text/css" href="pycse.css" />
-#+Latex_header: \usepackage{underscore}
-#+Latex_header: \usepackage{makeidx}
 #+Latex_header: \makeindex
   
 [[./pycse.png]]
  
-* DONE Overview
+*  Overview
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
 I recommend the Enthought python distribution (http://www.enthought.com). This distribution is free for academic use, and cheap otherwise. It is pretty complete in terms of mathematical, scientific and plotting modules. All of the examples in this book were created with the Enthought python distribution. 
 
-* DONE Basic python usage
+*  Basic python usage
 ** Basic math
    :PROPERTIES:
    :categories: python, math
@@ -40,8 +38,6 @@ print 8.1 - 5
 #+END_SRC
 
 #+RESULTS:
-: 6
-: 3.1
 
 Multiplication is equally straightforward.
 #+BEGIN_SRC python
@@ -438,6 +434,144 @@ print func(2, 3, 4, 5, mysillykw='hahah')
 #+RESULTS:
 : kw: mysillykw = hahah
 : 17
+
+** Lambda Lambda Lambda
+   :PROPERTIES:
+   :date:     2013/05/20 10:13:11
+   :updated:  2013/06/26 18:56:48
+   :categories: programming
+   :END:
+Is that some kind of fraternity? of anonymous functions? What is that!? There are many times where you need a callable, small function in python, and it is inconvenient to have to use =def= to create a named function. Lambda functions solve this problem. Let us look at some examples. First, we create a lambda function, and assign it to a variable. Then we show that variable is a function, and that we can call it with an argument.
+
+#+BEGIN_SRC python
+f = lambda x: 2*x
+print f
+print f(2)
+#+END_SRC
+
+#+RESULTS:
+: <function <lambda> at 0x0000000001E6AAC8>
+: 4
+
+We can have more than one argument:
+#+BEGIN_SRC python
+f = lambda x,y: x + y
+print f
+print f(2, 3)
+#+END_SRC
+
+#+RESULTS:
+: <function <lambda> at 0x0000000001E3AAC8>
+: 5
+
+And default arguments:
+
+#+BEGIN_SRC python
+f = lambda x, y=3: x + y
+print f
+print f(2)
+print f(4, 1)
+#+END_SRC
+
+#+RESULTS:
+: <function <lambda> at 0x0000000001E9AAC8>
+: 5
+: 5
+
+It is also possible to have arbitrary numbers of positional arguments. Here is an example that provides the sum of an arbitrary number of arguments.
+
+#+BEGIN_SRC python
+import operator
+f = lambda *x: reduce(operator.add, x)
+print f
+
+print f(1)
+print f(1, 2)
+print f(1, 2, 3)
+#+END_SRC
+
+#+RESULTS:
+: <function <lambda> at 0x0000000001DFAAC8>
+: 1
+: 3
+: 6
+
+You can also make arbitrary keyword arguments. Here we make a function that simply returns the kwargs as a dictionary. This feature may be helpful in passing kwargs to other functions.
+
+#+BEGIN_SRC python
+f = lambda **kwargs: kwargs
+
+print f(a=1, b=3)
+#+END_SRC
+
+#+RESULTS:
+: {'a': 1, 'b': 3}
+
+Of course, you can combine these options. Here is a function with all the options.
+
+#+BEGIN_SRC python
+f = lambda a, b=4, *args, **kwargs: (a, b, args, kwargs)
+
+print f('required', 3, 'optional-positional', g=4)
+
+#+END_SRC
+
+#+RESULTS:
+: ('required', 3, ('optional-positional',), {'g': 4})
+
+One of the primary limitations of lambda functions is they are limited to single expressions. They also do not have documentation strings, so it can be difficult to understand what they were written for later. 
+
+*** Applications of lambda functions
+
+Lambda functions are used in places where you need a function, but may not want to define one using =def=. For example, say you want to solve the nonlinear equation $\sqrt{x} = 2.5$. 
+#+BEGIN_SRC python
+from scipy.optimize import fsolve
+import numpy as np
+
+sol, = fsolve(lambda x: 2.5 - np.sqrt(x), 8)
+print sol
+#+END_SRC
+
+#+RESULTS:
+: 6.25
+
+Another time to use lambda functions is if you want to set a particular value of a parameter in a function. Say we have a function with an independent variable, $x$ and a parameter $a$, i.e. $f(x; a)$. If we want to find a solution $f(x; a) = 0$ for some value of $a$, we can use a lambda function to make a function of the single variable $x$. Here is a example.
+
+#+BEGIN_SRC python
+from scipy.optimize import fsolve
+import numpy as np
+
+def func(x, a):
+    return a * np.sqrt(x) - 4.0
+
+sol, = fsolve(lambda x: func(x, 3.2), 3)
+print sol
+#+END_SRC
+
+#+RESULTS:
+: 1.5625
+
+
+Any function that takes a function as an argument can use lambda functions. Here we use a lambda function that adds two numbers in the =reduce= function to sum a list of numbers.
+#+BEGIN_SRC python
+print reduce(lambda x, y: x + y, [0, 1, 2, 3, 4])
+#+END_SRC
+
+#+RESULTS:
+: 10
+
+We can evaluate the integral $\int_0^2 x^2 dx$ with a lambda function.
+#+BEGIN_SRC python
+from scipy.integrate import quad
+
+print quad(lambda x: x**2, 0, 2)
+#+END_SRC
+
+#+RESULTS:
+: (2.666666666666667, 2.960594732333751e-14)
+
+*** Summary
+Lambda functions can be helpful. They are never necessary. You can always define a function using =def=, but for some small, single-use functions, a lambda function could make sense. Lambda functions have some limitations, including that they are limited to a single expression, and they lack documentation strings.
 
 ** Creating arrays in python
    :PROPERTIES:
@@ -1199,7 +1333,7 @@ print '{0!r}'.format(mya) # uses __repr__
 
 This covers the majority of string formatting requirements I have come across. If there are more sophisticated needs, they can be met with various string templating python modules. the one I have used most is [[http://www.cheetahtemplate.org/][Cheetah]].
 
-* DONE Math
+*  Math
 ** Numeric derivatives by differences
    :PROPERTIES:
    :date:     2013/02/27 14:51:06
@@ -2547,7 +2681,114 @@ It is not clear you can solve the initial value problem to get C1.
 
 The symbolic math in sympy is pretty good. It is not up to the capability of Maple or Mathematica, (but neither is Matlab) but it continues to be developed, and could be helpful in some situations.
 
-* DONE Linear algebra
+** Is your ice cream float bigger than mine
+   :PROPERTIES:
+   :categories: math
+   :date:     2013/05/27 07:46:36
+   :updated:  2013/05/28 08:59:01
+   :END:
+
+Float numbers (i.e. the ones with decimals) cannot be perfectly represented in a computer. This can lead to some artifacts when you have to compare float numbers that on paper should be the same, but in silico are not. Let us look at some examples. In this example, we do some simple math that should result in an answer of 1, and then see if the answer is "equal" to one.
+
+#+BEGIN_SRC python
+print 3.0 * (1.0/3.0) 
+print 1.0 == 3.0 * (1.0/3.0) 
+#+END_SRC
+
+#+RESULTS:
+: 1.0
+: True
+
+Everything looks fine. Now, consider this example.
+
+#+BEGIN_SRC python
+print 49.0 * (1.0/49.0) 
+print 1.0 == 49.0 * (1.0/49.0) 
+#+END_SRC
+
+#+RESULTS:
+: 1.0
+: False
+
+The first line looks like everything is find, but the equality fails!
+
+#+RESULTS:
+: 1.0
+: False
+
+You can see here why the equality statement fails. We will print the two numbers to sixteen decimal places.
+
+#+BEGIN_SRC python
+print '{0:1.16f}'.format(49.0 * (1.0/49.0) )
+print '{0:1.16f}'.format(1.0)
+print 1 - 49.0 * (1.0/49.0) 
+#+END_SRC
+
+#+RESULTS:
+: 0.9999999999999999
+: 1.0000000000000000
+: 1.11022302463e-16
+
+The two numbers actually are not equal to each other because of float math. They are /very, very/ close to each other, but not the same. 
+
+This leads to the idea of asking if two numbers are equal to each other within some tolerance. The question of what tolerance to use requires thought. Should it be an absolute tolerance? a relative tolerance? How large should the tolerance be? We will use the distance between 1 and the nearest floating point number (this is =eps= in Matlab). =numpy= can tell us this number with the =np.spacing= command.
+
+Below, we implement a comparison function from [[http://dx.doi.org/10.1107/S010876730302186X][doi:10.1107/S010876730302186X]] that allows comparisons with tolerance.
+
+#+BEGIN_SRC python
+# Implemented from Acta Crystallographica A60, 1-6 (2003). doi:10.1107/S010876730302186X
+
+import numpy as np
+print np.spacing(1)
+
+def feq(x, y, epsilon):
+    'x == y'
+    return not((x < (y - epsilon)) or (y < (x - epsilon)))
+
+print feq(1.0, 49.0 * (1.0/49.0), np.spacing(1))
+
+#+END_SRC
+
+#+RESULTS:
+: 2.22044604925e-16
+: True
+
+For completeness, here are the other float comparison operators from that paper. We also show a few examples.
+#+BEGIN_SRC python
+import numpy as np
+
+def flt(x, y, epsilon):
+    'x < y'
+    return x < (y - epsilon)
+
+def fgt(x, y, epsilon):
+    'x > y'
+    return y < (x - epsilon)
+
+def fle(x, y, epsilon):
+    'x <= y'
+    return not(y < (x - epsilon))
+
+def fge(x, y, epsilon):
+    'x >= y'
+    return not(x < (y - epsilon))
+
+print fge(1.0, 49.0 * (1.0/49.0), np.spacing(1))
+print fle(1.0, 49.0 * (1.0/49.0), np.spacing(1))
+
+print fgt(1.0 + np.spacing(1), 49.0 * (1.0/49.0), np.spacing(1))
+print flt(1.0 - 2 * np.spacing(1), 49.0 * (1.0/49.0), np.spacing(1))
+#+END_SRC
+
+#+RESULTS:
+: True
+: True
+: True
+: True
+
+As you can see, float comparisons can be tricky. You have to give a lot of thought to how to make the comparisons, and the functions shown above are not the only way to do it. You need to build in testing to make sure your comparisons are doing what you want. 
+
+*  Linear algebra
 ** Potential gotchas in linear algebra in numpy
    :PROPERTIES:
    :categories: linear algebra, gotcha
@@ -3016,7 +3257,7 @@ algebra errors due to matrix size mismatches.
    :PROPERTIES:
    :categories: Linear algebra
    :date:     2013/03/01 16:44:46
-   :updated:  2013/03/06 16:26:47
+   :updated:  2013/05/05 14:10:05
    :tags:     reaction engineering
    :END:
  [[http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/][Matlab post]]
@@ -3150,20 +3391,251 @@ M = [[-1,  0, -1,  0,  2],  # H2 + Br2 == 2HBR
 U, s, V = np.linalg.svd(M)
 print s
 print np.sum(np.abs(s) > 1e-15)
+
+import sympy 
+M = sympy.Matrix(M)
+reduced_form, inds = M.rref()
+
+print reduced_form
+
+labels = ['H2',  'H', 'Br2', 'Br', 'HBr']
+for row in reduced_form.tolist():
+    s = '0 = '
+    for nu,species in zip(row,labels):
+        if nu != 0:
+            
+            s += ' {0:+d}{1}'.format(int(nu), species)
+    if s != '0 = ': print s
+    
+
 #+END_SRC
 
 #+RESULTS:
-: [  3.84742803e+00   3.32555975e+00   1.46217301e+00   2.04165560e-16
-:    4.75081557e-17]
-: 3
+#+begin_example
+[  3.84742803e+00   3.32555975e+00   1.46217301e+00   1.73313660e-16
+   8.57422679e-17]
+3
+[1, 0, 0,  2, -2]
+[0, 1, 0,  1, -1]
+[0, 0, 1, -2,  0]
+[0, 0, 0,  0,  0]
+[0, 0, 0,  0,  0]
+[0, 0, 0,  0,  0]
+0 =  +1H2 +2Br -2HBr
+0 =  +1H +1Br -1HBr
+0 =  +1Br2 -2Br
+#+end_example
 
 6 reactions are given, but the rank of the matrix is only 3. so there
-are only four independent reactions. You can see that reaction 6 is just
+are only three independent reactions. You can see that reaction 6 is just
 the opposite of reaction 2, so it is clearly not independent. Also,
 reactions 3 and 5 are just the reverse of each other, so one of them can
 also be eliminated. finally, reaction 4 is equal to reaction 1 minus
 reaction 3.
-* DONE Nonlinear algebra
+
+There are many possible independent reactions. In the code above, we use sympy to put the matrix into reduced row echelon form, which enables us to identify three independent reactions, and shows that three rows are all zero, i.e. they are not independent of the other three reactions. The choice of independent reactions is not unique.
+
+** TODO Reduced row echelon form
+
+There is a nice discussion [[http://numpy-discussion.10968.n7.nabble.com/Reduced-row-echelon-form-td16486.html][here]] on why there is not a rref command in numpy, primarily because one rarely actually needs it in linear algebra. Still, it is so often taught, and it helps visually see what the rank of a matrix is that I wanted to examine ways to get it.
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Matrix
+
+A = np.array([[3, 2, 1],
+              [2, 1, 1],
+              [6, 2, 4]])
+
+rA, pivots =  Matrix(A).rref()
+print rA
+#+END_SRC
+
+#+RESULTS:
+: [1, 0,  1]
+: [0, 1, -1]
+: [0, 0,  0]
+
+This rref form is a bit different than you might get from doing it by hand. The rows are also normalized.
+
+Based on this, we conclude the $A$ matrix has a rank of 2 since one row of the reduced form contains all zeros. That means the determinant will be zero, and it should not be possible to compute the inverse of the matrix, and there should be no solution to linear equations of $A x = b$. Let us check it out. 
+
+#+BEGIN_SRC python :session
+import numpy as np
+from sympy import Matrix
+
+A = np.array([[3, 2, 1],
+              [2, 1, 1],
+              [6, 2, 4]])
+
+print np.linalg.det(A)
+print np.linalg.inv(A)
+
+b = np.array([3, 0, 6])
+
+print np.linalg.solve(A, b)
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> ... ... >>> >>> 6.66133814775e-16
+: [[  3.00239975e+15  -9.00719925e+15   1.50119988e+15]
+:  [ -3.00239975e+15   9.00719925e+15  -1.50119988e+15]
+:  [ -3.00239975e+15   9.00719925e+15  -1.50119988e+15]]
+: >>> >>> >>> [  1.80143985e+16  -1.80143985e+16  -1.80143985e+16]
+
+There are "solutions", but there are a couple of red flags that should catch your eye. First, the determinant is within machine precision of zero. Second the elements of the inverse are all "large". Third, the solutions are all "large". All of these are indications of or artifacts of numerical imprecision. 
+
+** Computing determinants from matrix decompositions
+   :PROPERTIES:
+   :categories: linear algebra
+   :date:     2013/04/01 19:57:29
+   :updated:  2013/04/02 08:18:25
+   :END:
+[[index:LU decomposition,determinant]]
+There are a few properties of a matrix that can make it easy to compute determinants.
+
+1. The determinant of a triangular matrix is the product of the elements on the diagonal. 
+2. The determinant of a permutation matrix is (-1)**n where n is the number of permutations. Recall a permutation matrix is a matrix with a one in each row, and column, and zeros everywhere else. 
+3. The determinant of a product of matrices is equal to the product of the determinant of the matrices.
+
+The LU decomposition computes three matrices such that $A = P L U$. Thus, $\det A = \det P \det L \det U$. $L$ and $U$ are triangular, so we just need to compute the product of the diagonals. $P$ is not triangular, but if the elements of the diagonal are not 1, they will be zero, and then there has been a swap. So we simply subtract the sum of the diagonal from the length of the diagonal and then subtract 1 to get the number of swaps.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.linalg import lu
+
+A = np.array([[6, 2, 3],
+              [1, 1, 1],
+              [0, 4, 9]])
+
+P, L, U = lu(A)
+
+nswaps = len(np.diag(P)) - np.sum(np.diag(P)) - 1
+
+detP = (-1)**nswaps
+detL =  np.prod(np.diag(L)) 
+detU = np.prod(np.diag(U))
+
+print detP * detL * detU
+
+print np.linalg.det(A)
+#+END_SRC
+
+#+RESULTS:
+: 24.0
+: 24.0
+
+According to the numpy documentation, a method similar to this is used to compute the determinant. 
+
+** Calling lapack directly from scipy
+   :PROPERTIES:
+   :date:     2013/05/21 11:28:27
+   :updated:  2013/06/26 18:55:43
+   :categories: linear algebra
+   :END:
+If the built in linear algebra functions in numpy and scipy do not meet your needs, it is often possible to directly call lapack functions. Here we call a function to solve a set of complex linear equations. The lapack function for this is ZGBSV. The description of this function (http://linux.die.net/man/l/zgbsv) is:
+
+ZGBSV computes the solution to a complex system of linear equations A * X = B, where A is a band matrix of order N with KL subdiagonals and KU superdiagonals, and X and B are N-by-NRHS matrices. The LU decomposition with partial pivoting and row interchanges is used to factor A as A = L * U, where L is a product of permutation and unit lower triangular matrices with KL subdiagonals, and U is upper triangular with KL+KU superdiagonals. The factored form of A is then used to solve the system of equations A * X = B. 
+
+The python signature is (http://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lapack.zgbsv.html#scipy.linalg.lapack.zgbsv): 
+
+lub,piv,x,info = zgbsv(kl,ku,ab,b,[overwrite_ab,overwrite_b])
+
+We will look at an example from http://www.nag.com/lapack-ex/node22.html.
+
+We solve $A x = b$ with
+
+\begin{equation}
+A = \left(
+       \begin{array}{cccc}
+          -1.65 + 2.26 i & -2.05 - 0.85 i &  0.97 - 2.84 i &       0        \\
+                  6.30 i & -1.48 - 1.75 i & -3.99 + 4.01 i &  0.59 - 0.48 i \\
+                0        & -0.77 + 2.83 i & -1.06 + 1.94 i &  3.33 - 1.04 i \\
+                0        &       0        &  4.48 - 1.09 i & -0.46 - 1.72 i
+       \end{array}
+       \right)
+\end{equation}
+
+and
+
+\begin{equation}
+b = \left(
+       \begin{array}{cc}
+           -1.06 + 21.50 i \\
+          -22.72 - 53.90 i \\
+           28.24 - 38.60 i \\
+          -34.56 + 16.73 i
+       \end{array}
+       \right).
+\end{equation}
+
+The $A$ matrix has one lower diagonal (kl = 1) and two upper diagonals (ku = 2), four equations (n = 4) and one right-hand side.
+#+BEGIN_SRC python
+import scipy.linalg.lapack as la
+
+# http://www.nag.com/lapack-ex/node22.html
+import numpy as np
+A = np.array([[-1.65 + 2.26j, -2.05 - 0.85j,  0.97 - 2.84j,  0.0         ],
+              [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
+              [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
+              [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
+
+# construction of Ab is tricky.  Fortran indexing starts at 1, not
+# 0. This code is based on the definition of Ab at
+# http://linux.die.net/man/l/zgbsv. First, we create the Fortran
+# indices based on the loops, and then subtract one from them to index
+# the numpy arrays.
+Ab = np.zeros((5,4),dtype=np.complex)
+n, kl, ku = 4, 1, 2
+
+for j in range(1, n + 1):
+    for i in range(max(1, j - ku), min(n, j + kl) + 1):
+        Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
+
+b = np.array([[-1.06  + 21.50j],
+              [-22.72 - 53.90j],
+              [28.24 - 38.60j],
+              [-34.56 + 16.73j]])
+
+lub, piv, x, info = la.flapack.zgbsv(kl, ku, Ab, b)
+
+# compare to results at http://www.nag.com/lapack-ex/examples/results/zgbsv-ex.r
+print 'x = ',x
+print 'info = ',info
+
+# check solution
+print 'solved: ',np.all(np.dot(A,x) - b < 1e-12)
+
+# here is the easy way!!!
+print '\n\nbuilt-in solver'
+print np.linalg.solve(A,b)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+x =  [[-3.+2.j]
+ [ 1.-7.j]
+ [-5.+4.j]
+ [ 6.-8.j]]
+info =  0
+solved:  True
+
+
+built-in solver
+[[-3.+2.j]
+ [ 1.-7.j]
+ [-5.+4.j]
+ [ 6.-8.j]]
+#+end_example
+
+Some points of discussion. 
+
+1. Kind of painful! but, nevertheless, possible. You have to do a lot more work figuring out the dimensions of the problem, how to setup the problem, keeping track of indices, etc...  
+
+But, one day it might be helpful to know this can be done, e.g. to debug an installation, to validate an approach against known results, etc...
+
+*  Nonlinear algebra
 Nonlinear algebra problems are typically solved using an iterative process that terminates when the solution is found within a specified tolerance. This process is hidden from the user. The canonical standard form to solve is $f(X) = 0$.
 
 ** Know your tolerance
@@ -3731,7 +4203,7 @@ root 9 is at 29.081221492
 [[./images/heat-transfer-roots-2.png]]
 
 You can work this out once, and then you have all the roots in the interval and you can select the one you want.
-* DONE Statistics
+*  Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
    :categories: statistics
@@ -3839,7 +4311,7 @@ We are 95% certain the next measurement will fall in the interval above.
    :PROPERTIES:
    :categories: statistics
    :date:     2013/02/10 09:00:00
-   :updated:  2013/03/06 18:32:38
+   :updated:  2013/04/09 08:54:05
    :END:
 mod:scipy has a statistical package available for getting statistical distributions. This is useful for computing confidence intervals using the student-t tables. Here is an example of computing a 95% confidence interval on an average.
 #+BEGIN_SRC python :results output :exports both
@@ -3855,7 +4327,7 @@ std_x = 0.01 # standard deviation of measurements
 
 alpha = 1.0 - 0.95
 
-pred_interval = t.ppf(1-alpha/2., dof) * std_x * np.sqrt(1.0 + 1.0/n)
+pred_interval = t.ppf(1-alpha/2.0, dof) * std_x / np.sqrt(n)
 
 s = ['We are 95% confident the next measurement',
        ' will be between {0:1.3f} and {1:1.3f}']
@@ -3863,7 +4335,7 @@ print ''.join(s).format(avg_x - pred_interval, avg_x + pred_interval)
 #+END_SRC
 
 #+RESULTS:
-: We are 95% confident the next measurement will be between 16.076 and 16.124
+: We are 95% confident the next measurement will be between 16.093 and 16.107
 
 ** Are averages different
    :PROPERTIES:
@@ -4292,6 +4764,9 @@ B = np.random.normal(B_mu, B_sigma, size=(1, N))
 p = A + B
 m = A - B
 
+plt.hist(p)
+plt.show()
+
 print np.std(p)
 print np.std(m)
 
@@ -4405,7 +4880,7 @@ You can numerically perform error propagation analysis if you know the underlyin
    :PROPERTIES:
    :categories: statistics
    :date:     2013/03/07 09:26:06
-   :updated:  2013/03/07 09:26:06
+   :updated:  2013/04/23 21:28:24
    :END:
 In the previous section we examined an analytical approach to error propagation, and a simulation based approach. There is another approach to error propagation, using the uncertainties module (https://pypi.python.org/pypi/uncertainties/). You have to install this package, e.g. =pip install uncertainties=. After that, the module provides new classes of numbers and functions that incorporate uncertainty and propagate the uncertainty through the functions. In the examples that follow, we repeat the calculations from the previous section using the uncertainties module. 
 
@@ -4507,7 +4982,8 @@ print v
 : >>> >>> >>> >>> 37.2+/-3.61801050303
 
 _A real example?_
-This is what I would setup for a real working example. Unfortunately, it does not work, and it is not clear why.
+This is what I would setup for a real working example. We try to compute the exit concentration from a CSTR. The idea is to wrap the "external" fsolve function using the =uncertainties.wrap= function, which handles the units. Unfortunately, it does not work, and it is not clear why. But see the following discussion for a fix. 
+
 #+BEGIN_SRC python :session
 from scipy.optimize import fsolve
 
@@ -4537,11 +5013,82 @@ print 'The exit concentration is {0} mol/L'.format(CA_sol)
 : >>> >>> >>> >>> >>> >>> >>> ... ... ... ... ... >>> ... >>> >>> >>> <function fsolve at 0x148f25f0>
 : >>> >>> The exit concentration is NotImplemented mol/L
 
+I got a note from the author of the uncertainties package explaining the cryptic error above, and a solution for it. The error arises because fsolve does not know how to deal with uncertainties. The idea is to create a function that returns a float, when everything is given as a float. Then, we wrap the fsolve call, and finally wrap the wrapped fsolve call! 
 
+- Step 1. Write the function to solve with arguments for all unitted quantities. This function may be called with uncertainties, or with floats.
 
+- Step 2. Wrap the call to fsolve in a function that takes all the parameters as arguments, and that returns the solution.
+
+- Step 3. Use uncertainties.wrap to wrap the function in Step 2 to get the answer with uncertainties.
+
+Here is the code that does work:
+#+BEGIN_SRC python :results output
+import uncertainties as u
+from scipy.optimize import fsolve
+
+Fa0 = u.ufloat((5.0, 0.05))
+v0 = u.ufloat((10., 0.1))
+
+V = u.ufloat((66000.0, 100.0))  # reactor volume L^3
+k = u.ufloat((3.0, 0.2))      # rate constant L/mol/h
+
+# Step 1
+def func(Ca, v0, k, Fa0, V):
+    "Mole balance for a CSTR. Solve this equation for func(Ca)=0"
+    Fa = v0 * Ca     # exit molar flow of A
+    ra = -k * Ca**2  # rate of reaction of A L/mol/h
+    return Fa0 - Fa + V * ra
+
+# Step 2
+def Ca_solve(v0, k, Fa0, V): 
+    'wrap fsolve to pass parameters as float or units'
+    # this line is a little fragile. You must put [0] at the end or
+    # you get the NotImplemented result
+    sol = fsolve(func, 0.1 * Fa0 / v0, args=(v0, k, Fa0, V))[0]
+    return sol
+
+# Step 3
+print u.wrap(Ca_solve)(v0, k, Fa0, V) 
+#+END_SRC
+
+#+RESULTS:
+: 0.005+/-0.000167764327667
+
+It would take some practice to get used to this, but the payoff is that you have an "automatic" error propagation method.
+
+Being ever the skeptic, let us compare the result above to the Monte Carlo approach to error estimation below.
+
+#+BEGIN_SRC python :results output
+import numpy as np
+from scipy.optimize import fsolve
+
+N = 10000
+Fa0 = np.random.normal(5, 0.05, (1, N))
+v0 = np.random.normal(10.0, 0.1, (1, N))
+V =  np.random.normal(66000, 100, (1,N))
+k = np.random.normal(3.0, 0.2, (1, N))
+
+SOL = np.zeros((1, N))
+
+for i in range(N):
+    def func(Ca):
+        return Fa0[0,i] - v0[0,i] * Ca + V[0,i] * (-k[0,i] * Ca**2)
+    SOL[0,i] = fsolve(func, 0.1 * Fa0[0,i] / v0[0,i])[0]
+
+print 'Ca(exit) = {0}+/-{1}'.format(np.mean(SOL), np.std(SOL))
+#+END_SRC
+
+#+RESULTS:
+: Ca(exit) = 0.00500829453185+/-0.000169103578901
+
+I am pretty content those are the same!
 
 *** Summary
-The uncertainties module is pretty amazing. It automatically propagates errors through a pretty broad range of computations. I was not able to use it on a nonlinear algebra solution, and it was not clear why. Maybe there is a better approach to that.
+    :PROPERTIES:
+    :date:     2013/04/23 21:23:36
+    :updated:  2013/04/23 21:23:36
+    :END:
+The uncertainties module is pretty amazing. It automatically propagates errors through a pretty broad range of computations. It is a little tricky for third-party packages, but it seems doable.
 
 Read more about the package at http://pythonhosted.org/uncertainties/index.html.
 
@@ -4676,7 +5223,7 @@ print '{0:%} of samples are within +- 2standard deviations of the mean'.format(b
 
 *** Summary
 We only considered the numpy.random functions here, and not all of them. There are many distributions of random numbers to choose from. There are also random numbers in the python random module. Remember these are only [[http://en.wikipedia.org/wiki/Pseudorandom_number_generator][pseudorandom]] numbers, but they are still useful for many applications.
-* DONE Data analysis
+*  Data analysis
 ** Fit a line to numerical data
    :PROPERTIES:
    :categories: data analysis
@@ -5360,7 +5907,7 @@ print x,y
 
 #+RESULTS:
 : [ 1.  3.  5.  4.] [ 3.  4.  6.  8.]
-* DONE Interpolation
+*  Interpolation
 ** Better interpolate than never
    :PROPERTIES:
    :categories: interpolation
@@ -5682,7 +6229,7 @@ plt.savefig('images/splinefit.png')
 [[./images/splinefit.png]]
 
 There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html
-* DONE Optimization
+*  Optimization
 ** Constrained optimization
    :PROPERTIES:
    :categories: optimization
@@ -5967,7 +6514,7 @@ plt.savefig('images/min-dist-p-func.png')
 [[./images/min-dist-p-func.png]]
 
 In the code above, we demonstrate that the point we find on the curve that minimizes the distance satisfies the property that a vector from that point to our other point is normal to the tangent of the curve at that point. This is shown by the fact that the dot product of the two vectors is very close to zero. It is not zero because of the accuracy criteria that is used to stop the minimization is not high enough.
-* DONE Differential equations
+*  Differential equations
 The key to successfully solving many differential equations is correctly classifying the equations, putting them into a standard form and then picking the appropriate solver. You must be able to determine if an equation is:
 
 - An ordinary differential equation $Y' = f(x, Y)$ with 
@@ -5978,7 +6525,7 @@ The key to successfully solving many differential equations is correctly classif
 - A partial differential equation
 
 The following sections will illustrate the methods for solving these kinds of equations.
-** DONE Ordinary differential equations
+**  Ordinary differential equations
 *** Numerical solution to a simple ode
     :PROPERTIES:
     :categories: ODE, interpolation
@@ -6006,7 +6553,7 @@ def fprime(y,t):
 tspan = np.linspace(0, 2)
 y0 = 1
 ysol = odeint(fprime, y0, tspan)
-
+plt.figure(figsize=(4,3))
 plt.plot(tspan, ysol, label='numerical solution')
 plt.plot(tspan, np.exp(tspan), 'r--', label='analytical solution')
 plt.xlabel('time')
@@ -7190,12 +7737,12 @@ plt.show()
 
 [[./images/ode-la.png]]
 
-** DONE Delay Differential Equations
+**  Delay Differential Equations
 In Matlab you can solve Delay Differential equations (DDE) ([[http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/][Matlab post]]). I do not know of a solver in scipy at this time that can do this.
-** DONE Differential algebraic systems of equations
+**  Differential algebraic systems of equations
 There is not a builtin solver for DAE systems in scipy. It looks like [[http://pysundials.sourceforge.net/][pysundials]] may do it, but it must be compiled and installed.
 
-** DONE Boundary value equations
+**  Boundary value equations
 I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
 
 *** Plane Poiseuille flow - BVP solve by shooting method
@@ -7907,7 +8454,7 @@ plt.savefig('images/blasius.png')
 
 [[./images/blasius.png]]
 
-** DONE Partial differential equations
+**  Partial differential equations
 *** Modeling a transient plug flow reactor
    :PROPERTIES:
    :categories: PDE, animation
@@ -8147,7 +8694,110 @@ Finally, the animated solution.
 
 [[./images/transient_heat.gif]]
 
-* DONE Plotting
+*** Transient diffusion - partial differential equations
+    :PROPERTIES:
+    :categories: PDE
+    :tags:     mass transfer
+    :date:     2013/04/02 09:27:42
+    :updated:  2013/04/02 09:44:05
+    :END:
+index:pde
+We want to solve for the concentration profile of  component that diffuses into a 1D rod, with an impermeable barrier at the end. The PDE governing this situation is:
+
+$\frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}$
+
+at $t=0$, in this example we have $C_0(x) = 0$ as an initial condition, with boundary conditions $C(0,t)=0.1$ and $\partial C/ \partial x(L,t)=0$.
+
+We are going to discretize this equation in both time and space to arrive at the solution. We will let $i$ be the index for the spatial discretization, and $j$ be the index for the temporal discretization. The discretization looks like this.
+
+[[./images/pde-diffusion-discretization-scheme.png]]
+
+Note that we cannot use the method of lines as we did before because we have the derivative-based boundary condition at one of the boundaries.
+
+We approximate the time derivative as:
+
+\(\frac{\partial C}{\partial t} \bigg| _{i,j} \approx \frac{C_{i,j+1} - C_{i,j}}{\Delta t} \)
+
+\(\frac{\partial^2 C}{\partial  x^2} \bigg| _{i,j} \approx \frac{C_{i+1,j} - 2 C_{i,j} + C_{i-1,j}}{h^2} \)
+
+We define $\alpha = \frac{D \Delta t}{h^2}$, and from these two approximations and the PDE, we solve for the unknown solution at a later time step as:
+
+\(C_{i, j+1} = \alpha C_{i+1,j} + (1 - 2 \alpha) C_{i,j}  + \alpha C_{i-1,j} \)
+
+We know $C_{i,j=0}$ from the initial conditions, so we simply need to iterate to evaluate $C_{i,j}$, which is the solution at each time step.
+
+See also: http://www3.nd.edu/~jjwteach/441/PdfNotes/lecture16.pdf
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+N = 20  # number of points to discretize
+L = 1.0
+X = np.linspace(0, L, N) # position along the rod
+h = L / (N - 1)          # discretization spacing
+
+C0t = 0.1  # concentration at x = 0
+D = 0.02
+
+tfinal = 50.0
+Ntsteps = 1000
+dt = tfinal / (Ntsteps - 1)
+t = np.linspace(0, tfinal, Ntsteps)
+
+alpha = D * dt / h**2
+print alpha
+
+C_xt = [] # container for all the time steps
+
+# initial condition at t = 0
+C = np.zeros(X.shape)
+C[0] = C0t
+
+C_xt += [C]
+
+for j in range(1, Ntsteps):
+    N = np.zeros(C.shape)
+    N[0] =  C0t
+    N[1:-1] = alpha*C[2:] + (1 - 2 * alpha) * C[1:-1] + alpha * C[0:-2]
+    N[-1] = N[-2]  # derivative boundary condition flux = 0
+    C[:] = N
+    C_xt += [N]
+
+    # plot selective solutions
+    if j in [1,2,5,10,20,50,100,200,500]:
+        plt.plot(X, N, label='t={0:1.2f}'.format(t[j]))
+
+plt.xlabel('Position in rod')
+plt.ylabel('Concentration')
+plt.title('Concentration at different times')
+plt.legend(loc='best')
+plt.savefig('images/transient-diffusion-temporal-dependence.png')
+
+C_xt = np.array(C_xt)
+plt.figure()
+plt.plot(t, C_xt[:,5], label='x={0:1.2f}'.format(X[5]))
+plt.plot(t, C_xt[:,10], label='x={0:1.2f}'.format(X[10]))
+plt.plot(t, C_xt[:,15], label='x={0:1.2f}'.format(X[15]))
+plt.plot(t, C_xt[:,19], label='x={0:1.2f}'.format(X[19]))
+plt.legend(loc='best')
+plt.xlabel('Time')
+plt.ylabel('Concentration')
+plt.savefig('images/transient-diffusion-position-dependence.png')
+
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: 0.361361361361
+
+[[./images/transient-diffusion-temporal-dependence.png]]
+
+[[./images/transient-diffusion-position-dependence.png]]
+
+The solution is somewhat sensitive to the choices of time step and spatial discretization. If you make the time step too big, the method is not stable, and large oscillations may occur.
+
+*  Plotting
 ** Plot customizations - Modifying line, text and figure properties
 [[http://matlab.cheme.cmu.edu/2011/08/01/plot-customizations-modifying-line-text-and-figure-properties/][Matlab post]]
 
@@ -8811,7 +9461,7 @@ plt.show()
 
 [[./images/interactive-labeled-points.png]]
 
-* DONE Programming
+*  Programming
 ** Some of this, sum of that
    :PROPERTIES:
    :categories: miscellaneous, recursive
@@ -9144,6 +9794,116 @@ print text
 :           a variable. It might also be possible to get a multiline
 :             <FONT style="BACKGROUND-COLOR: LightGray">%open</FONT> directive.
 
+** Working with lists
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/04/09 21:54:22
+   :updated:  2013/05/19 11:27:26
+   :END: 
+It is not too uncommon to have a list of data, and then to apply a function to every element, to filter the list, or extract elements that meet some criteria. In this example, we take a string and split it into words. Then, we will examine several ways to apply functions to the words, to filter the list to get data that meets some criteria. Here is the string splitting.
+
+#+BEGIN_SRC python :session
+text = '''
+ As we have seen, handling units with third party functions is fragile, and often requires additional code to wrap the function to handle the units. An alternative approach that avoids the wrapping is to rescale the equations so they are dimensionless. Then, we should be able to use all the standard external functions without modification. We obtain the final solutions by rescaling back to the answers we want.
+
+Before doing the examples, let us consider how the quantities package handles dimensionless numbers.
+
+import quantities as u
+
+a = 5 * u.m
+L = 10 * u.m # characteristic length
+
+print a/L
+print type(a/L)
+
+'''
+
+words = text.split()
+print words
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... ... ... ... ... ... ... >>> >>> >>> ['As', 'we', 'have', 'seen,', 'handling', 'units', 'with', 'third', 'party', 'functions', 'is', 'fragile,', 'and', 'often', 'requires', 'additional', 'code', 'to', 'wrap', 'the', 'function', 'to', 'handle', 'the', 'units.', 'An', 'alternative', 'approach', 'that', 'avoids', 'the', 'wrapping', 'is', 'to', 'rescale', 'the', 'equations', 'so', 'they', 'are', 'dimensionless.', 'Then,', 'we', 'should', 'be', 'able', 'to', 'use', 'all', 'the', 'standard', 'external', 'functions', 'without', 'modification.', 'We', 'obtain', 'the', 'final', 'solutions', 'by', 'rescaling', 'back', 'to', 'the', 'answers', 'we', 'want.', 'Before', 'doing', 'the', 'examples,', 'let', 'us', 'consider', 'how', 'the', 'quantities', 'package', 'handles', 'dimensionless', 'numbers.', 'import', 'quantities', 'as', 'u', 'a', '=', '5', '*', 'u.m', 'L', '=', '10', '*', 'u.m', '#', 'characteristic', 'length', 'print', 'a/L', 'print', 'type(a/L)']
+
+Let us get the length of each word.
+
+#+BEGIN_SRC python :session
+print [len(word) for word in words]
+
+# functional approach with a lambda function
+print map(lambda word: len(word), words)
+
+# functional approach with a builtin function
+print map(len, words)
+
+# functional approach with a user-defined function
+def get_length(word):
+    return len(word)
+
+print map(get_length, words)
+#+END_SRC
+
+#+RESULTS:
+: [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: >>> ... [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: >>> [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: >>> ... ... ... >>> [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+
+Now let us get all the words that start with the letter "a". This is sometimes called filtering a list. We use a string function =startswith= to check for upper and lower-case letters. We will use list comprehension with a condition.
+
+#+BEGIN_SRC python :session
+print [word for word in words if word.startswith('a') or word.startswith('A')]
+
+# make word lowercase to simplify the conditional statement
+print [word for word in words if word.lower().startswith('a')]
+#+END_SRC
+
+#+RESULTS:
+: ['As', 'and', 'additional', 'An', 'alternative', 'approach', 'avoids', 'are', 'able', 'all', 'answers', 'as', 'a', 'a/L']
+: ['As', 'and', 'additional', 'An', 'alternative', 'approach', 'avoids', 'are', 'able', 'all', 'answers', 'as', 'a', 'a/L']
+
+A slightly harder example is to find all the words that are actually numbers. We could use a regular expression for that, but we will instead use a function we create. We use a function that tries to cast a word as a float. If this fails, we know the word is not a float, so we return False.
+
+#+BEGIN_SRC python :session
+def float_p(word):
+    try:
+        float(word)
+        return True
+    except ValueError:
+        return False
+
+print [word for word in words if float_p(word)]
+
+# here is a functional approach
+print filter(float_p, words)
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... >>> ['5', '10']
+: ['5', '10']
+
+Finally, we consider filtering the list to find all words that contain certain symbols, say any character in this string "./=*#". Any of those characters will do, so we search each word for one of them, and return True if it contains it, and False if none are contained. 
+#+BEGIN_SRC python :session
+def punctuation_p(word):
+    S = './=*#'
+    for s in S:
+        if s in word:
+            return True
+    return False
+
+print [word for word in words if punctuation_p(word)]
+print filter(punctuation_p, words)
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... >>> ['units.', 'dimensionless.', 'modification.', 'want.', 'numbers.', '=', '*', 'u.m', '=', '*', 'u.m', '#', 'a/L', 'type(a/L)']
+: ['units.', 'dimensionless.', 'modification.', 'want.', 'numbers.', '=', '*', 'u.m', '=', '*', 'u.m', '#', 'a/L', 'type(a/L)']
+
+In this section we examined a few ways to interact with lists using list comprehension and functional programming. These approaches make it possible to work on arbitrary size lists, without needing to know in advance how big the lists are. New lists are automatically generated as results, without the need to preallocate lists, i.e. you do not need to know the size of the output. This can be handy as it avoids needing to write loops in some cases and leads to more compact code.
+
 ** Making word files in python
  [[http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/][Matlab post]]
 
@@ -9295,8 +10055,777 @@ wb.save('data/example2.xls')
 *** Summary
 Matlab has better support for interacting with Excel than python does right now. You could get better Excel interaction via COM, but that is Windows specific, and requires you to have Excel installed on your computer. 
 If you only need to read or write data, then xlrd/xlwt or the openpyxl modules will server you well.
+** Using Excel in Python
+   :PROPERTIES:
+   :categories: programming
+   :tags: excel
+   :date:     2013/04/06 14:01:02
+   :updated:  2013/04/06 14:01:02
+   :END:
+index:Excel, index:COM
+There may be a time where you have an Excel sheet that already has a model built into it, and you normally change cells in the sheet, and it solves the model. It can be tedious to do that a lot, and we can use python to do that. Python has a COM interface that can communicate with Excel (and many other windows programs. see http://my.safaribooksonline.com/1565926218 for Python Programming on Win32). In this example, we will use a very simple Excel sheet that calculates the volume of a CSTR that runs a zeroth order reaction ($-r_A = k$) for a particular conversion. You set the conversion in the cell B1, and the volume is automatically computed in cell B6. We simply need to set the value of B1, and get the value of B6 for a range of different conversion values. In this example, the volume is returned in Liters.
 
-* DONE Worked examples
+#+BEGIN_SRC python
+import win32com.client as win32
+excel = win32.Dispatch('Excel.Application')
+
+wb = excel.Workbooks.Open('c:/Users/jkitchin/Dropbox/pycse/data/cstr-zeroth-order.xlsx')
+ws = wb.Worksheets('Sheet1')
+
+X = [0.1, 0.5, 0.9]
+for x in X:
+    ws.Range("B1").Value = x
+    V = ws.Range("B6").Value
+    print 'at X = {0} V = {1:1.2f} L'.format(x, V)
+ 
+# we tell Excel the workbook is saved, even though it is not, so it
+# will quit without asking us to save.
+excel.ActiveWorkbook.Saved = True 
+excel.Application.Quit() 
+#+END_SRC
+
+#+RESULTS:
+: at X = 0.1 V = 22.73 L
+: at X = 0.5 V = 113.64 L
+: at X = 0.9 V = 204.55 L
+
+This was a simple example (one that did not actually need Excel at all) that illustrates the feasibility of communicating with Excel via a COM interface. 
+
+Some links I have found that help figure out how to do this are:
+- http://www.numbergrinder.com/2008/11/pulling-data-from-excel-using-python-com/
+- http://www.numbergrinder.com/2008/11/closing-excel-using-python/
+- http://www.dzone.com/snippets/script-excel-python
+
+** Running Aspen via Python
+   :PROPERTIES:
+   :categories: programming
+   :tags:     Aspen
+   :date:     2013/06/14 10:23:27
+   :updated:  2013/06/14 10:23:27
+   :END:
+
+Aspen is a process modeling tool that simulates industrial processes. It has a GUI for setting up the flowsheet, defining all the stream inputs and outputs, and for running the simulation. For single calculations it is pretty convenient. For many calculations, all the pointing and clicking to change properties can be tedious, and difficult to reproduce. Here we show how to use Python to automate Aspen using the COM interface.
+
+We have an Aspen flowsheet setup for a flash operation. The feed consists of 91.095 mol% water and 8.905 mol% ethanol at 100 degF and 50 psia. 48.7488 lbmol/hr of the mixture is fed to the flash tank which is at 150 degF and 20 psia. We want to know the composition of the VAPOR and LIQUID streams. The simulation has been run once.
+
+[[./images/flash-flowsheet.png]]
+
+This is an example that just illustrates it is possible to access data from a simulation that has been run. You have to know quite a bit about the Aspen flowsheet before writing this code. Particularly, you need to open the Variable Explorer to find the "path" to the variables that you want, and to know what the units are of those variables are.
+
+#+BEGIN_SRC python
+import os
+import win32com.client as win32
+aspen = win32.Dispatch('Apwn.Document')
+
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+## Input variables
+feed_temp = aspen.Tree.FindNode('\Data\Streams\FEED\Input\TEMP\MIXED').Value
+print 'Feed temperature was {0} degF'.format(feed_temp)
+
+ftemp = aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value
+print 'Flash temperature = {0}'.format(ftemp)
+
+## Output variables
+eL_out = aspen.Tree.FindNode("\Data\Streams\LIQUID\Output\MOLEFLOW\MIXED\ETHANOL").Value
+wL_out = aspen.Tree.FindNode("\Data\Streams\LIQUID\Output\MOLEFLOW\MIXED\WATER").Value
+
+eV_out = aspen.Tree.FindNode("\Data\Streams\VAPOR\Output\MOLEFLOW\MIXED\ETHANOL").Value
+wV_out = aspen.Tree.FindNode("\Data\Streams\VAPOR\Output\MOLEFLOW\MIXED\WATER").Value
+
+tot = aspen.Tree.FindNode("\Data\Streams\FEED\Input\TOTFLOW\MIXED").Value
+
+print 'Ethanol vapor mol flow: {0} lbmol/hr'.format(eV_out)
+print 'Ethanol liquid mol flow: {0} lbmol/hr'.format(eL_out)
+
+print 'Water vapor mol flow: {0} lbmol/hr'.format(wV_out)
+print 'Water liquid mol flow: {0} lbmol/hr'.format(wL_out)
+
+print 'Total = {0}. Total in = {1}'.format(eV_out + eL_out + wV_out + wL_out,
+                                           tot)
+
+aspen.Close()
+#+END_SRC
+
+#+RESULTS:
+: Feed temperature was 100.0 degF
+: Flash temperature = 150.0
+: Ethanol vapor mol flow: 3.89668323 lbmol/hr
+: Ethanol liquid mol flow: 0.444397241 lbmol/hr
+: Water vapor mol flow: 0.774592763 lbmol/hr
+: Water liquid mol flow: 43.6331268 lbmol/hr
+: Total = 48.748800034. Total in = 48.7488
+
+It is nice that we can read data from a simulation, but it would be helpful if we could change variable values and to rerun the simulations. That is possible. We simply set the value of the variable, and tell Aspen to rerun. Here, we will change the temperature of the Flash tank and plot the composition of the outlet streams as a function of that temperature.
+
+#+BEGIN_SRC python
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import win32com.client as win32
+
+aspen = win32.Dispatch('Apwn.Document')
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+T = np.linspace(150, 200, 10)
+
+x_ethanol, y_ethanol = [], []
+
+for temperature in T:
+    aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value = temperature
+    aspen.Engine.Run2()
+
+    x_ethanol.append(aspen.Tree.FindNode('\Data\Streams\LIQUID\Output\MOLEFRAC\MIXED\ETHANOL').Value)
+    y_ethanol.append(aspen.Tree.FindNode('\Data\Streams\VAPOR\Output\MOLEFRAC\MIXED\ETHANOL').Value)
+
+plt.plot(T, y_ethanol, T, x_ethanol)
+plt.legend(['vapor', 'liquid'])
+plt.xlabel('Flash Temperature (degF)')
+plt.ylabel('Ethanol mole fraction')
+plt.savefig('images/aspen-water-ethanol-flash.png')
+aspen.Close()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/aspen-water-ethanol-flash.png]]
+
+
+It takes about 30 seconds to run the previous example. Unfortunately, the way it is written, if you want to change anything, you have to run all of the calculations over again. How to avoid that is moderately tricky, and will be the subject of another example.
+ 
+In summary, it seems possible to do a lot with Aspen automation via python. This can also be done with Matlab, Excel, and other programming languages where COM automation is possible. The COM interface is not especially well documented, and you have to do a lot of digging to figure out some things. It is not clear how committed Aspen is to maintaining or improving the COM interface (http://www.chejunkie.com/aspen-plus/aspen-plus-activex-automation-server/). Hopefully they can keep it alive for power users who do not want to program in Excel!
+** Using an external solver with Aspen
+   :PROPERTIES:
+   :categories: programming
+   :tags:     aspen
+   :date:     2013/06/17 09:49:27
+   :updated:  2013/06/17 09:49:27
+   :END:
+One reason to interact with Aspen via python is to use external solvers to drive the simulations. Aspen has some built-in solvers, but it does not have everything. You may also want to integrate additional calculations, e.g. capital costs, water usage, etc... and integrate those results into a report. 
+
+Here is a simple example where we use fsolve to find the temperature of the flash tank that will give a vapor phase mole fraction of ethanol of 0.8. It is a simple example, but it illustrates the possibility.
+
+#+BEGIN_SRC python
+import os
+import win32com.client as win32
+aspen = win32.Dispatch('Apwn.Document')
+
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+from scipy.optimize import fsolve
+
+def func(flashT):
+    flashT = float(flashT) # COM objects do not understand numpy types
+    aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value = flashT
+    aspen.Engine.Run2()
+    y = aspen.Tree.FindNode('\Data\Streams\VAPOR\Output\MOLEFRAC\MIXED\ETHANOL').Value
+    return y - 0.8
+
+sol, = fsolve(func, 150.0)
+print 'A flash temperature of {0:1.2f} degF will have y_ethanol = 0.8'.format(sol)
+#+END_SRC
+
+#+RESULTS:
+: A flash temperature of 157.38 degF will have y_ethanol = 0.8
+
+One unexpected detail was that the Aspen COM objects cannot be assigned numpy number types, so it was necessary to recast the argument as a float. Otherwise, this worked about as expected for an fsolve problem.
+
+** Redirecting the print function
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/05/19 11:19:36
+   :updated:  2013/05/19 11:19:36
+   :END:
+Ordinarily a print statement prints to stdout, or your terminal/screen. You can redirect this so that printing is done to a file, for example. This might be helpful if you use print statements for debugging, and later want to save what is printed to a file. Here we make a simple function that prints some things.
+
+#+BEGIN_SRC python :session
+def debug():
+    print 'step 1'
+    print 3 + 4
+    print 'finished'
+
+debug()
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... >>> step 1
+: 7
+: finished
+
+Now, let us redirect the printed lines to a file. We create a file object, and set sys.stdout equal to that file object.
+#+BEGIN_SRC python :session
+import sys
+print >> sys.__stdout__, '__stdout__ before = ', sys.__stdout__
+print >> sys.__stdout__, 'stdout before = ', sys.stdout
+
+f = open('data/debug.txt', 'w')
+sys.stdout = f
+
+# note that sys.__stdout__ does not change, but stdout does.
+print >> sys.__stdout__, '__stdout__ after = ', sys.__stdout__
+print >> sys.__stdout__, 'stdout after = ', sys.stdout
+
+debug()
+
+# reset stdout back to console
+sys.stdout = sys.__stdout__
+
+print f
+f.close() # try to make it a habit to close files
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: __stdout__ before =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: stdout before =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: >>> >>> >>> >>> ... __stdout__ after =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: stdout after =  <open file 'data/debug.txt', mode 'w' at 0x2ae7dbcbbb70>
+: >>> >>> >>> ... >>> >>> >>> <open file 'data/debug.txt', mode 'w' at 0x2ae7dbcbbb70>
+: >>> <closed file 'data/debug.txt', mode 'w' at 0x2ae7dbcbbb70>
+
+Note it can be important to close files. If you are looping through large numbers of files, you will eventually run out of file handles, causing an error. We can use a context manager to automatically close the file like this
+
+#+BEGIN_SRC python :session
+import sys
+
+# use the open context manager to automatically close the file
+with open('data/debug.txt', 'w') as f:
+    sys.stdout = f
+    debug()
+    print >> sys.__stdout__, f
+
+# reset stdout
+sys.stdout = sys.__stdout__
+print f
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> ... ... ... ... ... <open file 'data/debug.txt', mode 'w' at 0x0000000002071C00>
+: ... >>> <closed file 'data/debug.txt', mode 'w' at 0x0000000002071C00>
+
+See, the file is closed for us! We can see the contents of our file like this.
+#+BEGIN_SRC sh
+cat data/debug.txt
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+The approaches above are not fault safe. Suppose our debug function raised an exception. Then, it could be possible the line to reset the stdout would not be executed. We can solve this with try/finally code.
+
+#+BEGIN_SRC python :session
+import sys
+
+print 'before: ', sys.stdout
+try:
+    with open('data/debug-2.txt', 'w') as f:
+        sys.stdout = f
+        # print to the original stdout
+        print >> sys.__stdout__, 'during: ', sys.stdout
+        debug()
+        raise Exception('something bad happened')
+finally:
+    # reset stdout
+    sys.stdout = sys.__stdout__
+
+print 'after: ', sys.stdout
+print f # verify it is closed
+print sys.stdout # verify this is reset
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> before:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: ... ... ... ... ... ... ... ... ... ... during:  <open file 'data/debug-2.txt', mode 'w' at 0x2ae7dbcbbf60>
+: Traceback (most recent call last):
+:   File "<stdin>", line 7, in <module>
+: Exception: something bad happened
+: after:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: <closed file 'data/debug-2.txt', mode 'w' at 0x2ae7dbcbbf60>
+: <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+
+#+BEGIN_SRC sh
+cat data/debug-2.txt
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+This is the kind of situation where a context manager is handy. Context managers are typically a class that executes some code when you "enter" the context, and then execute some code when you "exit" the context. Here we want to change sys.stdout to a new value inside our context, and change it back when we exit the context. We will store the value of sys.stdout going in, and restore it on the way out.
+
+#+BEGIN_SRC python :session
+import sys
+
+class redirect:
+    def __init__(self, f=sys.stdout):
+        "redirect print statement to f. f must be a file-like object"
+        self.f = f
+        self.stdout = sys.stdout
+        print >> sys.__stdout__, 'init stdout: ', sys.stdout        
+    def __enter__(self): 
+        sys.stdout = self.f
+        print >> sys.__stdout__,  'stdout in context-manager: ',sys.stdout
+    def __exit__(self, *args):
+        sys.stdout = self.stdout
+        print '__stdout__ at exit = ',sys.__stdout__        
+
+# regular printing
+with redirect():
+    debug()
+
+# write to a file
+with open('data/debug-3.txt', 'w') as f:
+    with redirect(f):
+        debug()
+
+# mixed regular and 
+with open('data/debug-4.txt', 'w') as f:
+    with redirect(f):
+        print 'testing redirect'
+        with redirect():
+            print 'temporary console printing'
+            debug()
+        print 'Now outside the inner context. this should go to data/debug-4.txt'
+        debug()
+        raise Exception('something else bad happened')
+
+print sys.stdout
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+>>> ... ... ... ... ... ... ... ... ... ... ... ... >>> ... ... ... init stdout:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+stdout in context-manager:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+step 1
+7
+finished
+__stdout__ at exit =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+... ... ... ... init stdout:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+stdout in context-manager:  <open file 'data/debug-3.txt', mode 'w' at 0x2ae7dbcbbb70>
+__stdout__ at exit =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+... ... ... ... ... ... ... ... ... ... init stdout:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+stdout in context-manager:  <open file 'data/debug-4.txt', mode 'w' at 0x2ae7dca4d030>
+init stdout:  <open file 'data/debug-4.txt', mode 'w' at 0x2ae7dca4d030>
+stdout in context-manager:  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+temporary console printing
+step 1
+7
+finished
+__stdout__ at exit =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+Exception: something else bad happened
+<open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+#+end_example
+
+Here are the contents of the debug file. 
+#+BEGIN_SRC sh
+cat data/debug-3.txt
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+The contents of the other debug file have some additional lines, because we printed some things while in the redirect context.
+#+BEGIN_SRC sh
+cat data/debug-4.txt
+#+END_SRC
+
+#+RESULTS:
+: testing redirect
+: __stdout__ at exit =  <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
+: Now outside the inner context. this should go to data/debug-4.txt
+: step 1
+: 7
+: finished
+
+See http://www.python.org/dev/peps/pep-0343/ (number 5) for another example of redirecting using a function decorator. I think it is harder to understand, because it uses a generator.
+
+There were a couple of points in this section:
+
+1. You can control where things are printed in your programs by modifying the value of sys.stdout
+2. You can use try/except/finally blocks to make sure code gets executed in the event an exception is raised
+3. You can use context managers to make sure files get closed, and code gets executed if exceptions are raised.
+
+** TODO Modifying functions with decorators
+Sometimes, it is useful to modify an existing function, without changing the original definition of the function. 
+
+** Getting a dictionary of counts
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/05/29 20:18:27
+   :updated:  2013/05/29 20:20:50
+   :END:
+I frequently want to take a list and get a dictionary of keys that have the count of each element in the list. Here is how I have typically done this countless times in the past. 
+
+#+BEGIN_SRC python
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+
+d = {}
+for el in L:
+    if el in d:
+        d[el] += 1
+    else:
+        d[el] = 1
+
+print d
+#+END_SRC
+
+#+RESULTS:
+: {'a': 3, 'b': 2, 'e': 2, 'd': 1}
+
+That seems like too much code, and that there must be a list comprehension approach combined with a dictionary constructor. 
+
+#+BEGIN_SRC python
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+
+print dict((el,L.count(el)) for el in L)
+#+END_SRC
+
+#+RESULTS:
+: {'a': 3, 'b': 2, 'e': 2, 'd': 1}
+
+Wow, that is a lot simpler! I suppose for large lists this might be slow, since count must look through the list for each element, whereas the longer code looks at each element once, and does one conditional analysis.
+
+Here is another example of much shorter and cleaner code. 
+
+#+BEGIN_SRC python
+from collections import Counter
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+print Counter(L)
+print Counter(L)['a']
+#+END_SRC
+
+#+RESULTS:
+: Counter({'a': 3, 'b': 2, 'e': 2, 'd': 1})
+: 3
+
+** About your python
+#+BEGIN_SRC python
+import sys
+
+print sys.version
+
+print sys.executable
+
+print sys.getwindowsversion()
+
+print sys.platform
+
+# where the platform independent Python files are installed
+print sys.prefix
+#+END_SRC
+
+#+RESULTS:
+: 2.7.3 | 64-bit | (default, Mar 25 2013, 15:41:53) [MSC v.1500 64 bit (AMD64)]
+: C:\Users\jkitchin\AppData\Local\Enthought\Canopy\User\Scripts\python.exe
+: sys.getwindowsversion(major=6, minor=1, build=7601, platform=2, service_pack='Service Pack 1')
+: win32
+: C:\Users\jkitchin\AppData\Local\Enthought\Canopy\User
+
+The =platform= module provides similar, complementary information.
+
+#+BEGIN_SRC python
+import platform
+
+print platform.uname()
+print platform.system()
+print platform.architecture()
+print platform.machine()
+print platform.node()
+print platform.platform()
+print platform.processor()
+print platform.python_build()
+print platform.python_version()
+
+#+END_SRC
+
+#+RESULTS:
+: ('Windows', 'jkitchin-2012', '7', '6.1.7601', 'AMD64', 'Intel64 Family 6 Model 58 Stepping 9, GenuineIntel')
+: Windows
+: ('64bit', 'WindowsPE')
+: AMD64
+: jkitchin-2012
+: Windows-7-6.1.7601-SP1
+: Intel64 Family 6 Model 58 Stepping 9, GenuineIntel
+: ('default', 'Mar 25 2013 15:41:53')
+: 2.7.3
+
+** Automatic, temporary directory changing
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/06/16 09:09:22
+   :updated:  2013/06/16 09:09:22
+   :END:
+If you are doing some analysis that requires you to change directories, e.g. to read a file, and then change back to another directory to read another file, you have probably run into problems if there is an error somewhere. You would like to make sure that the code changes back to the original directory after each error. We will look at a few ways to accomplish that here.
+
+The try/except/finally method is the traditional way to handle exceptions, and make sure that some code "finally" runs. Let us look at two examples here. In the first example, we try to change into a directory that does not exist.
+
+#+BEGIN_SRC python
+import os, sys
+
+CWD = os.getcwd() # store initial position
+print 'initially inside {0}'.format(os.getcwd())
+TEMPDIR = 'data/run1' # this does not exist
+
+try:
+    os.chdir(TEMPDIR)
+    print 'inside {0}'.format(os.getcwd())
+except:
+    print 'Exception caught: ',sys.exc_info()[0]
+finally:
+    print 'Running final code'
+    os.chdir(CWD)
+    print 'finally inside {0}'.format(os.getcwd())
+#+END_SRC
+
+#+RESULTS:
+: initially inside c:\users\jkitchin\Dropbox\pycse
+: Exception caught:  <type 'exceptions.WindowsError'>
+: Running final code
+: finally inside c:\users\jkitchin\Dropbox\pycse
+
+
+Now, let us look at an example where the directory does exist. We will change into the directory, run some code, and then raise an Exception.
+
+#+BEGIN_SRC python
+import os, sys
+
+CWD = os.getcwd() # store initial position
+print 'initially inside {0}'.format(os.getcwd())
+TEMPDIR = 'data'
+
+try:
+    os.chdir(TEMPDIR)
+    print 'inside {0}'.format(os.getcwd())
+    print os.listdir('.')
+    raise Exception('boom')
+except:
+    print 'Exception caught: ',sys.exc_info()[0]
+finally:
+    print 'Running final code'
+    os.chdir(CWD)
+    print 'finally inside {0}'.format(os.getcwd())
+#+END_SRC
+
+#+RESULTS:
+: initially inside c:\users\jkitchin\Dropbox\pycse
+: inside c:\users\jkitchin\Dropbox\pycse\data
+: ['antoine_data.dat', 'antoine_database.mat', 'commonshellsettings.xml', 'cstr-zeroth-order.xlsx', 'debug-2.txt', 'debug-3.txt', 'debug-4.txt', 'debug.txt', 'example.xlsx', 'example2.xls', 'example3.xls', 'example4.xls', 'example4.xlsx', 'Flash_Example.apw', 'Flash_Example.bkp', 'Flash_Example.def', 'gc-data-21.txt', 'PT.txt', 'raman.txt', 'testdata.txt']
+: Exception caught:  <type 'exceptions.Exception'>
+: Running final code
+: finally inside c:\users\jkitchin\Dropbox\pycse
+
+You can see that we changed into the directory, ran some code, and then caught an exception. Afterwards, we changed back to our original directory. This code works fine, but it is somewhat verbose, and tedious to write over and over. We can get a cleaner syntax with a context manager. The context manager uses the =with= keyword in python. In a context manager some code is executed on entering the "context", and code is run on exiting the context. We can use that to automatically change directory, and when done, change back to the original directory. We use the =contextlib.contextmanager= decorator on a function. With a function, the code up to a =yield= statement is run on entering the context, and the code after the yield statement is run on exiting. We wrap the yield statement in try/except/finally block to make sure our final code gets run.
+
+#+BEGIN_SRC python
+import contextlib
+import os, sys
+
+@contextlib.contextmanager
+def cd(path):
+    print 'initially inside {0}'.format(os.getcwd())
+    CWD = os.getcwd()
+    
+    os.chdir(path)
+    print 'inside {0}'.format(os.getcwd())
+    try:
+        yield
+    except:
+        print 'Exception caught: ',sys.exc_info()[0]
+    finally:
+        print 'finally inside {0}'.format(os.getcwd())
+        os.chdir(CWD)
+
+# Now we use the context manager
+with cd('data'):
+    print os.listdir('.')
+    raise Exception('boom')
+
+print
+with cd('data/run2'):
+    print os.listdir('.')
+#+END_SRC
+
+#+RESULTS:
+
+One case that is not handled well with this code is if the directory you want to change into does not exist. In that case an exception is raised on entering the context when you try change into a directory that does not exist. An alternative class based context manager can be found [[http://code.activestate.com/recipes/576620-changedirectory-context-manager/][here]]. 
+
+** TODO multiprocessing
+#+BEGIN_SRC python
+import multiprocessing
+
+cpus = multiprocessing.cpu_count()
+print cpus
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+*  Miscellaneous
+** Mail merge with python
+   :PROPERTIES:
+   :categories: programming, email
+   :date:     2013/04/16 16:10:50
+   :updated:  2013/04/16 16:10:50
+   :END:
+Suppose you are organizing some event, and you have a mailing list of email addresses and people you need to send a mail to telling them what room they will be in. You would like to send a personalized email to each person, and you do not want to type each one by hand. Python can automate this for you. All you need is the mailing list in some kind of structured format, and then you can go through it line by line to create and send emails.
+
+We will use an org-table to store the data in.
+
+#+tblname: mail-list
+| First name | Last name | email address        | Room number |
+|------------+-----------+----------------------+-------------|
+| Jane       | Doe       | jane-doe@gmail.com   |           1 |
+| John       | Doe       | john-doe@gmail.com   |           2 |
+| Jimmy      | John      | jimmy-john@gmail.com |           3 |
+
+We pass that table into an org-mode source block as a variable called data, which will be a list of lists, one for each row of the table. You could alternatively read these from an excel spreadsheet, a csv file, or some kind of python data structure. 
+
+We do not actually send the emails in this example. To do that you need to have access to a mail server, which could be on your own machine, or it could be a relay server you have access to.
+
+We create a string that is a template with some fields to be substituted, e.g. the firstname and room number in this case. Then we loop through each row of the table, and format the template with those values, and create an email message to the person. First we print each message to check that they are correct. 
+
+#+BEGIN_SRC python :var data=mail-list
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.Utils import  formatdate
+
+template = '''
+Dear {firstname:s},
+
+I am pleased to inform you that your talk will be in room {roomnumber:d}.
+
+Sincerely,
+John
+'''
+
+for firstname, lastname, emailaddress, roomnumber in data:
+    msg = MIMEMultipart()
+    msg['From'] = "youremail@gmail.com"
+    msg['To'] = emailaddress
+    msg['Date'] = formatdate(localtime=True)
+
+    msgtext = template.format(**locals())
+    print msgtext
+
+    msg.attach(MIMEText(msgtext))
+
+    ## Uncomment these lines and fix 
+    #server = smtplib.SMTP('your.relay.server.edu')
+    #server.sendmail('your_email@gmail.com', # from
+    #                emailaddress,
+    #                msg.as_string())
+    #server.quit()
+
+    print msg.as_string()
+    print '------------------------------------------------------------------'
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+Dear Jane,
+
+I am pleased to inform you that your talk will be in room 1.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============1191311863=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: jane-doe@gmail.com
+Date: Tue, 16 Apr 2013 16:10:23 -0400
+
+--===============1191311863==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear Jane,
+
+I am pleased to inform you that your talk will be in room 1.
+
+Sincerely,
+John
+
+--===============1191311863==--
+------------------------------------------------------------------
+
+Dear John,
+
+I am pleased to inform you that your talk will be in room 2.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============1713881863=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: john-doe@gmail.com
+Date: Tue, 16 Apr 2013 16:10:23 -0400
+
+--===============1713881863==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear John,
+
+I am pleased to inform you that your talk will be in room 2.
+
+Sincerely,
+John
+
+--===============1713881863==--
+------------------------------------------------------------------
+
+Dear Jimmy,
+
+I am pleased to inform you that your talk will be in room 3.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============0696685580=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: jimmy-john@gmail.com
+Date: Tue, 16 Apr 2013 16:10:23 -0400
+
+--===============0696685580==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear Jimmy,
+
+I am pleased to inform you that your talk will be in room 3.
+
+Sincerely,
+John
+
+--===============0696685580==--
+------------------------------------------------------------------
+#+end_example
+
+*  Worked examples
 ** Peak finding in Raman spectroscopy
    :PROPERTIES:
    :categories: data analysis
@@ -10587,7 +12116,16 @@ $-\epsilon_2 \le 0$
 
 $\epsilon_1 + \epsilon_2 \le 0.5$
 
-In Matlab we express this in matrix form as Ax=b where $A = \left[ \begin{array}{cc} -1 & 0 \\ 0 & -1 \\ 1 & 1 \end{array} \right]$ and $b = \left[ \begin{array}{c} 0 \\ 0 \\ 0.5\end{array} \right]$
+In Matlab we express this in matrix form as Ax=b where 
+\begin{equation}
+A = \left[ \begin{array}{cc} -1 & 0 \\ 0 & -1 \\ 1 & 1 \end{array} \right]
+\end{equation}
+
+and 
+
+\begin{equation}
+b = \left[ \begin{array}{c} 0 \\ 0 \\ 0.5\end{array} \right] 
+\end{equation}
 
 Unlike in Matlab, in python we construct the inequality constraints as functions that are greater than or equal to zero when the constraint is met.
 
@@ -11689,7 +13227,7 @@ It is a little confusing why it is necessary to put a comma after the CA_sol in 
 ** Meet the steam tables
    :PROPERTIES:
    :date:     2013/02/28 22:09:29
-   :updated:  2013/03/09 13:16:48
+   :updated:  2013/06/26 19:00:46
    :tags:     thermodynamics, steam
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/31/matlab-meets-the-steam-tables/][Matlab post]]
@@ -11844,24 +13382,17 @@ plt.savefig('images/iawps-steam.png')
 #+RESULTS:
 #+begin_example
 
->>> >>> <matplotlib.figure.Figure object at 0x03C60730>
->>> >>> ... ... ... ... Traceback (most recent call last):
-  File "<stdin>", line 2, in <module>
-NameError: name 'IAPWS97' is not defined
-... Traceback (most recent call last):
-  File "<stdin>", line 2, in <module>
-NameError: name 'IAPWS97' is not defined
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-NameError: name 'IAPWS97' is not defined
->>> Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-NameError: name 'svap' is not defined
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-NameError: name 'sliq' is not defined
->>> <matplotlib.text.Text object at 0x040F1AB0>
-<matplotlib.text.Text object at 0x04108B70>
+>>> >>> <matplotlib.figure.Figure object at 0x000000000638BC18>
+>>> >>> ... ... ... ... [<matplotlib.lines.Line2D object at 0x0000000007F9C208>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9C400>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9C8D0>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9CD30>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9E1D0>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9E630>]
+... >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000001FDCEB8>]
+[<matplotlib.lines.Line2D object at 0x0000000007F9EA90>]
+>>> <matplotlib.text.Text object at 0x0000000007F7BE48>
+<matplotlib.text.Text object at 0x0000000007F855F8>
 #+end_example
 
 
@@ -11892,10 +13423,10 @@ plt.savefig('images/iawps-steam-2.svg')
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x00000000084ED630>]
-: [<matplotlib.lines.Line2D object at 0x00000000081F9518>]
-: [<matplotlib.lines.Line2D object at 0x00000000087A9DD8>]
-: [<matplotlib.lines.Line2D object at 0x00000000087A9CF8>]
+: [<matplotlib.lines.Line2D object at 0x0000000008350908>]
+: [<matplotlib.lines.Line2D object at 0x00000000083358D0>]
+: [<matplotlib.lines.Line2D object at 0x000000000835BEB8>]
+: [<matplotlib.lines.Line2D object at 0x0000000008357160>]
 
 [[./images/iawps-steam-2.png]]
 
@@ -11903,7 +13434,185 @@ plt.savefig('images/iawps-steam-2.svg')
 
 This was an interesting exercise. On one hand, the tedium of interpolating the steam tables is gone. On the other hand, you still have to know exactly what to ask for to get an answer that is correct. The iapws interface is a little clunky, and takes some getting used to. It does not seem as robust as the Xsteam module I used in Matlab.
 
-* DONE Units
+** What region is a point in
+   :PROPERTIES:
+   :date:     2013/06/06 10:35:57
+   :updated:  2013/06/26 18:55:07
+   :categories: programming
+   :END:
+
+Suppose we have a space that is divided by a boundary into two regions, and we want to know if an arbitrary point is on one region or the other. One way to figure this out is to pick a point that is known to be in a region, and then draw a line to the arbitrary point counting the number of times it crosses the boundary. If the line crosses an even number of times, then the point is in the same region and if it crosses an odd number of times, then the point is in the other region. 
+
+Here is the boundary and region we consider in this example:
+
+#+BEGIN_SRC python :session
+boundary = [[0.1, 0],
+            [0.25, 0.1],
+            [0.3, 0.2],
+            [0.35, 0.34],
+            [0.4, 0.43],
+            [0.51, 0.47],
+            [0.48, 0.55],
+            [0.44, 0.62],
+            [0.5, 0.66],
+            [0.55,0.57],
+            [0.556, 0.48],
+            [0.63, 0.43],
+            [0.70, 0.44],
+            [0.8, 0.51],
+            [0.91, 0.57],
+            [1.0, 0.6]]
+
+import matplotlib.pyplot as plt
+
+plt.plot([p[0] for p in boundary],
+         [p[1] for p in boundary])
+plt.ylim([0, 1])
+plt.savefig('images/boundary-1.png')
+#+END_SRC
+
+#+RESULTS:
+: 
+: ... ... ... ... ... ... ... ... ... ... ... ... ... ... >>> >>> >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x00000000062FEBA8>]
+: (0, 1)
+
+[[./images/boundary-1.png]]
+
+In this example, the boundary is complicated, and not described by a simple function. We will check for intersections of the line from the arbitrary point to the reference point with each segment defining the boundary. If there is an intersection in the boundary, we count that as a crossing. We choose the origin (0, 0) in this case for the reference point. For an arbitrary point (x1, y1), the equation of the line is therefore (provided x1 !=0):
+
+$y = \frac{y1}{x1} x$.
+
+Let the points defining a boundary segment be (bx1, by1) and (bx2, by2). The equation for the line connecting these points (provided bx1 != bx2) is:
+
+$y = by1 + \frac{by2 - by1}{bx2 - bx1}(x - bx1)$
+
+Setting these two equations equal to each other, we can solve for the value of $x$, and if $bx1 <= x <= bx2$ then we would say there is an intersection with that segment. The solution for x is:
+
+$x = \frac{m bx1 - by1}{m - y1/x1}$
+
+This can only fail if $m = y1/x1$ which means the segments are parallel and either do not intersect or go through each other. One issue we have to resolve is what to do when the intersection is at the boundary. In that case, we would see an intersection with two segments since bx1 of one segment is also bx2 of another segment. We resolve the issue by only counting intersections with bx1. Finally, there may be intersections at values of $x$ greater than the point, and we are not interested in those because the intersections are not between the point and reference point.
+
+Here are all of the special cases that we  have to handle:
+
+[[./images/region-determination.png]]
+
+We will have to do float comparisons, so we will define [[Is your ice cream float bigger than mine][tolerance functions]] for all of these. I tried this previously with regular comparison operators, and there were many cases that did not work because of float comparisons. In the code that follows, we define the tolerance functions, the function that handles almost all the special cases, and show that it almost always correctly identifies the region a point is in.
+
+#+BEGIN_SRC python
+import numpy as np
+
+TOLERANCE = 2 * np.spacing(1)
+
+def feq(x, y, epsilon=TOLERANCE):
+    'x == y'
+    return not((x < (y - epsilon)) or (y < (x - epsilon)))
+
+def flt(x, y, epsilon=TOLERANCE):
+    'x < y'
+    return x < (y - epsilon)
+
+def fgt(x, y, epsilon=TOLERANCE):
+    'x > y'
+    return y < (x - epsilon)
+
+def fle(x, y, epsilon=TOLERANCE):
+    'x <= y'
+    return not(y < (x - epsilon))
+
+def fge(x, y, epsilon=TOLERANCE):
+    'x >= y'
+    return not(x < (y - epsilon))
+
+boundary = [[0.1, 0],
+            [0.25, 0.1],
+            [0.3, 0.2],
+            [0.35, 0.34],
+            [0.4, 0.43],
+            [0.51, 0.47],
+            [0.48, 0.55],
+            [0.44, 0.62],
+            [0.5, 0.66],
+            [0.55,0.57],
+            [0.556, 0.48],
+            [0.63, 0.43],
+            [0.70, 0.44],
+            [0.8, 0.51],
+            [0.91, 0.57],
+            [1.0, 0.6]]
+
+def intersects(p, isegment):
+    'p is a point (x1, y1), isegment is an integer indicating which segment starting with 0'
+    x1, y1 = p
+    bx1, by1 = boundary[isegment]
+    bx2, by2 = boundary[isegment + 1]
+
+    # outline cases to handle
+    if feq(bx1, bx2) and feq(x1, 0.0): # both segments are vertical
+        if feq(bx1, x1):
+            return True
+        else:
+            return False
+    elif feq(bx1, bx2):  # segment is vertical
+        m1 = y1 / x1 # slope of reference line
+        y = m1 * bx1 # value of reference line at bx1
+        if ((fge(y, by1) and flt(y, by2))
+            or (fle(y, by1) and fgt(y,by2))):
+            # reference line intersects the segment
+            return True
+        else:
+            return False
+    else: # neither reference line nor segment is vertical
+        m = (by2 - by1) / (bx2 - bx1) # segment slope
+        m1 = y1 / x1
+        if feq(m, m1): # line and segment are parallel
+            if feq(y1, m * bx1):
+                return True
+            else:
+                return False
+        else: # lines are not parallel
+            x = (m * bx1 - by1) / (m - m1) # x at intersection
+
+            if ((fge(x, bx1) and flt(x, bx2))
+                or (fle(x, bx1) and fgt(x, bx2))) and fle(x, x1):
+                return True
+            else:
+                return False
+
+    raise Exception('you should not get here')
+
+import matplotlib.pyplot as plt
+
+plt.plot([p[0] for p in boundary],
+         [p[1] for p in boundary], 'go-')
+plt.ylim([0, 1])
+
+N = 100
+
+X = np.linspace(0, 1, N)
+
+for x in X:
+    for y in X:
+        p = (x, y)
+        
+        nintersections = sum([intersects(p, i) for i in range(len(boundary) - 1)])
+
+        if nintersections % 2 == 0:
+            plt.plot(x, y, 'r.')
+        else:
+            plt.plot(x, y, 'b.')
+
+plt.savefig('images/boundary-2.png')
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/boundary-2.png]]
+
+If you look carefully, there are two blue points in the red region, which means there is some edge case we do not capture in our function. Kudos to the person who figures it out. 
+
+*  Units
 ** Using units in python
   :PROPERTIES:
   :categories: python, units
@@ -12542,7 +14251,7 @@ print 'Ca at t = {0} = {1}'.format(tspan[-1], X_sol.flatten()[-1] * Ca0)
 
 That is pretty much it. Using dimensionless quantities simplifies the need to write wrapper code, although it does increase the effort to rederive your equations (with corresponding increased opportunities to make mistakes). Using units to confirm your dimensionless derivation reduces those opportunities.
 
-* GNU Free Documentation License
+*  GNU Free Documentation License
 #+begin_example
                 GNU Free Documentation License
                  Version 1.3, 3 November 2008
@@ -12980,3 +14689,110 @@ http://scipy-lectures.github.com/index.html
 #+END_LaTeX
 
 
+* build								   :noexport:
+** pdf
+#+BEGIN_SRC emacs-lisp
+(let ((org-latex-classes '(("article"                          ;class-name
+			    "\\documentclass{article}"        ; header-string
+			    ("\\section{%s}" . "\\section*{%s}")
+			    ("\\subsection{%s}" . "\\subsection*{%s}")
+			    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+			    ("\\paragraph{%s}" . "\\paragraph*{%s}")
+			    ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))  
+      (org-latex-default-packages-alist '(("AUTO" "inputenc" t)
+					  ("T1" "fontenc" t)
+					  ("" "fixltx2e" nil)
+					  ("" "graphicx" t)
+					  ("" "longtable" nil)
+					  ("" "float" nil)
+					  ("" "wrapfig" nil)
+					  ("normalem" "ulem" t)
+					  ("" "textcomp" t)
+					  ("" "marvosym" t)
+					  ("" "wasysym" t)
+					  ("" "latexsym" t)
+					  ("" "amssymb" t)
+					  ("" "amstext" nil)
+					  ("" "minted" nil)
+					  ("" "underscore" nil)
+					  ("" "makeidx" nil)
+					  ("linktocpage,
+                                    pdfstartview=FitH,
+                                    colorlinks,
+                                    linkcolor=blue,
+                                    anchorcolor=blue,
+                                    citecolor=blue,
+                                    filecolor=blue,
+                                    menucolor=blue,
+                                    urlcolor=blue" "hyperref" nil)
+					  "\\tolerance=1000"))
+      ;; these variables are for the export command
+      (async nil)
+      (subtreep nil)
+      (visible-only nil)
+      (body-only nil)
+      (ext-plist nil))
+
+  (ignore-errors
+    (delete-file "pycse.aux")
+    (delete-file "pycse.bbl")
+    (delete-file "pycse.pdf"))
+  (org-latex-export-to-latex async subtreep visible-only body-only ext-plist))
+
+
+
+;  (org-latex-export-to-pdf async subtreep visible-only body-only ext-plist))
+
+;  
+
+;(progn 
+;    (ignore-errors
+;    (delete-file "pycse.aux")
+;    (delete-file "pycse.bbl")
+;    (delete-file "pycse.pdf"))
+;    (setq org-latex-to-pdf-process '("texi2dvi --pdf --clean --verbose --batch %f"))
+;    (org-latex-export-to-pdf))
+
+;; these are actually best run at the cmd line. On windows the pygmentize sometimes has a file lock issue.
+;;! I can't write on file `pycse.pyg'.
+;;<to be read again>
+;;                   \relax
+;;l.10799 ...s,fontsize=\scriptsize,linenos]{python}
+;; this does not happen in linux.
+;(shell-command "pdflatex -shell-escape pycse")
+;(shell-command "bibtex pycse")   ; no citations at the moment
+;(shell-command "pdflatex -shell-escape pycse")
+;(shell-command "pdflatex -shell-escape pycse")
+
+;(save-buffer)
+;(princ "pycse is built"))
+#+END_SRC
+
+** html
+#+BEGIN_SRC emacs-lisp
+(require 'ox-publish)
+(setq org-publish-project-alist
+       '(("pycse-content"
+	  :base-directory "~/Dropbox/pycse/"
+	  :base-extension "org"
+	  :publishing-directory "~/Dropbox/pycse/gh-pages/"
+	  :recursive t
+	  :exclude "aspen\\|sandbox\\|python\\|data\\|gh-pages"
+	  :publishing-function org-html-publish-to-html
+	  :headline-levels 5             ; Just the default for this project.
+	  :auto-preamble t
+	  )
+	 ("pycse-static"
+	  :base-directory "~/Dropbox/pycse/"
+	  :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|dat\\|mat\\|txt\\|svg"
+	  :publishing-directory "~/Dropbox/pycse/gh-pages/"
+	  :exclude "gh-pages"
+	  :recursive t
+	  :publishing-function org-publish-attachment
+	  )
+	 ;; ... all the components ...
+	 ("pycse" :components ("pycse-content" "pycse-static"))
+	 ))
+
+(org-publish "pycse")
+#+END_SRC
