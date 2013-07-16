@@ -1667,7 +1667,7 @@ plt.show()
    :PROPERTIES:
    :categories: math
    :date:     2013/02/27 14:51:38
-   :updated:  2013/03/06 18:26:30
+   :updated:  2013/07/09 20:53:58
    :END:
 [[index:derivative!complex step]]
 
@@ -1687,7 +1687,7 @@ derivative is presented that does not rely on differences!
 The new way is: $f'(x) = \rm{imag}(f(x + i\Delta x)/\Delta x)$ where the
 function $f$ is evaluated in imaginary space with a small $\Delta x$ in
 the complex plane. The derivative is miraculously equal to the imaginary
-part of the result in the limit of $\Delta x \rightarrow 0$!
+part of the result in the limit of \(\Delta x \rightarrow 0\)!
 
 This example comes from the first link. The derivative must be evaluated
 using the chain rule.  We compare a forward difference, central
@@ -4936,7 +4936,7 @@ print unp.sqrt(A)
 : >>> >>> >>> >>> 4.00874045057+/-0.00748364738749
 : ... >>> >>> 4.00874045057+/-0.00748364738749
 
-Note in the last example, we had to either import a function from uncertainties.umath or import a special version of numpy that handles uncertainty. This may be a limitation of teh uncertainties package as not all functions in arbitrary modules can be covered. Note, however, that you can wrap a function to make it handle uncertainty like this.
+Note in the last example, we had to either import a function from uncertainties.umath or import a special version of numpy that handles uncertainty. This may be a limitation of the uncertainties package as not all functions in arbitrary modules can be covered. Note, however, that you can wrap a function to make it handle uncertainty like this.
 
 #+BEGIN_SRC python :session
 import numpy as np
@@ -13081,6 +13081,40 @@ print 'Estimated absolute error = {0}'.format(abserr)
 
 
 You can see the estimate error is very small compared to the solution.
+
+** Uncertainty in an integral equation
+   :PROPERTIES:
+   :categories: uncertainty, math
+   :date:     2013/07/10 09:05:02
+   :updated:  2013/07/10 09:05:02
+   :END:
+
+In a [[http://jkitchin.github.io/blog/2013/01/06/Integrating-a-batch-reactor-design-equation/][previous example]], we solved for the time to reach a specific conversion in a batch reactor. However, it is likely there is uncertainty in the rate constant, and possibly in the initial concentration. Here we examine the effects of that uncertainty on the time to reach the desired conversion.
+
+To do this we have to write a function that takes arguments with uncertainty, and wrap the function with the uncertainties.wrap decorator. The function must return a single float number (current limitation of the uncertainties package). Then, we simply call the function, and the uncertainties from the inputs will be automatically propagated to the outputs. Let us say there is about 10% uncertainty in the rate constant, and 1% uncertainty in the initial concentration.
+
+#+BEGIN_SRC python
+from scipy.integrate import quad
+import uncertainties as u
+
+k = u.ufloat((1.0e-3, 1.0e-4))
+Ca0 = u.ufloat((1.0, 0.01))# mol/L
+
+@u.wrap
+def func(k, Ca0):
+    def integrand(X):
+        return 1./(k*Ca0)*(1./(1-X)**2)
+    integral, abserr = quad(integrand, 0, 0.9)
+    return integral
+
+sol = func(k, Ca0)
+print 't = {0} seconds ({1} hours)'.format(sol, sol/3600)
+#+END_SRC
+
+#+RESULTS:
+: t = 9000.0+/-904.488801332 seconds (2.5+/-0.251246889259 hours)
+
+The result shows about a 10% uncertainty in the time, which is similar to the largest uncertainty in the inputs.  This information should certainly be used in making decisions about how long to actually run the reactor to be sure of reaching the goal. For example, in this case, running the reactor for 3 hours (that is roughly + 2\sigma) would ensure at a high level of confidence (approximately 95% confidence) that you reach at least 90% conversion.  
 
 ** Integrating the batch reactor mole balance
    :PROPERTIES:
