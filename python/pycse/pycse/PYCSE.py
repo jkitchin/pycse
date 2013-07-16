@@ -33,7 +33,12 @@ def regress(A, y, alpha=None):
     return (b, bint, se)
 
 def nlinfit(model, x, y, p0, alpha=0.05):
-    '''nonlinear regression with conf intervals'''
+    '''nonlinear regression with conf intervals
+    x is the independent data
+    y is the dependent data
+    model has a signature of f(x, p0, p1, p2, ...)
+    p0 is the initial guess of the parameters
+    '''
     pars, pcov = curve_fit(model, x, y, p0=p0)
     n = len(y)    # number of data points
     p = len(pars) # number of parameters
