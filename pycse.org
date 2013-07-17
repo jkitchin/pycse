@@ -5336,6 +5336,40 @@ plt.savefig('images/la-line-fit.png')
 
 This method can be readily extended to fitting any polynomial model, or other linear model that is fit in a least squares sense. This method does not provide confidence intervals.
 
+
+** Linear regression with confidence intervals (updated)
+   :PROPERTIES:
+   :categories: data analysis, linear regression, confidence interval
+   :date:     2013/02/18 09:00:00
+   :updated:  2013/02/27 14:39:17
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/][Matlab post]]
+Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. Data from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.
+
+We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the data in the least squares sense. We can write this in a linear algebra form as: T*p = Ca where T is a matrix of columns [1 t t^2 t^3 t^4], and p is a column vector of the fitting parameters. We want to solve for the p vector and estimate the confidence intervals.
+
+=pycse= now has a regress function similar to Matlab. That function just uses the code in the next example (also seen [[http://jkitchin.github.io/blog/2013/02/18/Linear-regression-with-confidence-intervals/][here]]).
+
+#+BEGIN_SRC python
+from pycse import regress
+import numpy as np
+time = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
+Ca = np.array([50.0, 38.0, 30.6, 25.6, 22.2, 19.5, 17.4])*1e-3
+
+T = np.column_stack([time**0, time, time**2, time**3, time**4])
+
+alpha = 0.05
+p, pint, se = regress(T, Ca, alpha)
+print pint
+#+END_SRC
+
+#+RESULTS:
+: [[  4.96802466e-02   5.03002725e-02]
+:  [ -3.15461977e-04  -2.80230660e-04]
+:  [  1.07149474e-06   1.61547491e-06]
+:  [ -4.90319669e-09  -2.06650007e-09]
+:  [  1.35006805e-12   6.04387103e-12]]
+
 ** Linear regression with confidence intervals.
    :PROPERTIES:
    :categories: data analysis, linear regression, confidence interval
