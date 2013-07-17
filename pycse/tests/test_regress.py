@@ -3,7 +3,7 @@ from nose.tools import raises
 import numpy as np
 
 T = np.array([   0,  100,  200,  300,  400,  500,  600,  700,
-                 800,  900, 1000, 1100, 1200, 1300, 1400])
+                 800,  900, 1000, 1100, 1200, 1300, 1400.0])
 
 E = np.array([  6.5742 ,   6.56969,   6.64349,   6.78516,   6.85911,
                 6.77201, 6.45256,   5.82957,   4.81762,   3.3017,
@@ -13,6 +13,10 @@ E = np.array([  6.5742 ,   6.56969,   6.64349,   6.78516,   6.85911,
 def test():
     A = np.column_stack([T**0, T**1, T**2, T**3, T**4])
     p, pint, se = regress(A, E, alpha=0.05)
+    print p
+    print pint
+    print se
     # there should not be any np.nan in se
     assert ~np.isnan(se).all()
 
+test()
