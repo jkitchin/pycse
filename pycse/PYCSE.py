@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from scipy.stats.distributions import  t
 from scipy.optimize import curve_fit, fsolve
@@ -9,6 +10,8 @@ def regress(A, y, alpha=None):
     A is a matrix of function values in columns
 
     alpha is for the 100*(1 - alpha) confidence level
+
+    This function is not as sophisticated as what is in Matlab. I think this code is derived from the description at http://www.weibull.com/DOEWeb/confidence_intervals_in_multiple_linear_regression.htm and http://www.weibull.com/DOEWeb/estimating_regression_models_using_least_squares.htm
     '''
 
     b, res, rank, s = np.linalg.lstsq(A, y)
@@ -21,9 +24,16 @@ def regress(A, y, alpha=None):
         k = len(b)
 
         sigma2 = np.sum((y - np.dot(A, b))**2) / (n - k)  # RMSE
-
+        
         C = sigma2 * np.linalg.inv(np.dot(A.T, A)) # covariance matrix
-        se = np.sqrt(np.diag(C)) # standard error
+        dC = np.diag(C)
+        
+        if (dC < 0.0).any():
+            print dC < 0.0
+            print 'any: ',(dC < 0.0).any()
+            warnings.warn('\n{0}\ndetected a negative number in your covariance matrix. Taking the absolute value of the diagonal'.format(dC))
+            dC = np.abs(dC)
+        se = np.sqrt(dC) # standard error
 
         sT = t.ppf(1.0 - alpha/2.0, n - k) # student T multiplier
         CI = sT * se
