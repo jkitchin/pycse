@@ -9,5 +9,7 @@ setup(name = 'pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      scripts=['pycse/bin/submit.py','pycse/bin/pycse-server.py'],
+      scripts=['pycse/bin/publish.py',
+               'pycse/bin/submit.py',
+               'pycse/bin/pycse-server.py'],
       long_description='''python computations in science and engineering''')
