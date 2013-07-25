@@ -262,7 +262,6 @@ def mysave(*args, **kwargs):
     if '_pyreport_' in args[0]:
         #this is coming from show. we just save and return. The figure
         #list should already be updated.
-        print 'Here goes figure %s' % args[0]
         original_savefig(args[0])
         return
     
