@@ -251,9 +251,6 @@ original_savefig = matplotlib.pyplot.savefig
 # patch to capture savefig
 def mysave(*args, **kwargs):
     'wrap savefig for publish'
-    if '_pyreport_' in args[0]:
-        #this is coming from show. we just return
-        return
 
     # catching a user call
     self = main.myshow
@@ -261,9 +258,16 @@ def mysave(*args, **kwargs):
     figure_name = '%s%d.%s' % ( self.basename,
                                 len(self.figure_list),
                                 self.figure_extension )
-    self.figure_list += (figure_name, )
-    print "(savefig) Here goes figure %s" % figure_name
 
+    if '_pyreport_' in args[0]:
+        #this is coming from show. we just save and return. The figure
+        #list should already be updated.
+        print 'Here goes figure %s' % args[0]
+        original_savefig(args[0])
+        return
+    
+    self.figure_list += (figure_name, )
+    print "Here goes figure %s" % figure_name
     # first save what the user wants
     original_savefig(*args, **kwargs)
     # now what we need for the output
@@ -328,7 +332,13 @@ parser = argparse.ArgumentParser(description='submit your python script and outp
 parser.add_argument('files', nargs='*',                    
                     help='scripts to submit')
 
+parser.add_argument('-v', action='store_true', help='be verbose')
+parser.add_argument('--tex', action='store_true', help='make tex file')
+
 args = parser.parse_args()
+
+
+
 if len(args.files) > 1:
     print 'You can only publish one file at a time! Please try again.'
     import sys; sys.exit()
@@ -347,14 +357,21 @@ for INPUT in args.files:
                 raise Exception('''You are missing #+{0}: in your file. please add it and try again.'''.format(prop))
 
     BASENAME = '{ANDREWID}-{COURSE}-{ASSIGNMENT}'.format(**data)
+
+    myoptions = ['-o','{0}.pdf'.format(BASENAME),
+                 '-l',#allow LaTeX literal comment
+                 '-e',#allow LaTeX math mode escape in code wih dollar signs
+                 ]
+
+    if args.v:
+        myoptions += ['-v']
+
+    if args.tex:
+        myoptions += ['-t', 'tex']
+                 
     
-    opts, args = options.parse_options(['-o',
-                                        '{0}.pdf'.format(BASENAME),
-                                        #'-v',
-                                        #'-t','tex',
-                                        '-l', #allow LaTeX literal comment lines starting with "#$"
-                                        '-e' #allow LaTeX math mode escape in code wih dollar signs
-                                        ])        
+    opts, args = options.parse_options(myoptions)
+    
     opts.update({'infilename':INPUT})
 
     default_options, _not_used = options.option_parser.parse_args(args =[])
