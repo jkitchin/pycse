@@ -14,11 +14,7 @@ pip install --upgrade https://github.com/joblib/pyreport/archive/master.zip
 
 That package only wraps pylab, and I use matplotlib.pyplot a lot. This script wraps that with modified functions that capture the output, but still leverages the pyreport code.
 '''
-import cStringIO, os, sys, traceback
-#import random, string
-
-# Adapted from pyreport to patch the matplotlib.pyplot.show function
-
+import os
 from pyreport import main
 from pyreport.main import rst2latex, protect, tex2pdf, safe_unlink, ReportCompiler
 import re
@@ -221,17 +217,18 @@ class MyTexCompiler(ReportCompiler):
 {0}
 '''.format(user_data_string), tex_string)
 
+        path, fname = os.path.split(options.infilename)
+        
         tex_string = re.sub(r'\\end{document}', r'''\\attachfile[description={0}]{{{0}}}
-        \\end{{document}}'''.format(options.infilename), tex_string)
+        \\end{{document}}'''.format(fname), tex_string)
                                         
         # XXX: no need to use epstopdf: we are now using MPL'pdf output
         #if options.figuretype == "pdf":
         #    if options.verbose:
         #        print >> sys.stderr, "Compiling figures"
         #    self.figure_list = map(epstopdf, self.figure_list)
-        print tex_string
+        
         print >>fileobject, tex_string
-
 
     def compile2pdf(self, output_list, fileobject, options):
         """ Compiles the output_list to the tex file given the filename
@@ -243,22 +240,39 @@ class MyTexCompiler(ReportCompiler):
         self.figure_list = ()
 
 main.TexCompiler = MyTexCompiler
-            
+
+
+# patch to capture pyplot.show
 import matplotlib.pyplot
 matplotlib.pyplot.show = main.myshow
 
 original_savefig = matplotlib.pyplot.savefig
 
+# patch to capture savefig
 def mysave(*args, **kwargs):
+    'wrap savefig for publish'
+    if '_pyreport_' in args[0]:
+        #this is coming from show. we just return
+        return
+
+    # catching a user call
     self = main.myshow
     
     figure_name = '%s%d.%s' % ( self.basename,
                                 len(self.figure_list),
                                 self.figure_extension )
     self.figure_list += (figure_name, )
-    print "Here goes figure %s" % figure_name
-    import pylab
-    original_savefig(figure_name)
+    print "(savefig) Here goes figure %s" % figure_name
+
+    # first save what the user wants
+    original_savefig(*args, **kwargs)
+    # now what we need for the output
+    if 'fname' in kwargs:
+        del kwargs['fname']
+    else:
+        args = args[1:]
+    # try to save with all the user-defined args
+    original_savefig(figure_name, *args, **kwargs)
 
 matplotlib.pyplot.savefig = mysave
 
@@ -315,6 +329,9 @@ parser.add_argument('files', nargs='*',
                     help='scripts to submit')
 
 args = parser.parse_args()
+if len(args.files) > 1:
+    print 'You can only publish one file at a time! Please try again.'
+    import sys; sys.exit()
     
 for INPUT in args.files:
     # check for compliance of data
@@ -333,7 +350,7 @@ for INPUT in args.files:
     
     opts, args = options.parse_options(['-o',
                                         '{0}.pdf'.format(BASENAME),
-                                        '-v',
+                                        #'-v',
                                         #'-t','tex',
                                         '-l', #allow LaTeX literal comment lines starting with "#$"
                                         '-e' #allow LaTeX math mode escape in code wih dollar signs
@@ -342,7 +359,7 @@ for INPUT in args.files:
 
     default_options, _not_used = options.option_parser.parse_args(args =[])
     default_options.figure_type = 'png'
-    
+
     pyreport.main(open(INPUT), overrides=opts)
 
 
