@@ -14,11 +14,10 @@ pip install --upgrade https://github.com/joblib/pyreport/archive/master.zip
 
 That package only wraps pylab, and I use matplotlib.pyplot a lot. This script wraps that with modified functions that capture the output, but still leverages the pyreport code.
 '''
-#import cStringIO, os, sys, traceback
-#import random, string
+
+import os
 
 # Adapted from pyreport to patch the matplotlib.pyplot.show function
-
 import pylab
 original_savefig = pylab.savefig
 
