@@ -24,6 +24,7 @@ from docutils import io as docIO
 # This is some major monkey patching to get the following:
 # 1. paper size, with default opening to fit width in window
 # 2. insert user data into file.
+# 3. attach python script to the file
 
 class MyTexCompiler(ReportCompiler):
     empty_listing = re.compile(
@@ -206,13 +207,17 @@ class MyTexCompiler(ReportCompiler):
         """ Compiles the output_list to the tex file given the filename
         """
         tex_string = rst2latex(self.blocks2rst_string(output_list))
-        
+
+        # here we make it letter paper and change how the pdf opens in full width
         tex_string = tex_string.replace('\documentclass[a4paper]{article}', '\documentclass[pdfstartview=FitH]{article}')
         tex_string = re.sub(r"\\begin{document}", 
                         protect(self.preamble) + r"\\begin{document}", tex_string)
         tex_string = re.sub(self.empty_listing, "", tex_string)
 
-        tex_string = re.sub(r'\\begin{document}', r'''\\begin{{document}}
+        # if there is user_data we insert it here.
+        # the option --no-user suppresses this insertion
+        if user_data_string:
+            tex_string = re.sub(r'\\begin{document}', r'''\\begin{{document}}
         
 {0}
 '''.format(user_data_string), tex_string)
@@ -326,39 +331,43 @@ PROPERTIES = ['COURSE',
 
 ##################################################################
 
-parser = argparse.ArgumentParser(description='submit your python script and output in tex, pdf or org-mode archive file')
+parser = argparse.ArgumentParser(description='submit your python script and output in tex, or pdf')
 
 parser.add_argument('files', nargs='*',                    
                     help='scripts to submit')
 
 parser.add_argument('-v', action='store_true', help='be verbose')
 parser.add_argument('--tex', action='store_true', help='make tex file')
+parser.add_argument('--no-user', action='store_true', help='do not check for compliance or put user data in pdf')
 
 args = parser.parse_args()
-
-
 
 if len(args.files) > 1:
     print 'You can only publish one file at a time! Please try again.'
     import sys; sys.exit()
     
 for INPUT in args.files:
-    # check for compliance of data
-    with open(INPUT) as f:
-        text = f.read()
 
-        for prop in PROPERTIES:
-            regexp = '#\+{0}:(.*)'.format(prop)
-            m = re.search(regexp, text)
-            if m:
-                data[prop] = m.group(1).strip()
-            else:
-                raise Exception('''You are missing #+{0}: in your file. please add it and try again.'''.format(prop))
+    if args.no_user:
+        user_data_string = ''
+        name, ext = os.path.splitext(INPUT)
+        BASENAME = name
+    else:
+        # check for compliance of data
+        with open(INPUT) as f:
+            text = f.read()
 
-    BASENAME = '{ANDREWID}-{COURSE}-{ASSIGNMENT}'.format(**data)
+            for prop in PROPERTIES:
+                regexp = '#\+{0}:(.*)'.format(prop)
+                m = re.search(regexp, text)
+                if m:
+                    data[prop] = m.group(1).strip()
+                else:
+                    raise Exception('''You are missing #+{0}: in your file. please add it and try again.'''.format(prop))
 
-    myoptions = ['-o','{0}.pdf'.format(BASENAME),
-                 '-l',#allow LaTeX literal comment
+        BASENAME = '{ANDREWID}-{COURSE}-{ASSIGNMENT}'.format(**data)
+
+    myoptions = ['-l',#allow LaTeX literal comment
                  '-e',#allow LaTeX math mode escape in code wih dollar signs
                  ]
 
@@ -367,6 +376,9 @@ for INPUT in args.files:
 
     if args.tex:
         myoptions += ['-t', 'tex']
+        myoptions += ['-o','{0}'.format(BASENAME),]
+    else:
+        myoptions += ['-o','{0}'.format(BASENAME),]
                  
     
     opts, args = options.parse_options(myoptions)
