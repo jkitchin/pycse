@@ -74,7 +74,7 @@ class MyTexCompiler(ReportCompiler):
     \usepackage{listings}
     \usepackage{color}
     \usepackage{graphicx}
-          
+    \usepackage{attachfile}      
     \definecolor{darkgreen}{cmyk}{0.7, 0, 1, 0.5}
     \definecolor{darkblue}{cmyk}{1, 0.8, 0, 0}
     \definecolor{lightblue}{cmyk}{0.05,0,0,0.05}
@@ -220,6 +220,9 @@ class MyTexCompiler(ReportCompiler):
         
 {0}
 '''.format(user_data_string), tex_string)
+
+        tex_string = re.sub(r'\\end{document}', r'''\\attachfile[description={0}]{{{0}}}
+        \\end{{document}}'''.format(options.infilename), tex_string)
                                         
         # XXX: no need to use epstopdf: we are now using MPL'pdf output
         #if options.figuretype == "pdf":
@@ -330,7 +333,7 @@ for INPUT in args.files:
     
     opts, args = options.parse_options(['-o',
                                         '{0}.pdf'.format(BASENAME),
-                                        #'-v',
+                                        '-v',
                                         #'-t','tex',
                                         '-l', #allow LaTeX literal comment lines starting with "#$"
                                         '-e' #allow LaTeX math mode escape in code wih dollar signs
