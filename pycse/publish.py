@@ -27,7 +27,7 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
-VERSION = 2.0
+VERSION = 2.01
 
 class MyTexCompiler(ReportCompiler):
     empty_listing = re.compile(
@@ -388,10 +388,32 @@ PROPERTIES = ['COURSE',
               'ANDREWID',              
               'NAME']
 
-def publish(INPUT, args):
+parser = argparse.ArgumentParser(description='submit your python script and output in tex, or pdf')
+
+parser.add_argument('files', nargs='*',                    
+                    help='scripts to submit')
+
+parser.add_argument('-v', action='store_true', help='be verbose')
+parser.add_argument('--tex', action='store_true', help='make tex file')
+parser.add_argument('--no-user', action='store_true', help='do not check for compliance or put user data in pdf')
+
+def publish(args):
+    '''args is one of two things:
+    1. a string from an ipython magic method
+    2. the output from argparse
+    '''
+    global user_data_string
     
+    if isinstance(args, unicode):
+        # magic method provides a unicode string.
+        # we have to parse the string
+        args = parser.parse_args(args.split())
+
+    INPUT = args.files[0]
+        
     if args.no_user:
-        user_data_string = ''
+        user_data_string = False
+        
         name, ext = os.path.splitext(INPUT)
         BASENAME = name
     else:
@@ -422,7 +444,6 @@ def publish(INPUT, args):
     else:
         myoptions += ['-o','{0}'.format(BASENAME),]
 
-
     opts, args = options.parse_options(myoptions)
 
     opts.update({'infilename':INPUT})
@@ -431,18 +452,15 @@ def publish(INPUT, args):
     default_options.figure_type = 'png'
 
     pyreport.main(open(INPUT), overrides=opts)
+
+    try:
+        os.startfile(BASENAME + '.pdf')
+    except:
+        pass
         
 ##################################################################
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='submit your python script and output in tex, or pdf')
-
-    parser.add_argument('files', nargs='*',                    
-                        help='scripts to submit')
-
-    parser.add_argument('-v', action='store_true', help='be verbose')
-    parser.add_argument('--tex', action='store_true', help='make tex file')
-    parser.add_argument('--no-user', action='store_true', help='do not check for compliance or put user data in pdf')
 
     args = parser.parse_args()
 
@@ -450,9 +468,9 @@ if __name__ == '__main__':
         print 'You can only publish one file at a time! Please try again.'
         import sys; sys.exit()
     
-    for INPUT in args.files:
-        publish(INPUT, args)
-
+        
+    publish(args)
+    
 
 
 
