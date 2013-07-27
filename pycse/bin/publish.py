@@ -257,6 +257,17 @@ original_savefig = matplotlib.pyplot.savefig
 def mysave(*args, **kwargs):
     'wrap savefig for publish'
 
+    # we use hashes of the files to determine this
+    from hashlib import sha1
+    def git_hash(figure_name):
+        with open(figure_name) as f:
+            data = f.read()
+    
+        s = sha1()
+        s.update("blob %u\0" % len(data))
+        s.update(data)
+        return s.hexdigest()
+    
     # catching a user call
     self = main.myshow
     
@@ -268,10 +279,18 @@ def mysave(*args, **kwargs):
         #this is coming from show. we just save and return. The figure
         #list should already be updated.
         original_savefig(args[0])
+
+        current_hashes = [git_hash(x) for x in self.figure_list]
+        this_hash = git_hash(args[0])
+
+        #myshow puts the figure in the list at the end, so we need to
+        #check all figures up to the end, not including the end
+        if this_hash in current_hashes[0:-1]:
+            # we just take off the last element
+            newlist = [x for x in self.figure_list[0:-1]]
+            self.figure_list = tuple(newlist)
         return
     
-    self.figure_list += (figure_name, )
-    print "Here goes figure %s" % figure_name
     # first save what the user wants
     original_savefig(*args, **kwargs)
     # now what we need for the output
@@ -282,6 +301,16 @@ def mysave(*args, **kwargs):
     # try to save with all the user-defined args
     original_savefig(figure_name, *args, **kwargs)
 
+    # now let us check if the figure is already saved
+    current_hashes = [git_hash(x) for x in self.figure_list]
+
+    this_hash = git_hash(figure_name)
+    if not this_hash in current_hashes:
+        self.figure_list += (figure_name, )
+        print "Here goes figure %s" % figure_name
+    else:
+        os.unlink(figure_name)
+    
 matplotlib.pyplot.savefig = mysave
 
     
