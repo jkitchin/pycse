@@ -21,7 +21,7 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
-VERSION = 1.01
+VERSION = 2.0
 
 # This is some major monkey patching to get the following:
 # 1. paper size, with default opening to fit width in window
