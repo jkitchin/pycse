@@ -26,4 +26,21 @@ def magic_publish(self, args):
         
 ip.define_magic('publish', magic_publish)
 
+###########################################################################
+from setuptools.command import easy_install
+
+def magic_easy_install(self, package):
+    easy_install.main( ["-U", package] )
+    
+ip.define_magic('easy_install', magic_easy_install)
+    
+import pip
+
+def magic_pip(self, package):
+    pip.main(['install','--upgrade', package]) 
+
+ip.define_magic('pip', magic_pip)
+    
+###########################################################################    
+
 print 'pycse-magic loaded.'
