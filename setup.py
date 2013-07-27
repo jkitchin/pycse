@@ -6,8 +6,6 @@ import IPython
 IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
                       'profile_default',
                       'startup')
-print IPydir
-                      
 
    
 setup(name = 'pycse',
@@ -19,9 +17,6 @@ setup(name = 'pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      scripts=['pycse/publish.py',
-               #'pycse/bin/submit.py',
-               #'pycse/bin/pycse-server.py'
-               ],
+      scripts=['pycse/publish.py'],
       data_files=[(IPydir, ['pycse/00-pycse-magic.py'])],
       long_description='''python computations in science and engineering''')
