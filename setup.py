@@ -9,7 +9,7 @@ setup(name = 'pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      scripts=['pycse/bin/publish.py',
+      scripts=['pycse/publish.py',
                #'pycse/bin/submit.py',
                #'pycse/bin/pycse-server.py'
                ],
