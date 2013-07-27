@@ -1,5 +1,13 @@
 from distutils.core import setup
+import os
 
+# for installing magic IPython stuff
+import IPython
+IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
+                      'profile_default',
+                      'startup')
+
+   
 setup(name = 'pycse',
       version='1.0',
       description='python computations in science and engineering',
@@ -13,4 +21,5 @@ setup(name = 'pycse',
                #'pycse/bin/submit.py',
                #'pycse/bin/pycse-server.py'
                ],
+      data_files=[(IPydir, ['pycse/00-pycse-magic.py'])],
       long_description='''python computations in science and engineering''')
