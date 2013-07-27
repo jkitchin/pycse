@@ -1,3 +1,32 @@
+'''
+Wrapped functions for handling units. This is using my pycse.units package.
+
+Functions wrapped so far
+========================
+
+scipy
+-----
+
+fsolve
+odeint
+quad
+
+numpy
+-----
+
+polyfit
+polyder
+
+Need to do
+----------
+
+regress
+nlinfit
+
+trapz
+interp1
+'''
+
 from pycse.units import *
 import numpy as np
 from scipy.optimize import fsolve as _fsolve
