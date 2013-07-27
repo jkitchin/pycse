@@ -6,6 +6,8 @@ import IPython
 IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
                       'profile_default',
                       'startup')
+print IPydir
+                      
 
    
 setup(name = 'pycse',
