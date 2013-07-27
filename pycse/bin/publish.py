@@ -21,6 +21,8 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
+VERSION = 1.01
+
 # This is some major monkey patching to get the following:
 # 1. paper size, with default opening to fit width in window
 # 2. insert user data into file.
@@ -209,7 +211,7 @@ class MyTexCompiler(ReportCompiler):
         tex_string = rst2latex(self.blocks2rst_string(output_list))
 
         # here we make it letter paper and change how the pdf opens in full width
-        tex_string = tex_string.replace('\documentclass[a4paper]{article}', '\documentclass[pdfstartview=FitH]{article}')
+        tex_string = tex_string.replace('\documentclass[a4paper]{article}', '\documentclass[pdfstartview=FitH,pdfproducer=pycse-publish-v{0}]{{article}}'.format(VERSION))
         tex_string = re.sub(r"\\begin{document}", 
                         protect(self.preamble) + r"\\begin{document}", tex_string)
         tex_string = re.sub(self.empty_listing, "", tex_string)
@@ -289,6 +291,7 @@ def mysave(*args, **kwargs):
             # we just take off the last element
             newlist = [x for x in self.figure_list[0:-1]]
             self.figure_list = tuple(newlist)
+            os.unlink(args[0])
         return
     
     # first save what the user wants
