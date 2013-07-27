@@ -248,7 +248,36 @@ class MyTexCompiler(ReportCompiler):
 
 main.TexCompiler = MyTexCompiler
 
+class PylabShow(object):
+    """ Factory for creating a function to replace pylab.show .
+"""
+    figure_list = ()
+    
+    figure_extension = "eps"
 
+    def _set_options(self,options):
+        if not options.outfilename in set(("-", None)):
+            self.basename = "%s_pyreport_" % os.path.splitext(
+                        os.path.basename(options.infilename))[0]
+        else:
+            self.basename = "_pyreport_"
+        # XXX: Use pylab's pdf output
+        #if options.figuretype == "pdf":
+        # self.figure_extension = "eps"
+        #else:
+        self.figure_extension = options.figuretype
+        
+    def __call__(self):
+        figure_name = '%s%d.%s' % ( self.basename,
+                                    len(self.figure_list),
+                                    self.figure_extension )
+        
+        import pylab
+        pylab.savefig(figure_name)
+
+main.myshow = PylabShow()
+
+        
 # patch to capture pyplot.show
 import matplotlib.pyplot
 matplotlib.pyplot.show = main.myshow
@@ -278,20 +307,17 @@ def mysave(*args, **kwargs):
                                 self.figure_extension )
 
     if '_pyreport_' in args[0]:
-        #this is coming from show. we just save and return. The figure
-        #list should already be updated.
+        #this is coming from show. 
         original_savefig(args[0])
 
         current_hashes = [git_hash(x) for x in self.figure_list]
         this_hash = git_hash(args[0])
 
-        #myshow puts the figure in the list at the end, so we need to
-        #check all figures up to the end, not including the end
-        if this_hash in current_hashes[0:-1]:
-            # we just take off the last element
-            newlist = [x for x in self.figure_list[0:-1]]
-            self.figure_list = tuple(newlist)
+        if this_hash in current_hashes:
             os.unlink(args[0])
+        else:
+            self.figure_list += (figure_name, )
+            print "Here goes figure %s" % figure_name
         return
     
     # first save what the user wants
