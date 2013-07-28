@@ -50,12 +50,13 @@ def magic_pip(self, package):
 
 ip.define_magic('pip', magic_pip)
 
-def magic_upgrade(self):
+def magic_upgrade(self, *args):
+    print args
     for package in ['quantities',
                     'uncertainties',
                     'https://github.com/jkitchin/pycse/archive/master.zip',
                     'https://github.com/jkitchin/pyreport/archive/master.zip']:
-        easy_install.main( ["-U", package] )
+        pip.main(['install','--upgrade', package]) 
 
 ip.define_magic('pycse_upgrade', magic_upgrade)
 
