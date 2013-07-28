@@ -55,7 +55,7 @@ def magic_upgrade(self):
                     'uncertainties',
                     'https://github.com/jkitchin/pycse/archive/master.zip',
                     'https://github.com/jkitchin/pyreport/archive/master.zip']:
-    easy_install.main( ["-U", package] )
+        easy_install.main( ["-U", package] )
 
 ip.define_magic('pycse_upgrade', magic_upgrade)
 
