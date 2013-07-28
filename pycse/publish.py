@@ -464,13 +464,35 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if len(args.files) > 1:
-        print 'You can only publish one file at a time! Please try again.'
-        import sys; sys.exit()
+    #if len(args.files) > 1:
+    #    print 'You can only publish one file at a time! Please try again.'
+    #    import sys; sys.exit()
     
+    #publish(args)
+    
+    # this seems clunky, but it lets you run the script on many files 
+    # because it uses a clean namespace each time. Otherwise, you get namespace
+    # pollution that eventually causes an error.
+    
+    from subprocess import Popen, PIPE
+    
+    for f in args.files:
         
-    publish(args)
+        cmd = u'{0}'.format(f)
+        if args.v:
+            cmd += ' -v'
+        if args.tex:
+            cmd += ' --tex'
+        if args.no_user:
+            cmd += ' --no-user'
+        code = '''from pycse.publish import publish
+publish(u'{0}')'''.format(cmd)
     
+    
+        p = Popen('python', stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        out, err = p.communicate(code)
+        print out, err
+        
 
 
 
