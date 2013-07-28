@@ -60,8 +60,13 @@ def magic_upgrade(self, *args):
 
 ip.define_magic('pycse_upgrade', magic_upgrade)
 
-    
-    
+##################################################################
+## pycse_test magic
+
+def magic_pycse_test(self, args):
+    print 'Your installation of pycse looks ok.'
+
+ip.define_magic('pycse_test', magic_pycse_test)
 ###########################################################################    
 import numpy as np
 import matplotlib.pyplot as plt
