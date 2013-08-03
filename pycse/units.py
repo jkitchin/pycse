@@ -57,6 +57,10 @@ class Unit(np.ndarray):
         return 'Unit({0}, exponents={1}, label={2})'.format(np.array(self),
                                                             self.exponents,
                                                             self.label)
+                                                            
+    @property
+    def value(self):
+        return np.array(self)
 
     def as_units(self, U):
         '''print units in something other than the base units.
@@ -437,6 +441,7 @@ class Unit(np.ndarray):
         >> R = u.degC2R(100)  # 100 degC in Rankine'''
         K = degC(C)
         R = 5 / 9 * float(K) * u.R
+        return R
 
 
 
