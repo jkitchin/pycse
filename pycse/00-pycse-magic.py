@@ -1,3 +1,12 @@
+# http://ipython.org/ipython-doc/dev/interactive/qtconsole.html#display
+from IPython.display import display
+
+
+# set images to inline by default
+c = c = get_ipython().config
+c.IPKernelApp.pylab = 'inline'
+
+
 ip = get_ipython()
 
 def magic_publish(self, args):
