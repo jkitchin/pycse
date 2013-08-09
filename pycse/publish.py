@@ -27,9 +27,10 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
-VERSION = 2.01
+VERSION = 2.1
 
 class MyTexCompiler(ReportCompiler):
+    global data
     empty_listing = re.compile(
             r"""\\begin\{lstlisting\}\{\}\s*\\end\{lstlisting\}""", re.DOTALL)
     
@@ -71,54 +72,66 @@ class MyTexCompiler(ReportCompiler):
     
     def __init__(self, options):
         self.preamble = r"""
-    \usepackage{listings}
-    \usepackage{color}
-    \usepackage{graphicx}
-    \usepackage{attachfile}      
-    \definecolor{darkgreen}{cmyk}{0.7, 0, 1, 0.5}
-    \definecolor{darkblue}{cmyk}{1, 0.8, 0, 0}
-    \definecolor{lightblue}{cmyk}{0.05,0,0,0.05}
-    \definecolor{grey}{cmyk}{0.1,0.1,0.1,1}
-    \definecolor{lightgrey}{cmyk}{0,0,0,0.5}
-    \definecolor{purple}{cmyk}{0.8,1,0,0}
+    \usepackage{{listings}}
+    \usepackage{{color}}
+    \usepackage{{graphicx}}
+    \usepackage{{attachfile}}
+
+    \usepackage{{datetime}}
+    % set some pdf metadata
+    \pdfinfo{{
+             /Author ({fullname})
+             /Title  ()
+             /CreationDate (D:\pdfdate)
+             /Grade ()
+             /Assignment ({assignment})
+             }}
+    \definecolor{{darkgreen}}{{cmyk}}{{0.7, 0, 1, 0.5}}
+    \definecolor{{darkblue}}{{cmyk}}{{1, 0.8, 0, 0}}
+    \definecolor{{lightblue}}{{cmyk}}{{0.05,0,0,0.05}}
+    \definecolor{{grey}}{{cmyk}}{{0.1,0.1,0.1,1}}
+    \definecolor{{lightgrey}}{{cmyk}}{{0,0,0,0.5}}
+    \definecolor{{purple}}{{cmyk}}{{0.8,1,0,0}}
 
     \makeatletter
         \let\@oddfoot\@empty\let\@evenfoot\@empty
-        \def\@evenhead{\thepage\hfil\slshape\leftmark
-                        {\rule[-0.11cm]{-\textwidth}{0.03cm}
-                        \rule[-0.11cm]{\textwidth}{0.03cm}}}
-        \def\@oddhead{{\slshape\rightmark}\hfil\thepage
-                        {\rule[-0.11cm]{-\textwidth}{0.03cm}
-                        \rule[-0.11cm]{\textwidth}{0.03cm}}}
+        \def\@evenhead{{\thepage\hfil\slshape\leftmark
+                        {{\rule[-0.11cm]{{-\textwidth}}{{0.03cm}}
+                        \rule[-0.11cm]{{\textwidth}}{{0.03cm}}}}}}
+        \def\@oddhead{{{{\slshape\rightmark}}\hfil\thepage
+                        {{\rule[-0.11cm]{{-\textwidth}}{{0.03cm}}
+                        \rule[-0.11cm]{{\textwidth}}{{0.03cm}}}}}}
         \let\@mkboth\markboth
-        \markright{{\bf %s }\hskip 3em  \today}
-        \def\maketitle{
-            \centerline{\Large\bfseries\@title}
+        \markright{{{{\bf {replacement} }}\hskip 3em  \today}}
+        \def\maketitle{{
+            \centerline{{\Large\bfseries\@title}}
             \bigskip
-        }
+        }}
     \makeatother
 
-
-    \lstset{language=python,
+    \lstset{{language=python,
             extendedchars=true,
             aboveskip = 0.5ex,
             belowskip = 0.6ex,
             basicstyle=\ttfamily,
             keywordstyle=\sffamily\bfseries,
             identifierstyle=\sffamily,
-            commentstyle=\slshape\color{darkgreen},
-            stringstyle=\rmfamily\color{blue},
+            commentstyle=\slshape\color{{darkgreen}},
+            stringstyle=\rmfamily\color{{blue}},
             showstringspaces=false,
             tabsize=4,
             breaklines=true,
-            numberstyle=\footnotesize\color{grey},
+            numberstyle=\footnotesize\color{{grey}},
             classoffset=1,
-            morekeywords={eyes,zeros,zeros_like,ones,ones_like,array,rand,indentity,mat,vander},keywordstyle=\color{darkblue},
+            morekeywords={{eyes,zeros,zeros_like,ones,ones_like,array,rand,indentity,mat,vander}},keywordstyle=\color{{darkblue}},
             classoffset=2,
-            otherkeywords={[,],=,:},keywordstyle=\color{purple}\bfseries,
-            classoffset=0""" % ( re.sub( "_", r'\\_', options.infilename) ) + options.latexescapes * r""",
+            otherkeywords={{[,],=,:}},keywordstyle=\color{{purple}}\bfseries,
+            classoffset=0""".format(
+            assignment=data['ASSIGNMENT'],
+            fullname=data['NAME'],
+            replacement=( re.sub( "_", r'\\_', options.infilename) )) + options.latexescapes * r""",
             mathescape=true""" +"""
-            }
+            }}
     """
 
         if options.nocode:
@@ -194,7 +207,7 @@ class MyTexCompiler(ReportCompiler):
             self.preamble += latex_doublepage
         else:
             pass
-            self.preamble += r"""\usepackage[top=2.1cm,bottom=2.1cm,left=2cm,right=2cm]{geometry}
+            self.preamble += r"""\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
     \def\inputBlocksize{\normalsize}
 
         """    
@@ -212,7 +225,14 @@ class MyTexCompiler(ReportCompiler):
         tex_string = rst2latex(self.blocks2rst_string(output_list))
 
         # here we make it letter paper and change how the pdf opens in full width
-        tex_string = tex_string.replace('\documentclass[a4paper]{article}', '\documentclass[pdfstartview=FitH,pdfproducer=pycse-publish-v{0}]{{article}}'.format(VERSION))
+        tex_string = tex_string.replace('\documentclass[a4paper]{article}',
+                                        '''
+\documentclass[pdfstartview=FitH,
+               pdfproducer=pycse-publish-v{VERSION},
+               pdfauthor={author},
+               pdftitle={assignment}]{{article}}'''.format(VERSION=VERSION,
+                                                           author=data['NAME'],
+                                                           assignment=data['ASSIGNMENT']))
         tex_string = re.sub(r"\\begin{document}", 
                         protect(self.preamble) + r"\\begin{document}", tex_string)
         tex_string = re.sub(self.empty_listing, "", tex_string)
@@ -402,7 +422,7 @@ def publish(args):
     1. a string from an ipython magic method
     2. the output from argparse
     '''
-    global user_data_string
+    global data,user_data_string
     
     if isinstance(args, unicode):
         # magic method provides a unicode string.
