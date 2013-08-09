@@ -96,9 +96,9 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     '''
 
     x0 = xspan[0]  # initial point
-    xf = xspan[-1] # final point
+#    xf = xspan[-1] # final point
 
-    f0 = func(y0, x0) # value of ode at initial point
+#    f0 = func(y0, x0) # value of ode at initial point
 
     X = [x0]
     sol = [y0]
