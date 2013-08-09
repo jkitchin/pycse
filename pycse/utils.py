@@ -19,3 +19,18 @@ def fle(x, y, epsilon=np.spacing(1)):
 def fge(x, y, epsilon=np.spacing(1)):
     'x >= y'
     return not(x < (y - epsilon))
+    
+    
+from contextlib import contextmanager
+@contextmanager
+def ignore_exception(*exceptions):
+    try:
+        yield
+    except exceptions as e:
+        print 'caught ',e
+        return
+    finally:
+        print 'done'
+
+with ignore_exception(ZeroDivisionError):
+    print 1/0
