@@ -83,8 +83,9 @@ class MyTexCompiler(ReportCompiler):
              /Author ({fullname})
              /Title  ()
              /CreationDate (D:\pdfdate)
-             /Grade ()
+             /AndrewID ({andrewid})  
              /Assignment ({assignment})
+             /Grade ()
              }}
     \definecolor{{darkgreen}}{{cmyk}}{{0.7, 0, 1, 0.5}}
     \definecolor{{darkblue}}{{cmyk}}{{1, 0.8, 0, 0}}
@@ -126,7 +127,7 @@ class MyTexCompiler(ReportCompiler):
             morekeywords={{eyes,zeros,zeros_like,ones,ones_like,array,rand,indentity,mat,vander}},keywordstyle=\color{{darkblue}},
             classoffset=2,
             otherkeywords={{[,],=,:}},keywordstyle=\color{{purple}}\bfseries,
-            classoffset=0""".format(
+            classoffset=0""".format(andrewid=data['ANDREWID'],
             assignment=data['ASSIGNMENT'],
             fullname=data['NAME'],
             replacement=( re.sub( "_", r'\\_', options.infilename) )) + options.latexescapes * r""",
