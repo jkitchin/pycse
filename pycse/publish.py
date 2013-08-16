@@ -80,9 +80,6 @@ class MyTexCompiler(ReportCompiler):
     \usepackage{{datetime}}
     % set some pdf metadata
     \pdfinfo{{
-             /Author ({fullname})
-             /Title  ()
-             /CreationDate (D:\pdfdate)
              /AndrewID ({andrewid})  
              /Assignment ({assignment})
              /Grade ()
@@ -395,7 +392,6 @@ data = {'mac':mac,
 
 user_data_string = r'''
 \\begin{{verbatim}}
-userid:   {data[userid]}
 hostname: {data[hostname]}
 ipaddr:   {data[ipaddr]}
 mac:      {data[mac]}
