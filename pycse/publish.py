@@ -27,7 +27,7 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
-VERSION = 2.1
+VERSION = 2.2
 
 class MyTexCompiler(ReportCompiler):
     global data
@@ -413,6 +413,7 @@ parser.add_argument('files', nargs='*',
 parser.add_argument('-v', action='store_true', help='be verbose')
 parser.add_argument('--tex', action='store_true', help='make tex file')
 parser.add_argument('--no-user', action='store_true', help='do not check for compliance or put user data in pdf')
+parser.add_argument('--version', action='store_true', help='print version')
 
 def publish(args):
     '''args is one of two things:
@@ -492,6 +493,11 @@ if __name__ == '__main__':
     # pollution that eventually causes an error.
     
     from subprocess import Popen, PIPE
+
+    if args.version:
+        print 'Version = {0}'.format(VERSION)
+        import sys; sys.exit()
+
     
     for f in args.files:
         
