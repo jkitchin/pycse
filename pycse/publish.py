@@ -76,7 +76,7 @@ class MyTexCompiler(ReportCompiler):
     \usepackage{{color}}
     \usepackage{{graphicx}}
     \usepackage{{attachfile}}
-
+    \usepackage{{amsmath}}
     \usepackage{{datetime}}
     % set some pdf metadata
     \pdfinfo{{
