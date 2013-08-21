@@ -96,9 +96,6 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
     '''
 
     x0 = xspan[0]  # initial point
-#    xf = xspan[-1] # final point
-
-#    f0 = func(y0, x0) # value of ode at initial point
 
     X = [x0]
     sol = [y0]
@@ -124,8 +121,6 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
         X += [x2]
         sol += [f2[-1][0]]
 
-        #print X[-1], sol[-1], events[0](sol[-1], X[-1])
-
         # check event functions
         for j, event in enumerate(events):
             e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
@@ -133,6 +128,7 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
             if ((e[j, i + 1] * e[j, i] < 0) 
                 or np.abs(e[j, i + 1]) < TOLERANCE # this point is practically 0
                 or np.abs(e[j, i]) < TOLERANCE):
+                
                 # change in sign detected Event detected where the sign of
                 # the event has changed. The event is between xPt = X[-2]
                 # and xLt = X[-1]. run a modified bisect function to
@@ -144,12 +140,15 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                 xPt = X[-2]  # previous point
                 fPt = sol[-2]
                 ePt = e[j, i]
-
+                
                 k = 0 # bisection counter
                 ISTERMINAL = False # assume this is the case
                 # bisection loop
+                print k
                 while k < 100: # max iterations
-                    if np.abs(xLt - xPt) < TOLERANCE:
+                    #print np.abs(xLt - xPt)
+                    if (np.abs(xLt - xPt) <= TOLERANCE):
+                        
                         # we know the interval to a prescribed precision now.
                         # check if direction is satisfied, and collect event if needed.
                         # e[j, i + 1] is the last value calculated
@@ -165,8 +164,7 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                         # only get event if event function is increasing
                         elif (e[j, i + 1] < e[j, i] ) and direction == -1:
                             COLLECTEVENT = True
-                        else:
-                            raise Exception, 'unexpected collectevent happened'
+                
                             
                         if COLLECTEVENT:
                             TE.append(xPt)
@@ -174,6 +172,8 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                             IE.append(j)
 
                             if isterminal:
+                                X[-1] = xPt
+                                sol[-1] = fPt
                                 return X, sol, TE, YE, IE
 
                         break # and return to integrating
@@ -188,7 +188,8 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                     # check if new_x is sufficiently different from xPt
                     if np.abs(new_x - xPt) < TOLERANCE:
                         # it is not different, so we do not go forward
-                        xPt = xLt = new_x
+                        # we set the range to be done
+                        xPt = xLt = new_x                        
                         continue                        
 
                     # now get the new value of the integrated solution at
@@ -202,20 +203,27 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                         
                     new_f = f[-1][-1]
                     new_e, isterminal, direction = event(new_f, new_x)
-
-                    # now check event sign change
-                    if ePt * new_e > 0:
+                    # now check event sign change if new_e * ePt is
+                    # positive then they are on the same side of zero
+                    # so we set xPt to new_x. Otherwise, new_e is on
+                    # the other side of zero, so we set xLt to new_X
+                    if ePt * new_e >= 0:
+                        # no sign change
                         xPt = new_x
                         fPt = new_f
                         ePt = new_e
+                        
                     else:
+                        # this was a sign change.
                         xLt = new_x
                         fLt = new_f
                         eLt = new_e
+                        
+                    if k==99: 
+                        raise Exception('99 iterations reached in bisect loop')
 
                     k += 1
-                    
-              
+                                        
     return X, sol, TE, YE, IE
 
 
