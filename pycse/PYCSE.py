@@ -29,9 +29,9 @@ def regress(A, y, alpha=None):
         errors =  y - np.dot(A, b)
         sigma2 = np.sum(errors**2) / (n - k)  # RMSE
 
-        variance =  np.linalg.inv(np.dot(A.T, A))
+        covariance =  np.linalg.inv(np.dot(A.T, A))
                 
-        C = sigma2 * variance 
+        C = sigma2 * covariance 
         dC = np.diag(C)
         
         if (dC < 0.0).any():
@@ -336,16 +336,18 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
     Y = odeint(F, [alpha, y20], X)
     return X, Y
 
-def BVP_nl(F, x1, x2, alpha, beta, init, N):
+def BVP_nl(F, X, BCS, init, **kwargs):
     '''solve nonlinear BVP y''(x) = F(x, y, y')
-    y(x1) = alpha
-    y(x2) = beta
+    
+    X is a vector to make finite differences over
 
-    init is a function f(x) that returns an initial guess.
-    N is the number of points in the discretization.
+    BCS is a function that returns the boundary conditions: a,b = BCS(X, Y)
+        
+    init is a vector of initial guess
     '''
 
-    X = np.linspace(x1, x2, N)
+    x1, x2 = X[0], X[-1]
+    N = len(X)
     h = (x2 - x1) / (N - 1)
 
     def residuals(y):
@@ -353,7 +355,9 @@ def BVP_nl(F, x1, x2, alpha, beta, init, N):
 
         res = np.zeros(y.shape)
 
-        res[0] = y[0] - alpha
+        a,b = BCS(X, y)
+
+        res[0] = a
 
         for i in range(1, N - 1):
             x = X[i]
@@ -361,12 +365,14 @@ def BVP_nl(F, x1, x2, alpha, beta, init, N):
             YP = (y[i + 1] - y[i - 1]) / (2 * h)
             res[i] = YPP - F(x, y[i], YP)
 
-        res[-1] = y[-1] - beta
+        res[-1] = b
         return res
 
-    Y = fsolve(residuals, init(X))
-
-    return X, Y
+    Y, something, flag, msg = fsolve(residuals, init, full_output=1)
+    if flag != 1:
+        print flag, msg
+        raise Exception(msg)
+    return Y
 
 
 def bvp_sh(odefun, bcfun, xspan, y0_guess):
