@@ -5044,7 +5044,8 @@ def Ca_solve(v0, k, Fa0, V):
     'wrap fsolve to pass parameters as float or units'
     # this line is a little fragile. You must put [0] at the end or
     # you get the NotImplemented result
-    sol = fsolve(func, 0.1 * Fa0 / v0, args=(v0, k, Fa0, V))[0]
+    guess = 0.1 * Fa0 / v0
+    sol = fsolve(func, guess, args=(v0, k, Fa0, V))[0]
     return sol
 
 # Step 3
@@ -5052,7 +5053,7 @@ print u.wrap(Ca_solve)(v0, k, Fa0, V)
 #+END_SRC
 
 #+RESULTS:
-: 0.005+/-0.000167764327667
+: 0.00500+/-0.00017
 
 It would take some practice to get used to this, but the payoff is that you have an "automatic" error propagation method.
 
@@ -6938,7 +6939,10 @@ print TE, YE, IE
 #+END_SRC
 
 #+RESULTS:
-: [-6.0000001083101306, -1.9999999635550625] [-3.0871138978483259e-14, -7.7715611723760958e-16] [1, 0]
+: 0
+: 0
+: 0
+: [-6.0000001085843806, -1.9999999635539343] [-8.6840257207398963e-15, 1.9761141278884509e-08] [1, 0]
 
 [[./images/event-ode-2.png]]
 
