@@ -16,3 +16,12 @@ import urllib
 urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py'))
 
 print 'Ipython magic installed now!'
+
+from setuptools.command import easy_install
+easy_install.main( ["-U","quantities"] )
+easy_install.main( ["-U","uncertainties"] )
+
+package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
+easy_install.main( ["-U",package] )
+
+print 'Extra packages now installed.'
