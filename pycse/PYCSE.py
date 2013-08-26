@@ -144,7 +144,7 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
                 k = 0 # bisection counter
                 ISTERMINAL = False # assume this is the case
                 # bisection loop
-                print k
+                
                 while k < 100: # max iterations
                     #print np.abs(xLt - xPt)
                     if (np.abs(xLt - xPt) <= TOLERANCE):
