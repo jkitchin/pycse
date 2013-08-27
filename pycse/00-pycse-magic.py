@@ -42,23 +42,20 @@ ip.define_magic('publish', magic_publish)
 from setuptools.command import easy_install
 
 def magic_easy_install(self, package):
-    easy_install.main( ["-U", package] )
+    easy_install.main( [args, package] )
     
 ip.define_magic('easy_install', magic_easy_install)
     
 ##################################################################
-def pycse_update(*args):
+def pycse_update(self, *args):
     # for installing magic IPython stuff
-    # In ipython run this
-    # %load https://raw.github.com/jkitchin/pycse/master/install-pycse.py
 
-    print args
     from setuptools.command import easy_install
-    easy_install.main( ["-U","pycse"] )
+    easy_install.main( [args,"pycse"] )
 
     # my customized pyreport
     package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
-    easy_install.main( ["-U",package] )
+    easy_install.main( [args,package] )
 
 
     import IPython, os
