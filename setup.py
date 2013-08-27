@@ -2,7 +2,7 @@ from distutils.core import setup
 import os
   
 setup(name = 'pycse',
-      version='1.21',
+      version='1.23',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -10,7 +10,7 @@ setup(name = 'pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      scripts=['pycse/publish.py', 'pycse/install-pycse-magic.py'],
+      scripts=['pycse/publish.py'],
       long_description='''\
 python computations in science and engineering
 ===============================================
