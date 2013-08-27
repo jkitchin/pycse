@@ -2,7 +2,7 @@ from distutils.core import setup
 import os
   
 setup(name = 'pycse',
-      version='1.25.1',
+      version='1.25.4',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',

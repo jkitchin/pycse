@@ -22,9 +22,10 @@ if not os.path.exists(IPydir):
 import pycse
 p = pycse.__file__
 a = os.path.join(os.path.split(p)[0],'00-pycse-magic.py')
+dest = os.path.join(IPydir,'00-pycse-magic.py')
 import shutil
-shutil.copy(a, os.path.join(IPydir,'00-pycse-magic.py'))
-    
+shutil.copy(a, dest)
+print 'copied {0} to {1}'.format(a, dest)
 print 'Ipython magic installed now!'
 
 # extra packages

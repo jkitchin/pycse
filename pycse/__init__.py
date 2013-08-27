@@ -1,5 +1,5 @@
 from PYCSE import *
-
+__version__ = '1.25.4'
 # myextension.py
 
 def pycse_update(*args):

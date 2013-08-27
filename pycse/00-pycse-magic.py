@@ -51,10 +51,12 @@ def pycse_update(self, *args):
     # for installing magic IPython stuff
 
     from setuptools.command import easy_install
-    easy_install.main( [args, "pycse"] )
+    cmd = [args[0], 'pycse'] if args[0] else ['pycse']
+    easy_install.main(cmd)
 
     # my customized pyreport
     package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
+    cmd = [args[0], package] if args[0] else [package]
     easy_install.main( [args,package] )
 
 
@@ -77,8 +79,11 @@ def pycse_update(self, *args):
     print 'Ipython magic installed now!'
 
     # extra packages
-    easy_install.main( ["-U","quantities"] )
-    easy_install.main( ["-U","uncertainties"] )
+    for pkg in ['quantities', 
+                'uncertainties']:
+        cmd = [args[0], pkg] if args[0] else [pkg]
+        easy_install.main(cmd)
+
     print 'Extra packages now installed.'
     
 ip.define_magic('pycse_update', pycse_update)
