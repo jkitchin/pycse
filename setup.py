@@ -1,8 +1,9 @@
 from distutils.core import setup
 import os
+from pycse import __version__
   
 setup(name = 'pycse',
-      version='1.25.4',
+      version=__version__,
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',

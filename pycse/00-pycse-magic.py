@@ -47,17 +47,17 @@ def magic_easy_install(self, package):
 ip.define_magic('easy_install', magic_easy_install)
     
 ##################################################################
-def pycse_update(self, *args):
+def magic_pycse_update(self, args):
     # for installing magic IPython stuff
 
     from setuptools.command import easy_install
-    cmd = [args[0], 'pycse'] if args[0] else ['pycse']
+    cmd = [args, 'pycse'] if args else ['pycse']
     easy_install.main(cmd)
 
     # my customized pyreport
     package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
-    cmd = [args[0], package] if args[0] else [package]
-    easy_install.main( [args,package] )
+    cmd = [args, package] if args else [package]
+    easy_install.main(cmd)
 
 
     import IPython, os
@@ -69,24 +69,22 @@ def pycse_update(self, *args):
 
     if not os.path.exists(IPydir):
         raise Exception('No ipython directory found')
-    
-    import pycse
-    p = pycse.__file__
-    a = os.path.join(os.path.split(p)[0],'00-pycse-magic.py')
-    import shutil
-    shutil.copy(a, os.path.join(IPydir,'00-pycse-magic.py'))
 
+    url = 'https://raw.github.com/jkitchin/pycse/master/pycse/00-pycse-magic.py'
+
+    import urllib
+    urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py')) 
     print 'Ipython magic installed now!'
 
     # extra packages
     for pkg in ['quantities', 
                 'uncertainties']:
-        cmd = [args[0], pkg] if args[0] else [pkg]
+        cmd = [args, pkg] if args else [pkg]
         easy_install.main(cmd)
 
     print 'Extra packages now installed.'
     
-ip.define_magic('pycse_update', pycse_update)
+ip.define_magic('pycse_update', magic_pycse_update)
 
 ##################################################################
 ## pycse_test magic
