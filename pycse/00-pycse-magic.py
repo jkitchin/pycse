@@ -6,8 +6,13 @@ from subprocess import Popen, PIPE
 c = c = get_ipython().config
 c.IPKernelApp.pylab = 'inline'
 
-
 ip = get_ipython()
+
+# active true float division
+exec ip.compile('from __future__ import division', '<input>', 'single') \
+    in ip.user_ns
+
+############################################################
 
 def magic_publish(self, args):
     '''magic function to publish a python file in ipython
@@ -17,21 +22,11 @@ def magic_publish(self, args):
     call publish.py with subprocess because it does not recognize it as an executable,
     even though you can call it from a shell.
 
-    so we find the location of of the publish.py script and execute it
+    so we basically pipe a script to a python interpreter and execute it
     in its own process, with a new namespace each time.
 
     this is not pretty, but it works for now.
     '''
-    ## import os, subprocess
-    ## import pycse
-    ## path, init = os.path.split(pycse.__file__)
-    ## cmd = ['python',
-    ##        os.path.join(path,'publish.py')]
-    ## cmd += [str(x) for x in args.split()]
-    
-    ## status = subprocess.check_call(cmd)
-    ## if status != 0:
-    ##     print 'Something went wrong in publishing.'
     
     # this is some new code inspired by some magic methods in Ipython. 
     # It seems to be a cleaner approach.
@@ -51,6 +46,44 @@ def magic_easy_install(self, package):
     
 ip.define_magic('easy_install', magic_easy_install)
     
+##################################################################
+def pycse_update(*args):
+    # for installing magic IPython stuff
+    # In ipython run this
+    # %load https://raw.github.com/jkitchin/pycse/master/install-pycse.py
+
+    print args
+    from setuptools.command import easy_install
+    easy_install.main( ["-U","pycse"] )
+
+    # my customized pyreport
+    package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
+    easy_install.main( ["-U",package] )
+
+
+    import IPython, os
+    IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
+                      'profile_default',
+                      'startup')
+                      
+    print 'Installing ipython magic to : ',IPydir
+
+    if not os.path.exists(IPydir):
+        raise Exception('No ipython directory found')
+
+    url = 'https://raw.github.com/jkitchin/pycse/master/pycse/00-pycse-magic.py'
+
+    import urllib
+    urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py'))
+
+    print 'Ipython magic installed now!'
+
+    # extra packages
+    easy_install.main( ["-U","quantities"] )
+    easy_install.main( ["-U","uncertainties"] )
+    print 'Extra packages now installed.'
+    
+ip.define_magic('pycse_update', pycse_update)
 
 ##################################################################
 ## pycse_test magic
@@ -65,8 +98,11 @@ def magic_pycse_test(self, args):
     print 'Your installation checked out: ', PASSED
 
 ip.define_magic('pycse_test', magic_pycse_test)
+
 ###########################################################################    
+## load some common libraries
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 
 import quantities as u
