@@ -1,7 +1,11 @@
 # for installing magic IPython stuff
+# In ipython run this
+# %load https://raw.github.com/jkitchin/pycse/master/install-pycse.py
 
 from setuptools.command import easy_install
 easy_install.main( ["-U","pycse"] )
+
+# my customized pyreport
 package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
 easy_install.main( ["-U",package] )
 

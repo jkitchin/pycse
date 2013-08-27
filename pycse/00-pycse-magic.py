@@ -52,28 +52,18 @@ def magic_easy_install(self, package):
     
 ip.define_magic('easy_install', magic_easy_install)
     
-import pip
-
-def magic_pip(self, package):
-    pip.main(['install','--upgrade', package]) 
-
-ip.define_magic('pip', magic_pip)
-
-def magic_upgrade(self, *args):
-    print args
-    for package in ['quantities',
-                    'uncertainties',
-                    'https://github.com/jkitchin/pycse/archive/master.zip',
-                    'https://github.com/jkitchin/pyreport/archive/master.zip']:
-        pip.main(['install','--upgrade', package]) 
-
-ip.define_magic('pycse_upgrade', magic_upgrade)
 
 ##################################################################
 ## pycse_test magic
 
 def magic_pycse_test(self, args):
-    print 'Your installation of pycse looks ok.'
+    PASSED = True
+    try:
+        p = Popen('pdflatex --version', stdout=PIPE, stderr=PIPE, stdin=PIPE)
+    except:
+        PASSED = False
+        print 'No pdflatex found'
+    print 'Your installation checked out: ', PASSED
 
 ip.define_magic('pycse_test', magic_pycse_test)
 ###########################################################################    

@@ -1,17 +1,8 @@
 from distutils.core import setup
 import os
-
-# for installing magic IPython stuff
-#import IPython
-#IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
-#                      'profile_default',
-#                      'startup')
-                      
-#print 'Installing ipython magic to : ',IPydir
-
-   
+  
 setup(name = 'pycse',
-      version='1.19',
+      version='1.20',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
