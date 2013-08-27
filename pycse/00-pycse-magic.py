@@ -51,7 +51,7 @@ def pycse_update(self, *args):
     # for installing magic IPython stuff
 
     from setuptools.command import easy_install
-    easy_install.main( [args,"pycse"] )
+    easy_install.main( [args, "pycse"] )
 
     # my customized pyreport
     package = 'https://github.com/jkitchin/pyreport/archive/master.zip'
@@ -67,7 +67,9 @@ def pycse_update(self, *args):
 
     if not os.path.exists(IPydir):
         raise Exception('No ipython directory found')
-        
+    
+    import pycse
+    p = pycse.__file__
     a = os.path.join(os.path.split(p)[0],'00-pycse-magic.py')
     import shutil
     shutil.copy(a, os.path.join(IPydir,'00-pycse-magic.py'))
