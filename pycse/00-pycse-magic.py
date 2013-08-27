@@ -1,6 +1,6 @@
 # http://ipython.org/ipython-doc/dev/interactive/qtconsole.html#display
 from IPython.display import display
-
+from subprocess import Popen, PIPE
 
 # set images to inline by default
 c = c = get_ipython().config
@@ -35,7 +35,6 @@ def magic_publish(self, args):
     
     # this is some new code inspired by some magic methods in Ipython. 
     # It seems to be a cleaner approach.
-    from subprocess import Popen, PIPE
     code = '''from pycse.publish import publish
 publish(u'{0}')'''.format(args)
     
