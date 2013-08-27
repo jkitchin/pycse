@@ -1,6 +1,7 @@
 import numpy as np
 from pycse.units import *
 from nose.tools import raises
+from pycse.utils import *
 
 def test1():
     'test trapz'
@@ -44,10 +45,11 @@ def test_polyfit1():
     Cc = 2*u.mol / u.m**3 / u.s * t
 
     P = polyfit(t,Cc,1)
-    print P
-    assert P[0] == 2 * u.mol / u.m**3 / u.s
-    assert P[1] == 0 * u.mol / u.m**3
+    
+    assert np.array(np.abs(P[0] - 2 * u.mol / u.m**3 / u.s)) <= 1e-6
+    assert np.array(np.abs(P[1] == 0 * u.mol / u.m**3)) <= 1e-6
 
+test_polyfit1()
 
 def test_polyfit2():
     u = units()
