@@ -67,11 +67,10 @@ def pycse_update(self, *args):
 
     if not os.path.exists(IPydir):
         raise Exception('No ipython directory found')
-
-    url = 'https://raw.github.com/jkitchin/pycse/master/pycse/00-pycse-magic.py'
-
-    import urllib
-    urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py'))
+        
+    a = os.path.join(os.path.split(p)[0],'00-pycse-magic.py')
+    import shutil
+    shutil.copy(a, os.path.join(IPydir,'00-pycse-magic.py'))
 
     print 'Ipython magic installed now!'
 
