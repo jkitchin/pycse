@@ -19,13 +19,10 @@ print 'Installing ipython magic to : ',IPydir
 if not os.path.exists(IPydir):
     raise Exception('No ipython directory found')
 
-import pycse
-p = pycse.__file__
-a = os.path.join(os.path.split(p)[0],'00-pycse-magic.py')
-dest = os.path.join(IPydir,'00-pycse-magic.py')
-import shutil
-shutil.copy(a, dest)
-print 'copied {0} to {1}'.format(a, dest)
+url = 'https://raw.github.com/jkitchin/pycse/master/pycse/00-pycse-magic.py'
+
+import urllib
+urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py')) 
 print 'Ipython magic installed now!'
 
 # extra packages
