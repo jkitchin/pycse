@@ -4106,13 +4106,15 @@ f0 = -120
 
 X, F, TE, YE, IE = odelay(fprime, f0, xspan, events=[event])
 for te, ye in zip(TE, YE):
-    print 'root found at x = {0: 1.3f}, f={1: 1.3f}'.format(te, ye)
+    print 'root found at x = {0: 1.3f}, f={1: 1.3f}'.format(te, float(ye))
 #+END_SRC
 
 #+RESULTS:
-: root found at x = -6.000, f=-0.000
-: root found at x = -2.000, f=-0.000
+: root found at x = -6.000, f= 0.000
+: root found at x = -2.000, f= 0.000
 : root found at x =  2.000, f= 0.000
+
+
 ** Finding the nth root of a periodic function
    :PROPERTIES:
    :categories: nonlinear algebra
@@ -4188,21 +4190,62 @@ plt.show()
 
 #+RESULTS:
 #+begin_example
-root 0 is at 1.25578377377
-root 1 is at 4.07947743741
-root 2 is at 7.15579904465
-root 3 is at 10.2709851256
-root 4 is at 13.3983973869
-root 5 is at 16.5311587137
-root 6 is at 19.6667276775
-root 7 is at 22.8039503455
-root 8 is at 25.9422288192
-root 9 is at 29.081221492
+root 0 is at 1.25578376407
+root 1 is at 4.07947742793
+root 2 is at 7.15579903773
+root 3 is at 10.2709851211
+root 4 is at 13.3983973819
+root 5 is at 16.5311587094
+root 6 is at 19.666727676
+root 7 is at 22.8039503485
+root 8 is at 25.9422288177
+root 9 is at 29.0812214887
 #+end_example
 
 [[./images/heat-transfer-roots-2.png]]
 
 You can work this out once, and then you have all the roots in the interval and you can select the one you want.
+** Coupled nonlinear equations
+   :PROPERTIES:
+   :categories: nonlinear algebra
+   :date:     2013/09/02 15:21:24
+   :updated:  2013/09/02 15:21:24
+   :END:
+Suppose we seek the solution to this set of equations:
+
+\begin{align}
+y &=& x^2 \\
+y &=& 8 - x^2
+\end{align}
+
+To solve this we need to setup a function that is equal to zero at the solution. We have two equations, so our function must return two values. There are two variables, so the argument to our function will be an array of values. 
+
+#+BEGIN_SRC python
+from scipy.optimize import fsolve
+
+def objective(X):
+    x, y = X            # unpack the array in the argument
+    z1 = y - x**2       # first equation
+    z2 = y - 8 + x**2   # second equation
+    return [z1, z2]     # list of zeros
+
+x0, y0 = 1, 1           # initial guesses
+guess = [x0, y0]
+sol = fsolve(objective, guess)
+print sol
+
+# of course there may be more than one solution
+x0, y0 = -1, -1           # initial guesses
+guess = [x0, y0]
+sol = fsolve(objective, guess)
+print sol
+#+END_SRC
+
+#+RESULTS:
+: [ 2.  4.]
+: [-2.  4.]
+
+
 *  Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
@@ -6939,10 +6982,7 @@ print TE, YE, IE
 #+END_SRC
 
 #+RESULTS:
-: 0
-: 0
-: 0
-: [-6.0000001085843806, -1.9999999635539343] [-8.6840257207398963e-15, 1.9761141278884509e-08] [1, 0]
+: [-6.0000001048311304, -1.9999999660912129] [array([  5.30797628e-13]), array([  2.22044605e-16])] [1, 0]
 
 [[./images/event-ode-2.png]]
 
@@ -7118,9 +7158,9 @@ def stop(Ca, t):
 
 tspan = np.linspace(0.0, 10.0)
 
-t, CA, TE, YE, IE = odelay(dCadt, Ca0, tspan, events=[stop], full_output=1)
+t, CA, TE, YE, IE = odelay(dCadt, Ca0, tspan, events=[stop])
 
-print 'At t = {0:1.2f} seconds the concentration of A is {1:1.2f} mol/L.'.format(t[-1], CA[-1])
+print 'At t = {0:1.2f} seconds the concentration of A is {1:1.2f} mol/L.'.format(t[-1], float(CA[-1]))
 #+END_SRC
 
 #+RESULTS:
@@ -7178,7 +7218,7 @@ plt.show()
 #+END_SRC
 
 #+RESULTS:
-: [1, 0, 1, 0, 1, 0]
+: [0, 1, 0, 1, 0, 1, 0]
 
 [[./images/ode-events-min-max.png]]
 
