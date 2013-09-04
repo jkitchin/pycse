@@ -93,10 +93,30 @@ def magic_pycse_test(self, args):
     PASSED = True
     try:
         p = Popen('pdflatex --version', stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        print 'Found pdflatex'
     except:
         PASSED = False
         print 'No pdflatex found'
-    print 'Your installation checked out: ', PASSED
+
+    import numpy
+    print 'numpy version: ', numpy.__version__
+
+    import scipy
+    print 'scipy version: ', scipy.__version__
+
+    import matplotlib
+    print 'matplotlib version: ', matplotlib.__version__
+
+    import IPython
+    print 'IPython version: ', IPython.__version__
+
+    import quantities
+    print 'quantities version: ', quantities.__version__
+
+    print uncertainties
+    print 'uncertainties version: ', uncertainties.__version__
+
+    
 
 ip.define_magic('pycse_test', magic_pycse_test)
 
