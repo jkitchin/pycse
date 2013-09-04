@@ -1,4 +1,4 @@
-__version__ = '1.29'
+__version__ = '1.31'
 
 from PYCSE import *
 
