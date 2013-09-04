@@ -75,7 +75,7 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-def odelay(func, y0, xspan, events, **kwargs):
+def odelay(func, y0, xspan, events):
     '''ode wrapper with events func is callable, with signature func(Y, x)
     y0 are the initial conditions xspan is what you want to integrate
     over
@@ -111,12 +111,7 @@ def odelay(func, y0, xspan, events, **kwargs):
         x2 = xspan[i + 1]
         f1 = sol[i]
 
-        if 'full_output' in kwargs:
-            f2, output = odeint(func, f1, [x1, x2], **kwargs)
-            if output['message'] != 'Integration successful.':
-                print output
-        else:
-            f2 = odeint(func, f1, [x1, x2], **kwargs)
+        f2 = odeint(func, f1, [x1, x2])
         
         X += [x2]
         sol += [f2[-1][0]]
@@ -143,8 +138,8 @@ def odelay(func, y0, xspan, events, **kwargs):
                 # we need to find a value of x that makes the event zero
                 def objective(x):
                     # evaluate ode from xLT to x
-                    xspan = [xLt, x]
-                    tempsol = odeint(func, fLt, xspan, **kwargs)
+                    txspan = [xLt, x]
+                    tempsol = odeint(func, fLt, txspan)
                     sol = tempsol[-1, 0]
                     val, isterminal, direction = event(sol, x)
                     return val
@@ -156,8 +151,8 @@ def odelay(func, y0, xspan, events, **kwargs):
 
                 # now evaluate solution at this point, so we can
                 # record the function values here.
-                xspan = [xLt, xZ]
-                tempsol = odeint(func, fLt, xspan, **kwargs)
+                txspan = [xLt, xZ]
+                tempsol = odeint(func, fLt, txspan)
                 fZ = tempsol[-1,:]
 
                 vZ, isterminal, direction = event(fZ, xZ)
@@ -169,12 +164,7 @@ def odelay(func, y0, xspan, events, **kwargs):
                     COLLECTEVENT = True
                 elif (e[j, i + 1] < e[j, i] ) and direction == -1:
                     COLLECTEVENT = True
-                else:
-                    print 'e[j, i + 1] = ', e[j, i + 1]
-                    print 'e[j, i] = ', e[j, i]
-                    print 'direction = ', direction
-                    raise Exception('Unexpected COLLECTEVENT.')
-
+                
                 if COLLECTEVENT:
                     TE.append(xZ)
                     YE.append(fZ)
