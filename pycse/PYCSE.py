@@ -75,24 +75,24 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
-    '''ode wrapper with events
-    func is callable, with signature func(Y, x, *args)
-    y0 are the initial conditions
-    tspan  is what you want to integrate over
+def odelay(func, y0, xspan, events, **kwargs):
+    '''ode wrapper with events func is callable, with signature func(Y, x)
+    y0 are the initial conditions xspan is what you want to integrate
+    over
 
-    events is a list of callable functions with signature event(Y, t, *args).
-    These functions return zero when an event has happend.
+    events is a list of callable functions with signature event(Y, x).
+    These functions return zero when an event has happened.
     
-    [value, isterminal, direction] = events(t,y)
-    value(i) is the value of the ith event function.
+    [value, isterminal, direction] = event(Y, x)
+    value is the value of the event function. When value = 0, an event is  triggered
 
-    isterminal(i) = 1 if the integration is to terminate at a zero of
-    this event function, otherwise, 0.
+    isterminal = True if the integration is to terminate at a zero of
+    this event function, otherwise, False.
 
-    direction(i) = 0 if all zeros are to be located (the default), +1
+    direction = 0 if all zeros are to be located (the default), +1
     if only zeros where the event function is increasing, and -1 if
-    only zeros where the event function is decreasing.  
+    only zeros where the event function is decreasing.
+
     '''
 
     x0 = xspan[0]  # initial point
@@ -121,111 +121,73 @@ def odelay(func, y0, xspan, events=[], TOLERANCE=1e-6, **kwargs):
         X += [x2]
         sol += [f2[-1][0]]
 
-        # check event functions
+        # check event functions. At each step we compute the event
+        # functions, and check if they have changed sign since the
+        # last step. If they changed sign, it implies a zero was
+        # crossed.
+        TOLERANCE = 1e-6
         for j, event in enumerate(events):
             e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
                 
-            if ((e[j, i + 1] * e[j, i] < 0) 
-                or np.abs(e[j, i + 1]) < TOLERANCE # this point is practically 0
+            if ((e[j, i + 1] * e[j, i] < 0)        # sign change in
+                                                   # event means zero
+                                                   # crossing
+                or np.abs(e[j, i + 1]) < TOLERANCE # this point is
+                                                   # practically 0
                 or np.abs(e[j, i]) < TOLERANCE):
-                
-                # change in sign detected Event detected where the sign of
-                # the event has changed. The event is between xPt = X[-2]
-                # and xLt = X[-1]. run a modified bisect function to
-                # narrow down to find where event = 0
-                xLt = X[-1]  # Last point
+
+                xLt = X[-1]       # Last point
                 fLt = sol[-1]
                 eLt = e[j, i+1]
 
-                xPt = X[-2]  # previous point
-                fPt = sol[-2]
-                ePt = e[j, i]
-                
-                k = 0 # bisection counter
-                ISTERMINAL = False # assume this is the case
-                # bisection loop
-                
-                while k < 100: # max iterations
-                    #print np.abs(xLt - xPt)
-                    if (np.abs(xLt - xPt) <= TOLERANCE):
-                        
-                        # we know the interval to a prescribed precision now.
-                        # check if direction is satisfied, and collect event if needed.
-                        # e[j, i + 1] is the last value calculated
-                        # e[j, i] is the previous to last
-                        
-                        COLLECTEVENT = False
-                        # get all events
-                        if direction == 0:
-                            COLLECTEVENT = True
-                        # only get event if event function is decreasing
-                        elif (e[j, i + 1] > e[j, i] ) and direction == 1:
-                            COLLECTEVENT = True
-                        # only get event if event function is increasing
-                        elif (e[j, i + 1] < e[j, i] ) and direction == -1:
-                            COLLECTEVENT = True
-                
-                            
-                        if COLLECTEVENT:
-                            TE.append(xPt)
-                            YE.append(fPt)
-                            IE.append(j)
+                # we need to find a value of x that makes the event zero
+                def objective(x):
+                    # evaluate ode from xLT to x
+                    xspan = [xLt, x]
+                    tempsol = odeint(func, fLt, xspan, **kwargs)
+                    sol = tempsol[-1, 0]
+                    val, isterminal, direction = event(sol, x)
+                    return val
 
-                            if isterminal:
-                                X[-1] = xPt
-                                sol[-1] = fPt
-                                return X, sol, TE, YE, IE
+                from scipy.optimize import fsolve
+                xZ, = fsolve(objective, xLt)  # this should be the
+                                              # value of x that makes
+                                              # the event zero
 
-                        break # and return to integrating
+                # now evaluate solution at this point, so we can
+                # record the function values here.
+                xspan = [xLt, xZ]
+                tempsol = odeint(func, fLt, xspan, **kwargs)
+                fZ = tempsol[-1,:]
 
-                    # slope of line connecting last and previous point
-                    m = (ePt - eLt)/(xPt - xLt) # slope of line connecting points
-                                                # bracketing zero
+                vZ, isterminal, direction = event(fZ, xZ)
 
-                    #estimated x where the zero is      
-                    new_x = -ePt / m + xPt
+                COLLECTEVENT = False
+                if direction == 0:
+                    COLLECTEVENT = True
+                elif (e[j, i + 1] > e[j, i] ) and direction == 1:
+                    COLLECTEVENT = True
+                elif (e[j, i + 1] < e[j, i] ) and direction == -1:
+                    COLLECTEVENT = True
+                else:
+                    print 'e[j, i + 1] = ', e[j, i + 1]
+                    print 'e[j, i] = ', e[j, i]
+                    print 'direction = ', direction
+                    raise Exception('Unexpected COLLECTEVENT.')
 
-                    # check if new_x is sufficiently different from xPt
-                    if np.abs(new_x - xPt) < TOLERANCE:
-                        # it is not different, so we do not go forward
-                        # we set the range to be done
-                        xPt = xLt = new_x                        
-                        continue                        
+                if COLLECTEVENT:
+                    TE.append(xZ)
+                    YE.append(fZ)
+                    IE.append(j)
 
-                    # now get the new value of the integrated solution at
-                    # that new x
-                    if 'full_output' in kwargs:
-                        f, output  = odeint(func, fPt, [xPt, new_x], **kwargs)
-                        if output['message'] != 'Integration successful.':
-                            print output
-                    else:
-                        f  = odeint(func, fPt, [xPt, new_x], **kwargs)
-                        
-                    new_f = f[-1][-1]
-                    new_e, isterminal, direction = event(new_f, new_x)
-                    # now check event sign change if new_e * ePt is
-                    # positive then they are on the same side of zero
-                    # so we set xPt to new_x. Otherwise, new_e is on
-                    # the other side of zero, so we set xLt to new_X
-                    if ePt * new_e >= 0:
-                        # no sign change
-                        xPt = new_x
-                        fPt = new_f
-                        ePt = new_e
-                        
-                    else:
-                        # this was a sign change.
-                        xLt = new_x
-                        fLt = new_f
-                        eLt = new_e
-                        
-                    if k==99: 
-                        raise Exception('99 iterations reached in bisect loop')
+                    if isterminal:
+                        X[-1] = xZ
+                        sol[-1] = fZ
+                        return X, sol, TE, YE, IE
 
-                    k += 1
-                                        
+    # at the end, return what we have
     return X, sol, TE, YE, IE
-
+                
 
 def deriv(x, y, method='two-point'):
     '''compute the numerical derivate dydx
@@ -245,7 +207,7 @@ def deriv(x, y, method='two-point'):
 
     elif method == 'four-point':
         dydx = np.zeros(y.shape, np.float) #we know it will be this size
-        h = x[1] - x[0] #this assumes the points are evenely spaced!
+        h = x[1] - x[0] #this assumes the points are evenly spaced!
         dydx[2:-2] = (y[0:-4] - 8 * y[1:-3] + 8 * y[3:-1] - y[4:]) / (12.0 * h)
 
         # simple differences at the end-points
