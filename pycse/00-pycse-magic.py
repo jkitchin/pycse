@@ -91,6 +91,8 @@ ip.define_magic('pycse_update', magic_pycse_update)
 
 def magic_pycse_test(self, args):
     PASSED = True
+    import pycse
+    print pycse.__version__
     try:
         p = Popen('pdflatex --version', stdout=PIPE, stderr=PIPE, stdin=PIPE)
         print 'Found pdflatex'
