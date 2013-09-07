@@ -90,6 +90,43 @@ class MyTexCompiler(ReportCompiler):
     \definecolor{{grey}}{{cmyk}}{{0.1,0.1,0.1,1}}
     \definecolor{{lightgrey}}{{cmyk}}{{0,0,0,0.5}}
     \definecolor{{purple}}{{cmyk}}{{0.8,1,0,0}}
+\usepackage[pdftex]{{web}}
+\screensize{{11in}}{{8.5in}}
+\margins{{.25in}}{{.25in}}{{0.25in}}{{.25in}}
+\usepackage{{eforms}}
+\usepackage{{popupmenu}}
+
+\hypersetup{{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}}
+
+\usepackage{{bookmark}}
+
+\begin{{popupmenu}}{{myMenu}}
+    \item{{title=A++}}
+    \item{{title=A+}}
+    \item{{title=A}}
+    \item{{title=A-}}
+    \item{{title=A/B}}
+    \item{{title=B+}}
+    \item{{title=B}}
+    \item{{title=B-}}
+    \item{{title=B/C}}
+    \item{{title=C+}}
+    \item{{title=C}}
+    \item{{title=C-}}
+    \item{{title=C/D}}
+    \item{{title=D+}}
+    \item{{title=D}}
+    \item{{title=D-}}
+    \item{{title=D/R}}
+    \item{{title=R+}}
+    \item{{title=R}}
+    \item{{title=R-}}
+    \item{{title=R--}}
+\end{{popupmenu}}
+
+\begin{{insDLJS}}[AeBMenu]{{md}}{{Menu Data}}
+\myMenu
+\end{{insDLJS}}
 
     \makeatletter
         \let\@oddfoot\@empty\let\@evenfoot\@empty
@@ -246,7 +283,18 @@ class MyTexCompiler(ReportCompiler):
         path, fname = os.path.split(options.infilename)
         
         tex_string = re.sub(r'\\end{document}', r'''\\attachfile[description={0}]{{{0}}}
-        \\end{{document}}'''.format(fname), tex_string)
+
+\\PushButton[name=mymenu,
+onclick={{var cChoice = \\popUpMenu(myMenu);
+this.info.Grade = cChoice;
+var grade = this.getField("myGrade");
+grade.value = cChoice;
+        }}]{{Press to select grade}} Grade: \\textField
+	[\\BC{{0 0 1}}\\BG{{0.98 0.92 0.73}}
+	\\textColor{{1 0 0}}
+	]{{myGrade}}{{0.5in}}{{12bp}}
+% endif
+\\end{{document}}'''.format(fname), tex_string)
                                         
         # XXX: no need to use epstopdf: we are now using MPL'pdf output
         #if options.figuretype == "pdf":
