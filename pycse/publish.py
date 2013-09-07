@@ -82,7 +82,7 @@ class MyTexCompiler(ReportCompiler):
     \pdfinfo{{
              /AndrewID ({andrewid})  
              /Assignment ({assignment})
-             /Grade ()
+             /Grade (ungraded)
              }}
     \definecolor{{darkgreen}}{{cmyk}}{{0.7, 0, 1, 0.5}}
     \definecolor{{darkblue}}{{cmyk}}{{1, 0.8, 0, 0}}
@@ -90,15 +90,6 @@ class MyTexCompiler(ReportCompiler):
     \definecolor{{grey}}{{cmyk}}{{0.1,0.1,0.1,1}}
     \definecolor{{lightgrey}}{{cmyk}}{{0,0,0,0.5}}
     \definecolor{{purple}}{{cmyk}}{{0.8,1,0,0}}
-\usepackage[pdftex]{{web}}
-\screensize{{11in}}{{8.5in}}
-\margins{{.25in}}{{.25in}}{{0.25in}}{{.25in}}
-\usepackage{{eforms}}
-\usepackage{{popupmenu}}
-
-\hypersetup{{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}}
-
-\usepackage{{bookmark}}
 
 \begin{{popupmenu}}{{myMenu}}
     \item{{title=A++}}
@@ -166,7 +157,7 @@ class MyTexCompiler(ReportCompiler):
             fullname=data['NAME'],
             replacement=( re.sub( "_", r'\\_', options.infilename) )) + options.latexescapes * r""",
             mathescape=true""" +"""
-            }}
+            }
     """
 
         if options.nocode:
@@ -272,36 +263,55 @@ class MyTexCompiler(ReportCompiler):
                         protect(self.preamble) + r"\\begin{document}", tex_string)
         tex_string = re.sub(self.empty_listing, "", tex_string)
 
+        
         # if there is user_data we insert it here.
         # the option --no-user suppresses this insertion
-        if user_data_string:
-            tex_string = re.sub(r'\\begin{document}', r'''\\begin{{document}}
-        
-{0}
-'''.format(user_data_string), tex_string)
-
+        tex_string = re.sub(r'\\end{document}', "", tex_string)
         path, fname = os.path.split(options.infilename)
-        
-        tex_string = re.sub(r'\\end{document}', r'''\\attachfile[description={0}]{{{0}}}
+        if user_data_string:
+            tex_string += user_data_string
+            tex_string +=  r'''
+\vspace{{2mm}}            
+\attachfile[description={0}]{{{0}}}
+\vspace{{8mm}}
 
-\\PushButton[name=mymenu,
-onclick={{var cChoice = \\popUpMenu(myMenu);
+\PushButton[name=mymenu,
+onclick={{var cChoice = \popUpMenu(myMenu);
 this.info.Grade = cChoice;
 var grade = this.getField("myGrade");
 grade.value = cChoice;
-        }}]{{Press to select grade}} Grade: \\textField
-	[\\BC{{0 0 1}}\\BG{{0.98 0.92 0.73}}
-	\\textColor{{1 0 0}}
+        }}]{{Press to select grade}} Grade: \textField
+	[\BC{{0 0 1}}\BG{{0.98 0.92 0.73}}
+	\textColor{{1 0 0}}
 	]{{myGrade}}{{0.5in}}{{12bp}}
-% endif
-\\end{{document}}'''.format(fname), tex_string)
-                                        
+
+\end{{document}}'''.format(fname)
+        else:
+            tex_string += r'''
+\vspace{{2mm}}
+\attachfile[description={0}]{{{0}}}
+\vspace{{2mm}}
+\end{{document}}'''.format(fname)
+
+        # this is an awful hack around docutils
+        tex_string = re.sub('%%% User specified packages and stylesheets',
+                            '''
+\usepackage[pdftex]{{web}}
+\screensize{{11in}}{{8.5in}}
+\margins{{.25in}}{{.25in}}{{0.25in}}{{.25in}}
+\usepackage{{eforms}}
+\usepackage{{popupmenu}}
+
+\hypersetup{{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}}
+
+\usepackage{{bookmark}}''', tex_string)
+
         # XXX: no need to use epstopdf: we are now using MPL'pdf output
         #if options.figuretype == "pdf":
         #    if options.verbose:
         #        print >> sys.stderr, "Compiling figures"
         #    self.figure_list = map(epstopdf, self.figure_list)
-        
+         
         print >>fileobject, tex_string
 
     def compile2pdf(self, output_list, fileobject, options):
@@ -419,7 +429,7 @@ import datetime
 from pyreport import pyreport, options
 
 data = {}
-userid = os.environ.get('USER','no user found')
+userid = os.environ.get('USER', 'no user found')
 date_submitted = datetime.datetime.now()
 
 # mac address of submitting computer
@@ -439,7 +449,7 @@ data = {'mac':mac,
         'date_submitted':date_submitted}
 
 user_data_string = r'''
-\\begin{{verbatim}}
+\begin{{verbatim}}
 hostname: {data[hostname]}
 ipaddr:   {data[ipaddr]}
 mac:      {data[mac]}
@@ -479,6 +489,8 @@ def publish(args):
         
     if args.no_user:
         user_data_string = False
+        for prop in PROPERTIES:
+            data[prop] = None
         
         name, ext = os.path.splitext(INPUT)
         BASENAME = name
