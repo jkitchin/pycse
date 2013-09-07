@@ -92,7 +92,7 @@ ip.define_magic('pycse_update', magic_pycse_update)
 def magic_pycse_test(self, args):
     PASSED = True
     import pycse
-    print pycse.__version__
+    print 'pycse version: ',pycse.__version__
     try:
         p = Popen('pdflatex --version', stdout=PIPE, stderr=PIPE, stdin=PIPE)
         print 'Found pdflatex'
@@ -117,8 +117,6 @@ def magic_pycse_test(self, args):
 
     import uncertainties
     print 'uncertainties version: ', uncertainties.__version__
-
-    
 
 ip.define_magic('pycse_test', magic_pycse_test)
 
