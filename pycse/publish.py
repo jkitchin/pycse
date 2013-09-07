@@ -27,7 +27,7 @@ import re
 from docutils import core as docCore
 from docutils import io as docIO
 
-VERSION = 2.2
+VERSION = 3.0
 
 class MyTexCompiler(ReportCompiler):
     global data
@@ -255,7 +255,7 @@ class MyTexCompiler(ReportCompiler):
                                         '''
 \documentclass[pdfstartview=FitH,
                pdfproducer=pycse-publish-v{VERSION},
-               pdfauthor={author},
+               pdfauthor={author},pdfstartview=FitH,
                pdftitle={assignment}]{{article}}'''.format(VERSION=VERSION,
                                                            author=data['NAME'],
                                                            assignment=data['ASSIGNMENT']))
@@ -298,19 +298,13 @@ grade.value = cChoice;
                             '''
 \usepackage[pdftex]{{web}}
 \screensize{{11in}}{{8.5in}}
-\margins{{.25in}}{{.25in}}{{0.25in}}{{.25in}}
+\margins{{0.25in}}{{0.25in}}{{0.25in}}{{0.25in}}
 \usepackage{{eforms}}
 \usepackage{{popupmenu}}
 
 \hypersetup{{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}}
 
 \usepackage{{bookmark}}''', tex_string)
-
-        # XXX: no need to use epstopdf: we are now using MPL'pdf output
-        #if options.figuretype == "pdf":
-        #    if options.verbose:
-        #        print >> sys.stderr, "Compiling figures"
-        #    self.figure_list = map(epstopdf, self.figure_list)
          
         print >>fileobject, tex_string
 
