@@ -93,7 +93,7 @@ def magic_pycse_test(self, args):
     PASSED = True
     import pycse
     s = []
-    s += ['pycse version: ' pycse.__version__]
+    s += ['pycse version: {0}'.format(pycse.__version__)]
     try:
         p = Popen('pdflatex --version', stdout=PIPE, stderr=PIPE, stdin=PIPE)
         s += ['Found pdflatex']
@@ -102,22 +102,22 @@ def magic_pycse_test(self, args):
         s += ['No pdflatex found']
 
     import numpy
-    s += ['numpy version: ' numpy.__version__]
+    s += ['numpy version: {0}'.format(numpy.__version__)]
 
     import scipy
-    s += ['scipy version: ' scipy.__version__]
+    s += ['scipy version: {0}'.format(scipy.__version__)]
 
     import matplotlib
-    s += ['matplotlib version: '  matplotlib.__version__]
+    s += ['matplotlib version: {0}'.format(matplotlib.__version__)]
 
     import IPython
-    s += ['IPython version: '  IPython.__version__]
+    s += ['IPython version: {0}'.format(IPython.__version__)]
 
     import quantities
-    s += ['quantities version: ' quantities.__version__]
+    s += ['quantities version: {0}'.format(quantities.__version__)]
 
     import uncertainties
-    s += ['uncertainties version: ' uncertainties.__version__]
+    s += ['uncertainties version: {0}'.format(uncertainties.__version__)]
     
     return '\n'.join(s)
 
