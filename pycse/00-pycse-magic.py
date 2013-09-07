@@ -113,7 +113,7 @@ def magic_pycse_test(self, args):
     import quantities
     print 'quantities version: ', quantities.__version__
 
-    print uncertainties
+    import uncertainties
     print 'uncertainties version: ', uncertainties.__version__
 
     
