@@ -75,7 +75,7 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-def odelay(func, y0, xspan, events):
+def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
     '''ode wrapper with events func is callable, with signature func(Y, x)
     y0 are the initial conditions xspan is what you want to integrate
     over
@@ -95,6 +95,11 @@ def odelay(func, y0, xspan, events):
 
     '''
 
+    if odeint_args is None:
+        odeint_args = {}
+    if fsolve_args is None:
+        fsolve_args = {}
+
     x0 = xspan[0]  # initial point
 
     X = [x0]
@@ -111,10 +116,10 @@ def odelay(func, y0, xspan, events):
         x2 = xspan[i + 1]
         f1 = sol[i]
 
-        f2 = odeint(func, f1, [x1, x2])
+        f2 = odeint(func, f1, [x1, x2], **odeint_args)
         
         X += [x2]
-        sol += [f2[-1][0]]
+        sol += [f2[-1,:]]
 
         # check event functions. At each step we compute the event
         # functions, and check if they have changed sign since the
@@ -139,20 +144,20 @@ def odelay(func, y0, xspan, events):
                 def objective(x):
                     # evaluate ode from xLT to x
                     txspan = [xLt, x]
-                    tempsol = odeint(func, fLt, txspan)
-                    sol = tempsol[-1, 0]
+                    tempsol = odeint(func, fLt, txspan, **odeint_args)
+                    sol = tempsol[-1, :]
                     val, isterminal, direction = event(sol, x)
                     return val
 
                 from scipy.optimize import fsolve
-                xZ, = fsolve(objective, xLt)  # this should be the
+                xZ, = fsolve(objective, xLt, **fsolve_args)  # this should be the
                                               # value of x that makes
                                               # the event zero
 
                 # now evaluate solution at this point, so we can
                 # record the function values here.
                 txspan = [xLt, xZ]
-                tempsol = odeint(func, fLt, txspan)
+                tempsol = odeint(func, fLt, txspan, **odeint_args)
                 fZ = tempsol[-1,:]
 
                 vZ, isterminal, direction = event(fZ, xZ)
@@ -173,12 +178,19 @@ def odelay(func, y0, xspan, events):
                     if isterminal:
                         X[-1] = xZ
                         sol[-1] = fZ
-                        return X, sol, TE, YE, IE
+                        return (np.array(X), 
+                                np.array(sol), 
+                                np.array(TE), 
+                                np.array(YE), 
+                                np.array(IE))
 
     # at the end, return what we have
-    return X, sol, TE, YE, IE
-                
-
+    return (np.array(X), 
+            np.array(sol), 
+            np.array(TE), 
+            np.array(YE), 
+            np.array(IE))
+               
 def deriv(x, y, method='two-point'):
     '''compute the numerical derivate dydx
     method = 'two-point': centered difference
@@ -373,7 +385,9 @@ def bvp(odefun, bcfun, X, yinit):
         dy2dx = -np.abs(y1)
         return [dy1dx, dy2dx]
 
-    def bcfun(Ya, Yb):
+    def bcfun(Y):
+        Ya = Y[:,0]
+        Yb = Y[:,1]
         y1a, y2a = Ya
         y1b, y2b = Yb
 
@@ -381,41 +395,43 @@ def bvp(odefun, bcfun, X, yinit):
 
     x = np.linspace(0, 4, 100)
 
-    y1 = 1.0 * np.ones(x.shape)
-    y2 = 0.0 * np.ones(x.shape)
+    y1 = x**0
+    y2 = 0.0 * x
 
-    Yinit = np.vstack([y1, y2])
+    Yinit = np.column_stack([y1, y2])
 
     sol = bvp(odefun, bcfun, x, Yinit)
     '''
         
+    # we have to setup a series of equations equal to zero at the solution Y
+    # we will end up with nX * neq equations.
+    # at each x point between the boundaries we approximate the derivative by central difference
+    # neq of these will be the boundary conditions
+    # neq * (nX - 1) of them will be the interior points
     def objective(Yflat):        
         Y = Yflat.reshape(yinit.shape)
 
-        residbc = bcfun(Y[:,0], Y[:,-1])
+        nX, neq = Y.shape
+        
+        res = bcfun(Y)  # these are ultimately the "zeros" we solve for
 
-        neq = len(Y) # number of equations
-        nX = len(X)
+        ode = np.array(odefun(Y, X)) # evaluate odefun for this Y
 
-        res = []
+        # now we estimate dYdt from the solution and subtract it from ode
+        # that will be zero at the solution
+        # Y is nX rows by neq columns
+        # I need column wise, centered finite difference from 1 to nX-2
 
-        # now the boundary conditions. We evaluate thise with 3-point formulas.
-        # since these equations should be zero on both ends, we combine the two
-        # equations to avoid overspecifying the problem.
+        dYdt = (Y[2:,:] - Y[0:-2,:]) / (X[2:,np.newaxis] - X[0:-2,np.newaxis])
+        
+        Z = ode[1:-1,:] - dYdt
+        
+        res += Z.flat
 
-        endpoints = []
-        for j, val in enumerate(odefun(Y[:,0], X[0])):
-            yjprime = (-3.0 * Y[j, 0] + 4.0 * Y[j, 1] - Y[j, 2]) / (X[2] - X[0])
-            endpoints.append(yjprime - val)
-
-        res += endpoints
-
-        # now we need to loop through X and create equations
-        for i in range(1, len(X) - 1):
-            for j, val in enumerate(odefun(Y[:,i], X[i])):
-                res.append((Y[j, i + 1] - Y[j, i - 1]) / (X[i + 1] - X[i - 1]) - val)
-
-        res += residbc
+        # finally, we need to estimate the derivatives at one end point
+        yjprime = (-3.0 * Y[0, :] + 4.0 * Y[1, :] - Y[2, :]) / (X[2] - X[0])
+        z = ode[0,:] - yjprime
+        res += z.flat
 
         return res
 
@@ -427,14 +443,34 @@ def bvp(odefun, bcfun, X, yinit):
 
 
 if __name__ == '__main__':
-    N = 101 #number of points
-    L = 2 * np.pi #interval of data
+#    N = 101 #number of points
+#    L = 2 * np.pi #interval of data
+#
+#    x = np.arange(0.0, L, L/float(N)) #this does not include the endpoint
+#    y = np.sin(x) + 0.05 * np.random.random(size=x.shape)
+#
+#    dydx = deriv(x, y, 'fft')
+#
+#    import matplotlib.pyplot as plt
+#    plt.plot(x, dydx, x, np.cos(x))
+#    plt.show()
 
-    x = np.arange(0.0, L, L/float(N)) #this does not include the endpoint
-    y = np.sin(x) + 0.05 * np.random.random(size=x.shape)
 
-    dydx = deriv(x, y, 'fft')
-
+    def ode(Y, x):
+        return [1, 2]
+       
+    def event(Y, x):
+        y1, y2 = Y
+        isterminal = True
+        direction = 0
+        value = y2 - 2
+        return value, isterminal, direction
+    
     import matplotlib.pyplot as plt
-    plt.plot(x, dydx, x, np.cos(x))
+    
+    Y0 = [0,0]
+    xspan = np.linspace(0, 5)
+    
+    X, Y, XE, YE, IE = odelay(ode, Y0, xspan, events=(event,))
+    plt.plot(np.array(X), np.array(Y))
     plt.show()
