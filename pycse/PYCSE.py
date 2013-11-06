@@ -75,7 +75,7 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, pint, SE)
 
-def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
+def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
     '''ode wrapper with events func is callable, with signature func(Y, x)
     y0 are the initial conditions xspan is what you want to integrate
     over
@@ -93,10 +93,12 @@ def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
     if only zeros where the event function is increasing, and -1 if
     only zeros where the event function is decreasing.
 
+    fsolve_args is a dictionary of options for fsolve
+    kwargs are any additional options you want to send to odeint.
     '''
+    if 'full_output' in kwargs:
+        raise Exception('full_output not supported as an option')
 
-    if odeint_args is None:
-        odeint_args = {}
     if fsolve_args is None:
         fsolve_args = {}
 
@@ -116,7 +118,7 @@ def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
         x2 = xspan[i + 1]
         f1 = sol[i]
 
-        f2 = odeint(func, f1, [x1, x2], **odeint_args)
+        f2 = odeint(func, f1, [x1, x2], **kwargs)
         
         X += [x2]
         sol += [f2[-1,:]]
@@ -144,7 +146,7 @@ def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
                 def objective(x):
                     # evaluate ode from xLT to x
                     txspan = [xLt, x]
-                    tempsol = odeint(func, fLt, txspan, **odeint_args)
+                    tempsol = odeint(func, fLt, txspan, **kwargs)
                     sol = tempsol[-1, :]
                     val, isterminal, direction = event(sol, x)
                     return val
@@ -157,7 +159,7 @@ def odelay(func, y0, xspan, events, odeint_args=None, fsolve_args=None):
                 # now evaluate solution at this point, so we can
                 # record the function values here.
                 txspan = [xLt, xZ]
-                tempsol = odeint(func, fLt, txspan, **odeint_args)
+                tempsol = odeint(func, fLt, txspan, **kwargs)
                 fZ = tempsol[-1,:]
 
                 vZ, isterminal, direction = event(fZ, xZ)
@@ -407,13 +409,15 @@ def bvp(odefun, bcfun, X, yinit):
     # we will end up with nX * neq equations.
     # at each x point between the boundaries we approximate the derivative by central difference
     # neq of these will be the boundary conditions
-    # neq * (nX - 1) of them will be the interior points
+    # neq * (nX - 1) of them will be the derivatives at the interior points
     def objective(Yflat):        
         Y = Yflat.reshape(yinit.shape)
 
         nX, neq = Y.shape
         
-        res = bcfun(Y)  # these are ultimately the "zeros" we solve for
+        # these are ultimately the "zeros" we solve for
+        # The first set are the boundary conditions
+        res = bcfun(Y)  
 
         ode = np.array(odefun(Y, X)) # evaluate odefun for this Y
 
@@ -429,6 +433,7 @@ def bvp(odefun, bcfun, X, yinit):
         res += Z.flat
 
         # finally, we need to estimate the derivatives at one end point
+        # We use a 3 point formula to estimate this derivative at the left boundary
         yjprime = (-3.0 * Y[0, :] + 4.0 * Y[1, :] - Y[2, :]) / (X[2] - X[0])
         z = ode[0,:] - yjprime
         res += z.flat
