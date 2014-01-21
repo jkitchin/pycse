@@ -40,7 +40,7 @@ print 8.1 - 5
 #+RESULTS:
 
 Multiplication is equally straightforward.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 5 * 4
 print 3.1 * 2
 #+END_SRC
@@ -51,7 +51,7 @@ print 3.1 * 2
 
 Division is almost as straightforward, but we have to remember that integer division is not the same as float division. Let us consider float division first.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 4.0 / 2.0
 print 1.0/3.1
 #+END_SRC
@@ -62,7 +62,7 @@ print 1.0/3.1
 
 Now, consider the integer versions:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 4 / 2
 print 1/3
 #+END_SRC
@@ -75,7 +75,7 @@ The first result is probably what you expected, but the second may come as a sur
 
 Exponentiation is also a basic math operation that python supports directly.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 3.**2
 print 3**2
 print 2**0.5
@@ -96,7 +96,7 @@ Other types of mathematical operations require us to import functionality from p
    :END:
 The primary library we will consider is mod:numpy, which provides many mathematical functions, statistics as well as support for linear algebra. For a complete listing of the functions available, see http://docs.scipy.org/doc/numpy/reference/routines.math.html. We begin with the simplest functions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.sqrt(2)
 #+END_SRC
@@ -106,7 +106,7 @@ print np.sqrt(2)
 
 *** Exponential and logarithmic functions
 Here is the exponential function.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.exp(1)
 #+END_SRC
@@ -116,7 +116,7 @@ print np.exp(1)
 
 There are two logarithmic functions commonly used, the natural log function func:numpy.log and the base10 logarithm func:numpy.log10.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.log(10)
 print np.log10(10)  # base10
@@ -135,7 +135,7 @@ There are many other intrinsic functions available in mod:numpy which we will ev
    :END:
 We can combine operations to evaluate complex equations. Consider the value of the equation $x^3 - \log(x)$ for the value $x=4.1$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 x = 3
 print x**3 - np.log(x)
@@ -146,7 +146,7 @@ print x**3 - np.log(x)
 
 It would be tedious to type this out each time. Next, we learn how to express this equation as a new function, which we can call with different values.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 def f(x):
     return x**3 - np.log(x)
@@ -171,7 +171,7 @@ Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-
 
 We often need to make functions in our codes to do things. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def f(x):
     "return the inverse square of x"
     return 1.0 / x**2
@@ -190,7 +190,7 @@ print f([4,5])
 
 Note that functions are not automatically vectorized. That is why we see the error above. There are a few ways to achieve that. One is to "cast" the input variables to objects that support vectorized operations, such as numpy.array objects.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 def f(x):
@@ -209,7 +209,7 @@ print f([4,5])
 
 It is possible to have more than one variable.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 def func(x, y):
@@ -226,7 +226,7 @@ print func(np.array([2, 3]), np.array([3, 4]))
 
 You can define "lambda" functions, which are also known as inline or anonymous functions. The syntax is =lambda var:f(var)=. I think these are hard to read and discourage their use. Here is a typical usage where you have to define a simple function that is passed to another function, e.g. scipy.integrate.quad to perform an integral.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import quad
 print quad(lambda x:x**3, 0 ,2)
 
@@ -236,12 +236,12 @@ print quad(lambda x:x**3, 0 ,2)
 : (4.0, 4.440892098500626e-14)
 
 It is possible to nest functions inside of functions like this.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 
 def wrapper(x):
     a = 4
     def func(x, a):
-        return a * x
+	return a * x
 
     return func(x, a)
 
@@ -253,10 +253,10 @@ print wrapper(4)
 : 16
 
 An alternative approach is to "wrap" a function, say to fix a parameter. You might do this so you can integrate the wrapped function, which depends on only a single variable, whereas the original function depends on two variables.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 def func(x, a):
-        return a * x
- 
+	return a * x
+
 def wrapper(x):
     a = 4
     return func(x, a)
@@ -269,7 +269,7 @@ print wrapper(4)
 
 Last example, defining a function for an ode
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import odeint
 import numpy as np
 import matplotlib.pyplot as plt
@@ -303,7 +303,7 @@ In this function f(a,b), =a= and =b= are called positional arguments, and they a
 
 If we provide a default value for an argument, then the argument is called a keyword argument, and it becomes optional. You can combine positional arguments and keyword arguments, but positional arguments must come first. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 def func(a, n=2):
     "compute the nth power of a"
     return a**n
@@ -323,7 +323,7 @@ In the first call to the function, we only define the argument =a=, which is a m
 
 If all of the arguments are optional, we can even call the function with no arguments. If you give arguments as positional arguments, they are used in the order defined in the function. If you use keyword arguments, the order is arbitrary.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 def func(a=1, n=2):
     "compute the nth power of a"
     return a**n
@@ -341,11 +341,11 @@ print func(n=4, a=2)
 
 It is occasionally useful to allow an arbitrary number of arguments in a function. Suppose we want a function that can take an arbitrary number of positional arguments and return the sum of all the arguments. We use the syntax =*args= to indicate arbitrary positional arguments. Inside the function the variable =args= is a tuple containing all of the arguments passed to the function. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 def func(*args):
     sum = 0
     for arg in args:
-        sum += arg
+	sum += arg
     return sum
 
 print func(1, 2, 3, 4)
@@ -356,7 +356,7 @@ print func(1, 2, 3, 4)
 
 A more "functional programming" version of the last function is given here. This is an advanced approach that is less readable to new users, but more compact and likely more efficient for large numbers of arguments.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import operator
 def func(*args):
     return reduce(operator.add, args)
@@ -369,10 +369,10 @@ print func(1, 2, 3, 4)
 
 It is possible to have arbitrary keyword arguments. This is a common pattern when you call another function within your function that takes keyword arguments. We use =**kwargs= to indicate that arbitrary keyword arguments can be given to the function. Inside the function, kwargs is variable containing a dictionary of the keywords and values passed in.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 def func(**kwargs):
     for kw in kwargs:
-        print '{0} = {1}'.format(kw, kwargs[kw])
+	print '{0} = {1}'.format(kw, kwargs[kw])
 
 func(t1=6, color='blue')
 #+END_SRC
@@ -382,7 +382,7 @@ func(t1=6, color='blue')
 : t1 = 6
 
 A typical example might be:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 
 def myplot(x, y, fname=None, **kwargs):
@@ -392,9 +392,9 @@ def myplot(x, y, fname=None, **kwargs):
     plt.ylabel('Y')
     plt.title('My plot')
     if fname:
-        plt.savefig(fname)
+	plt.savefig(fname)
     else:
-        plt.show()
+	plt.show()
 
 x = [1, 3, 4, 5]
 y = [3, 6, 9, 12]
@@ -418,13 +418,13 @@ myplot(x, y, 'images/myfig2.png', **d)
 In that example we wrap the matplotlib plotting commands in a function, which we can call the way we want to, with arbitrary optional arguments. In this example, you cannot pass keyword arguments that are illegal to the plot command or you will get an error.
 
 It is possible to combine all the options at once. I admit it is hard to imagine where this would be really useful, but it can be done!
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 def func(a, b=2, *args, **kwargs):
     "return a**b + sum(args) and print kwargs"
     for kw in kwargs:
-        print 'kw: {0} = {1}'.format(kw, kwargs[kw])
+	print 'kw: {0} = {1}'.format(kw, kwargs[kw])
 
     return a**b + np.sum(args)
 
@@ -443,7 +443,7 @@ print func(2, 3, 4, 5, mysillykw='hahah')
    :END:
 Is that some kind of fraternity? of anonymous functions? What is that!? There are many times where you need a callable, small function in python, and it is inconvenient to have to use =def= to create a named function. Lambda functions solve this problem. Let us look at some examples. First, we create a lambda function, and assign it to a variable. Then we show that variable is a function, and that we can call it with an argument.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 f = lambda x: 2*x
 print f
 print f(2)
@@ -454,7 +454,7 @@ print f(2)
 : 4
 
 We can have more than one argument:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 f = lambda x,y: x + y
 print f
 print f(2, 3)
@@ -466,7 +466,7 @@ print f(2, 3)
 
 And default arguments:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 f = lambda x, y=3: x + y
 print f
 print f(2)
@@ -480,7 +480,7 @@ print f(4, 1)
 
 It is also possible to have arbitrary numbers of positional arguments. Here is an example that provides the sum of an arbitrary number of arguments.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import operator
 f = lambda *x: reduce(operator.add, x)
 print f
@@ -498,7 +498,7 @@ print f(1, 2, 3)
 
 You can also make arbitrary keyword arguments. Here we make a function that simply returns the kwargs as a dictionary. This feature may be helpful in passing kwargs to other functions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 f = lambda **kwargs: kwargs
 
 print f(a=1, b=3)
@@ -509,7 +509,7 @@ print f(a=1, b=3)
 
 Of course, you can combine these options. Here is a function with all the options.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 f = lambda a, b=4, *args, **kwargs: (a, b, args, kwargs)
 
 print f('required', 3, 'optional-positional', g=4)
@@ -524,7 +524,7 @@ One of the primary limitations of lambda functions is they are limited to single
 *** Applications of lambda functions
 
 Lambda functions are used in places where you need a function, but may not want to define one using =def=. For example, say you want to solve the nonlinear equation $\sqrt{x} = 2.5$. 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 import numpy as np
 
@@ -537,7 +537,7 @@ print sol
 
 Another time to use lambda functions is if you want to set a particular value of a parameter in a function. Say we have a function with an independent variable, $x$ and a parameter $a$, i.e. $f(x; a)$. If we want to find a solution $f(x; a) = 0$ for some value of $a$, we can use a lambda function to make a function of the single variable $x$. Here is a example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 import numpy as np
 
@@ -553,7 +553,7 @@ print sol
 
 
 Any function that takes a function as an argument can use lambda functions. Here we use a lambda function that adds two numbers in the =reduce= function to sum a list of numbers.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print reduce(lambda x, y: x + y, [0, 1, 2, 3, 4])
 #+END_SRC
 
@@ -561,7 +561,7 @@ print reduce(lambda x, y: x + y, [0, 1, 2, 3, 4])
 : 10
 
 We can evaluate the integral $\int_0^2 x^2 dx$ with a lambda function.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import quad
 
 print quad(lambda x: x**2, 0, 2)
@@ -580,7 +580,7 @@ Lambda functions can be helpful. They are never necessary. You can always define
    :categories: python
    :END:
 Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 a = np.array([1, 2, 3])
@@ -602,7 +602,7 @@ print np.vstack([a, b]).T
 
 Or rows:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 a = np.array([1, 2, 3])
@@ -622,11 +622,11 @@ print np.vstack([a, b])
 
 The opposite operation is to extract the rows or columns of a 2D array into smaller arrays. We might want to do that to extract a row or column from a calculation for further analysis, or plotting for example. There are splitting functions in numpy. They are somewhat confusing, so we examine some examples. The numpy.hsplit command splits an array "horizontally". The best way to think about it is that the "splits" move horizontally across the array. In other words, you draw a vertical split, move over horizontally, draw another vertical split, etc... You must specify the number of splits that you want, and the array must be evenly divisible by the number of splits.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
+	      [4, 5, 6, 9]])
 
 # split into two parts
 p1, p2 = np.hsplit(A, 2)
@@ -659,11 +659,11 @@ print p4
 
 In the numpy.vsplit command the "splits" go "vertically" down the array. Note that the split commands return 2D arrays.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
+	      [4, 5, 6, 9]])
 
 # split into two parts
 p1, p2 = np.vsplit(A, 2)
@@ -679,11 +679,11 @@ print p2.shape
 
 An alternative approach is array unpacking. In this example, we unpack the array into two variables. The array unpacks by row.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
+	      [4, 5, 6, 9]])
 
 # split into two parts
 p1, p2 = A
@@ -697,11 +697,11 @@ print p2
 
 To get the columns, just transpose the array.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
+	      [4, 5, 6, 9]])
 
 # split into two parts
 p1, p2, p3, p4 = A.T
@@ -723,11 +723,11 @@ Note that now, we have 1D arrays.
 
 You can also access rows and columns by indexing. We index an array by [row, column]. To get a row, we specify the row number, and all the columns in that row like this [row, :]. Similarly, to get a column, we specify that we want all rows in that column like this: [:, column]. This approach is useful when you only want a few columns or rows.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[1, 2, 3, 5], 
-              [4, 5, 6, 9]])
+	      [4, 5, 6, 9]])
 
 # get row 1
 print A[1]
@@ -752,7 +752,7 @@ Note that even when we specify a column, it is returned as a 1D array.
    :END:
 It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.linspace(0, np.pi, 10)
 #+END_SRC
@@ -763,7 +763,7 @@ print np.linspace(0, np.pi, 10)
 
 The main point of using the mod:numpy functions is that they work element-wise on elements of an array. In this example, we compute the $\cos(x)$ for each element of $x$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 x = np.linspace(0, np.pi, 10)
 print np.cos(x)
@@ -775,7 +775,7 @@ print np.cos(x)
 
 You can already see from this output that there is a root to the equation $\cos(x) = 0$, because there is a change in sign in the output. This is not a very convenient way to view the results; a graph would be better.  We use mod:matplotlib to make figures. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -792,7 +792,7 @@ plt.savefig('images/plot-cos.png')
 
 This figure illustrates graphically what the numbers above show. The function crosses zero at approximately $x = 1.5$. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation $f(x) = \cos(x) = 0$. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve 
 import numpy as np
 
@@ -820,7 +820,7 @@ We know the solution is \pi/2.
 We often have a need to organize data into structures when solving problems.
 *** the list
 A list in python is data separated by commas in square brackets. Here, we might store the following data in a variable to describe the Antoine coefficients for benzene and the range they are relevant for [Tmin Tmax]. Lists are flexible, you can put anything in them, including other lists. We access the elements of the list by indexing:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 c = ['benzene', 6.9056, 1211.0, 220.79, [-16, 104]]
 print c[0]
 print c[-1]
@@ -840,7 +840,7 @@ print Trange
 
 Lists are "mutable", which means you can change their values.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 a = [3, 4, 5, [7, 8], 'cat']
 print a[0], a[-1]
 a[-1] = 'dog'
@@ -855,7 +855,7 @@ print a
 *** tuples
 Tuples are /immutable/; you cannot change their values. This is handy in cases where it is an error to change the value. A tuple is like a list but it is enclosed in parentheses.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 a = (3, 4, 5, [7, 8], 'cat')
 print a[0], a[-1]
 a[-1] = 'dog'
@@ -871,7 +871,7 @@ a[-1] = 'dog'
 *** struct
 Python does not exactly have the same thing as a struct in Matlab. You can achieve something like it by defining an empty class and then defining attributes of the class. You can check if an object has a particular attribute using hasattr.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 class Antoine:
     pass
 
@@ -892,7 +892,7 @@ print hasattr(a, 'A')
 *** dictionaries
 The analog of the containers.Map in Matlab is the dictionary in python. Dictionaries are enclosed in curly brackets, and are composed of key:value pairs.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 s = {'name':'benzene',
      'A':6.9056,
      'B':1211.0}
@@ -908,7 +908,7 @@ print s['Trange']
 : {'A': 6.9056, 'C': 220.79, 'B': 1211.0, 'name': 'benzene', 'Trange': [-16, 104]}
 : [-16, 104]
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 s = {'name':'benzene',
      'A':6.9056,
      'B':1211.0}
@@ -941,7 +941,7 @@ There are times where you have a lot of data in a vector or array and you want t
 
 A key point to remember is that in python array/vector indices start at 0. Unlike Matlab, which uses parentheses to index a array, we use brackets in python.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 x = np.linspace(-np.pi, np.pi, 10)
@@ -964,7 +964,7 @@ print x[-2] # second to last element
 
 We can select a range of elements too. The syntax a:b extracts the a^{th} to (b-1)^{th} elements. The syntax a:b:n starts at a, skips nelements up to the index b.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print x[1:4]     # second to fourth element. Element 5 is not included
 print x[0:-1:2]  # every other element
 print x[:]       # print the whole vector
@@ -981,7 +981,7 @@ print x[-1:0:-1] # reverse the vector!
 
 Suppose we want the part of the vector where x > 2. We could do that by inspection, but there is a better way. We can create a mask of boolean (0 or 1) values that specify whether x > 2 or not, and then use the mask as an index.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print x[x > 2]
 #+END_SRC
 
@@ -990,7 +990,7 @@ print x[x > 2]
 
 You can use this to analyze subsections of data, for example to integrate the function y = sin(x) where x > 2.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 y = np.sin(x)
 
 print np.trapz( x[x > 2], y[x > 2])
@@ -1003,10 +1003,10 @@ print np.trapz( x[x > 2], y[x > 2])
 *** 2d arrays
 In 2d arrays, we use  row, column notation. We use a : to indicate all rows or all columns.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 a = np.array([[1, 2, 3], 
-              [4, 5, 6], 
-              [7, 8, 9]])
+	      [4, 5, 6], 
+	      [7, 8, 9]])
 
 print a[0, 0]
 print a[-1, -1]
@@ -1028,7 +1028,7 @@ print a[:]
 
 *** Using indexing to assign values to rows and columns
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 b = np.zeros((3, 3))
 print b
 
@@ -1056,7 +1056,7 @@ print b
 
 Python does not have the linear assignment method like Matlab does. You can achieve something like that as follows. We flatten the array to 1D, do the linear assignment, and reshape the result back to the 2D array.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 c = b.flatten()
 c[2] = 34
 b[:] = c.reshape(b.shape)
@@ -1072,7 +1072,7 @@ print b
 *** 3D arrays
 The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think about the indexing like this: (row, column, page)
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 M = np.random.uniform(size=(3,3,3))  # a 3x3x3 array
 print M
 #+END_SRC
@@ -1093,7 +1093,7 @@ print M
   [ 0.67427208  0.51793637  0.89016255]]]
 #+end_example
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print M[:, :, 0]  # 2d array on page 0
 print M[:, 0, 0]  # column 0 on page 0
 print M[1, :, 2]  # row 1 on page 2
@@ -1119,7 +1119,7 @@ This was first worked out in this [[http://matlab.cheme.cmu.edu/2011/10/06/sprin
 
 Often you will want to control the way a variable is printed. You may want to only show a few decimal places, or print in scientific notation, or embed the result in a string. Here are some examples of printing with no control over the format.
  
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = 2./3
 print a
 print 1/3
@@ -1139,7 +1139,7 @@ There is no control over the number of decimals, or spaces around a printed numb
 
 In python, we use the format function to control how variables are printed. With the format function you use codes like {/n/:format specifier} to indicate that a formatted string should be used. /n/ is the /n^{th}/ argument passed to format, and there are a variety of format specifiers. Here we examine how to format float numbers. The specifier has the general form "w.df" where w is the width of the field, and d is the number of decimals, and f indicates a float number. "1.3f" means to print a float number with 3 decimal places. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 'The value of 1/3 to 3 decimal places is {0:1.3f}'.format(1./3.)
 #+END_SRC
 
@@ -1148,7 +1148,7 @@ print 'The value of 1/3 to 3 decimal places is {0:1.3f}'.format(1./3.)
 
 In that example, the 0 in {0:1.3f} refers to the first (and only) argument to the format function. If there is more than one argument, we can refer to them like this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 'Value 0 = {0:1.3f}, value 1 = {1:1.3f}, value 0 = {0:1.3f}'.format(1./3., 1./6.)
 #+END_SRC
 
@@ -1159,7 +1159,7 @@ Note you can refer to the same argument more than once, and in arbitrary order w
 
 Suppose you have a list of numbers you want to print out, like this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 for x in [1./3., 1./6., 1./9.]:
     print 'The answer is {0:1.2f}'.format(x)
 #+END_SRC
@@ -1171,7 +1171,7 @@ for x in [1./3., 1./6., 1./9.]:
 
 The "g" format specifier is a general format that can be used to indicate a precision, or to indicate significant digits. To print a number with a specific number of significant digits we do this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print '{0:1.3g}'.format(1./3.)
 print '{0:1.3g}'.format(4./3.)
 #+END_SRC
@@ -1182,7 +1182,7 @@ print '{0:1.3g}'.format(4./3.)
 
 We can also specify plus or minus signs. Compare the next two outputs.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 for x in [-1., 1.]: 
     print '{0:1.2f}'.format(x)
 #+END_SRC
@@ -1193,7 +1193,7 @@ for x in [-1., 1.]:
 
 You can see the decimals do not align. That is because there is a minus sign in front of one number. We can specify to show the sign for positive and negative numbers, or to pad positive numbers to leave space for positive numbers.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 for x in [-1., 1.]: 
     print '{0:+1.2f}'.format(x) # explicit sign
 
@@ -1208,7 +1208,7 @@ for x in [-1., 1.]:
 :  1.00
 
 We use the "e" or "E" format modifier to specify scientific notation.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 eps = np.finfo(np.double).eps
 print eps
@@ -1228,7 +1228,7 @@ print '{0:1.2E}'.format(eps)  #exponential notation with capital E
 As a float with 2 decimal places, that very small number is practically equal to 0.
 
 We can even format percentages. Note you do not need to put the % in your string.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 'the fraction {0} corresponds to {0:1.0%}'.format(0.78) 
 #+END_SRC
 
@@ -1245,7 +1245,7 @@ There are many other options for formatting strings. See http://docs.python.org/
    :END:
 There are several more advanced ways to include formatted values in a string. In the previous case we examined replacing format specifiers by /positional/ arguments in the format command. We can instead use /keyword/ arguments. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 s = 'The {speed} {color} fox'.format(color='brown', speed='quick')
 print s
 #+END_SRC
@@ -1255,7 +1255,7 @@ print s
 
 If you have a lot of variables already defined in a script, it is convenient to use them in string formatting with the locals command:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 speed = 'slow'
 color= 'blue'
 
@@ -1266,12 +1266,12 @@ print 'The {speed} {color} fox'.format(**locals())
 : The slow blue fox
 
 If you want to access attributes on an object, you can specify them directly in the format identifier.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 class A:
     def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
+	self.a = a
+	self.b = b
+	self.c = c
 
 mya = A(3,4,5)
 
@@ -1282,7 +1282,7 @@ print 'a = {obj.a}, b = {obj.b}, c = {obj.c:1.2f}'.format(obj=mya)
 : a = 3, b = 4, c = 5.00
 
 You can access values of a dictionary:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 d = {'a': 56, "test":'woohoo!'}
 
 print "the value of a in the dictionary is {obj[a]}. It works {obj[test]}".format(obj=d)
@@ -1293,7 +1293,7 @@ print "the value of a in the dictionary is {obj[a]}. It works {obj[test]}".forma
 
 And, you can access elements of a list. Note, however you cannot use -1 as an index in this case.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 L = [4, 5, 'cat']
 
 print 'element 0 = {obj[0]}, and the last element is {obj[2]}'.format(obj=L)
@@ -1304,20 +1304,20 @@ print 'element 0 = {obj[0]}, and the last element is {obj[2]}'.format(obj=L)
 
 There are three different ways to "print" an object. If an object has a __format__ function, that is the default used in the format command. It may be helpful to use the =str= or =repr= of an object instead. We get this with !s for =str= and !r for =repr=.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 class A:
     def __init__(self, a, b):
-        self.a = a; self.b = b
+	self.a = a; self.b = b
 
     def __format__(self, format):
-        s = 'a={{0:{0}}} b={{1:{0}}}'.format(format)
-        return s.format(self.a, self.b)
+	s = 'a={{0:{0}}} b={{1:{0}}}'.format(format)
+	return s.format(self.a, self.b)
 
     def __str__(self):
-        return 'str: class A, a={0} b={1}'.format(self.a, self.b)
+	return 'str: class A, a={0} b={1}'.format(self.a, self.b)
 
     def __repr__(self):
-        return 'representing: class A, a={0}, b={1}'.format(self.a, self.b)
+	return 'representing: class A, a={0}, b={1}'.format(self.a, self.b)
 
 mya = A(3, 4)
 
@@ -1348,7 +1348,7 @@ numpy has a function called numpy.diff() that is similar to the one found in mat
 
 Loops in python are pretty slow (relatively speaking) but they are usually trivial to understand. In this script we show some simple ways to construct derivative vectors using loops. It is implied in these formulas that the data points are equally spaced. If they are not evenly spaced, you need a different approach.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from pylab import *
 import time
@@ -1427,7 +1427,7 @@ plt.show()
 [[index:derivative!vectorized]]
 Loops are usually not great for performance. Numpy offers some vectorized methods that allow us to compute derivatives without loops, although this comes at the mental cost of harder to understand syntax
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -1472,7 +1472,7 @@ plt.show()
 If your data is very noisy, you will have a hard time getting good derivatives; derivatives tend to magnify noise. In these cases, you have to employ smoothing techniques, either implicitly by using a multipoint derivative formula, or explicitly by smoothing the data yourself, or taking the derivative of a function that has been fit to the data in the neighborhood you are interested in.
 
 Here is an example of a 4-point centered difference of some noisy data:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -1527,7 +1527,7 @@ plt.show()
 index:derivative!polynomial 
 One way to reduce the noise inherent in derivatives of noisy data is to fit a smooth function through the data, and analytically take the derivative of the curve. Polynomials are especially convenient for this. The challenge is to figure out what an appropriate polynomial order is. This requires judgment and experience.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 from pycse import deriv
@@ -1573,7 +1573,7 @@ You can see a third order polynomial is a reasonable fit here. There are only 6 
 index:derivative!fitting
 A variation of a polynomial fit is to fit a model with reasonable physics. Here we fit a nonlinear function to the noisy data. The model is for the concentration vs. time in a batch reactor for a first order irreversible reaction. Once we fit the data, we take the analytical derivative of the fitted function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -1585,7 +1585,7 @@ Ca_data = np.array([2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495])
 def func(t, Ca0, k):
     return Ca0 * np.exp(-k * t)
 
- 
+
 pars, pcov = curve_fit(func, tspan, Ca_data, p0=[2, 2.3])
 
 plt.plot(tspan, Ca_data)
@@ -1693,7 +1693,7 @@ This example comes from the first link. The derivative must be evaluated
 using the chain rule.  We compare a forward difference, central
 difference and complex-step derivative approximations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -1735,13 +1735,13 @@ to evaluate the derivative of an integral function. Let $f(x) =
 Of course, this can be done
 [[http://mathmistakes.info/facts/CalculusFacts/learn/doi/doif.html][analytically]], but it is not trivial!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import quad
 
 def f_(z):
     def integrand(t):
-        return np.tan(t**3)
+	return np.tan(t**3)
     return quad(integrand, 0, z**2)
 
 f = np.vectorize(f_)
@@ -1798,16 +1798,16 @@ f(x) &=&  0, x < 0 \\
 \end{eqnarray} 
 
 Today we examine a few ways to define a function like this. A simple way is to use conditional statements.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def f1(x):
     if x < 0:
-        return 0
+	return 0
     elif (x >= 0) & (x < 1):
-        return x
+	return x
     elif (x >= 1) & (x < 2):
-        return 2.0 - x
+	return 2.0 - x
     else:
-        return 0
+	return 0
 
 print f1(-1)
 print f1([0, 1, 2, 3])  # does not work!
@@ -1820,7 +1820,7 @@ print f1([0, 1, 2, 3])  # does not work!
 
 This works, but the function is not vectorized, i.e. f([-1 0 2 3]) does not evaluate properly (it should give a list or array). You can get vectorized behavior by using list comprehension, or by writing your own loop. This does not fix all limitations, for example you cannot use the f1 function in the quad function to integrate it.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -1839,7 +1839,7 @@ plt.savefig('images/vector-piecewise.png')
 
 Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def f2(x):
     'fully vectorized version'
     x = np.asarray(x)
@@ -1863,17 +1863,17 @@ plt.savefig('images/vector-piecewise-2.png')
 
 A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x >= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def heaviside(x):
     x = np.array(x)
     if x.shape != ():
-        y = np.zeros(x.shape)
-        y[x > 0.0] = 1
-        y[x == 0.0] = 0.5
+	y = np.zeros(x.shape)
+	y[x > 0.0] = 1
+	y[x == 0.0] = 0.5
     else: # special case for 0d array (a number)
-        if x > 0: y = 1
-        elif x == 0: y = 0.5
-        else: y = 0
+	if x > 0: y = 1
+	elif x == 0: y = 0.5
+	else: y = 0
     return y
 
 def f3(x):
@@ -1890,7 +1890,7 @@ print quad(f3, -1, 3)
 : 
 : ... ... ... ... ... ... ... ... ... ... >>> ... ... ... ... ... >>> >>> (1.0, 1.1102230246251565e-14)
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.plot(x, f3(x))
 plt.savefig('images/vector-piecewise-3.png')
 #+END_SRC
@@ -1915,7 +1915,7 @@ In [[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Post 1280]] 
 
 Today we examine a strategy for smoothly joining these two functions. First we define the two functions.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
@@ -1928,7 +1928,7 @@ def fF_turbulent_unvectorized(Re):
     # 1/np.sqrt(f) = (4.0*np.log10(Re*np.sqrt(f))-0.4)
     # we have to solve this equation to get f
     def func(f):
-        return 1/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
+	return 1/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
     fguess = 0.01
     f, = fsolve(func, fguess)
     return f
@@ -1942,7 +1942,7 @@ fF_turbulent = np.vectorize(fF_turbulent_unvectorized)
 
 Now we plot the correlations.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 Re1 = np.linspace(500, 3000)
 f1 = fF_laminar(Re1)
 
@@ -1974,7 +1974,7 @@ Sigmoid functions
 
 A sigmoid function smoothly varies from 0 to 1 according to the equation: $\sigma(x) = \frac{1}{1 + e^{-(x-x0)/\alpha}}$. The transition is centered on $x0$, and $\alpha$ determines the width of the transition.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 x = np.linspace(-4,4);
 y = 1.0 / (1 + np.exp(-x / 0.1))
 plt.figure(2); plt.clf()
@@ -1995,7 +1995,7 @@ plt.savefig('images/smooth-transitions-sigma.png')
 
 If we have two functions, $f_1(x)$ and $f_2(x)$ we want to smoothly join, we do it like this: $f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)$. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def fanning_friction_factor(Re):
     '''combined, continuous correlation for the fanning friction factor.
     the alpha parameter is chosen to provide the desired smoothness.
@@ -2032,7 +2032,7 @@ You can see that away from the transition the combined function is practically e
 
 [[http://www.chem.mtu.edu/~fmorriso/DataCorrelationForSmoothPipes2010.pdf][Morrison]] derived a single function for the friction factor correlation over all Re: $f = \frac{0.0076\left(\frac{3170}{Re}\right)^{0.165}}{1 + \left(\frac{3171}{Re}\right)^{7.0}} + \frac{16}{Re}$. Here we show the comparison with the approach used above. The friction factor differs slightly at high Re, because Morrison's is based on the Prandlt correlation, while the work here is based on the Nikuradse correlation. They are similar, but not the same.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 # add this correlation to figure 1
 h, = plt.plot(Re, 16.0/Re + (0.0076 * (3170 / Re)**0.165) / (1 + (3170.0 / Re)**7))
 
@@ -2064,7 +2064,7 @@ Suppose we have a parameter that has two different values depending on the value
 
 We define our function as $x(D) = x0 + (x1 - x0)*(1 - sigma(D,w)$. We control the rate of the transition by the variable $w$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -2106,7 +2106,7 @@ Let us look at some examples. We consider the example of computing $\int_0^2 x^3
 
 We use the scipy.integrate.quad command  to evaluate this $\int_0^2 x^3 dx$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import quad
 
 ans, err = quad(lambda x: x**3, 0, 2)
@@ -2118,7 +2118,7 @@ print ans
 
 you can also define a function for the integrand.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import quad
 
 def integrand(x):
@@ -2135,7 +2135,7 @@ print ans
 
 if we had numerical data like this, we use trapz to integrate it
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 x = np.array([0, 0.5, 1, 1.5, 2])
@@ -2153,7 +2153,7 @@ print i2, error
 
 Note the integral of these vectors is greater than 4! You can see why here.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 x = np.array([0, 0.5, 1, 1.5, 2])
@@ -2174,7 +2174,7 @@ plt.savefig('images/quad-1.png')
 
 The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 x2 = np.linspace(0, 2, 100)
@@ -2195,7 +2195,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];
 
 and you want to integrate this from x = 0.25 to 1.75. We do not have data in those regions, so some interpolation is going to be needed. Here is one approach.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
 import numpy as np
@@ -2258,7 +2258,7 @@ numpy makes it easy to get the derivative and integral of a polynomial.
 
 Consider: $y = 2x^2 - 1$. We know the derivative is $4x$. Here we compute the derivative and evaluate it at x=4.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 p = np.poly1d([2, 0, -1])
@@ -2274,7 +2274,7 @@ print p2(4)
 
 The integral of the previous polynomial is $\frac{2}{3} x^3 - x + c$. We assume $C=0$. Let us compute the integral $\int_2^4 2x^2 - 1 dx$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 p = np.poly1d([2, 0, -1])
@@ -2291,7 +2291,7 @@ print p2(4) - p2(2)
 
 One reason to use polynomials is the ease of finding all of the roots using numpy.roots. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.roots([2, 0, -1]) # roots are +- sqrt(2)
 
@@ -2306,7 +2306,7 @@ print np.roots(p)
 
 There are applications of polynomials in thermodynamics. The van der waal equation is a cubic polynomial $f(V) = V^3 - \frac{p n b + n R T}{p} V^2 + \frac{n^2 a}{p}V - \frac{n^3 a b}{p} = 0$, where $a$ and $b$ are constants, $p$ is the pressure, $R$ is the gas constant, $T$ is an absolute temperature and $n$ is the number of moles. The roots of this equation tell you the volume of the gas at those conditions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 # numerical values of the constants
 a = 3.49e4
@@ -2343,7 +2343,7 @@ Let us compute the integral of sin(x) from x=0 to $\pi$. To approximate the inte
 
 We will use this example to illustrate the difference in performance between loops and vectorized operations in python.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import time
 
@@ -2370,7 +2370,7 @@ print f
 : >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> >>> ... ... >>> >>> time elapsed = 0.0780000686646 sec
 : >>> 1.99999835177
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 t0 = time.time()
 Xk = x[1:-1] - x[0:-2] # vectorized version of (x[k+1] - x[k])
 Yk = y[1:-1] + y[0:-2] # vectorized version of (y[k+1] + y[k])
@@ -2389,7 +2389,7 @@ print f
 
 In the last example, there may be loop buried in the sum command. Let us do one final method, using linear algebra, in a single line. The key to understanding this is to recognize the sum is just the result of a dot product of the x differences and y sums. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 t0 = time.time()
 f = 0.5 * np.dot(Xk, Yk)
 tf = time.time() - t0
@@ -2416,7 +2416,7 @@ The times here are considerably slower than in Matlab. I am not sure if that is 
 [[index:integration!Simpson's rule]]
 A more accurate numerical integration than the trapezoid method is [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html][Simpson's rule]]. The syntax is similar to trapz, but the method is in scipy.integrate.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import simps, romb
 
@@ -2467,7 +2467,7 @@ $$y=x^2$$
 
 from x=0 to x=1. You should be able to work out that the answer is 1/3.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import quad
 
 def integrand(x):
@@ -2496,7 +2496,7 @@ $\int_{x=\pi}^{2\pi}\int_{y=0}^{\pi}y sin(x)+x cos(y)dydx$
 
 The syntax in dblquad is a bit more complicated than in Matlab. We have to provide callable functions for the range of the y-variable. Here they are constants, so we create lambda functions that return the constants. Also, note that the order of arguments in the integrand is different than in Matlab.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import dblquad
 import numpy as np
 
@@ -2505,8 +2505,8 @@ def integrand(y, x):
     return y * np.sin(x) + x * np.cos(y)
 
 ans, err = dblquad(integrand, np.pi, 2*np.pi,
-                   lambda x: 0,
-                   lambda x: np.pi)
+		   lambda x: 0,
+		   lambda x: np.pi)
 print ans
 
 
@@ -2523,7 +2523,7 @@ $0 <= y <= 1$
 
 $-1 <= z <= 1$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import tplquad
 import numpy as np
 
@@ -2531,11 +2531,11 @@ def integrand(z, y, x):
     return y * np.sin(x) + z * np.cos(x)
 
 ans, err = tplquad(integrand,
-                   0, np.pi,  # x limits
-                   lambda x: 0,
-                   lambda x: 1, # y limits
-                   lambda x,y: -1,
-                   lambda x,y: 1) # z limits
+		   0, np.pi,  # x limits
+		   lambda x: 0,
+		   lambda x: 1, # y limits
+		   lambda x,y: -1,
+		   lambda x,y: 1) # z limits
 
 print ans 
 
@@ -2555,7 +2555,7 @@ scipy.integrate offers the same basic functionality as Matlab does. The syntax d
 
 A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import scipy
 from scipy.integrate import quad
 
@@ -2577,7 +2577,7 @@ That is all there is too it!
 ** Function integration by the Romberg method
 
 An alternative to the scipy.integrate.quad function is the [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html][Romberg method]]. This method is not likely to be more accurate than quad, and it does not give you an error estimate. 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 from scipy.integrate import quad, romberg
@@ -2602,7 +2602,7 @@ print romberg(np.sin, a, b)
  [[http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/][Matlab post]]
 Python has capability to do symbolic math through the sympy package. 
 *** Solve the quadratic equation
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from sympy import solve, symbols, pprint
 
 a,b,c,x = symbols('a,b,c,x')
@@ -2629,7 +2629,7 @@ The solution you should recognize in the form of $\frac{b \pm \sqrt{b^2 - 4 a c}
 
 you might find this helpful!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from sympy import diff
 
 print diff(f, x)
@@ -2645,7 +2645,7 @@ print diff(f, a)
 : >>> x**2
 
 *** integration
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from sympy import integrate
 
 print integrate(f, x)          # indefinite integral
@@ -2658,7 +2658,7 @@ print integrate(f, (x, 0, 1))  # definite integral from x=0..1
 : a/3 + b/2 + c
 
 *** Analytically solve a simple ODE
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from sympy import Function, Symbol, dsolve
 f = Function('f')
 x = Symbol('x')
@@ -2690,7 +2690,7 @@ The symbolic math in sympy is pretty good. It is not up to the capability of Map
 
 Float numbers (i.e. the ones with decimals) cannot be perfectly represented in a computer. This can lead to some artifacts when you have to compare float numbers that on paper should be the same, but in silico are not. Let us look at some examples. In this example, we do some simple math that should result in an answer of 1, and then see if the answer is "equal" to one.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 3.0 * (1.0/3.0) 
 print 1.0 == 3.0 * (1.0/3.0) 
 #+END_SRC
@@ -2701,7 +2701,7 @@ print 1.0 == 3.0 * (1.0/3.0)
 
 Everything looks fine. Now, consider this example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print 49.0 * (1.0/49.0) 
 print 1.0 == 49.0 * (1.0/49.0) 
 #+END_SRC
@@ -2718,7 +2718,7 @@ The first line looks like everything is find, but the equality fails!
 
 You can see here why the equality statement fails. We will print the two numbers to sixteen decimal places.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 print '{0:1.16f}'.format(49.0 * (1.0/49.0) )
 print '{0:1.16f}'.format(1.0)
 print 1 - 49.0 * (1.0/49.0) 
@@ -2735,7 +2735,7 @@ This leads to the idea of asking if two numbers are equal to each other within s
 
 Below, we implement a comparison function from [[http://dx.doi.org/10.1107/S010876730302186X][doi:10.1107/S010876730302186X]] that allows comparisons with tolerance.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 # Implemented from Acta Crystallographica A60, 1-6 (2003). doi:10.1107/S010876730302186X
 
 import numpy as np
@@ -2754,7 +2754,7 @@ print feq(1.0, 49.0 * (1.0/49.0), np.spacing(1))
 : True
 
 For completeness, here are the other float comparison operators from that paper. We also show a few examples.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 def flt(x, y, epsilon):
@@ -2797,7 +2797,7 @@ As you can see, float comparisons can be tricky. You have to give a lot of thoug
    :END:
 Numpy has some gotcha features for linear algebra purists. The first is that a 1d array is neither a row, nor a column vector. That is, $a$ = $a^T$ if $a$ is a 1d array. That means you can take the dot product of $a$ with itself, without transposing the second argument. This would not be allowed in Matlab.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 a = np.array([0, 1, 2])
@@ -2821,7 +2821,7 @@ print np.dot(a, a.T)
 
 Compare the previous behavior with this 2d array. In this case, you cannot take the dot product of $b$ with itself, because the dimensions are incompatible. You must transpose the second argument to make it dimensionally consistent. Also, the result of the dot product is not a simple scalar, but a 1 \times 1 array.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 b = np.array([[0, 1, 2]])
 print b.shape
 print b
@@ -2848,7 +2848,7 @@ ValueError: objects are not aligned
 #+end_example
 
 Try to figure this one out! x is a column vector, and y is a 1d vector. Just by adding them you get a 2d array.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 x = np.array([[2], [4], [6], [8]])
 y = np.array([1, 1, 1, 1, 1, 2])
 print x + y
@@ -2862,7 +2862,7 @@ print x + y
 :  [ 9  9  9  9  9 10]]
 
 Or this crazy alternative way to do the same thing.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 x = np.array([2, 4, 6, 8])
 y = np.array([1, 1, 1, 1, 1, 1, 2])
 
@@ -2877,7 +2877,7 @@ print x[:, np.newaxis] + y
 :  [ 9  9  9  9  9  9 10]]
 
 In the next example,  we have a 3 element vector and a 4 element vector. We convert $b$ to a 2D array with np.newaxis, and compute the outer product of the two arrays. The result is a 4 \times 3 array.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 a = np.array([1, 2, 3])
 b = np.array([10, 20, 30, 40])
 
@@ -2912,11 +2912,11 @@ reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
 
 When solving linear equations, we can represent them in matrix form. The we simply use =numpy.linalg.solve= to get the solution.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [20, 10, 0]])
+	      [0, 10, 25],
+	      [20, 10, 0]])
 
 b = np.array([0, 90, 80])
 
@@ -2942,11 +2942,11 @@ print np.abs((np.dot(A, x) - b)) <= TOLERANCE
 
 It can be useful to confirm there should be a solution, e.g. that the equations are all independent. The matrix rank will tell us that. Note that numpy:rank does not give you the matrix rank, but rather the number of dimensions of the array. We compute the rank by computing the number of singular values of the matrix that are greater than zero, within a prescribed tolerance. We use the =numpy.linalg.svd= function for that. In Matlab you would use the rref command to see if there are any rows that are all zero, but this command does not exist in numpy. That command does not have practical use in numerical linear algebra and has not been implemented.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [20, 10, 0]])
+	      [0, 10, 25],
+	      [20, 10, 0]])
 
 b = np.array([0, 90, 80])
 
@@ -2960,8 +2960,8 @@ print '# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE))
 # to illustrate a case where there are only 2 independent rows
 # consider this case where row3 = 2*row2.
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [0, 20, 50]])
+	      [0, 10, 25],
+	      [0, 20, 50]])
 
 u, s, v = np.linalg.svd(A)
 
@@ -3003,10 +3003,10 @@ by E. Kreyszig.
 There are two ways to get the transpose of a matrix: with a notation, and
 with a function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 # function
 print np.transpose(A)
@@ -3026,11 +3026,11 @@ print A.T
 
 *** Rule 1
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 print np.all(A == (A.T).T)
 #+END_SRC
@@ -3040,10 +3040,10 @@ print np.all(A == (A.T).T)
 
 *** Rule 2
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 B = np.array([[3, 4, 5], [1, 2,3]])
 
@@ -3055,10 +3055,10 @@ print np.all( A.T + B.T == (A + B).T)
 
 *** Rule 3
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 c = 2.1
 
@@ -3070,14 +3070,14 @@ print np.all( (c*A).T == c*A.T)
 
 *** Rule 4
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 B = np.array([[0, 2],
-              [1, 2],
-              [6, 7]])
+	      [1, 2],
+	      [6, 7]])
 
 print np.all(np.dot(A, B).T == np.dot(B.T, A.T))
 #+END_SRC
@@ -3116,7 +3116,7 @@ We can compute this with a loop, where you initialize y, and then
  add the product of the ith elements of a and b to y in each
 iteration of the loop. This is known to be slow for large vectors
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = [1, 2, 3, 4, 5]
 b = [3, 6, 8, 9, 10]
 
@@ -3130,7 +3130,7 @@ print sum
 : 125
 
 This is an old fashioned style of coding. A more modern, pythonic approach is:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = [1, 2, 3, 4, 5]
 b = [3, 6, 8, 9, 10]
 
@@ -3145,7 +3145,7 @@ print sum
 
 *** The numpy approach
 The most compact method is to use the  methods in numpy.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 a = np.array([1, 2, 3, 4, 5])
@@ -3160,7 +3160,7 @@ print np.sum(a * b)
 *** Matrix algebra approach.
 The operation defined above is actually a dot product. We an directly compute the dot product in numpy. Note that with 1d arrays, python knows what to do and does not require any transpose operations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 a = np.array([1, 2, 3, 4, 5])
@@ -3176,7 +3176,7 @@ print np.dot(a, b)
 Consider $y = \sum\limits_{i=1}^n w_i x_i^2$. This operation is like a weighted sum of squares.
 The old-fashioned way to do this is with a loop.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 w = [0.1, 0.25, 0.12, 0.45, 0.98];
 x = [9, 7, 11, 12, 8];
 y = 0
@@ -3190,7 +3190,7 @@ print y
 
 Compare this to the more modern numpy approach.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
 x = np.array([9, 7, 11, 12, 8])
@@ -3203,7 +3203,7 @@ print y
 
 We can also express this in matrix algebra form. The operation is equivalent to $y = \vec{x} \cdot D_w \cdot \vec{x}^T$ where $D_w$ is a diagonal matrix with the weights on the diagonal.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
 x = np.array([9, 7, 11, 12, 8])
@@ -3219,7 +3219,7 @@ This last form avoids explicit loops and sums, and relies on fast linear algebra
 *** Last example
 Consider the sum of the product of three vectors. Let $y = \sum\limits_{i=1}^n w_i x_i y_i$. This is like a weighted sum of products. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
@@ -3269,7 +3269,7 @@ Matlab provides a rank command which gives you the number of singular values gre
 
 The default tolerance used in Matlab is max(size(A))*eps(norm(A)). Let us break that down. eps(norm(A)) is the positive distance from abs(X) to the next larger in magnitude floating point number of the same precision as X. Basically, the smallest significant number. We multiply that by the size of A, and take the largest number. We have to use some judgment in what the tolerance is, and what "zero" means.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 v1 = [6, 0, 3, 1, 4, 2];
 v2 = [0, -1, 2, 7, 0, 5];
@@ -3315,7 +3315,7 @@ transpose each side of the equation to get:
 
 which is the form Ax = b. We solve it in a least-squares sense.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 A = np.column_stack([v1, v2])
 x = np.linalg.lstsq(A, v3)
 print x[0]
@@ -3328,7 +3328,7 @@ print x[0]
 This shows that v3 = 2*v1 - 3*v2
 
 *** another example
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 #Problem set 7.4 #17
 import numpy as np
 
@@ -3349,7 +3349,7 @@ You can tell by inspection the rank is 2 because there are no near-zero singular
 
 the rank command roughly works in the following way: the matrix is converted to a reduced row echelon form, and then the number of rows that are not all equal to zero are counted. Matlab uses a tolerance to determine what is equal to zero. If there is uncertainty in the numbers, you may have to define what zero is, e.g. if the absolute value of a number is less than 1e-5, you may consider that close enough to be zero. The default tolerance is usually very small, of order 1e-15. If we believe that any number less than 1e-5 is practically equivalent to zero, we can use that information to compute the rank like this.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 A = [[1, 2, 3],
@@ -3377,7 +3377,7 @@ Let this be our species vector: v = [H2 H Br2 Br HBr].T
 
 the reactions are then defined by M*v where M is a stoichometric matrix in which each row represents a reaction with negative stoichiometric coefficients for reactants, and positive stoichiometric coefficients for products. A stoichiometric coefficient of 0 is used for species not participating in the reaction.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 #    [H2  H Br2 Br HBr]
@@ -3402,11 +3402,11 @@ labels = ['H2',  'H', 'Br2', 'Br', 'HBr']
 for row in reduced_form.tolist():
     s = '0 = '
     for nu,species in zip(row,labels):
-        if nu != 0:
-            
-            s += ' {0:+d}{1}'.format(int(nu), species)
+	if nu != 0:
+
+	    s += ' {0:+d}{1}'.format(int(nu), species)
     if s != '0 = ': print s
-    
+
 
 #+END_SRC
 
@@ -3439,13 +3439,13 @@ There are many possible independent reactions. In the code above, we use sympy t
 
 There is a nice discussion [[http://numpy-discussion.10968.n7.nabble.com/Reduced-row-echelon-form-td16486.html][here]] on why there is not a rref command in numpy, primarily because one rarely actually needs it in linear algebra. Still, it is so often taught, and it helps visually see what the rank of a matrix is that I wanted to examine ways to get it.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from sympy import Matrix
 
 A = np.array([[3, 2, 1],
-              [2, 1, 1],
-              [6, 2, 4]])
+	      [2, 1, 1],
+	      [6, 2, 4]])
 
 rA, pivots =  Matrix(A).rref()
 print rA
@@ -3460,13 +3460,13 @@ This rref form is a bit different than you might get from doing it by hand. The 
 
 Based on this, we conclude the $A$ matrix has a rank of 2 since one row of the reduced form contains all zeros. That means the determinant will be zero, and it should not be possible to compute the inverse of the matrix, and there should be no solution to linear equations of $A x = b$. Let us check it out. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from sympy import Matrix
 
 A = np.array([[3, 2, 1],
-              [2, 1, 1],
-              [6, 2, 4]])
+	      [2, 1, 1],
+	      [6, 2, 4]])
 
 print np.linalg.det(A)
 print np.linalg.inv(A)
@@ -3501,13 +3501,13 @@ There are a few properties of a matrix that can make it easy to compute determin
 
 The LU decomposition computes three matrices such that $A = P L U$. Thus, $\det A = \det P \det L \det U$. $L$ and $U$ are triangular, so we just need to compute the product of the diagonals. $P$ is not triangular, but if the elements of the diagonal are not 1, they will be zero, and then there has been a swap. So we simply subtract the sum of the diagonal from the length of the diagonal and then subtract 1 to get the number of swaps.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.linalg import lu
 
 A = np.array([[6, 2, 3],
-              [1, 1, 1],
-              [0, 4, 9]])
+	      [1, 1, 1],
+	      [0, 4, 9]])
 
 P, L, U = lu(A)
 
@@ -3571,15 +3571,15 @@ b = \left(
 \end{equation}
 
 The $A$ matrix has one lower diagonal (kl = 1) and two upper diagonals (ku = 2), four equations (n = 4) and one right-hand side.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import scipy.linalg.lapack as la
 
 # http://www.nag.com/lapack-ex/node22.html
 import numpy as np
 A = np.array([[-1.65 + 2.26j, -2.05 - 0.85j,  0.97 - 2.84j,  0.0         ],
-              [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
-              [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
-              [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
+	      [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
+	      [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
+	      [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
 
 # construction of Ab is tricky.  Fortran indexing starts at 1, not
 # 0. This code is based on the definition of Ab at
@@ -3591,12 +3591,12 @@ n, kl, ku = 4, 1, 2
 
 for j in range(1, n + 1):
     for i in range(max(1, j - ku), min(n, j + kl) + 1):
-        Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
+	Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
 
 b = np.array([[-1.06  + 21.50j],
-              [-22.72 - 53.90j],
-              [28.24 - 38.60j],
-              [-34.56 + 16.73j]])
+	      [-22.72 - 53.90j],
+	      [28.24 - 38.60j],
+	      [-34.56 + 16.73j]])
 
 lub, piv, x, info = la.flapack.zgbsv(kl, ku, Ab, b)
 
@@ -3651,7 +3651,7 @@ nu = 0.5*u.L/u.s;
 k = 0.23 * u.L/u.mol/u.s;
 #+END_EXAMPLE
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -3676,7 +3676,7 @@ def func(Ca):
 
 Let us plot the function to estimate the solution.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 c = np.linspace(0.001, 2) * mol / L
 
 plt.plot(c, func(c))
@@ -3695,7 +3695,7 @@ plt.savefig('images/nonlin-tolerance.png')
 
 Now let us solve the equation. It looks like an answer is near C=500. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 
 cguess = 500
@@ -3727,7 +3727,7 @@ $$100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa$$
 
 We start by creating a function handle that describes the integrand. We can use this function in the quad command to evaluate the integral.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import quad
 from scipy.optimize import fsolve
@@ -3751,7 +3751,7 @@ vfunc = np.vectorize(func)
 
 We will need an initial guess, so we make a plot of our function to get an idea.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 
 f = np.linspace(0.01, 1)
@@ -3770,7 +3770,7 @@ plt.show()
 
 Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 Fa_guess = 0.1
 Fa_exit, = fsolve(vfunc, Fa_guess)
 print 'The exit concentration is {0:1.2f} mol/L'.format(Fa_exit / nu)
@@ -3800,7 +3800,7 @@ $1 + 2x - 3y + x^2 + xy - y e^x = 0$
 
 In principle this is easy, we simply need some initial guesses and a nonlinear solver. The challenge here is what would you guess? There could be many solutions. The equations are implicit, so it is not easy to graph them, but let us give it a shot, starting on the x range -5 to 5. The idea is set a value for x, and then solve for y in each equation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.optimize import fsolve
 
@@ -3818,7 +3818,7 @@ x = np.linspace(-5, 5, 500)
 def fy(x):
     x0 = 0.0
     def tmp(y):
-        return f(x, y)
+	return f(x, y)
     y1, = fsolve(tmp, x0)
     return y1
 
@@ -3826,7 +3826,7 @@ def fy(x):
 def gy(x):
     x0 = 0.0
     def tmp(y):
-        return g(x, y)
+	return g(x, y)
     y1, = fsolve(tmp, x0)
     return y1
 
@@ -3857,7 +3857,7 @@ plt.savefig('images/continuation-1.png')
 
 You can see there is a solution near x = -1, y = 0, because both functions equal zero there. We can even use that guess with fsolve. It is disappointly easy! But, keep in mind that in 3 or more dimensions, you cannot perform this visualization, and another method could be required.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def func(X):
     x,y = X
     return [f(x, y), g(x, y)]
@@ -3886,7 +3886,7 @@ $2x - 3y = -1$
 
 These equations are trivial to solve:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 x0 = np.linalg.solve([[1., 1.], [2., -3.]],[ -2, -1])
 print x0
 #+END_SRC
@@ -3918,7 +3918,7 @@ For this set of equations:
 
 Now, we simply set up those two differential equations on $\frac{\partial x}{\partial \lambda}$ and $\frac{\partial y}{\partial \lambda}$, with the initial conditions at $\lambda = 0$ which is the solution of the simpler linear equations, and integrate to $\lambda = 1$, which is the final solution of the original equations!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def ode(X, LAMBDA):
     x,y = X
     pfpx = 1.0 - 2.0 * LAMBDA * x + 8 * LAMBDA * y
@@ -3972,7 +3972,7 @@ $$ \frac{\partial x}{\partial \lambda} = -\frac{\partial f}{\partial \lambda}/\f
 
 That defines an ordinary differential equation that we can solve by integrating from $\lambda=0$ where we know the solution to $\lambda=1$ which is the solution to the real problem. For this problem: $\frac{\partial f}{\partial \lambda}=x^2$ and $\frac{\partial f}{\partial x}=-5 + 2\lambda x$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -3996,7 +3996,7 @@ plt.savefig('images/nonlin-contin-II-1.png')
 
 We found one solution at x=2. What about the other solution? To get that we have to introduce $\lambda$ into the equations in another way. We could try: $f(x;\lambda) = x^2 + \lambda(-5x + 6)$, but this leads to an ODE that is singular at the initial starting point. Another approach is $f(x;\lambda) = x^2 + 6 + \lambda(-5x)$, but now the solution at $\lambda=0$ is imaginary, and we do not have a way to integrate that! What we can do instead is add and subtract a number like this: $f(x;\lambda) = x^2 - 4 + \lambda(-5x + 6 + 4)$. Now at $\lambda=0$, we have a simple equation with roots at $\pm 2$, and we already know that $x=2$ is a solution. So, we create our ODE on $dx/d\lambda$ with initial condition $x(0) = -2$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -4035,7 +4035,7 @@ $$f(x) = x^3 + 6x^2 - 4x -24$$
 
 This ony works for a polynomial, it does not work for any other nonlinear function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 print np.roots([1, 6, -4, -24])
 #+END_SRC
@@ -4045,7 +4045,7 @@ print np.roots([1, 6, -4, -24])
 
 Let us plot the function to see where the roots are.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -4065,7 +4065,7 @@ Now we consider several approaches to counting the number of roots in this inter
 
 Count the number of times the sign changes in the interval. What we have to do is multiply neighboring elements together, and look for negative values. That indicates a sign change. For example the product of two positive or negative numbers is a positive number. You only get a negative number from the product of a positive and negative number, which means the sign changed.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -4088,7 +4088,7 @@ $$f'(x) = 3x^2 + 12x - 4$$
 
 with f(-8) = -120
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from pycse import odelay
 
@@ -4126,7 +4126,7 @@ for te, ye in zip(TE, YE):
 There is a heat transfer problem where one needs to find the n^th root of the following equation: $x J_1(x) - Bi J_0(x)=0$ where $J_0$ and $J_1$ are the Bessel functions of zero and first order, and $Bi$ is the Biot number. We examine an approach to finding these roots. 
 
 First,  we plot the function.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.special import jn, jn_zeros
 import matplotlib.pyplot as plt
 import numpy as np
@@ -4147,7 +4147,7 @@ plt.savefig('images/heat-transfer-roots-1.png')
 
 You can see there are many roots to this equation, and we want to be sure we get the n^{th} root. This function is pretty well behaved, so if you make a good guess about the solution you will get an answer, but if you make a bad guess, you may get the wrong root. We examine next a way to do it without guessing the solution. What we want is the solution to $f(x) = 0$, but we want all the solutions in a given interval. We derive a new equation, $f'(x) = 0$, with initial condition $f(0) = f0$, and integrate the ODE with an event function that identifies all zeros of $f$ for us. The derivative of our function is $df/dx = d/dx(x J_1(x)) - Bi J'_0(x)$. It is known (http://www.markrobrien.com/besselfunct.pdf) that $d/dx(x J_1(x)) = x J_0(x)$, and $J'_0(x) = -J_1(x)$. All we have to do now is set up the problem and run it.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import *  # contains the ode integrator with events
 
 from scipy.special import jn, jn_zeros
@@ -4220,7 +4220,7 @@ y &=& 8 - x^2
 
 To solve this we need to setup a function that is equal to zero at the solution. We have two equations, so our function must return two values. There are two variables, so the argument to our function will be an array of values. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 
 def objective(X):
@@ -4258,7 +4258,7 @@ print sol
 
 Given several measurements of a single quantity, determine the average value of the measurements, the standard deviation of the measurements and the 95% confidence interval for the average.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 y = [8.1, 8.0, 8.1]
@@ -4287,7 +4287,7 @@ Here is the principle of computing a confidence interval.
 
 The confidence interval is defined as ybar +- T_multiplier*std/sqrt(n).
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.stats.distributions import  t
 ci = 0.95
 alpha = 1.0 - ci
@@ -4325,7 +4325,7 @@ subtract 1 because one degree of freedom is lost from calculating the
 average. The confidence interval is defined as
 ybar +- T_multiplier*std/sqrt(n).
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.stats.distributions import  t
 
@@ -4357,7 +4357,7 @@ We are 95% certain the next measurement will fall in the interval above.
    :updated:  2013/04/09 08:54:05
    :END:
 mod:scipy has a statistical package available for getting statistical distributions. This is useful for computing confidence intervals using the student-t tables. Here is an example of computing a 95% confidence interval on an average.
-#+BEGIN_SRC python :results output :exports both
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.stats.distributions import  t
 
@@ -4396,7 +4396,7 @@ The hypothesis:
 
 the true averages are the same. We need to perform a two-sample t-test of the hypothesis that $\mu_1 - \mu_2 = 0$ (this is often called the null hypothesis). we use a two-tailed test because we do not care if the difference is positive or negative, either way means the averages are not the same.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 n1 = 30  # students in class A
@@ -4422,7 +4422,7 @@ see the discussion at http://stattrek.com/Help/Glossary.aspx?Target=Two-sample%2
 compute the t-score for our data
 
 The difference between two averages determined from small sample numbers follows the t-distribution. the t-score is the difference between the difference of the means and the hypothesized difference of the means, normalized by the standard error. we compute the absolute value of the t-score to make sure it is positive for convenience later.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 tscore = np.abs(((x1 - x2) - 0) / SE)
 print tscore
 #+END_SRC
@@ -4438,7 +4438,7 @@ A way to approach determinining if the difference is significant or not is to as
 Let us compute the t-value that corresponds to a 95% confidence level for a mean of zero with the degrees of freedom computed earlier. This means that 95% of the t-scores we expect to get will fall within $\pm$ t95.
 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.stats.distributions import  t
 
 ci = 0.95;
@@ -4454,7 +4454,7 @@ print t95
 
 since tscore < t95, we conclude that at the 95% confidence level we cannot say these averages are statistically different because our computed t-score falls in the expected range of deviations. Note that our t-score is very close to the 95% limit. Let us consider a smaller confidence interval.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 ci = 0.94
 alpha = 1 - ci;
 t95 = t.ppf(1.0 - alpha/2.0, DF)
@@ -4471,7 +4471,7 @@ another way to get there
 
 An alternative way to get the confidence that the averages are different is to directly compute it from the cumulative t-distribution function. We compute the difference between all the t-values less than tscore and the t-values less than -tscore, which is the fraction of measurements that are between them. You can see here that we are practically 95% sure that the averages are different.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 f = t.cdf(tscore, DF) - t.cdf(-tscore, DF)
 print f
 #+END_SRC
@@ -4503,7 +4503,7 @@ Run          Ambient                            Fitted
 
 We need to read the data in, and perform a regression analysis on P vs. T. In python we start counting at 0, so we actually want columns 3 and 4.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -4527,7 +4527,7 @@ plt.savefig('images/model-selection-1.png')
 
 It appears the data is roughly linear, and we know from the ideal gas law that PV = nRT, or P = nR/V*T, which says P should be linearly correlated with V. Note that the temperature data is in degC, not in K, so it is not expected that P=0 at T = 0. We will use linear algebra to compute the line coefficients. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 A = np.vstack([T**0, T]).T
 b = P
 
@@ -4565,7 +4565,7 @@ The confidence interval on the intercept is large, but it does not contain zero 
 
 The R^2 value accounts roughly for the fraction of variation in the data that can be described by the model. Hence, a value close to one means nearly all the variations are described by the model, except for random variations.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 ybar = np.mean(P)
 SStot = np.sum((P - ybar)**2)
 SSerr = np.sum((P - np.dot(A, x))**2)
@@ -4577,7 +4577,7 @@ print R2
 : 
 : >>> >>> >>> 0.993715411798
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure(); plt.clf()
 plt.plot(T, P, 'k.', T, np.dot(A, x), 'b-')
 plt.xlabel('Temperature')
@@ -4597,7 +4597,7 @@ plt.savefig('images/model-selection-2.png')
 
 The fit looks good, and R^2 is near one, but is it a good model? There are a few ways to examine this. We want to make sure that there are no systematic trends in the errors between the fit and the data, and we want to make sure there are not hidden correlations with other variables. The residuals are the error between the fit and the data. The residuals should not show any patterns when plotted against any variables, and they do not in this case.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 residuals = P - np.dot(A, x)
 
 plt.figure()
@@ -4637,7 +4637,7 @@ There may be some correlations in the residuals with the run order. That could i
 
 We assume all the errors are uncorrelated with each other. We can use a lag plot to assess this, where we plot residual[i] vs residual[i-1], i.e. we look for correlations between adjacent residuals. This plot should look random, with no correlations if the model is good.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure(); plt.clf()
 plt.plot(residuals[1:-1], residuals[0:-2],'ko')
 plt.xlabel('residual[i]')
@@ -4657,7 +4657,7 @@ It is hard to argue there is any correlation here.
 
 Lets consider a quadratic model instead.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 A = np.vstack([T**0, T, T**2]).T
 b = P;
 
@@ -4703,7 +4703,7 @@ You can see that the confidence interval on the constant and T^2 term includes z
 
 Let us consider a model with intercept = 0, P = alpha*T. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 A = np.vstack([T]).T
 b = P;
 
@@ -4754,7 +4754,7 @@ plt.savefig('images/model-selection-no-intercept.png')
 The fit is visually still pretty good, and the R^2 value is only slightly worse. Let us examine the residuals again. 
 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 residuals = P - np.dot(A,x)
 
 plt.figure()
@@ -4792,7 +4792,7 @@ We will use a Monte Carlo simulation to illustrate error propagation. The idea i
 We will assume all parameters are defined by a normal distribution with known mean and standard deviation.
 
 *** Addition and subtraction
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -4824,7 +4824,7 @@ print np.sqrt(A_sigma**2 + B_sigma**2) # the analytical std dev
 
 *** Multiplication 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 F_mu = 25.0; F_sigma = 1;
 x_mu = 6.4; x_sigma = 0.4;
 
@@ -4844,7 +4844,7 @@ print np.sqrt((F_sigma / F_mu)**2 + (x_sigma / x_mu)**2) * F_mu * x_mu
 *** Division
 This is really like multiplication: F / x = F * (1 / x).
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 d = F / x
 print np.std(d)
 print np.sqrt((F_sigma / F_mu)**2 + (x_sigma / x_mu)**2) * F_mu / x_mu
@@ -4858,7 +4858,7 @@ print np.sqrt((F_sigma / F_mu)**2 + (x_sigma / x_mu)**2) * F_mu / x_mu
 *** exponents
 This rule is different than multiplication (A^2 = A*A) because in the previous examples we assumed the errors in A and B for A*B were uncorrelated. in A*A, the errors are not uncorrelated, so there is a different rule for error propagation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 t_mu = 2.03; t_sigma = 0.01*t_mu; # 1% error
 A_mu = 16.07; A_sigma = 0.06;
 
@@ -4875,7 +4875,7 @@ print (5 * t_sigma / t_mu) * t_mu**5
 : >>> >>> >>> >>> >>> ... 1.72454836176
 : 1.72365440621
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print np.std(np.sqrt(A))
 print 1.0 / 2.0 * A_sigma / A_mu * np.sqrt(A_mu)
 #+END_SRC
@@ -4888,7 +4888,7 @@ print 1.0 / 2.0 * A_sigma / A_mu * np.sqrt(A_mu)
 
 let v = v0 + a*t, with uncertainties in vo,a and t
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 vo_mu = 1.2; vo_sigma = 0.02;
 a_mu = 3.0;  a_sigma  = 0.3;
 t_mu = 12.0; t_sigma  = 0.12;
@@ -4928,7 +4928,7 @@ You can numerically perform error propagation analysis if you know the underlyin
 In the previous section we examined an analytical approach to error propagation, and a simulation based approach. There is another approach to error propagation, using the uncertainties module (https://pypi.python.org/pypi/uncertainties/). You have to install this package, e.g. =pip install uncertainties=. After that, the module provides new classes of numbers and functions that incorporate uncertainty and propagate the uncertainty through the functions. In the examples that follow, we repeat the calculations from the previous section using the uncertainties module. 
 
 _Addition and subtraction_
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import uncertainties as u
 
 A = u.ufloat((2.5, 0.4))
@@ -4943,7 +4943,7 @@ print A - B
 : -1.6+/-0.5
 
 _Multiplication and division_
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 F = u.ufloat((25, 1))
 x = u.ufloat((6.4, 0.4))
 
@@ -4960,7 +4960,7 @@ print d
 : >>> >>> 3.90625+/-0.289859806243
 
 _Exponentiation_
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 t = u.ufloat((2.03, 0.0203))
 print t**5
 
@@ -4981,7 +4981,7 @@ print unp.sqrt(A)
 
 Note in the last example, we had to either import a function from uncertainties.umath or import a special version of numpy that handles uncertainty. This may be a limitation of the uncertainties package as not all functions in arbitrary modules can be covered. Note, however, that you can wrap a function to make it handle uncertainty like this.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 wrapped_sqrt = u.wrap(np.sqrt)
@@ -4993,13 +4993,13 @@ print wrapped_sqrt(A)
 : >>> >>> 4.00874045057+/-0.00748364738774
 
 _Propagation of errors in an integral_
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import uncertainties as u
 
 x = np.array([u.ufloat((1, 0.01)), 
-              u.ufloat((2, 0.1)),
-              u.ufloat((3, 0.1))])
+	      u.ufloat((2, 0.1)),
+	      u.ufloat((3, 0.1))])
 
 y = 2 * x
 
@@ -5011,7 +5011,7 @@ print np.trapz(x, y)
 : >>> >>> ... ... >>> >>> >>> >>> 8.0+/-0.600333240792
 
 _Chain rule in error propagation_
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 v0 = u.ufloat((1.2, 0.02))
 a = u.ufloat((3.0, 0.3))
 t = u.ufloat((12.0, 0.12))
@@ -5027,7 +5027,7 @@ print v
 _A real example?_
 This is what I would setup for a real working example. We try to compute the exit concentration from a CSTR. The idea is to wrap the "external" fsolve function using the =uncertainties.wrap= function, which handles the units. Unfortunately, it does not work, and it is not clear why. But see the following discussion for a fix. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 
 Fa0 = u.ufloat((5.0, 0.05))
@@ -5065,7 +5065,7 @@ I got a note from the author of the uncertainties package explaining the cryptic
 - Step 3. Use uncertainties.wrap to wrap the function in Step 2 to get the answer with uncertainties.
 
 Here is the code that does work:
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python 
 import uncertainties as u
 from scipy.optimize import fsolve
 
@@ -5102,7 +5102,7 @@ It would take some practice to get used to this, but the payoff is that you have
 
 Being ever the skeptic, let us compare the result above to the Monte Carlo approach to error estimation below.
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.optimize import fsolve
 
@@ -5116,7 +5116,7 @@ SOL = np.zeros((1, N))
 
 for i in range(N):
     def func(Ca):
-        return Fa0[0,i] - v0[0,i] * Ca + V[0,i] * (-k[0,i] * Ca**2)
+	return Fa0[0,i] - v0[0,i] * Ca + V[0,i] * (-k[0,i] * Ca**2)
     SOL[0,i] = fsolve(func, 0.1 * Fa0[0,i] / v0[0,i])[0]
 
 print 'Ca(exit) = {0}+/-{1}'.format(np.mean(SOL), np.std(SOL))
@@ -5149,7 +5149,7 @@ Random numbers are used in a variety of simulation methods, most notably Monte C
 
 Say you are the gambling type, and bet your friend $5 the next random number will be greater than 0.49. Let us ask Python to roll the random number generator for us.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 n = np.random.uniform()
@@ -5167,7 +5167,7 @@ else:
 
 The odds of you winning the last bet are slightly stacked in your favor. There is only a 49% chance your friend wins, but a 51% chance that you win. Lets play the game a lot of times times and see how many times you win, and your friend wins. First, lets generate a bunch of numbers and look at the distribution with a histogram.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 N = 10000
@@ -5192,7 +5192,7 @@ As you can see you win slightly more than you lost.
 
 It is possible to get random integers. Here are a few examples of getting a random integer between 1 and 100. You might do this to get random indices of a list, for example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 print np.random.random_integers(1, 100)
@@ -5208,7 +5208,7 @@ print np.random.random_integers(1, 100, (2,2))
 
 The normal distribution is defined by $f(x)=\frac{1}{\sqrt{2\pi \sigma^2}} \exp (-\frac{(x-\mu)^2}{2\sigma^2})$ where $\mu$ is the mean value, and $\sigma$ is the standard deviation. In the standard distribution, $\mu=0$ and $\sigma=1$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 mu = 1
@@ -5223,7 +5223,7 @@ print np.random.normal(mu, sigma, 2)
 
 Let us compare the sampled distribution to the analytical distribution. We generate a large set of samples, and calculate the probability of getting each value using the matplotlib.pyplot.hist command.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5246,7 +5246,7 @@ What fraction of points lie between plus and minus one standard deviation of the
 
 samples >= mu-sigma will return a vector of ones where the inequality is true, and zeros where it is not. (samples >= mu-sigma) & (samples <= mu+sigma) will return a vector of ones where there is a one in both vectors, and a zero where there is not. In other words, a vector where both inequalities are true. Finally, we can sum the vector to get the number of elements where the two inequalities are true, and finally normalize by the total number of samples to get the fraction of samples that are greater than -sigma and less than sigma.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5278,7 +5278,7 @@ We only considered the numpy.random functions here, and not all of them. There a
 
 We want to fit a line to this data:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 x = [0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10]
 y = [0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147]
 #+END_SRC
@@ -5287,7 +5287,7 @@ y = [0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147]
 
 We use the polyfit(x, y, n) command where n is the polynomial order, n=1 for a line.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 p = np.polyfit(x, y, 1)
@@ -5303,7 +5303,7 @@ print slope, intercept
 
 To show the fit, we can use numpy.polyval to evaluate the fit at many points.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 
 xfit = np.linspace(0, 10)
@@ -5346,7 +5346,7 @@ etc...
 
 Which we write in matrix form as $A p = y$ where $A$ is a matrix of column vectors, e.g. [1, x_i]. $A$ is not a square matrix, so we cannot solve it as written. Instead, we form $A^T A p = A^T y$ and solve that set of equations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 x = np.array([0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10])
 y = np.array([0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147])
@@ -5394,7 +5394,7 @@ We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the d
 
 =pycse= now has a regress function similar to Matlab. That function just uses the code in the next example (also seen [[http://jkitchin.github.io/blog/2013/02/18/Linear-regression-with-confidence-intervals/][here]]).
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import regress
 import numpy as np
 time = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
@@ -5425,7 +5425,7 @@ Fit a fourth order polynomial to this data and determine the confidence interval
 
 We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the data in the least squares sense. We can write this in a linear algebra form as: T*p = Ca where T is a matrix of columns [1 t t^2 t^3 t^4], and p is a column vector of the fitting parameters. We want to solve for the p vector and estimate the confidence intervals.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.stats.distributions import  t
 
@@ -5491,7 +5491,7 @@ A fourth order polynomial fits the data well, with a good R^2 value. All of the 
    :END:
 Here is a typical nonlinear function fit to data. you need to provide an initial guess. In this example we fit the Birch-Murnaghan equation of state to energy vs. volume data from density functional theory calculations.
 
-#+BEGIN_SRC python :results outputt
+#+BEGIN_SRC python 
 from scipy.optimize import leastsq
 import numpy as np
 
@@ -5545,7 +5545,7 @@ See additional examples at \url{http://docs.scipy.org/doc/scipy/reference/tutori
    :updated:  2013/02/27 14:40:50
    :END:
 Here is an example of fitting a nonlinear function to data by direct minimization of the summed squared error. 
-#+BEGIN_SRC python :results output :exports both
+#+BEGIN_SRC python 
 from scipy.optimize import fmin
 import numpy as np
 
@@ -5604,7 +5604,7 @@ plt.savefig('images/nonlinear-fitting-lsq.png')
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/10/nonlinearfit_minsse-m/][Matlab post]]
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5627,7 +5627,7 @@ plt.savefig('images/nonlin-minsse-1.png')
 
 We are going to fit the function $y = x^a$ to the data. The best $a$ will minimize the summed squared error between the model and the fit. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def errfunc_(a):
     return np.sum((y - x**a)**2)
 
@@ -5654,7 +5654,7 @@ plt.savefig('images/nonlin-minsse-2.png')
 
 Based on the graph above, you can see a minimum in the summed squared error near $a = 2.1$. We use that as our initial guess. Since we know the answer is bounded, we use scipy.optimize.fminbound
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.optimize import fminbound
 
 amin = fminbound(errfunc, 1.0, 3.0)
@@ -5698,7 +5698,7 @@ In this example we use a nonlinear curve-fitting function: scipy.optimize.curve_
 
 We will fit the function $y = a x / (b + x)$ to some data, and compute the 95% confidence intervals on the parameters.
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python 
 # Nonlinear curve fit with confidence interval
 import numpy as np
 from scipy.optimize import curve_fit
@@ -5728,8 +5728,8 @@ tval = t.ppf(1.0-alpha/2., dof)
 for i, p,var in zip(range(n), pars, np.diag(pcov)):
     sigma = var**0.5
     print 'p{0}: {1} [{2}  {3}]'.format(i, p,
-                                  p - sigma*tval,
-                                  p + sigma*tval)
+				  p - sigma*tval,
+				  p + sigma*tval)
 
 import matplotlib.pyplot as plt
 plt.plot(x,y,'bo ')
@@ -5762,7 +5762,7 @@ Our goal is to fit this equation to data $y = c1 exp(-x) + c2*x$ and compute the
 This is actually could be a linear regression problem, but it is convenient to illustrate the  use the nonlinear fitting routine because it makes it easy to get
 confidence intervals for comparison. The basic idea is to use the covariance matrix returned from the nonlinear fitting routine to estimate the student-t corrected confidence interval. 
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python 
 # Nonlinear curve fit with confidence interval
 import numpy as np
 from scipy.optimize import curve_fit
@@ -5770,7 +5770,7 @@ from scipy.stats.distributions import  t
 
 x = np.array([ 0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9,  1. ])
 y = np.array([ 4.70192769,  4.46826356,  4.57021389,  4.29240134,  3.88155125,
-               3.78382253,  3.65454727,  3.86379487,  4.16428541,  4.06079909])
+	       3.78382253,  3.65454727,  3.86379487,  4.16428541,  4.06079909])
 
 # this is the function we want to fit to our data
 def func(x,c0, c1):
@@ -5790,8 +5790,8 @@ tval = t.ppf(1.0 - alpha / 2.0, dof) # student-t value for the dof and confidenc
 for i, p,var in zip(range(n), pars, np.diag(pcov)):
     sigma = var**0.5
     print 'c{0}: {1} [{2}  {3}]'.format(i, p,
-                                  p - sigma*tval,
-                                  p + sigma*tval)
+				  p - sigma*tval,
+				  p + sigma*tval)
 
 import matplotlib.pyplot as plt
 plt.plot(x,y,'bo ')
@@ -5821,7 +5821,7 @@ Fit the model f(x1,x2; a,b) = a*x1 + x2^b to the data given below. This model ha
 
 We want to do a nonlinear fit to find a and b that minimize the summed squared errors between the model predictions and the data. With only two variables, we can graph how the summed squared error varies with the parameters, which may help us get initial guesses. Let us assume the parameters lie in a range, here we choose 0 to 5. In other problems you would adjust this as needed.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -5852,7 +5852,7 @@ def model(X, a, b):
     'Nested function for the model'
     x1 = X[:, 0]
     x2 = X[:, 1]
-    
+
     f = a * x1 + x2**b
     return f
 
@@ -5923,7 +5923,7 @@ It can be difficult to figure out initial guesses for nonlinear fitting problems
 
 Suppose we know the concentration of A follows this differential equation: $\frac{dC_A}{dt} = -k C_A$, and we have data we want to fit to it. Here is an example of doing that.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.integrate import odeint
@@ -5935,7 +5935,7 @@ Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
 def fitfunc(t, k):
     'Function that returns Ca computed from an ODE for a k'
     def myode(Ca, t):
-        return -k * Ca
+	return -k * Ca
 
     Ca0 = Ca_data[0]
     Casol = odeint(myode, Ca0, t)
@@ -5976,7 +5976,7 @@ sometimes you will get data in a delimited text file format, .e.g. separated by 
 #+END_EXAMPLE
 
 It is easy to read this directly into variables like this:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 x,y = np.loadtxt('data/testdata.txt', unpack=True)
@@ -5998,7 +5998,7 @@ index:interpolation
 
 We often have some data that we have obtained in the lab, and we want to solve some problem using the data. For example, suppose we have this data that describes the value of f at time t.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 
 t = [0.5, 1, 3, 6]
@@ -6020,7 +6020,7 @@ plt.savefig('images/interpolate-1.png')
 *** Estimate the value of f at t=2.
 
 This is a simple interpolation problem.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.interpolate import interp1d
 
 g = interp1d(t, f) # default is linear interpolation
@@ -6036,7 +6036,7 @@ print g([2, 3, 4])
 
 The function we sample above is actually f(t) = exp(-t). The linearly interpolated example is not too accurate.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 print np.exp(-2)
 #+END_SRC
@@ -6049,7 +6049,7 @@ print np.exp(-2)
 [[index:interpolation!cubic]]
 we can tell interp1d to use a different interpolation scheme such as cubic polynomial splines like this. For nonlinear functions, this may improve the accuracy of the interpolation, as it implicitly includes information about the curvature by fitting a cubic polynomial over neighboring points. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 g2 = interp1d(t, f, 'cubic')
 print g2(2)
 print g2([2, 3, 4])
@@ -6062,7 +6062,7 @@ print g2([2, 3, 4])
 
 Interestingly, this is a different value than Matlab's cubic interpolation. Let us show the cubic spline fit.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure()
 plt.plot(t,f)
 plt.xlabel('t')
@@ -6093,7 +6093,7 @@ It is easy to interpolate a new value of f given a value of t. What if we want t
 
 We setup a function that we can use fsolve on. The function will be equal to zero at the time. The second function will look like 0 = 0.2 - f(t). The answer for 0.2=exp(-t) is t = 1.6094. Since we use interpolation here, we will get an approximate answer. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 
 def func(t):
@@ -6112,7 +6112,7 @@ print ans
 
 We can switch the order of the interpolation to solve this problem. An issue we have to address in this method is that the "x" values must be monotonically /increasing/. It is somewhat subtle to reverse a list in python. I will use the cryptic syntax of [::-1] instead of the list.reverse() function or reversed() function. list.reverse() actually reverses the list "in place", which changes the contents of the variable. That is not what I want. reversed() returns an iterator which is also not what I want. [::-1] is a fancy indexing trick that returns a reversed list.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 g3 = interp1d(f[::-1], t[::-1])
 
 print g3(0.2)
@@ -6128,7 +6128,7 @@ Suppose we want to know at what time is 1/f = 100? Now we have to decide what do
 
 **** interpolate on f(t) then invert the interpolated number
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def func(t):
     'objective function. we do some error bounds because we cannot interpolate out of the range.'
     if t < 0.5: t=0.5
@@ -6147,7 +6147,7 @@ print 'The %error is {0:%}'.format((a1 - 4.6052)/4.6052)
 : The %error is 19.958154%
 
 **** invert f(t) then interpolate on 1/f
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 ig = interp1d(t, 1.0 / np.array(f))
 
 def ifunc(t):
@@ -6213,7 +6213,7 @@ So which is the best to interpolate? I think you should interpolate the quantity
 
 When we have data at two points but we need data in between them we use interpolation. Suppose we have the points (4,3) and (6,2) and we want to know the value of y at x=4.65, assuming y varies linearly between these points. we use the interp1d command to achieve this. The syntax in python is slightly different than in matlab.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.interpolate import interp1d
 
 x = [4, 6]
@@ -6234,7 +6234,7 @@ print ifunc([4.65, 5.01, 4.2, 9])
 
 The default interpolation method is simple linear interpolation between points. Other methods exist too, such as fitting a cubic spline to the data and using the spline representation to interpolate from.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.interpolate import interp1d
 
 x = [1, 2, 3, 4];
@@ -6266,7 +6266,7 @@ In this case the cubic spline interpolation is  more accurate than the linear in
    :updated:  2013/02/27 14:43:07
    :END:
 When you do not know the functional form of data to fit an equation, you can still fit/interpolate with splines.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 # use splines to fit and interpolate data
 from scipy.interpolate import interp1d
 from scipy.optimize import fmin
@@ -6293,7 +6293,7 @@ plt.legend(['data','fit','max'], loc='best', numpoints=1)
 plt.xlabel('x data')
 plt.ylabel('y data')
 plt.title('Max point = ({0:1.2f}, {1:1.2f})'.format(float(xmax),
-                                                    float(f(xmax))))
+						    float(f(xmax))))
 plt.savefig('images/splinefit.png')
 #+END_SRC
 
@@ -6323,7 +6323,7 @@ adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.
 
 Suppose we seek to minimize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We could setup a Lagrange multiplier approach to solving this problem, but we will use a constrained optimization approach instead.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.optimize import fmin_slsqp
 
 def objective(X):
@@ -6392,7 +6392,7 @@ plt.savefig('images/lagrange-1.png')
 
 To find the maximum, we construct the following function: $\Lambda(x,y; \lambda) = f(x,y)+\lambda g(x,y)$ where $g(x,y) = x^2 + y^2 - 1 = 0$, which is the constraint function. Since $g(x,y)=0$, we are not really changing the original function, provided that the constraint is met!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 def func(X):
@@ -6410,14 +6410,14 @@ The minima/maxima of the augmented function are located where all of the partial
 
 Rather than perform the analytical differentiation, here we develop a way to numerically approximate the partial derivatives.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def dfunc(X):
     dLambda = np.zeros(len(X))
     h = 1e-3 # this is the step size used in the finite difference.
     for i in range(len(X)):
-        dX = np.zeros(len(X))
-        dX[i] = h
-        dLambda[i] = (func(X+dX)-func(X-dX))/(2*h);
+	dX = np.zeros(len(X))
+	dX[i] = h
+	dLambda[i] = (func(X+dX)-func(X-dX))/(2*h);
     return dLambda
 #+END_SRC
 
@@ -6427,7 +6427,7 @@ def dfunc(X):
 
 The function we defined above (dfunc) will equal zero at a maximum or minimum. It turns out there are two solutions to this problem, but only one of them is the maximum value. Which solution you get depends on the initial guess provided to the solver. Here we have to use some judgement to identify the maximum.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.optimize import fsolve
 
 # this is the max
@@ -6539,7 +6539,7 @@ This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/
 [[index:optimization!constrained]]
 A problem that can be cast as a constrained minimization problem is to find the minimum distance from a point to a curve. Suppose we have $f(x) = x^2$, and the point (0.5, 2). what is the minimum distance from that point to $f(x)$?
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fmin_cobyla
@@ -6621,7 +6621,7 @@ over the time span of 0 to 2. The initial condition is y(0) = 1.
 
 to solve this equation, you need to create a function of the form: dydt = f(y, t) and then use one of the odesolvers, e.g. odeint.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -6650,7 +6650,7 @@ The numerical and analytical solutions agree.
 Now, suppose you want to know at what time is the solution equal to 3? There are several approaches to this, including setting up a solver, or using an event like approach to stop integration at y=3. A simple approach is to use reverse interpolation. We simply reverse the x and y vectors so that y is the independent variable, and we interpolate the corresponding x-value.
 index:interpolation!reverse
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -6737,22 +6737,22 @@ A mass balance on the salt in the tank leads to this differential equation: $\fr
 
 $$C_{S,in}(t) = \begin{array}{ll} 0 & t \le 0, \\ 4 & 0 < t \le 10, \\ 2 & t > 10. \end{array}$$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
 V = 1000.0 # L
 nu = 6.0  # L/min
-    
+
 def Cs_in(t):
     'inlet concentration'
     if t < 0:
-        Cs = 0.0 # g/L
+	Cs = 0.0 # g/L
     elif (t > 0) and (t <= 10):
-        Cs = 4.0
+	Cs = 4.0
     else:
-        Cs = 2.0
+	Cs = 2.0
     return Cs
 
 def mass_balance(Ms, t):
@@ -6782,7 +6782,7 @@ The ode solvers in Matlab allow you create functions that define events that can
 
 It does not appear that events are supported in scipy. A solution is at http://mail.scipy.org/pipermail/scipy-dev/2005-July/003078.html, but it does not appear integrated into scipy yet (8 years later ;).
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 
@@ -6807,12 +6807,12 @@ while i < 100:   # take max of 100 steps
     # df/dt = df/dCa dCa/dt
     #       = 2*(Ca - 1) * dCadt
     t2 = t1 - (Ca - 1.0)**2 / (2 * (Ca - 1) *dCadt(Ca, t1))
-        
+
     f = odeint(dCadt, Ca, [t1, t2])
 
     if np.abs(Ca - 1.0) <= 1e-4:
-        print 'Solution reached at i = {0}'.format(i)
-        break
+	print 'Solution reached at i = {0}'.format(i)
+	break
 
     tspan += [t2]
     sol.append(f[-1][0])
@@ -6843,7 +6843,7 @@ ODE solving in Matlab is considerably more advanced in functionality than in sci
   :END:
 The ODE functions in scipy.integrate do not directly support events like the functions in Matlab do. We can achieve something like it though, by digging into the guts of the solver, and writing a little code. In  previous [[http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/][example]] I used an event to count the number of roots in a function by integrating the derivative of the function. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 
@@ -6873,7 +6873,7 @@ while x2 <= xf: #stop integrating when we get to xf
     x1 = X[-1]
     x2 = x1 + deltax
     f1 = sol[-1]
-    
+
     f2 = odeint(myode, f1, [x1, x2]) # integrate from x1,f1 to x2,f2
     X += [x2]
     sol += [f2[-1][0]]
@@ -6882,50 +6882,50 @@ while x2 <= xf: #stop integrating when we get to xf
     e += [event(sol[-1], X[-1])]
 
     if e[-1] * e[-2] < 0:
-        # Event detected where the sign of the event has changed. The
-        # event is between xPt = X[-2] and xLt = X[-1]. run a modified bisect
-        # function to narrow down to find where event = 0
-        xLt = X[-1]
-        fLt = sol[-1]
-        eLt = e[-1]
+	# Event detected where the sign of the event has changed. The
+	# event is between xPt = X[-2] and xLt = X[-1]. run a modified bisect
+	# function to narrow down to find where event = 0
+	xLt = X[-1]
+	fLt = sol[-1]
+	eLt = e[-1]
 
-        xPt = X[-2]
-        fPt = sol[-2]
-        ePt = e[-2]
+	xPt = X[-2]
+	fPt = sol[-2]
+	ePt = e[-2]
 
-        j = 0
-        while j < 100:
-            if np.abs(xLt - xPt) < 1e-6:
-                # we know the interval to a prescribed precision now.
-                # print 'Event found between {0} and {1}'.format(x1t, x2t)
-                print 'x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt)
-                events += [(xLt, fLt)]
-                break # and return to integrating
+	j = 0
+	while j < 100:
+	    if np.abs(xLt - xPt) < 1e-6:
+		# we know the interval to a prescribed precision now.
+		# print 'Event found between {0} and {1}'.format(x1t, x2t)
+		print 'x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt)
+		events += [(xLt, fLt)]
+		break # and return to integrating
 
-            m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
-                                        #bracketing zero
+	    m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
+					#bracketing zero
 
-            #estimated x where the zero is      
-            new_x = -ePt / m + xPt
+	    #estimated x where the zero is      
+	    new_x = -ePt / m + xPt
 
-            # now get the new value of the integrated solution at that new x
-            f  = odeint(myode, fPt, [xPt, new_x])
-            new_f = f[-1][-1]
-            new_e = event(new_f, new_x)
-                        
-            # now check event sign change
-            if eLt * new_e > 0:
-                xPt = new_x
-                fPt = new_f
-                ePt = new_e
-            else:
-                xLt = new_x
-                fLt = new_f
-                eLt = new_e
+	    # now get the new value of the integrated solution at that new x
+	    f  = odeint(myode, fPt, [xPt, new_x])
+	    new_f = f[-1][-1]
+	    new_e = event(new_f, new_x)
 
-            j += 1
-        
-        
+	    # now check event sign change
+	    if eLt * new_e > 0:
+		xPt = new_x
+		fPt = new_f
+		ePt = new_e
+	    else:
+		xLt = new_x
+		fLt = new_f
+		eLt = new_e
+
+	    j += 1
+
+
 import matplotlib.pyplot as plt
 plt.plot(X, sol)
 
@@ -6944,7 +6944,7 @@ plt.savefig('images/event-ode-1.png')
 
 That was a lot of programming to do something like find the roots of the function! Below is an example of using a function coded into pycse to solve the same problem. It is a bit more sophisticated because you can define whether an event is terminal, and the direction of the approach to zero for each event.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import *
 import numpy as np
 
@@ -6976,7 +6976,7 @@ colors = 'rg'
 
 for x,y,i in zip(TE, YE, IE):
     plt.plot([x], [y], 'o', color=colors[i])
-    
+
 plt.savefig('images/event-ode-2.png')
 plt.show()
 print TE, YE, IE
@@ -7000,7 +7000,7 @@ Given that the concentration of a species A in a constant volume, batch reactor 
 
 We will get a solution, then create an interpolating function and use fsolve to get the answer. index:interpolation!ODE
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.integrate import odeint
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve
@@ -7034,7 +7034,7 @@ plt.savefig('images/ode-specific-1.png')
 
 You can see the solution is near two seconds. Now we create an interpolating function to evaluate the solution. We will plot the interpolating function on a finer grid to make sure it seems reasonable.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 ca_func = interp1d(tspan, Ca, 'cubic')
 
 itime = np.linspace(0, 10, 200)
@@ -7063,7 +7063,7 @@ plt.show()
 
 that loos pretty reasonable. Now we solve the problem.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 tguess = 2.0
 tsol, = fsolve(lambda t: 1.0 - ca_func(t), tguess)
 print tsol
@@ -7085,7 +7085,7 @@ That is it. Interpolation can provide a simple way to evaluate the numerical sol
 
 For completeness we examine a final way to construct the function. We can actually integrate the ODE in the function to evaluate the solution at the point of interest. If it is not computationally expensive to evaluate the ODE solution this works fine. Note, however, that the ODE will get integrated from 0 to the value t for each iteration of fsolve.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def func(t):
     tspan = [0, t]
     sol = odeint(dCadt, Ca0, tspan)
@@ -7113,7 +7113,7 @@ $$\frac{dy}{dt} = y(t)$$
 
 The initial condition is y(0) = 1.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.integrate import odeint
 
 y0 = 1
@@ -7141,7 +7141,7 @@ In Post 968 we learned how to get the numerical solution to an ODE, and then to 
 
 Given that the concentration of a species A in a constant volume, batch reactor obeys this differential equation $\frac{dC_A}{dt}=- k C_A^2$ with the initial condition $C_A(t=0) = 2.3$ mol/L and $k = 0.23$ L/mol/s, compute the time it takes for $C_A$ to be reduced to 1 mol/L.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import *
 import numpy as np
 
@@ -7179,7 +7179,7 @@ Today we look at another way to use events in an ode solver. We use an events fu
 
 We use a simple ODE, $y' = sin(x)*e^{-0.05x}$, which has minima and maxima.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import *
 import numpy as np
 
@@ -7235,7 +7235,7 @@ Usually, the numerical ODE solvers in python work well with the standard setting
 
 we plot the analytical solution to the van der waal equation in reduced form here.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7266,7 +7266,7 @@ plt.show()
 
 we want an equation for dPdV, which we will integrate we use symbolic math to do the derivative for us.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from sympy import diff, Symbol
 Vrs = Symbol('Vrs')
 
@@ -7279,7 +7279,7 @@ print diff(Prs,Vrs)
 : >>> -2.4/(Vrs - 0.333333333333333)**2 + 6.0/Vrs**3
 
 Now, we solve the ODE. We will specify a large relative tolerance criteria (Note the default is much smaller than what we show here).
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.integrate import odeint
 
 def myode(Pr, Vr):
@@ -7313,7 +7313,7 @@ plt.show()
 
 You can see there is disagreement between the analytical solution and numerical solution. The origin of this problem is accuracy at the initial condition, where the derivative is extremely large.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print myode(Po, 0.34)
 #+END_SRC
 
@@ -7322,7 +7322,7 @@ print myode(Po, 0.34)
 
 We can increase the tolerance criteria to get a better answer. The defaults in odeint are actually set to 1.49012e-8.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 Vspan = np.linspace(0.334, 4)
 Po = Prfh(Vspan[0])
 P = odeint(myode, Po, Vspan)
@@ -7364,7 +7364,7 @@ $$\frac{dCa}{dt} = -k Ca(t)$$
 
 where $k$ is a parameter, and we want to solve the equation for a couple of values of $k$ to test the sensitivity of the solution on the parameter. Our question is, given $Ca(t=0)=2$, how long does it take to get $Ca = 1$, and how sensitive is the answer to small variations in $k$?
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -7410,7 +7410,7 @@ We previously examined a way to parameterize an ODE. In those methods, we either
 
 We want a convenient way to solve $dCa/dt = -k Ca$ for multiple values of $k$. Here we use a trick to pass a parameter to an ODE through the initial conditions. We expand the ode function definition to include this parameter, and set its derivative to zero, effectively making it a constant.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -7454,7 +7454,7 @@ We saw one method to parameterize an ODE, by creating an ode function that takes
 
 Here we define the ODE function in a loop. Since the nested function is in the namespace of the main function, it can "see" the values of the variables in the main function. We will use this method to look at the solution to the van der Pol equation for several different values of mu.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -7466,13 +7466,13 @@ Y0 = [0, 3]
 for mu in MU:
     # define the ODE
     def vdpol(Y, t):
-        x,y = Y
-        dxdt = y
-        dydt = -x + mu * (1 - x**2) * y
-        return  [dxdt, dydt]
-    
+	x,y = Y
+	dxdt = y
+	dydt = -x + mu * (1 - x**2) * y
+	return  [dxdt, dydt]
+
     Y = odeint(vdpol, Y0, tspan)
-    
+
     x = Y[:,0]; y = Y[:,1]
     plt.plot(x, y, label='mu={0:1.2f}'.format(mu))
 
@@ -7573,7 +7573,7 @@ if we take the case where $\nu = 0$, the solution is known to be the Bessel func
 
 There is a problem with our system of ODEs at x=0. Because of the $1/x^2$ term, the ODEs are not defined at x=0. If we start very close to zero instead, we avoid the problem.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 from scipy.special import jn # bessel function
@@ -7583,7 +7583,7 @@ def fbessel(Y, x):
     nu = 0.0
     y = Y[0]
     z = Y[1]
-  
+
     dydx = z
     dzdx = 1.0 / x**2 * (-x * z - (x**2 - nu**2) * y)
     return [dydx, dzdx]
@@ -7629,7 +7629,7 @@ The phase portrait is a plot of a vector field which qualitatively shows how the
 
 To generate the phase portrait, we need to compute the derivatives $y_1'$ and $y_2'$ at $t=0$ on a grid over the range of values for $y_1$ and $y_2$ we are interested in. We will plot the derivatives as a vector at each (y1, y2) which will show us the initial direction from each point. We will examine the solutions over the range -2 < y1 < 8, and -2 < y2 < 2 for y2, and create a grid of 20 x 20 points.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7650,12 +7650,12 @@ NI, NJ = Y1.shape
 
 for i in range(NI):
     for j in range(NJ):
-        x = Y1[i, j]
-        y = Y2[i, j]
-        yprime = f([x, y], t)
-        u[i,j] = yprime[0]
-        v[i,j] = yprime[1]
-     
+	x = Y1[i, j]
+	y = Y2[i, j]
+	yprime = f([x, y], t)
+	u[i,j] = yprime[0]
+	v[i,j] = yprime[1]
+
 
 Q = plt.quiver(Y1, Y2, u, v, color='r')
 
@@ -7677,7 +7677,7 @@ file:images/phase-portrait.png
 
 Let us plot a few solutions on the vector field. We will consider the solutions where y1(0)=0, and values of y2(0) = [0 0.5 1 1.5 2 2.5], in otherwords we start the pendulum at an angle of zero, with some angular velocity.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from scipy.integrate import odeint
 
 for y20 in [0, 0.5, 1, 1.5, 2, 2.5]:
@@ -7687,7 +7687,7 @@ for y20 in [0, 0.5, 1, 1.5, 2, 2.5]:
     plt.plot(ys[:,0], ys[:,1], 'b-') # path
     plt.plot([ys[0,0]], [ys[0,1]], 'o') # start
     plt.plot([ys[-1,0]], [ys[-1,1]], 's') # end
-    
+
 
 plt.xlim([-2, 8])
 plt.savefig('images/phase-portrait-2.png')
@@ -7747,11 +7747,11 @@ where $\left[\begin{array}{cc} \lambda_1 & 0 \\ 0 & \lambda_2\end{array}\right]$
 
 In this example, we evaluate the solution using linear algebra. The initial conditions we will consider are $y_1(0)=0$ and $y_2(0)=150$.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 
 A = np.array([[-0.02,  0.02],
-              [ 0.02, -0.02]])
+	      [ 0.02, -0.02]])
 
 # Return the eigenvalues and eigenvectors of a Hermitian or symmetric matrix.
 evals, evecs = np.linalg.eigh(A)
@@ -7771,7 +7771,7 @@ Compute the $c$ matrix
 
 V*c = Y0
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 Y0 = [0, 150]
 
 c = np.diag(np.linalg.solve(evecs, Y0))
@@ -7787,7 +7787,7 @@ Constructing the solution
 
 We will create a vector of time values, and stack them for each solution, $y_1(t)$ and $Y_2(t)$.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 
 t = np.linspace(0, 100)
@@ -7979,7 +7979,7 @@ You can see the agreement is excellent!
 
 This also seems like a useful bit of code to not have to reinvent regularly, so it has been added to pycse as BVP_sh. Here is an example usage.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import BVP_sh
 import matplotlib.pyplot as plt
 
@@ -8046,7 +8046,7 @@ The idea behind the finite difference method is to approximate the derivatives b
 -h^2 r_{N-1} \\
 -h^2 r_N + (1 - \frac{h}{2} p_N) \beta \end{array} \right] \]
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 # we use the notation for y'' = p(x)y' + q(x)y + r(x)
@@ -8079,24 +8079,24 @@ for i in range(npoints - 1):
     ri = r(X[i])
 
     if i == 0:
-        # first boundary condition
-        b[i] = -h**2 * ri + (1 + h / 2 * pi)*alpha; 
+	# first boundary condition
+	b[i] = -h**2 * ri + (1 + h / 2 * pi)*alpha; 
     elif i == npoints - 1:
-        # second boundary condition
-        b[i] = -h**2 * ri + (1 - h / 2 * pi)*beta; 
+	# second boundary condition
+	b[i] = -h**2 * ri + (1 - h / 2 * pi)*beta; 
     else:
-        b[i] = -h**2 * ri # intermediate points
-    
+	b[i] = -h**2 * ri # intermediate points
+
     for j in range(npoints - 1):
-        if j == i: # the diagonal
-            A[i,j] = 2 + h**2 * qi
-        elif j == i - 1: # left of the diagonal
-            A[i,j] = -1 - h / 2 * pi
-        elif j == i + 1: # right of the diagonal
-            A[i,j] = -1 + h / 2 * pi
-        else:
-            A[i,j] = 0 # off the tri-diagonal
- 
+	if j == i: # the diagonal
+	    A[i,j] = 2 + h**2 * qi
+	elif j == i - 1: # left of the diagonal
+	    A[i,j] = -1 - h / 2 * pi
+	elif j == i + 1: # right of the diagonal
+	    A[i,j] = -1 + h / 2 * pi
+	else:
+	    A[i,j] = 0 # off the tri-diagonal
+
 # solve the equations A*y = b for Y
 Y = np.linalg.solve(A,b)
 
@@ -8169,7 +8169,7 @@ Since the second derivative in this case is equal to zero, we have at each discr
 
 These are linear equations in the unknowns $x$ that we can easily solve. Here, we evaluate the solution.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 
 #we use the notation T(x1) = alpha and T(x2) = beta
@@ -8188,13 +8188,13 @@ A = np.zeros((npoints, npoints));
 #now we populate the A-matrix and b vector elements
 for i in range(npoints ):
     for j in range(npoints):
-        if j == i: # the diagonal
-            A[i,j] = -2
-        elif j == i - 1: # left of the diagonal
-            A[i,j] = 1
-        elif j == i + 1: # right of the diagonal
-            A[i,j] = 1
- 
+	if j == i: # the diagonal
+	    A[i,j] = -2
+	elif j == i - 1: # left of the diagonal
+	    A[i,j] = 1
+	elif j == i + 1: # right of the diagonal
+	    A[i,j] = 1
+
 # solve the equations A*y = b for Y
 Y = np.linalg.solve(A,b)
 
@@ -8221,7 +8221,7 @@ plt.savefig('images/bvp-heat-conduction-1d.png')
 I thought it was worthwhile coding a BVP solver into pycse. This function (bvp_L0) solves $y''(x) + p(x) y'(x) + q(x) y(x) = r(x)$ with constant value boundary conditions $y(x_0) = \alpha$ and $y(x_L) = \beta$.
 
 Fluids example for Plane poiseuelle flow ($y''(x) = constant$, $y(0) = 0$ and $y(L) = 0$:
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import bvp_L0
 
 # we use the notation for y'' = p(x)y' + q(x)y + r(x)
@@ -8248,7 +8248,7 @@ plt.show()
 : 100
 
 Heat transfer example $y''(x) = 0$, $y(0) = 100$ and $y(L) = 200$.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import bvp_L0
 
 # we use the notation for y'' = p(x)y' + q(x)y + r(x)
@@ -8301,7 +8301,7 @@ y_L - \beta &=&0
 
 Since we use a nonlinear solver, we will have to provide an initial guess to the solution. We will in this case assume a line. In other cases, a bad initial guess may lead to no solution.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
@@ -8326,12 +8326,12 @@ def residuals(y):
     res = np.zeros(y.shape)
 
     res[0] = y[0] - alpha
-    
+
     for i in range(1, N - 1):
-        x = X[i]
-        YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
-        YP = (y[i + 1] - y[i - 1]) / (2 * h)
-        res[i] = YPP - Ypp(x, y[i], YP)
+	x = X[i]
+	YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
+	YP = (y[i + 1] - y[i - 1]) / (2 * h)
+	res[i] = YPP - Ypp(x, y[i], YP)
 
     res[-1] = y[-1] - beta
     return res
@@ -8351,7 +8351,7 @@ plt.savefig('images/bvp-nonlinear-1.png')
 
 That code looks useful, so I put it in the pycse module in the function BVP_nl. Here is an example usage. We have to create two functions, one for the differential equation, and one for the initial guess.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from pycse import  BVP_nl
 import matplotlib.pyplot as plt
 
@@ -8409,7 +8409,7 @@ y_1(4) &=& -2
 
 This BVP is nonlinear because of the absolute value. We will have to guess solutions to get started. We will guess two different solutions, both of which will be constant values.  We will use pycse.bvp to solve the equation.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from pycse import bvp
 import matplotlib.pyplot as plt
@@ -8495,20 +8495,20 @@ We have to provide initial guesses for f_1, f_2 and f_3. This is the hardest par
 Finally, we let a solver iteratively find a solution for us, and find the answer we want. The solver is in the pycse module.
 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from pycse import bvp
 
 def odefun(F, x):
     f1, f2, f3 = F
     return [f2,  
-            f3,             
-            -0.5 * f1 * f3] 
+	    f3,             
+	    -0.5 * f1 * f3] 
 
 def bcfun(Fa, Fb):
     return [Fa[0],        # f1(0) =  0
-            Fa[1],        # f2(0) = 0
-            1.0 - Fb[1]]  # f2(inf) = 1
+	    Fa[1],        # f2(0) = 0
+	    1.0 - Fb[1]]  # f2(inf) = 1
 
 eta = np.linspace(0, 6, 100)
 f1init = eta
@@ -8565,7 +8565,7 @@ This leads to the following set of equations:
 \end{eqnarray}
 
 Last, we need initial conditions for all the nodes in the discretization. Let us assume the reactor was full of empty solvent, so that $C_i = 0$ at $t=0$. In the next block of code, we get the transient solutions, and the steady state solution.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 
@@ -8586,7 +8586,7 @@ def method_of_lines(C, t):
     'coupled ODES at each node point'
     D = -vo * np.diff(C) / np.diff(V) - k * C[1:]**2
     return np.concatenate([[0], #C0 is constant at entrance
-                            D])
+			    D])
 
 
 sol = odeint(method_of_lines, init, tspan)
@@ -8602,7 +8602,7 @@ ssol = odeint(pfr, Ca0, V)
 
 The transient solution contains the time dependent behavior of each node in the discretized reactor. Each row contains the concentration as a function of volume at a specific time point. For example, we can plot the concentration of A at the exit vs. time (that is, the last entry of each row) as:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 plt.plot(tspan, sol[:, -1])
 plt.xlabel('time')
@@ -8620,7 +8620,7 @@ plt.savefig('images/transient-pfr-1.png')
 [[./images/transient-pfr-1.png]]
 
 After approximately one space time, the steady state solution is reached at the exit. For completeness, we also examine the steady state solution.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure()
 plt.plot(V, ssol, label='Steady state')
 plt.plot(V, sol[-1], label='t = {}'.format(tspan[-1]))
@@ -8636,7 +8636,7 @@ There is some minor disagreement between the final transient solution and the st
 
 We can also create an animated gif to show how the concentration of A throughout the reactor varies with time. Note, I had to install ffmpeg (http://ffmpeg.org/) to save the animation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 from matplotlib import animation
 
 # make empty figure
@@ -8650,7 +8650,7 @@ def animate(i):
     ax.set_title('t = {0}'.format(tspan[i]))
     ax.figure.canvas.draw() 
     return line,
-    
+
 
 anim = animation.FuncAnimation(fig, animate, frames=50,  blit=True)
 
@@ -8684,7 +8684,7 @@ In Matlab there is the pdepe command. There is not yet a PDE solver in scipy. In
 
 Let us say the rod has a length of 1, $k=0.02$, and solve for the time-dependent temperature profiles.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -8704,7 +8704,7 @@ def odefunc(u, t):
 
     # now for the internal nodes
     for i in range(1, N-1):
-        dudt[i] = k * (u[i + 1] - 2*u[i] + u[i - 1]) / h**2
+	dudt[i] = k * (u[i + 1] - 2*u[i] + u[i - 1]) / h**2
 
     return dudt
 
@@ -8807,7 +8807,7 @@ We know $C_{i,j=0}$ from the initial conditions, so we simply need to iterate to
 
 See also: http://www3.nd.edu/~jjwteach/441/PdfNotes/lecture16.pdf
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8845,7 +8845,7 @@ for j in range(1, Ntsteps):
 
     # plot selective solutions
     if j in [1,2,5,10,20,50,100,200,500]:
-        plt.plot(X, N, label='t={0:1.2f}'.format(t[j]))
+	plt.plot(X, N, label='t={0:1.2f}'.format(t[j]))
 
 plt.xlabel('Position in rod')
 plt.ylabel('Concentration')
@@ -8881,7 +8881,7 @@ The solution is somewhat sensitive to the choices of time step and spatial discr
 [[http://matlab.cheme.cmu.edu/2011/08/01/plot-customizations-modifying-line-text-and-figure-properties/][Matlab post]]
 
 Here is a vanilla plot.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8936,8 +8936,8 @@ plt.ylabel('y data', fontsize=12, fontstyle='italic', color='b')
 # set all font properties
 fig = plt.gcf()
 for o in  fig.findobj(lambda x:hasattr(x, 'set_fontname') 
-                      or hasattr(x, 'set_fontweight')
-                      or hasattr(x, 'set_fontsize')):
+		      or hasattr(x, 'set_fontweight')
+		      or hasattr(x, 'set_fontsize')):
     o.set_fontname('Arial')
     o.set_fontweight('bold')
     o.set_fontsize(14)
@@ -8969,7 +8969,7 @@ There are many other things you can do!
 
 Sometimes you will have two datasets you want to plot together, but the scales will be so different it is hard to seem them both in the same plot. Here we examine a few strategies to plotting this kind of data.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8994,7 +8994,7 @@ plt.savefig('images/two-scales-1.png')
 
 this certainly solves the problem, but you have two full size plots, which can take up a lot of space in a presentation and report. Often your goal in plotting both data sets is to compare them, and it is easiest to compare plots when they are perfectly lined up. Doing that manually can be tedious.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 
 plt.figure()
 plt.plot(x,y1)
@@ -9024,7 +9024,7 @@ plt.savefig('images/two-scales-3.png')
 
 Sometimes you can scale one dataset so it has a similar magnitude as the other data set. Here we could multiply y2 by 100, and then it will be similar in size to y1. Of course, you need to indicate that y2 has been scaled in the graph somehow. Here we use the legend.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure()
 plt.plot(x, y1, x, 100 * y2)
 plt.legend(['y1', '100*y2'])
@@ -9043,7 +9043,7 @@ plt.savefig('images/two-scales-4.png')
 
 Using two separate y-axes can solve your scaling problem. Note that each y-axis is color coded to the data. It can be difficult to read these graphs when printed in black and white
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax1.plot(x, y1)
@@ -9072,7 +9072,7 @@ plt.savefig('images/two-scales-5.png')
 index:plot!subplot
 An alternative approach to double y axes is to use subplots. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 plt.figure()
 f, axes = plt.subplots(2, 1)
 axes[0].plot(x, y1)
@@ -9101,7 +9101,7 @@ plt.savefig('images/two-scales-6.png')
 [[http://matlab.cheme.cmu.edu/2011/09/16/customizing-plots-after-the-fact/][Matlab post]]
 Sometimes it is desirable to make a plot that shows the data you want to present, and to customize the details, e.g. font size/type and line thicknesses afterwards. It can be tedious to try to add the customization code to the existing code that makes the plot. Today, we look at a way to do the customization after the plot is created.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9152,7 +9152,7 @@ plt.show()
 
 Matplotlib has a lot of built-in colors. Here is a list of them, and an example of using them.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 from matplotlib.colors import cnames
 print cnames.keys()
@@ -9177,7 +9177,7 @@ plt.savefig('images/fall-colors.png')
 
 It is an unknown fact that Picasso had a brief blue plotting period with Matlab before moving on to his more famous paintings. It started from irritation with the default colors available in Matlab for plotting. After watching his friend van Gogh cut off his own ear out of frustration with the ugly default colors, Picasso had to do something different.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9187,7 +9187,7 @@ for m in np.linspace(1, 50, 100):
     plt.plot([0, 50], [m, m])
 
 plt.savefig('images/blues-1.png')
-#+END_SRC 
+#+END_SRC
 
 #+RESULTS:
 
@@ -9195,35 +9195,35 @@ plt.savefig('images/blues-1.png')
 
 Picasso copied the table availabe at http://en.wikipedia.org/wiki/List_of_colors and parsed it into a dictionary of hex codes for new colors. That allowed him to specify a list of beautiful blues for his graph. Picasso eventually gave up on python as an artform, and moved on to painting.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
 c = {}
 with open('color.table') as f:
     for line in f:
-        fields = line.split('\t')
-        colorname = fields[0].lower()
-        hexcode = fields[1]
-        c[colorname] = hexcode
+	fields = line.split('\t')
+	colorname = fields[0].lower()
+	hexcode = fields[1]
+	c[colorname] = hexcode
 
 names = c.keys()
 names.sort()
 print names
 
 blues = [c['alice blue'],
-         c['light blue'],
-         c['baby blue'],
-         c['light sky blue'],
-         c['maya blue'],
-         c['cornflower blue'],
-         c['bleu de france'],
-         c['azure'],
-         c['blue sapphire'],
-         c['cobalt'],
-         c['blue'],
-         c['egyptian blue'],
-         c['duke blue']]
+	 c['light blue'],
+	 c['baby blue'],
+	 c['light sky blue'],
+	 c['maya blue'],
+	 c['cornflower blue'],
+	 c['bleu de france'],
+	 c['azure'],
+	 c['blue sapphire'],
+	 c['cobalt'],
+	 c['blue'],
+	 c['egyptian blue'],
+	 c['duke blue']]
 
 ax = plt.gca()
 ax.set_color_cycle(blues)
@@ -9252,7 +9252,7 @@ plt.show()
 [[index:plotting!interactive key press]]
 One basic event a figure can react to is a mouse click. Let us make a graph with a parabola in it, and draw the shortest line from a point clicked on to the graph. Here is an example of doing that. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import fmin_cobyla
@@ -9275,12 +9275,12 @@ def onclick(event):
     P = (event.xdata, event.ydata)
 
     def objective(X):
-        x,y = X
-        return np.sqrt((x - P[0])**2 + (y - P[1])**2)
+	x,y = X
+	return np.sqrt((x - P[0])**2 + (y - P[1])**2)
 
     def c1(X):
-        x,y = X
-        return f(x) - y
+	x,y = X
+	return f(x) - y
 
     X = fmin_cobyla(objective, x0=[P[0], f(P[0])], cons=[c1])
 
@@ -9313,7 +9313,7 @@ Here is the result from two clicks. For some reason, this only works when you cl
 
 We can even do different things with different mouse clicks. A left click corresponds to event.button = 1, a middle click is event.button = 2, and a right click is event.button = 3. You can detect if a double click occurs too. Here is an example of these different options.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -9327,12 +9327,12 @@ def onclick(event):
     ax.set_title('x={0:1.2f} y={1:1.2f} button={2}'.format(event.xdata, event.ydata, event.button))
     colors = ' rbg'
     print 'button={0} (dblclick={2}). making a {1} dot'.format(event.button,
-                                                               colors[event.button],
-                                                               event.dblclick)
-   
+							       colors[event.button],
+							       event.dblclick)
+
     ms=5 # marker size
     if event.dblclick: #make marker bigger
-        ms = 10
+	ms = 10
 
     ax.plot([event.xdata], [event.ydata], 'o', color=colors[event.button], ms=ms)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9357,7 +9357,7 @@ plt.show()
 
 Finally, you may want to have key modifiers for your clicks, e.g. Ctrl-click is different than a click.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -9372,11 +9372,11 @@ def onclick(event):
     ax = plt.gca()
     ax.set_title('x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata))
     if event.key == 'ctrl+control':
-        color = 'red'
+	color = 'red'
     elif event.key == 'shift':
-        color = 'yellow'
+	color = 'yellow'
     else:
-        color = 'blue'
+	color = 'blue'
 
     ax.plot([event.xdata], [event.ydata], 'o', color=color)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9398,7 +9398,7 @@ You can have almost every key-click combination imaginable. This allows you to h
 *** Mouse movement
 In this example, we will let the mouse motion move a point up and down a curve. This might be helpful to explore a function graph, for example. We use interpolation to estimate the curve between data points. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import interp1d
@@ -9420,7 +9420,7 @@ marker, = ax.plot([0.5], [0.5],'go',  ms=15)
 ax.set_title('Move the mouse around')
 
 def onmove(event):
-    
+
     xe = event.xdata
     ye = event.ydata
 
@@ -9429,7 +9429,7 @@ def onmove(event):
     marker.set_ydata(p(xe))
 
     ax.figure.canvas.draw()  # this line is critical to change the title
-    
+
 cid = fig.canvas.mpl_connect('motion_notify_event', onmove)
 plt.show()
 #+END_SRC
@@ -9438,7 +9438,7 @@ plt.show()
 
 *** key press events
 Pressing a key is different than pressing a mouse button. We can do different things with different key presses. You can access the coordinates of the mouse when you press a key.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -9453,11 +9453,11 @@ def onpress(event):
     ax = plt.gca()
     ax.set_title('key={2} at x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata, event.key))
     if event.key == 'r':
-        color = 'red'
+	color = 'red'
     elif event.key == 'y':
-        color = 'yellow'
+	color = 'yellow'
     else:
-        color = 'blue'
+	color = 'blue'
 
     ax.plot([event.xdata], [event.ydata], 'o', color=color)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9482,7 +9482,7 @@ plt.show()
 *** Picking lines
 Instead of just getting the points in a figure, let us interact with lines on the graph. We want to make the line we click on thicker. We use a "pick_event" event and bind a function to that event that does something.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9500,7 +9500,7 @@ def onpick(event):
 
     # reset all lines to thin
     for line in [L1, L2]:
-        line.set_lw(1)
+	line.set_lw(1)
 
     thisline.set_lw(5) # make selected line thick 
     ax.figure.canvas.draw()  # this line is critical to change the linewidth
@@ -9514,7 +9514,7 @@ plt.show()
 
 *** Picking data points
 In this example we show how to click on a data point, and show which point was selected with a transparent marker, and show a label which refers to the point. 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9563,7 +9563,7 @@ Python provides a sum function to compute the sum of a list. However, the sum fu
 
 Here is a simple example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 v = [1, 2, 3, 4, 5, 6, 7, 8, 9] # a list
 print sum(v)
 
@@ -9577,7 +9577,7 @@ print sum(v)
 
 If you have data in a dictionary, sum works by default on the keys. You can give the sum function the values like this.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 v = {'a':1, 'b':3, 'c':4}
 print sum(v.values())
 #+END_SRC
@@ -9597,7 +9597,7 @@ Department 4: 7 people
 Department 5: one group of 8 and one group of 9.
 
 We might represent the data like this nested list. Now, if we want to compute the total number of people, we need to add up each group. We cannot simply sum the list, because some elements are single numbers, and others are lists, or lists of lists. We need to recurse through each entry until we get down to a number, which we can add to the running sum. 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 v = [1, 
     [2, 3],
     [4, [5, 6]],
@@ -9609,16 +9609,16 @@ def recursive_sum(X):
     s = 0 # initial value of the sum
 
     for i in range(len(X)):
-        import types  # we use this to test if we got a number
-        if isinstance(X[i], (types.IntType,
-                             types.LongType,
-                             types.FloatType,
-                             types.ComplexType)):
-            # this is the terminal step
-            s += X[i]
-        else:
-            # we did not get a number, so we recurse
-            s += recursive_sum(X[i])
+	import types  # we use this to test if we got a number
+	if isinstance(X[i], (types.IntType,
+			     types.LongType,
+			     types.FloatType,
+			     types.ComplexType)):
+	    # this is the terminal step
+	    s += X[i]
+	else:
+	    # we did not get a number, so we recurse
+	    s += recursive_sum(X[i])
     return s
 
 print recursive_sum(v)
@@ -9641,7 +9641,7 @@ index:sort
 
 Occasionally it is important to have sorted data. Python has a few sorting options. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = [4, 5, 1, 6, 8, 3, 2]
 print a
 a.sort()  # inplace sorting
@@ -9657,7 +9657,7 @@ print a
 : [8, 6, 5, 4, 3, 2, 1]
 
 If you do not want to modify your list, but rather get a copy of a sorted list, use the sorted command.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = [4, 5, 1, 6, 8, 3, 2]
 print 'sorted a = ',sorted(a)  # no change to a
 print 'sorted a = ',sorted(a, reverse=True)  # no change to a
@@ -9671,7 +9671,7 @@ print 'a        = ',a
 
 This works for strings too:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = ['b', 'a', 'c', 'tree']
 print sorted(a)
 #+END_SRC
@@ -9681,7 +9681,7 @@ print sorted(a)
 
 Here is a subtle point though. A capitalized letter comes before a lowercase letter. We can pass a function to the sorted command that is called on each element prior to the sort. Here we make each word lower case before sorting.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = ['B', 'a', 'c', 'tree']
 print sorted(a)
 
@@ -9695,22 +9695,22 @@ print sorted(a, key=str.lower)
 
 Here is a more complex sorting problem. We have a list of tuples with group names and the letter grade. We want to sort the list by the letter grades. We do this by creating a function that maps the letter grades to the position of the letter grades in a sorted list. We use the list.index function to find the index of the letter grade, and then sort on that.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 
 groups = [('group1', 'B'),
-          ('group2', 'A+'),
-          ('group3', 'A')]
+	  ('group2', 'A+'),
+	  ('group3', 'A')]
 
 def grade_key(gtup):
     '''gtup is a tuple of ('groupname', 'lettergrade')'''
     lettergrade = gtup[1]
 
     grades = ['A++', 'A+', 'A', 'A-', 'A/B'
-              'B+', 'B', 'B-', 'B/C',
-              'C+', 'C', 'C-', 'C/D',
-              'D+', 'D', 'D-', 'D/R',
-              'R+', 'R', 'R-', 'R--']
-    
+	      'B+', 'B', 'B-', 'B/C',
+	      'C+', 'C', 'C-', 'C/D',
+	      'D+', 'D', 'D-', 'D/R',
+	      'R+', 'R', 'R-', 'R--']
+
     return grades.index(lettergrade)
 
 print sorted(groups, key=grade_key)
@@ -9729,7 +9729,7 @@ print sorted(groups, key=grade_key)
 
 It is surprising how often you need to know only the unique entries in a vector of entries. In python, we create a "set" from a list, which only contains unique entries. Then we convert the set back to a list.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = [1, 1, 2, 3, 4, 5, 3, 5]
 
 b = list(set(a))
@@ -9739,7 +9739,7 @@ print b
 #+RESULTS:
 : [1, 2, 3, 4, 5]
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 a = ['a',
     'b',
     'abracadabra',
@@ -9766,16 +9766,16 @@ Recursive functions are functions that call themselves repeatedly until some exi
 
 The key ideas in defining a recursive function is that there needs to be some logic to identify when to terminate the function. Then, you need logic that calls the function again, but with a smaller part of the problem. Here we recursively call the function with n-1 until it gets called with n=0. 0! is defined to be 1.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 
 def recursive_factorial(n):
     '''compute the factorial recursively. Note if you put a negative
     number in, this function will never end. We also do not check if
     n is an integer.'''
     if n == 0:
-        return 1
+	return 1
     else:
-        return n * recursive_factorial(n - 1)
+	return n * recursive_factorial(n - 1)
 
 print recursive_factorial(5)
 #+END_SRC
@@ -9783,7 +9783,7 @@ print recursive_factorial(5)
 #+RESULTS:
 : 120
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from scipy.misc import factorial
 print factorial(5)
 #+END_SRC
@@ -9795,7 +9795,7 @@ print factorial(5)
 
 This example can also be solved by a loop. This loop is easier to read and understand than the recursive function. Note the recursive nature of defining the variable as itself times a number.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 n = 5
 factorial_loop = 1
 for i in range(1, n + 1):
@@ -9828,10 +9828,10 @@ This example shows how to use a regular expression to find strings matching the 
 
 Let us define some commands that will take datasring as an argument, and return the modified text. The idea is to find all the cmds, and then run them. We use python's =eval= command to get the function handle from a string, and the cmd functions all take a datastring argument (we define them that way). We will create commands to replace :cmd:`datastring` with html code for a light gray background, and :red:`some text` with html code making the text red. 
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 text = r'''Here is some text. use the :cmd:`open` to get the text into
-          a variable. It might also be possible to get a multiline
-            :red:`line     
+	  a variable. It might also be possible to get a multiline
+	    :red:`line     
      2` directive.'''
 
 print text
@@ -9847,7 +9847,7 @@ print '---------------------------------'
 : ---------------------------------
 
 Now, we define our functions.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def cmd(datastring):
     ' replace :cmd:`datastring` with html code with light gray background'
     s = '<FONT style="BACKGROUND-COLOR: LightGray">%{0}</FONT>';
@@ -9863,7 +9863,7 @@ def red(datastring):
 #+RESULTS:
 
 Finally, we do the regular expression. Regular expressions are hard. There are whole books on them. The point of this post is to alert you to the possibilities. I will break this regexp down as follows. 1. we want everything between :*: as the directive. =([^:]*)= matches everything not a :. =:([^:]*):= matches the stuff between two :. 2. then we want everything between `*`. =([^`]*)= matches everything not a `. 3. The () makes a group that python stores so we can refer to them later.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import re
 regex = ':([^:]*):`([^`]*)`'
 matches = re.findall(regex, text)
@@ -9891,7 +9891,7 @@ print text
    :END: 
 It is not too uncommon to have a list of data, and then to apply a function to every element, to filter the list, or extract elements that meet some criteria. In this example, we take a string and split it into words. Then, we will examine several ways to apply functions to the words, to filter the list to get data that meets some criteria. Here is the string splitting.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 text = '''
  As we have seen, handling units with third party functions is fragile, and often requires additional code to wrap the function to handle the units. An alternative approach that avoids the wrapping is to rescale the equations so they are dimensionless. Then, we should be able to use all the standard external functions without modification. We obtain the final solutions by rescaling back to the answers we want.
 
@@ -9917,7 +9917,7 @@ print words
 
 Let us get the length of each word.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print [len(word) for word in words]
 
 # functional approach with a lambda function
@@ -9941,7 +9941,7 @@ print map(get_length, words)
 
 Now let us get all the words that start with the letter "a". This is sometimes called filtering a list. We use a string function =startswith= to check for upper and lower-case letters. We will use list comprehension with a condition.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 print [word for word in words if word.startswith('a') or word.startswith('A')]
 
 # make word lowercase to simplify the conditional statement
@@ -9954,13 +9954,13 @@ print [word for word in words if word.lower().startswith('a')]
 
 A slightly harder example is to find all the words that are actually numbers. We could use a regular expression for that, but we will instead use a function we create. We use a function that tries to cast a word as a float. If this fails, we know the word is not a float, so we return False.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def float_p(word):
     try:
-        float(word)
-        return True
+	float(word)
+	return True
     except ValueError:
-        return False
+	return False
 
 print [word for word in words if float_p(word)]
 
@@ -9974,12 +9974,12 @@ print filter(float_p, words)
 : ['5', '10']
 
 Finally, we consider filtering the list to find all words that contain certain symbols, say any character in this string "./=*#". Any of those characters will do, so we search each word for one of them, and return True if it contains it, and False if none are contained. 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def punctuation_p(word):
     S = './=*#'
     for s in S:
-        if s in word:
-            return True
+	if s in word:
+	    return True
     return False
 
 print [word for word in words if punctuation_p(word)]
@@ -9997,7 +9997,7 @@ In this section we examined a few ways to interact with lists using list compreh
  [[http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/][Matlab post]]
 
 We can use COM automation in python to create Microsoft Word documents. This only works on windows, and Word must be installed.
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from win32com.client import constants, Dispatch
 import os
 
@@ -10042,7 +10042,7 @@ That is it! I would not call this extra convenient, but if you have a need to au
 
 I was going to do this by docx, which does not require windows, but it appears broken. It is missing a template directory, and it does not match the github code. docx is not actively maintained anymore either. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from docx import *
 
 # Make a new document tree - this is the main part of a Word document
@@ -10071,7 +10071,7 @@ document.save('test.doc')
 
 There will be times it is convenient to either read data from Excel, or write data to Excel. This is possible in python (http://www.python-excel.org/). You may also look at (https://bitbucket.org/ericgazoni/openpyxl/wiki/Home).
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import xlrd
 
 wb = xlrd.open_workbook('data/example.xlsx')
@@ -10099,7 +10099,7 @@ plt.savefig('images/excel-1.png')
 *** Writing Excel workbooks
 Writing data to Excel sheets is pretty easy. Note, however, that this overwrites the worksheet if it already exists.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import xlwt
 import numpy as np
 
@@ -10123,7 +10123,7 @@ book.save('data/example2.xls') # maybe can only write .xls format
 *** Updating an existing Excel workbook
 It turns out you have to make a copy of an existing workbook, modify the copy and then write out the results using the =xlwt= module.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from xlrd import open_workbook
 
 from xlutils.copy import copy
@@ -10154,7 +10154,7 @@ If you only need to read or write data, then xlrd/xlwt or the openpyxl modules w
 index:Excel, index:COM
 There may be a time where you have an Excel sheet that already has a model built into it, and you normally change cells in the sheet, and it solves the model. It can be tedious to do that a lot, and we can use python to do that. Python has a COM interface that can communicate with Excel (and many other windows programs. see http://my.safaribooksonline.com/1565926218 for Python Programming on Win32). In this example, we will use a very simple Excel sheet that calculates the volume of a CSTR that runs a zeroth order reaction ($-r_A = k$) for a particular conversion. You set the conversion in the cell B1, and the volume is automatically computed in cell B6. We simply need to set the value of B1, and get the value of B6 for a range of different conversion values. In this example, the volume is returned in Liters.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import win32com.client as win32
 excel = win32.Dispatch('Excel.Application')
 
@@ -10166,7 +10166,7 @@ for x in X:
     ws.Range("B1").Value = x
     V = ws.Range("B6").Value
     print 'at X = {0} V = {1:1.2f} L'.format(x, V)
- 
+
 # we tell Excel the workbook is saved, even though it is not, so it
 # will quit without asking us to save.
 excel.ActiveWorkbook.Saved = True 
@@ -10201,7 +10201,7 @@ We have an Aspen flowsheet setup for a flash operation. The feed consists of 91.
 
 This is an example that just illustrates it is possible to access data from a simulation that has been run. You have to know quite a bit about the Aspen flowsheet before writing this code. Particularly, you need to open the Variable Explorer to find the "path" to the variables that you want, and to know what the units are of those variables are.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import os
 import win32com.client as win32
 aspen = win32.Dispatch('Apwn.Document')
@@ -10231,7 +10231,7 @@ print 'Water vapor mol flow: {0} lbmol/hr'.format(wV_out)
 print 'Water liquid mol flow: {0} lbmol/hr'.format(wL_out)
 
 print 'Total = {0}. Total in = {1}'.format(eV_out + eL_out + wV_out + wL_out,
-                                           tot)
+					   tot)
 
 aspen.Close()
 #+END_SRC
@@ -10247,7 +10247,7 @@ aspen.Close()
 
 It is nice that we can read data from a simulation, but it would be helpful if we could change variable values and to rerun the simulations. That is possible. We simply set the value of the variable, and tell Aspen to rerun. Here, we will change the temperature of the Flash tank and plot the composition of the outlet streams as a function of that temperature.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10294,7 +10294,7 @@ One reason to interact with Aspen via python is to use external solvers to drive
 
 Here is a simple example where we use fsolve to find the temperature of the flash tank that will give a vapor phase mole fraction of ethanol of 0.8. It is a simple example, but it illustrates the possibility.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import os
 import win32com.client as win32
 aspen = win32.Dispatch('Apwn.Document')
@@ -10327,7 +10327,7 @@ One unexpected detail was that the Aspen COM objects cannot be assigned numpy nu
    :END:
 Ordinarily a print statement prints to stdout, or your terminal/screen. You can redirect this so that printing is done to a file, for example. This might be helpful if you use print statements for debugging, and later want to save what is printed to a file. Here we make a simple function that prints some things.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 def debug():
     print 'step 1'
     print 3 + 4
@@ -10343,7 +10343,7 @@ debug()
 : finished
 
 Now, let us redirect the printed lines to a file. We create a file object, and set sys.stdout equal to that file object.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import sys
 print >> sys.__stdout__, '__stdout__ before = ', sys.__stdout__
 print >> sys.__stdout__, 'stdout before = ', sys.stdout
@@ -10376,7 +10376,7 @@ print f
 
 Note it can be important to close files. If you are looping through large numbers of files, you will eventually run out of file handles, causing an error. We can use a context manager to automatically close the file like this
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import sys
 
 # use the open context manager to automatically close the file
@@ -10396,7 +10396,7 @@ print f
 : ... >>> <closed file 'data/debug.txt', mode 'w' at 0x0000000002071C00>
 
 See, the file is closed for us! We can see the contents of our file like this.
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh 
 cat data/debug.txt
 #+END_SRC
 
@@ -10407,17 +10407,17 @@ cat data/debug.txt
 
 The approaches above are not fault safe. Suppose our debug function raised an exception. Then, it could be possible the line to reset the stdout would not be executed. We can solve this with try/finally code.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import sys
 
 print 'before: ', sys.stdout
 try:
     with open('data/debug-2.txt', 'w') as f:
-        sys.stdout = f
-        # print to the original stdout
-        print >> sys.__stdout__, 'during: ', sys.stdout
-        debug()
-        raise Exception('something bad happened')
+	sys.stdout = f
+	# print to the original stdout
+	print >> sys.__stdout__, 'during: ', sys.stdout
+	debug()
+	raise Exception('something bad happened')
 finally:
     # reset stdout
     sys.stdout = sys.__stdout__
@@ -10438,7 +10438,7 @@ print sys.stdout # verify this is reset
 : <closed file 'data/debug-2.txt', mode 'w' at 0x2ae7dbcbbf60>
 : <open file '<stdout>', mode 'w' at 0x2ae7d70e01e0>
 
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh 
 cat data/debug-2.txt
 #+END_SRC
 
@@ -10449,21 +10449,21 @@ cat data/debug-2.txt
 
 This is the kind of situation where a context manager is handy. Context managers are typically a class that executes some code when you "enter" the context, and then execute some code when you "exit" the context. Here we want to change sys.stdout to a new value inside our context, and change it back when we exit the context. We will store the value of sys.stdout going in, and restore it on the way out.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC python 
 import sys
 
 class redirect:
     def __init__(self, f=sys.stdout):
-        "redirect print statement to f. f must be a file-like object"
-        self.f = f
-        self.stdout = sys.stdout
-        print >> sys.__stdout__, 'init stdout: ', sys.stdout        
+	"redirect print statement to f. f must be a file-like object"
+	self.f = f
+	self.stdout = sys.stdout
+	print >> sys.__stdout__, 'init stdout: ', sys.stdout        
     def __enter__(self): 
-        sys.stdout = self.f
-        print >> sys.__stdout__,  'stdout in context-manager: ',sys.stdout
+	sys.stdout = self.f
+	print >> sys.__stdout__,  'stdout in context-manager: ',sys.stdout
     def __exit__(self, *args):
-        sys.stdout = self.stdout
-        print '__stdout__ at exit = ',sys.__stdout__        
+	sys.stdout = self.stdout
+	print '__stdout__ at exit = ',sys.__stdout__        
 
 # regular printing
 with redirect():
@@ -10472,18 +10472,18 @@ with redirect():
 # write to a file
 with open('data/debug-3.txt', 'w') as f:
     with redirect(f):
-        debug()
+	debug()
 
 # mixed regular and 
 with open('data/debug-4.txt', 'w') as f:
     with redirect(f):
-        print 'testing redirect'
-        with redirect():
-            print 'temporary console printing'
-            debug()
-        print 'Now outside the inner context. this should go to data/debug-4.txt'
-        debug()
-        raise Exception('something else bad happened')
+	print 'testing redirect'
+	with redirect():
+	    print 'temporary console printing'
+	    debug()
+	print 'Now outside the inner context. this should go to data/debug-4.txt'
+	debug()
+	raise Exception('something else bad happened')
 
 print sys.stdout
 #+END_SRC
@@ -10516,7 +10516,7 @@ Exception: something else bad happened
 #+end_example
 
 Here are the contents of the debug file. 
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh 
 cat data/debug-3.txt
 #+END_SRC
 
@@ -10526,7 +10526,7 @@ cat data/debug-3.txt
 : finished
 
 The contents of the other debug file have some additional lines, because we printed some things while in the redirect context.
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh 
 cat data/debug-4.txt
 #+END_SRC
 
@@ -10557,15 +10557,15 @@ Sometimes, it is useful to modify an existing function, without changing the ori
    :END:
 I frequently want to take a list and get a dictionary of keys that have the count of each element in the list. Here is how I have typically done this countless times in the past. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
 
 d = {}
 for el in L:
     if el in d:
-        d[el] += 1
+	d[el] += 1
     else:
-        d[el] = 1
+	d[el] = 1
 
 print d
 #+END_SRC
@@ -10575,7 +10575,7 @@ print d
 
 That seems like too much code, and that there must be a list comprehension approach combined with a dictionary constructor. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
 
 print dict((el,L.count(el)) for el in L)
@@ -10588,7 +10588,7 @@ Wow, that is a lot simpler! I suppose for large lists this might be slow, since 
 
 Here is another example of much shorter and cleaner code. 
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 from collections import Counter
 L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
 print Counter(L)
@@ -10600,7 +10600,7 @@ print Counter(L)['a']
 : 3
 
 ** About your python
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import sys
 
 print sys.version
@@ -10624,7 +10624,7 @@ print sys.prefix
 
 The =platform= module provides similar, complementary information.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import platform
 
 print platform.uname()
@@ -10660,7 +10660,7 @@ If you are doing some analysis that requires you to change directories, e.g. to 
 
 The try/except/finally method is the traditional way to handle exceptions, and make sure that some code "finally" runs. Let us look at two examples here. In the first example, we try to change into a directory that does not exist.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import os, sys
 
 CWD = os.getcwd() # store initial position
@@ -10687,7 +10687,7 @@ finally:
 
 Now, let us look at an example where the directory does exist. We will change into the directory, run some code, and then raise an Exception.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import os, sys
 
 CWD = os.getcwd() # store initial position
@@ -10717,7 +10717,7 @@ finally:
 
 You can see that we changed into the directory, ran some code, and then caught an exception. Afterwards, we changed back to our original directory. This code works fine, but it is somewhat verbose, and tedious to write over and over. We can get a cleaner syntax with a context manager. The context manager uses the =with= keyword in python. In a context manager some code is executed on entering the "context", and code is run on exiting the context. We can use that to automatically change directory, and when done, change back to the original directory. We use the =contextlib.contextmanager= decorator on a function. With a function, the code up to a =yield= statement is run on entering the context, and the code after the yield statement is run on exiting. We wrap the yield statement in try/except/finally block to make sure our final code gets run.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import contextlib
 import os, sys
 
@@ -10725,16 +10725,16 @@ import os, sys
 def cd(path):
     print 'initially inside {0}'.format(os.getcwd())
     CWD = os.getcwd()
-    
+
     os.chdir(path)
     print 'inside {0}'.format(os.getcwd())
     try:
-        yield
+	yield
     except:
-        print 'Exception caught: ',sys.exc_info()[0]
+	print 'Exception caught: ',sys.exc_info()[0]
     finally:
-        print 'finally inside {0}'.format(os.getcwd())
-        os.chdir(CWD)
+	print 'finally inside {0}'.format(os.getcwd())
+	os.chdir(CWD)
 
 # Now we use the context manager
 with cd('data'):
@@ -10751,7 +10751,7 @@ with cd('data/run2'):
 One case that is not handled well with this code is if the directory you want to change into does not exist. In that case an exception is raised on entering the context when you try change into a directory that does not exist. An alternative class based context manager can be found [[http://code.activestate.com/recipes/576620-changedirectory-context-manager/][here]]. 
 
 ** TODO multiprocessing
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 import multiprocessing
 
 cpus = multiprocessing.cpu_count()
@@ -10785,7 +10785,7 @@ We do not actually send the emails in this example. To do that you need to have 
 
 We create a string that is a template with some fields to be substituted, e.g. the firstname and room number in this case. Then we loop through each row of the table, and format the template with those values, and create an email message to the person. First we print each message to check that they are correct. 
 
-#+BEGIN_SRC python :var data=mail-list
+#+BEGIN_SRC python :var data=mail-list :exports code
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
