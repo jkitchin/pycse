@@ -255,7 +255,7 @@ class MyTexCompiler(ReportCompiler):
                                         '''
 \documentclass[pdfstartview=FitH,
                pdfproducer=pycse-publish-v{VERSION},
-               pdfauthor={author},pdfstartview=FitH,
+               pdfauthor={author},
                pdftitle={assignment}]{{article}}'''.format(VERSION=VERSION,
                                                            author=data['NAME'],
                                                            assignment=data['ASSIGNMENT']))
@@ -296,15 +296,15 @@ grade.value = cChoice;
         # this is an awful hack around docutils
         tex_string = re.sub('%%% User specified packages and stylesheets',
                             '''
-\usepackage[pdftex]{{web}}
-\screensize{{11in}}{{8.5in}}
-\margins{{0.25in}}{{0.25in}}{{0.25in}}{{0.25in}}
-\usepackage{{eforms}}
-\usepackage{{popupmenu}}
+\usepackage[pdftex]{web}
+\screensize{11in}{8.5in}
+\margins{0.25in}{0.25in}{0.25in}{0.25in}
+\usepackage{eforms}
+\usepackage{popupmenu}
 
-\hypersetup{{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,pdfstartview=FitH}
 
-\usepackage{{bookmark}}''', tex_string)
+\usepackage{bookmark}''', tex_string)
          
         print >>fileobject, tex_string
 
@@ -524,6 +524,11 @@ def publish(args):
     default_options.figure_type = 'png'
 
     pyreport.main(open(INPUT), overrides=opts)
+
+    # clean up
+    for fname in ['md.djs']:
+        if os.path.exists(fname):
+            os.unlink(fname)
 
     try:
         os.startfile(BASENAME + '.pdf')

@@ -275,9 +275,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 k = 2.2
-def myode(t,y):
+def myode(y, t):
     "ode defining exponential growth"
-    return k * t
+    return k * y
 
 y0 = 3
 tspan = np.linspace(0,1)
@@ -1717,7 +1717,7 @@ dfdx_I = np.imag(f(x + np.complex(0, h))/h)
 print dfdx_a
 print dfdx_fd
 print dfdx_cd
-print dfdx_cd
+print dfdx_I
 
 #+END_SRC
 
@@ -1725,7 +1725,7 @@ print dfdx_cd
 : 1.77335410624
 : 1.7733539398
 : 1.77335410523
-: 1.77335410523
+: 1.77335410624
 
 These are all the same to 4 decimal places. The simple finite difference is the least accurate, and the central differences is practically the same as the complex number approach.
 
@@ -5741,9 +5741,10 @@ plt.savefig('images/nonlin-curve-fit-ci.png')
 #+END_SRC
 
 #+RESULTS:
-: p0: 1.32753141454 [1.3005365922  1.35452623688]
-: p1: 0.0264615569701 [0.0236076538292  0.0293154601109]
-: (array([ 1.32753141,  0.02646156]), [[1.3005365921998688, 1.3545262368760884], [0.023607653829234403, 0.029315460110926929]], [0.0097228006732683319, 0.0010278982773703883])
+: p0: 1.32753154044 [1.30053614901  1.35452693188]
+: p1: 0.0264615756885 [0.0236074605292  0.0293156908478]
+: p0: 1.32753153569 [1.30053616583  1.35452690556]
+: p1: 0.0264615749842 [0.0236074660978  0.0293156838707]
 
 [[./images/nonlin-curve-fit-ci.png]]
 
@@ -8961,6 +8962,8 @@ There are many other things you can do!
 ** Plotting two datasets with very different scales
    :PROPERTIES:
    :categories: plotting
+   :date:     2013/09/13 13:55:20
+   :updated:  2013/09/13 14:30:12
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/25/plotting-two-datasets-with-very-different-scales/][Matlab plot]]
 
@@ -9090,6 +9093,11 @@ plt.savefig('images/two-scales-6.png')
 [[./images/two-scales-6.png]]
 
 ** Customizing plots after the fact
+   :PROPERTIES:
+   :categories: plotting
+   :date:     2013/09/16 16:27:27
+   :updated:  2013/09/16 16:32:31
+   :END:
 [[http://matlab.cheme.cmu.edu/2011/09/16/customizing-plots-after-the-fact/][Matlab post]]
 Sometimes it is desirable to make a plot that shows the data you want to present, and to customize the details, e.g. font size/type and line thicknesses afterwards. It can be tedious to try to add the customization code to the existing code that makes the plot. Today, we look at a way to do the customization after the plot is created.
 
@@ -9460,10 +9468,12 @@ plt.show()
 #+END_SRC
 
 #+RESULTS:
-: r
+: e
 : t
+: u
+: a
 : y
-:  
+: r
 
 
 
@@ -9522,7 +9532,6 @@ marker, = ax.plot([0], [0], 'yo', visible=False, alpha=0.8, ms=15)
 def onpick(event):
     ind = event.ind
     ax.set_title('Data point {0} is labeled "{1}"'.format(ind, labels[ind]))
-    
     marker.set_visible(True)
     marker.set_xdata(x[ind])
     marker.set_ydata(x[ind])
@@ -9536,6 +9545,8 @@ plt.show()
 #+END_SRC
 
 #+RESULTS:
+: clicked on  [3]
+: clicked on  [4]
 
 [[./images/interactive-labeled-points.png]]
 
@@ -12863,7 +12874,7 @@ for cmpd, yi in zip(compounds, y):
    :PROPERTIES:
    :categories: plotting
    :date:     2013/02/15 09:00:00
-   :updated:  2013/03/06 16:32:25
+   :updated:  2013/09/25 09:13:03
    :tags:     Thermodynamics
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/11/the-equal-area-method-for-the-van-der-waals-equation/][Matlab post]] 
@@ -12894,14 +12905,14 @@ plt.savefig('images/maxwell-eq-area-1.png')
 
 #+RESULTS:
 : 
-: >>> >>> >>> ... ... ... ... >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000007720240>]
+: >>> >>> >>> >>> >>> >>> ... ... ... ... >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x042FDAF0>]
 : (0, 2)
-: <matplotlib.text.Text object at 0x00000000075C8630>
-: <matplotlib.text.Text object at 0x00000000075CADA0>
+: <matplotlib.text.Text object at 0x04237CB0>
+: <matplotlib.text.Text object at 0x042DC030>
 
 [[./images/maxwell-eq-area-1.png]]
 
-The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection.
+The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection. Let us draw a line on the figure at y = 0.65.
 
 #+BEGIN_SRC python :session
 y = 0.65
@@ -12912,7 +12923,7 @@ plt.savefig('images/maxwell-eq-area-2.png')
 
 #+RESULTS:
 : 
-: >>> [<matplotlib.lines.Line2D object at 0x0000000007720048>]
+: >>> [<matplotlib.lines.Line2D object at 0x042FDCD0>]
 
 [[./images/maxwell-eq-area-2.png]]
 
@@ -12931,7 +12942,7 @@ plt.savefig('images/maxwell-eq-area-3.png')
 #+RESULTS:
 : 
 : >>> >>> [ 0.60286812  1.09743234  2.32534056]
-: >>> [<matplotlib.lines.Line2D object at 0x0000000007728630>, <matplotlib.lines.Line2D object at 0x00000000078B0080>, <matplotlib.lines.Line2D object at 0x00000000078B0588>]
+: >>> [<matplotlib.lines.Line2D object at 0x0439C570>, <matplotlib.lines.Line2D object at 0x043933B0>, <matplotlib.lines.Line2D object at 0x04393CB0>]
 
 [[./images/maxwell-eq-area-3.png]]
 
@@ -12943,7 +12954,7 @@ for A1, we need the area under the line minus the area under the vdW curve. That
 from scipy.integrate import quad
 
 A1, e1 = (v[1] - v[0]) * y - quad(Prfh,  v[0], v[1])
-A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y
+A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1])* y 
 
 print A1, A2
 print e1, e2  # interesting these look so large
@@ -12969,24 +12980,26 @@ def equal_area(y):
 y_eq, = fsolve(equal_area, 0.65)
 print y_eq
 
-A1, e1 = (v[1] - v[0]) * y_eq - quad(Prfh,  v[0], v[1])
-A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y_eq
-
-vdWp = [1.0, -1.0 / 3.0 * (1.0 + 8.0 * Tr / y_eq), 3.0 / y_eq, -1.0 / y_eq]
+Tr = 0.9
+vdWp = [1, -1.0 / 3 * ( 1.0 + 8.0 * Tr / y_eq), 3.0 / y_eq,  -1.0 / y_eq]
 v = np.roots(vdWp)
 v.sort()
 
-print v
+A1, e1 = (v[1] - v[0]) * y_eq - quad(Prfh,  v[0], v[1])
+A2, e2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y_eq
+
+print A1, A2
 #+END_SRC
 
 #+RESULTS:
 : 
 : >>> ... ... ... ... ... ... ... ... >>> >>> 0.646998351872
-: >>> >>> >>> >>> >>> >>> >>> >>> [ 0.6034019   1.09052663  2.34884238]
+: >>> >>> >>> >>> >>> >>> >>> >>> >>> 0.0617526473994 0.0617526473994
 
 Now let us plot the equal areas and indicate them by shading.
 
 #+BEGIN_SRC python :session
+fig = plt.gcf()
 ax = fig.add_subplot(111)
 
 ax.plot(Vr,Pr)
@@ -13011,15 +13024,15 @@ plt.savefig('images/maxwell-eq-area-4.svg')
 #+RESULTS:
 #+begin_example
 
->>> >>> >>> [<matplotlib.lines.Line2D object at 0x0000000007CD0D68>]
->>> >>> >>> [<matplotlib.lines.Line2D object at 0x00000000075B14E0>]
-<matplotlib.collections.PolyCollection object at 0x0000000007CF3D68>
-<matplotlib.collections.PolyCollection object at 0x0000000007CF9C88>
->>> <matplotlib.text.Text object at 0x0000000007CFE0F0>
-<matplotlib.text.Text object at 0x0000000007CFE208>
-<matplotlib.text.Text object at 0x0000000007CD89E8>
-<matplotlib.text.Text object at 0x0000000007CE1198>
-<matplotlib.text.Text object at 0x0000000007CEC470>
+>>> >>> [<matplotlib.lines.Line2D object at 0x043939D0>]
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x043A7230>]
+<matplotlib.collections.PolyCollection object at 0x047ADE70>
+<matplotlib.collections.PolyCollection object at 0x047ADAB0>
+>>> <matplotlib.text.Text object at 0x0438E730>
+<matplotlib.text.Text object at 0x047B7930>
+<matplotlib.text.Text object at 0x04237CB0>
+<matplotlib.text.Text object at 0x042DC030>
+<matplotlib.text.Text object at 0x042EBCD0>
 #+end_example
 
 [[./images/maxwell-eq-area-4.png]]
@@ -14882,7 +14895,7 @@ http://scipy-lectures.github.com/index.html
 ;(save-buffer)
 ;(princ "pycse is built"))
 #+END_SRC
-
+   
 ** html
 #+BEGIN_SRC emacs-lisp
 (require 'ox-publish)
