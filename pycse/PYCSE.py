@@ -94,7 +94,15 @@ def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
     only zeros where the event function is decreasing.
 
     fsolve_args is a dictionary of options for fsolve
+    
     kwargs are any additional options you want to send to odeint.
+
+    Returns [x, y, te, ye, ie]
+    x is the independent variable array
+    y is the solution
+    te is an array of independent variable values where events occurred
+    ye is an array of the solution at the points where events occurred
+    ie is an array of indices indicating which event function occurred.
     '''
     if 'full_output' in kwargs:
         raise Exception('full_output not supported as an option')
@@ -106,7 +114,7 @@ def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
 
     X = [x0]
     sol = [y0]
-    TE, YE, IE = [], [], [] # where events occur
+    TE, YE, IE = [], [], [] # to store where events occur
     
     # initial value of events
     e = np.zeros((len(events), len(xspan)))
@@ -114,7 +122,7 @@ def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
         e[i,0], isterminal, direction = event(y0, x0)
 
     # now we step through the integration
-    for i, x1 in enumerate(xspan[0:-2]):
+    for i, x1 in enumerate(xspan[0:-1]):
         x2 = xspan[i + 1]
         f1 = sol[i]
 
