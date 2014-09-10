@@ -24,4 +24,5 @@ See http://jkitchin.github.io/pycse for documentation.
 
       ''')
 
+# python setup.py register to setup user
 # to push to pypi - python setup.py sdist upload
