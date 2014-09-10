@@ -2,19 +2,7 @@
 #+AUTHOR:    John Kitchin
 #+EMAIL:     johnrkitchin@gmail.com
 #+DATE:      2013-01-21 Mon
-#+DESCRIPTION:
-#+KEYWORDS:
-#+LANGUAGE:  en
-#+OPTIONS:   H:5 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
-#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-#+EXPORT_SELECT_TAGS: export
-#+EXPORT_EXCLUDE_TAGS: noexport
-#+LINK_UP:   
-#+LINK_HOME: 
-#+XSLT:
-#+STYLE: <link rel="stylesheet" typxe="text/css" href="pycse.css" />
-#+Latex_header: \makeindex
+
   
 [[./pycse.png]]
  
@@ -38,6 +26,8 @@ print 8.1 - 5
 #+END_SRC
 
 #+RESULTS:
+| pycse-content | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | org  | :publishing-directory | ~/Dropbox/books/pycse/gh-pages/ | :recursive | t    | :exclude | aspen\ | sandbox\ | python\ | data\ | gh-pages | :publishing-function | org-html-publish-to-html | :headline-levels      |                               5 | :auto-preamble | t        |            |   |                      |                        |
+| pycse-static  | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | css\ | js\                   | png\                            | jpg\       | gif\ | pdf\     | mp3\   | ogg\     | swf\    | dat\  | mat\     | txt\                 | svg                      | :publishing-directory | ~/Dropbox/books/pycse/gh-pages/ | :exclude       | gh-pages | :recursive | t | :publishing-function | org-publish-attachment |
 
 Multiplication is equally straightforward.
 #+BEGIN_SRC python 
@@ -2327,6 +2317,233 @@ Note that only one root is real (and even then, we have to interpet 0.j as not b
 
 *** Summary
 Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
+** DONE Wilkinson's polynomial 
+   CLOSED: [2014-02-21 Fri 09:55]
+   :PROPERTIES:
+   :categories: polynomial
+   :date:     2014/02/21 09:54:47
+   :updated:  2014/02/21 09:55:18
+   :END:
+
+[[http://en.wikipedia.org/wiki/Wilkinson%27s_polynomial][Wilkinson's polynomial]] is defined as
+\(  w(x) = \prod_{i=1}^{20} (x - i) = (x-1)(x-2) \ldots (x-20) \). 
+
+This innocent looking function has 20 roots, which are 1,2,3,...,19,20. Here is a plot of the function.
+
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+@np.vectorize
+def wilkinson(x):
+    p = np.prod(np.array([x - i for i in range(1, 21)]))
+    return p
+
+x = np.linspace(0, 21, 1000)
+plt.plot(x, wilkinson(x))
+plt.ylim([-5e13, 5e13])
+plt.savefig('./images/wilkinson-1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/wilkinson-1.png]]
+
+Let us consider the expanded version of the polynomial. We will use sympy to expand the polynomial. 
+
+#+BEGIN_SRC python
+from sympy import Symbol, Poly
+from sympy.polys.polytools import   poly_from_expr
+
+x = Symbol('x')
+W = 1
+for i in range(1, 21):
+    W = W * (x-i)
+
+print W.expand()
+
+P,d = poly_from_expr(W.expand())
+print P
+#+END_SRC
+#+RESULTS:
+: x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000
+: Poly(x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000, x, domain='ZZ')
+
+The coefficients are orders of magnitude apart in size. This should make you nervous, because the roots of this equation are between 1-20, but there are numbers here that are O(19). This is likely to make any rounding errors in the number representations very significant, and may lead to issues with accuracy of the solution. Let us explore that.
+
+We will get the roots using numpy.roots.
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Symbol
+from sympy.polys.polytools import   poly_from_expr
+
+x = Symbol('x')
+W = 1
+for i in range(1, 21):
+    W = W * (x-i)
+
+P,d = poly_from_expr(W.expand())
+p = P.all_coeffs()
+x = np.arange(1, 21)
+print '\nThese are the known roots\n',x
+
+# evaluate the polynomial at the known roots
+print '\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p, x))
+
+# find the roots ourselves
+roots = np.roots(p)
+print '\nHere are the roots from numpy:\n', roots
+
+# evaluate solution at roots
+print '\nHere is the polynomial evaluated at the calculated roots:\n', np.polyval(p, roots)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+These are the known roots
+[ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20]
+
+The polynomial evaluates to [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] at the known roots
+
+Here are the roots from numpy:
+[ 20.00032488  18.99715999  18.01122169  16.97113219  16.04827464
+  14.9353556   14.06527291  12.94905558  12.03344921  10.98404125
+  10.00605969   8.99839449   8.00028434   6.99997348   5.99999976
+   5.00000034   3.99999997   3.           2.           1.        ]
+
+Here is the polynomial evaluated at the calculated roots:
+[40711209714176.0 15404160985600.0 8634610242048.00 3479686769152.00
+ 1780604828160.00 694313602048.000 321293542400.000 150174387712.000
+ 56110411264.0000 21911624192.0000 8370015744.00000 3104464384.00000
+ 695443968.000000 125754368.000000 -947200.000000000 -9128960.00000000
+ -4393984.00000000 -712192.000000000 -31744.0000000000 17408.0000000000]
+#+end_example
+
+The roots are not exact. Even more to the point, the polynomial does not evaluate to zero at the calculated roots! Something is clearly wrong here. The polynomial function is fine, and it does evaluate to zero at the known roots which are integers. It is subtle, but up to that point, we are using only integers, which can be represented exactly. The roots function is evidently using some float math, and the floats are not the same as the integers.
+
+If we simply change the roots to floats, and reevaluate our polynomial, we get dramatically different results.
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Symbol
+from sympy.polys.polytools import   poly_from_expr
+
+x = Symbol('x')
+W = 1
+for i in range(1, 21):
+    W = W * (x - i)
+
+P,d = poly_from_expr(W.expand())
+p = P.all_coeffs()
+x = np.arange(1, 21, dtype=np.float)
+print '\nThese are the known roots\n',x
+
+# evaluate the polynomial at the known roots
+print '\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p, x))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+These are the known roots
+[  1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.
+  16.  17.  18.  19.  20.]
+
+The polynomial evaluates to [0 -8192.00000000000 -73728.0000000000 262144.000000000 716800.000000000
+ 4055040.00000000 -200704.000000000 5767168.00000000 -13768704.0000000
+ 152166400.000000 89210880.0000000 -146866176.000000 -91027456.0000000
+ -111190016.000000 405964800.000000 301989888.000000 -354531328.000000
+ -10256523264.0000 1316743168.00000 5308416000.00000] at the known roots
+#+end_example
+
+This also happens if we make the polynomial coefficients floats. That happens because in Python whenever one element is a float the results of math operations with that element are floats. 
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Symbol
+from sympy.polys.polytools import   poly_from_expr
+
+x = Symbol('x')
+W = 1
+for i in range(1, 21):
+    W = W * (x - i)
+
+P,d = poly_from_expr(W.expand())
+p = [float(x) for x in P.all_coeffs()]
+x = np.arange(1, 21)
+print '\nThese are the known roots\n',x
+
+# evaluate the polynomial at the known roots
+print '\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p, x))
+#+END_SRC
+
+#+RESULTS:
+: 
+: These are the known roots
+: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20]
+: 
+: The polynomial evaluates to [  0.00000000e+00  -8.19200000e+03  -1.84320000e+04  -6.22592000e+05
+:   -2.04800000e+06  -1.08380160e+07  -2.31813120e+07  -5.89824000e+07
+:   -1.31383296e+08  -9.93280000e+07  -5.61532928e+08  -8.75003904e+08
+:   -1.38583245e+09  -1.97532877e+09  -3.80851200e+09  -6.02931200e+09
+:   -9.61910374e+09  -2.36191334e+10  -1.62105057e+10  -2.71933440e+10] at the known roots
+
+Let us try to understand what is happening here. It turns out that the integer and float representations of the numbers are different! It is known that you cannot exactly represent numbers as floats. 
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Symbol
+from sympy.polys.polytools import   poly_from_expr
+
+x = Symbol('x')
+W = 1
+for i in range(1, 21):
+    W = W * (x - i)
+
+P,d = poly_from_expr(W.expand())
+p = P.all_coeffs()
+
+print '{0:<30s}{1:<30s}{2}'.format('Integer','Float','\delta')
+for pj in p:
+    print '{0:<30s}{1:<30f}{2}'.format(pj, float(pj), pj - float(pj))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Integer                       Float                         \delta
+1                             1.000000                      0
+-210                          -210.000000                   0
+20615                         20615.000000                  0
+-1256850                      -1256850.000000               0
+53327946                      53327946.000000               0
+-1672280820                   -1672280820.000000            0
+40171771630                   40171771630.000000            0
+-756111184500                 -756111184500.000000          0
+11310276995381                11310276995381.000000         0
+-135585182899530              -135585182899530.000000       0
+1307535010540395              1307535010540395.000000       0
+-10142299865511450            -10142299865511450.000000     0
+63030812099294896             63030812099294896.000000      0
+-311333643161390640           -311333643161390656.000000    16.0000000000000
+1206647803780373360           1206647803780373248.000000    112.000000000000
+-3599979517947607200          -3599979517947607040.000000   -160.000000000000
+8037811822645051776           8037811822645051392.000000    384.000000000000
+-12870931245150988800         -12870931245150988288.000000  -512.000000000000
+13803759753640704000          13803759753640704000.000000   0
+-8752948036761600000          -8752948036761600000.000000   0
+2432902008176640000           2432902008176640000.000000    0
+#+end_example
+
+Now you can see the issue. Many of these numbers are identical in integer and float form, but five of them are not. The integer /cannot/ be exactly represented as a float, and there is a difference in the representations. It is a small difference compared to the magnitude, but these kinds of differences get raised to high powers, and become larger. You may wonder why I used "0:<30s>" to print the integer? That is because =pj= in that loop is an object from sympy, which prints as a string. 
+
+This is a famous, and well known problem that is especially bad for this case. This illustrates that you cannot simply rely on what a computer tells you the answer is, without doing some critical thinking about the problem and the solution. Especially in problems where there are coefficients that vary by many orders of magnitude you should be cautious.
+
+There are a few interesting webpages on this topic, which inspired me to work this out in python. These webpages go into more detail on this problem, and provide additional insight into the sensitivity of the solutions to the polynomial coefficients.
+1. http://blogs.mathworks.com/cleve/2013/03/04/wilkinsons-polynomials/
+2. http://www.numericalexpert.com/blog/wilkinson_polynomial/
+3. http://en.wikipedia.org/wiki/Wilkinson%27s_polynomial
 ** The trapezoidal method of integration
    :PROPERTIES:
    :categories: math, integration
@@ -2811,13 +3028,14 @@ print np.dot(a, a.T)
 #+END_SRC
 
 #+RESULTS:
+: (3L,)
+: [0 1 2]
+: [0 1 2]
 : 
-: >>> >>> (3L,)
-: [0 1 2]
-: [0 1 2]
-: >>>
 : 5
 : 5
+
+
 
 Compare the previous behavior with this 2d array. In this case, you cannot take the dot product of $b$ with itself, because the dimensions are incompatible. You must transpose the second argument to make it dimensionally consistent. Also, the result of the dot product is not a simple scalar, but a 1 \times 1 array.
 
@@ -4245,7 +4463,6 @@ print sol
 : [ 2.  4.]
 : [-2.  4.]
 
-
 *  Statistics
 ** Introduction to statistical data analysis
    :PROPERTIES:
@@ -5380,7 +5597,6 @@ plt.savefig('images/la-line-fit.png')
 
 This method can be readily extended to fitting any polynomial model, or other linear model that is fit in a least squares sense. This method does not provide confidence intervals.
 
-
 ** Linear regression with confidence intervals (updated)
    :PROPERTIES:
    :categories: data analysis, linear regression, confidence interval
@@ -5736,15 +5952,14 @@ plt.plot(x,y,'bo ')
 xfit = np.linspace(0,1)
 yfit = func(xfit, pars[0], pars[1])
 plt.plot(xfit,yfit,'b-')
+
 plt.legend(['data','fit'],loc='best')
 plt.savefig('images/nonlin-curve-fit-ci.png')
 #+END_SRC
 
 #+RESULTS:
-: p0: 1.32753154044 [1.30053614901  1.35452693188]
-: p1: 0.0264615756885 [0.0236074605292  0.0293156908478]
-: p0: 1.32753153569 [1.30053616583  1.35452690556]
-: p1: 0.0264615749842 [0.0236074660978  0.0293156838707]
+: p0: 1.32753141454 [1.3005365922  1.35452623688]
+: p1: 0.0264615569701 [0.0236076538292  0.0293154601109]
 
 [[./images/nonlin-curve-fit-ci.png]]
 
@@ -6347,6 +6562,97 @@ print X
 :             Function evaluations: 20
 :             Gradient evaluations: 5
 : [-0.70710678 -0.70710678]
+
+** DONE Finding the maximum power of a photovoltaic device.
+   CLOSED: [2014-04-15 Tue 20:38]
+   :PROPERTIES:
+   :categories: python,optimization
+   :date:     2014/04/15 20:38:10
+   :updated:  2014/04/15 20:38:10
+   :END:
+
+A photovoltaic device is characterized by a current-voltage relationship. Let us say, for argument's sake, that the relationship is known and defined by
+
+\(i = 0.5 - 0.5 * V^2\)
+
+The voltage is highest when the current is equal to zero, but of course then you get no power. The current is highest when the voltage is zero, i.e. short-circuited, but there is again no power. We seek the highest power condition, which is to find the maximum of \(i V\). This is a constrained optimization. We solve it by creating an objective function that returns the negative of (\i V\), and then find the minimum.
+
+First, let us examine the i-V relationship.
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+V = np.linspace(0, 1)
+
+def i(V):
+    return 0.5 - 0.5 * V**2
+plt.plot(V, i(V))
+plt.savefig('images/iV.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/iV.png]]
+
+
+Now, let us be sure there is a maximum in power.
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+import numpy as np
+
+V = np.linspace(0, 1)
+
+def i(V):
+    return 0.5 - 0.5 * V**2
+plt.plot(V, i(V) * V)
+plt.savefig('images/P1.png')
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/P1.png]]
+
+You can see in fact there is a maximum, near V=0.6. We could solve this problem analytically by taking the appropriate derivative and solving it for zero. That still might require solving a nonlinear problem though. We will directly setup and solve the constrained optimization. 
+
+#+BEGIN_SRC python
+from scipy.optimize import fmin_slsqp
+import numpy as np
+import matplotlib.pyplot as plt
+
+def objective(X):
+    i, V = X
+    return - i * V
+
+def eqc(X):
+    'equality constraint'
+    i, V = X
+    return (0.5 - 0.5 * V**2) - i
+
+X0 = [0.2, 0.6]
+X = fmin_slsqp(objective, X0, eqcons=[eqc])
+
+imax, Vmax = X
+
+
+V = np.linspace(0, 1)
+
+def i(V):
+    return 0.5 - 0.5 * V**2
+plt.plot(V, i(V), Vmax, imax, 'ro')
+plt.savefig('images/P2.png')
+#+END_SRC
+
+#+RESULTS:
+: Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -0.192450127337
+:             Iterations: 5
+:             Function evaluations: 20
+:             Gradient evaluations: 5
+
+[[./images/P2.png]]
+
+You can see the maximum power is approximately 0.2 (unspecified units), at the conditions indicated by the red dot in the figure above.
+
 ** Using Lagrange multipliers in optimization
    :PROPERTIES:
    :categories: optimization
@@ -6629,7 +6935,7 @@ import matplotlib.pyplot as plt
 def fprime(y,t):
     return y
 
-tspan = np.linspace(0, 2)
+tspan = np.linspace(0, 25)
 y0 = 1
 ysol = odeint(fprime, y0, tspan)
 plt.figure(figsize=(4,3))
@@ -6639,6 +6945,7 @@ plt.xlabel('time')
 plt.ylabel('y(t)')
 plt.legend(loc='best')
 plt.savefig('images/simple-ode.png')
+plt.show()
 #+END_SRC
 
 #+RESULTS:
@@ -6670,6 +6977,7 @@ print 'y = 3 at x = {0}'.format(ip(3))
 
 #+RESULTS:
 : y = 3 at x = 1.09854780564
+
 
 *** Plotting ODE solutions in cylindrical coordinates
    :PROPERTIES:
@@ -8531,6 +8839,8 @@ plt.savefig('images/blasius.png')
 #+RESULTS:
 : f''(0) = f_3(0) = 0.332491109552
 
+That solution agrees well with reported solutions.
+
 [[./images/blasius.png]]
 
 **  Partial differential equations
@@ -8959,11 +9269,12 @@ plt.show()
 [[./images/plot-customization-3.png]]
 
 There are many other things you can do!
-** Plotting two datasets with very different scales
+** DONE Plotting two datasets with very different scales
+   CLOSED: [2014-06-19 Thu 15:26]
    :PROPERTIES:
    :categories: plotting
    :date:     2013/09/13 13:55:20
-   :updated:  2013/09/13 14:30:12
+   :updated:  2014/06/19 15:26:20
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/25/plotting-two-datasets-with-very-different-scales/][Matlab plot]]
 
@@ -11569,10 +11880,11 @@ print K
 : 
 : >>> 1.43446295961
 
-** Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
+** DONE Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
+   CLOSED: [2014-09-10 Wed 13:15]
    :PROPERTIES:
    :date:     2013/03/01 12:27:48
-   :updated:  2013/03/06 18:24:21
+   :updated:  2014/09/10 13:15:30
    :categories: optimization
    :tags:     thermodynamics
    :END:
@@ -11631,9 +11943,16 @@ def ec1(n):
     'equality constraint'
     return np.dot(Aeq, n) - beq
 
+def ic1(n):
+    '''inequality constraint
+       all n>=0
+    '''   
+    return n
 #+END_SRC
 
 #+RESULTS:
+
+
 
 Now we solve the problem.
 
@@ -11641,9 +11960,11 @@ Now we solve the problem.
 # initial guess suggested in the example
 n0 = [1e-3, 1e-3, 1e-3, 0.993, 1.0, 1e-4, 5.992, 1.0, 1e-3] 
 
+n0 = [0.066, 8.7e-08, 2.1e-14, 0.545, 1.39, 5.7e-14, 5.346, 1.521, 1.58e-7]
+
 from scipy.optimize import fmin_slsqp
 
-X = fmin_slsqp(func, n0, f_eqcons=ec1, iter=300, acc=1e-12)
+X = fmin_slsqp(func, n0, f_eqcons=ec1,f_ieqcons=ic1, iter=300, acc=1e-12)
 
 for s,x in zip(species, X):
     print '{0:10s} {1:1.4g}'.format(s, x)
@@ -11656,21 +11977,21 @@ print np.all( np.abs( np.dot(Aeq, X) - beq) < 1e-12)
 #+RESULTS:
 #+begin_example
 
->>> >>> >>> >>> Optimization terminated successfully.    (Exit mode 0)
-            Current function value: -104.403947663
-            Iterations: 217
-            Function evaluations: 2937
-            Gradient evaluations: 217
->>> ... ... CH4        0.06694
-C2H4       8.108e-08
-C2H2       5.174e-08
-CO2        0.5441
+>>> >>> >>> >>> >>> >>> Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -104.403951524
+            Iterations: 16
+            Function evaluations: 193
+            Gradient evaluations: 15
+>>> ... ... CH4        0.06644
+C2H4       9.48e-08
+C2H2       1.487e-13
+CO2        0.545
 CO         1.389
-O2         1.222e-14
-H2         5.343
-H2O        1.523
-C2H6       8.44e-08
-... [ -1.66977543e-13   1.77635684e-15   4.44089210e-16]
+O2         3.096e-13
+H2         5.346
+H2O        1.521
+C2H6       1.581e-07
+... [  0.00000000e+00   0.00000000e+00   4.44089210e-16]
 True
 #+end_example
 
@@ -11703,20 +12024,21 @@ print (X[3] * X[6]) / (X[4] * X[7])
 #+END_SRC
 
 #+RESULTS:
-: 1.37450039394
+: 1.37887525547
 
-This is close, but not exactly the same as the equilibrium constant computed above. I think they should be exactly the same, and the difference is due to convergence errors in the solution to the problem.
+This is very close to the equilibrium constant computed above. 
 
 Clearly, there is an equilibrium between these species that prevents the complete reaction of steam reforming.
 
 *** Summary
 
 This is an appealing way to minimize the Gibbs energy of a mixture. No assumptions about reactions are necessary, and the constraints are easy to identify. The Gibbs energy function is especially easy to code.
-** The Gibbs free energy of a reacting mixture and the equilibrium composition
+** DONE The Gibbs free energy of a reacting mixture and the equilibrium composition
+   CLOSED: [2014-09-10 Wed 12:21]
    :PROPERTIES:
    :categories: optimization
    :date:     2013/02/18 09:00:00
-   :updated:  2013/03/06 16:27:09
+   :updated:  2014/09/10 12:21:56
    :tags:     thermodynamics, reaction engineering
    :END:
 [[http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/][Matlab post]]
@@ -11795,9 +12117,11 @@ plt.savefig('images/gibbs-minim-1.png')
 
 #+RESULTS:
 : 
-: >>> [<matplotlib.lines.Line2D object at 0x10a8bf50>]
-: <matplotlib.text.Text object at 0x10608190>
-: <matplotlib.text.Text object at 0x10609d10>
+: >>> >>> >>> __main__:7: RuntimeWarning: divide by zero encountered in log
+: __main__:7: RuntimeWarning: invalid value encountered in multiply
+: [<matplotlib.lines.Line2D object at 0x10b1c7710>]
+: <matplotlib.text.Text object at 0x10b1c3d10>
+: <matplotlib.text.Text object at 0x10b1c9b90>
 
 [[./images/gibbs-minim-1.png]]
 
@@ -11806,15 +12130,17 @@ Now we simply minimize our Gwigglewiggle function. Based on the figure above, th
 #+BEGIN_SRC python :session
 from scipy.optimize import fminbound
 
-epsilonp_eq = fminbound(Gwigglewiggle, 0, 0.45)
+epsilonp_eq = fminbound(Gwigglewiggle, 0.4, 0.5)
+print epsilonp_eq
 
-plt.plot([extmin], [Gwigglewiggle(epsilonp_eq)], 'ro')
+plt.plot([epsilonp_eq], [Gwigglewiggle(epsilonp_eq)], 'ro')
 plt.savefig('images/gibbs-minim-2.png')
 #+END_SRC
 
 #+RESULTS:
 : 
-: >>> >>> [<matplotlib.lines.Line2D object at 0x10a8b5d0>]
+: >>> >>> 0.46959618249
+: >>> [<matplotlib.lines.Line2D object at 0x10d4d3e50>]
 
 [[./images/gibbs-minim-2.png]]
 
@@ -11833,8 +12159,8 @@ print y_j
 
 #+RESULTS:
 : 
-: >>> >>> >>> 0.0573226598476 0.0573226598476 0.885354680305
-: >>> >>> >>> [ 0.05732266  0.05732266  0.88535468]
+: >>> >>> >>> 0.0573220186324 0.0573220186324 0.885355962735
+: >>> ... >>> [ 0.05732202  0.05732202  0.88535596]
 
 $K = \frac{a_P}{a_I a_B} = \frac{y_p P/P^\circ}{y_i P/P^\circ y_b P/P^\circ} = \frac{y_P}{y_i y_b}\frac{P^\circ}{P}$.
 
@@ -11842,19 +12168,19 @@ We can express the equilibrium constant like this :$K = \prod\limits_j a_j^{\nu_
 
 #+BEGIN_SRC python :session
 K = np.exp(-Grxn/R/T)
-print K
-print yp / (yi * yb) * P0 / P
-
-print np.prod((y_j * P / P0)**nu_j)
+print 'K from delta G ',K
+print 'K as ratio of mole fractions ',yp / (yi * yb) * P0 / P
+print 'compact notation: ',np.prod((y_j * P / P0)**nu_j)
 #+END_SRC
 
 #+RESULTS:
 : 
-: 107.776294742
-: 107.776632714
-: >>> 107.776632714
+: K from delta G  107.776294742
+: K as ratio of mole fractions  107.779200065
+: compact notation:  107.779200065
 
-These results are very close, and only disagree because of the default tolerance used in identifying the minimum of our function. you could tighten the tolerances by setting options to the fminbnd function.
+
+These results are very close, and only disagree because of the default tolerance used in identifying the minimum of our function. You could tighten the tolerances by setting options to the fminbnd function.
 
 *** Summary
 
@@ -13138,6 +13464,7 @@ print('The equilibrium conversion is X = {0:1.2f}'.format(Xe))
 *** Footnotes
 
 [fn:fogler-setup] See Fogler, 4th ed. page 1025 for the setup of this equation. 
+
 ** Integrating a batch reactor design equation
    :PROPERTIES:
    :date:     2013/01/06 09:00:00
@@ -13374,6 +13701,8 @@ we have saturated liquid here, and we get the thermodynamic properties for the g
 We have saturated liquid here, and we get the thermodynamic properties for the given temperature.
 
 #+BEGIN_SRC python :session
+#import iapws
+#print iapws.__version__
 from iapws import IAPWS97
 
 T1 = 100 + 273.15 #in K
@@ -13598,7 +13927,7 @@ plt.savefig('images/boundary-1.png')
 
 #+RESULTS:
 : 
-: ... ... ... ... ... ... ... ... ... ... ... ... ... ... >>> >>> >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x00000000062FEBA8>]
+: >>> >>> ... ... ... ... ... ... ... ... ... ... ... ... ... ... ... >>> >>> >>> >>> ... [<matplotlib.lines.Line2D object at 0x0434D4D0>]
 : (0, 1)
 
 [[./images/boundary-1.png]]
@@ -13723,6 +14052,7 @@ for x in X:
 
         if nintersections % 2 == 0:
             plt.plot(x, y, 'r.')
+
         else:
             plt.plot(x, y, 'b.')
 
@@ -13737,6 +14067,8 @@ plt.show()
 
 If you look carefully, there are two blue points in the red region, which means there is some edge case we do not capture in our function. Kudos to the person who figures it out. 
 
+# https://mail.google.com/mail/?chat=off&shva=1#inbox/145cd93c0d56fcdf
+It was pointed out that the points intersect a point on the line.
 *  Units
 ** Using units in python
   :PROPERTIES:
@@ -13767,6 +14099,7 @@ print q
 
 P = q / liter
 print P
+
 
 #+END_SRC
 
@@ -14815,7 +15148,21 @@ http://scipy-lectures.github.com/index.html
 
 
 * build								   :noexport:
-** pdf
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:5 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+#+STYLE: <link rel="stylesheet" typxe="text/css" href="pycse.css" />
+#+Latex_header: \makeindex
+
+** DEPRECATED pdf
 #+BEGIN_SRC emacs-lisp
 (let ((org-latex-classes '(("article"                          ;class-name
 			    "\\documentclass{article}"        ; header-string
@@ -14901,9 +15248,9 @@ http://scipy-lectures.github.com/index.html
 (require 'ox-publish)
 (setq org-publish-project-alist
        '(("pycse-content"
-	  :base-directory "~/Dropbox/pycse/"
+	  :base-directory "~/Dropbox/books/pycse/"
 	  :base-extension "org"
-	  :publishing-directory "~/Dropbox/pycse/gh-pages/"
+	  :publishing-directory "~/Dropbox/books/pycse/gh-pages/"
 	  :recursive t
 	  :exclude "aspen\\|sandbox\\|python\\|data\\|gh-pages"
 	  :publishing-function org-html-publish-to-html
@@ -14911,9 +15258,9 @@ http://scipy-lectures.github.com/index.html
 	  :auto-preamble t
 	  )
 	 ("pycse-static"
-	  :base-directory "~/Dropbox/pycse/"
+	  :base-directory "~/Dropbox/books/pycse/"
 	  :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|dat\\|mat\\|txt\\|svg"
-	  :publishing-directory "~/Dropbox/pycse/gh-pages/"
+	  :publishing-directory "~/Dropbox/books/pycse/gh-pages/"
 	  :exclude "gh-pages"
 	  :recursive t
 	  :publishing-function org-publish-attachment
