@@ -6,3 +6,5 @@ __version__ = '1.46'
 '''
 from PYCSE import *
 
+# quantities math functions
+from qmath import * 
