@@ -1,4 +1,4 @@
-__version__ = '1.46'
+__version__ = '1.47'
 '''
 9/16/2013 made odelay multivariable and return arrays
 10/19/2013 changed bvp to work for multiple first order equations.
