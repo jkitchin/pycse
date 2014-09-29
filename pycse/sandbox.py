@@ -11,7 +11,7 @@ redirected_error = sys.stderr = StringIO()
 
 out, err, exc = None, None, None
 
-    
+# execute the code    
 exec(content)
   
 out = redirected_output.getvalue()
@@ -21,18 +21,18 @@ sys.stdout = old_stdout
 sys.stderr = old_stderr
 
 
-s = '''sandbox:
----stdout-----------------------------------------------------------
-{0}
+s = '''{0}
 '''.format(out)
 
 if err:
-    s += '''---stderr-----------------------------------------------------------
+    s += '''
+#+STDERR:
 {0}
 '''.format(err)
 
 if exc:
-    s += '''---Exception--------------------------------------------------------
+    s += '''
+#+EXCEPTIONS:
 {0}
 '''.format(exc)
 
