@@ -21,8 +21,7 @@ sys.stdout = old_stdout
 sys.stderr = old_stderr
 
 
-s = '''{0}
-'''.format(out)
+s = '''{0}'''.format(out)
 
 if err:
     s += '''

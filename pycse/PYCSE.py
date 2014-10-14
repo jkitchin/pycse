@@ -14,6 +14,13 @@ def regress(A, y, alpha=None):
 
     alpha is for the 100*(1 - alpha) confidence level
 
+    returns: [b, bint, se]
+      b is a vector of the fitted parameters
+      bint is a 2D array of confidence intervals
+      se is an array of standard error for each parameter.
+
+    The confidence intervals account for sample size using a student T multiplier.
+    
     This code is derived from the descriptions at http://www.weibull.com/DOEWeb/confidence_intervals_in_multiple_linear_regression.htm and http://www.weibull.com/DOEWeb/estimating_regression_models_using_least_squares.htm
     '''
     
@@ -56,6 +63,11 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     y is the dependent data
     model has a signature of f(x, p0, p1, p2, ...)
     p0 is the initial guess of the parameters
+
+    returns [p, pint, SE]
+      p is an array of the fitted parameters
+      pint is an array of confidence intervals
+      SE is an array of standard errors for the parameters.
     '''
     pars, pcov = curve_fit(model, x, y, p0=p0)
     n = len(y)    # number of data points
@@ -71,17 +83,19 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     for i, p,var in zip(range(n), pars, np.diag(pcov)):
         sigma = var**0.5
         SE.append(sigma)
-        pint.append([p - sigma*tval, p + sigma*tval])
+        pint.append([p - sigma * tval, p + sigma * tval])
 
-    return (pars, pint, SE)
+    return (pars, np.array(pint), np.array(SE))
 
-def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
+def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs):
     '''ode wrapper with events func is callable, with signature func(Y, x)
     y0 are the initial conditions xspan is what you want to integrate
     over
 
     events is a list of callable functions with signature event(Y, x).
     These functions return zero when an event has happened.
+
+    TOLERANCE is what is used to identify when an event has occurred.
     
     [value, isterminal, direction] = event(Y, x)
     value is the value of the event function. When value = 0, an event is  triggered
@@ -134,8 +148,7 @@ def odelay(func, y0, xspan, events, fsolve_args=None, **kwargs):
         # check event functions. At each step we compute the event
         # functions, and check if they have changed sign since the
         # last step. If they changed sign, it implies a zero was
-        # crossed.
-        TOLERANCE = 1e-6
+        # crossed.        
         for j, event in enumerate(events):
             e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
                 
@@ -205,6 +218,8 @@ def deriv(x, y, method='two-point'):
     '''compute the numerical derivate dydx
     method = 'two-point': centered difference
              'four-point': centered 4-point difference
+             'fft' is an experimental method usind fft.
+    returns an array the same size as x and y.
     '''
     x = np.array(x)
     y = np.array(y)

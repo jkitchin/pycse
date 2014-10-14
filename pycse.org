@@ -11226,11 +11226,12 @@ John
 #+end_example
 
 *  Worked examples
-** Peak finding in Raman spectroscopy
+** DONE Peak finding in Raman spectroscopy
+   CLOSED: [2014-10-14 Tue 15:01]
    :PROPERTIES:
    :categories: data analysis
    :date:     2013/02/27 10:55:57
-   :updated:  2013/02/27 14:45:37
+   :updated:  2014/10/14 15:01:48
    :END:
 Raman spectroscopy is a vibrational spectroscopy. The data typically comes as intensity vs. wavenumber, and it is discrete. Sometimes it is necessary to identify the precise location of a peak. In this post, we will use spline smoothing to construct an interpolating function of the data, and then use fminbnd to identify peak positions.
 
@@ -11241,17 +11242,6 @@ numpy:loadtxt
 Let us take a look at the raw data.
 
 #+BEGIN_SRC python :session 
-import os
-print os.getcwd()
-print os.environ['HOME']
-#+END_SRC
-
-#+RESULTS:
-: 
-: /home/jkitchin/Dropbox/intro-python
-: /home/jkitchin
-
-#+BEGIN_SRC python :session
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -11266,9 +11256,9 @@ plt.show()
 
 #+RESULTS:
 : 
-: >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1d372810>]
-: <matplotlib.text.Text object at 0x1d48df90>
-: <matplotlib.text.Text object at 0x1d356a10>
+: >>> [<matplotlib.lines.Line2D object at 0x10b1d3190>]
+: <matplotlib.text.Text object at 0x10b1b1b10>
+: <matplotlib.text.Text object at 0x10bc7f310>
 
 [[./images/raman-1.png]]
 
@@ -11288,9 +11278,9 @@ plt.show()
 
 #+RESULTS:
 : 
-: >>> [<matplotlib.lines.Line2D object at 0x1d5005d0>]
-: <matplotlib.text.Text object at 0x1d37a650>
-: <matplotlib.text.Text object at 0x1d3809d0>
+: >>> >>> >>> [<matplotlib.lines.Line2D object at 0x10bc7a4d0>]
+: <matplotlib.text.Text object at 0x10bc08090>
+: <matplotlib.text.Text object at 0x10bc49710>
 
 [[./images/raman-2.png]]
 
@@ -11300,7 +11290,7 @@ Next we consider a scipy:UnivariateSpline. This function "smooths" the data.
 from scipy.interpolate import UnivariateSpline
 
 # s is a "smoothing" factor
-sp = UnivariateSpline(w1, i1, s=3000)
+sp = UnivariateSpline(w1, i1, k=4, s=2000)
 
 plt.plot(w1, i1, 'b. ')
 plt.plot(w1, sp(w1), 'r-')
@@ -11312,10 +11302,10 @@ plt.show()
 
 #+RESULTS:
 : 
-: ... [<matplotlib.lines.Line2D object at 0x1dd35e90>]
-: [<matplotlib.lines.Line2D object at 0x2ab334a3d510>]
-: <matplotlib.text.Text object at 0x1d49bad0>
-: <matplotlib.text.Text object at 0x1dd3b950>
+: >>> ... >>> >>> [<matplotlib.lines.Line2D object at 0x1105633d0>]
+: [<matplotlib.lines.Line2D object at 0x10dd70250>]
+: <matplotlib.text.Text object at 0x10dd65f10>
+: <matplotlib.text.Text object at 0x1105409d0>
 
 [[./images/raman-3.png]]
 
@@ -11323,66 +11313,52 @@ Note that the UnivariateSpline function returns a "callable" function! Our next 
 
 #+BEGIN_SRC python :session
 # get the first derivative evaluated at all the points
-d1 =  sp(w1, 1)
+d1s = sp.derivative()
+
+d1 = d1s(w1)
+
+# we can get the roots directly here, which correspond to minima and
+# maxima.
+print('Roots = {}'.format(sp.derivative().roots()))
+minmax = sp.derivative().roots()
+
+plt.clf()
 plt.plot(w1, d1, label='first derivative')
 plt.xlabel('Raman shift (cm$^{-1}$)')
 plt.ylabel('First derivative')
+plt.grid()
 
-# find the places where the first derivative crosses zero
-s = np.zeros(d1.shape)
-s[d1 >= 0] = 1
-s[d1 < 0] = 0
-
-initial_guesses = w1[np.diff(s) == -1]
-plt.plot(initial_guesses, 0*initial_guesses, 'ro ', label='Guesses of zeros')
+plt.plot(minmax, d1s(minmax), 'ro ', label='zeros')
 plt.legend(loc='best')
-plt.savefig('images/raman-4.png'
-plt.show()
-
-#+END_SRC
-
-#+RESULTS:
-: 
-: >>> [<matplotlib.lines.Line2D object at 0x1d9eaad0>]
-: <matplotlib.text.Text object at 0x1d4f2210>
-: <matplotlib.text.Text object at 0x1d9e6910>
-: >>> ... >>> >>> >>> >>> >>> [<matplotlib.lines.Line2D object at 0x1d4f3250>]
-: <matplotlib.legend.Legend object at 0x1d839510>
-
-[[./images/raman-4.png]]
-
-Now, we can use these initial guesses to solve for the actual values.
-
-#+BEGIN_SRC python :session 
-from scipy.optimize import fminbound
-
-def func(w):
-    'function to minimize'
-    return -sp(w)
-
-for value in initial_guesses:
-    sol = fminbound(func, value - 1, value + 1)
-    plt.plot(sol, sp(sol), 'ro ', ms=8)
-    print 'Peak found at {0} cm^{{-1}}'.format(sol)
 
 plt.plot(w1, i1, 'b. ')
 plt.plot(w1, sp(w1), 'r-')
 plt.xlabel('Raman shift (cm$^{-1}$)')
 plt.ylabel('Intensity (counts)')
-plt.savefig('images/raman-5.png')
-plt.show()
+plt.plot(minmax, sp(minmax), 'ro ')
+
+plt.savefig('images/raman-4.png')
 #+END_SRC
 
 #+RESULTS:
-: 
-: ... ... ... >>> ... [<matplotlib.lines.Line2D object at 0x1da00510>]
-: Peak found at 1346.50980295 cm^{-1}
-: [<matplotlib.lines.Line2D object at 0x1d4c0110>]
-: Peak found at 1348.11261373 cm^{-1}
-: [<matplotlib.lines.Line2D object at 0x1da02b90>]
-: [<matplotlib.lines.Line2D object at 0x1da02750>]
-: <matplotlib.text.Text object at 0x1da01850>
-: <matplotlib.text.Text object at 0x1d9d4110>
+#+begin_example
+
+>>> >>> >>> >>> ... ... Roots = [ 1346.4623087   1347.42700893  1348.16689639]
+>>> >>> >>> [<matplotlib.lines.Line2D object at 0x1106b2dd0>]
+<matplotlib.text.Text object at 0x110623910>
+<matplotlib.text.Text object at 0x110c0a090>
+>>> >>> [<matplotlib.lines.Line2D object at 0x10b1bacd0>]
+<matplotlib.legend.Legend object at 0x1106b2650>
+[<matplotlib.lines.Line2D object at 0x1106b2b50>]
+[<matplotlib.lines.Line2D object at 0x110698550>]
+<matplotlib.text.Text object at 0x110623910>
+<matplotlib.text.Text object at 0x110c0a090>
+[<matplotlib.lines.Line2D object at 0x110698a10>]
+#+end_example
+
+[[./images/raman-4.png]]
+
+
 
 In the end, we have illustrated how to construct a spline smoothing interpolation function and to find maxima in the function, including generating some initial guesses. There is more art to this than you might like, since you have to judge how much smoothing is enough or too much. With too much, you may smooth peaks out. With too little, noise may be mistaken for peaks.
 
@@ -12480,11 +12456,12 @@ They are the same.
 The NIST Webbook provides a plethora of data for computing thermodynamic properties. It is a little tedious to enter it all into Matlab, and a little tricky to use the data to estimate temperature dependent reaction energies. A limitation of the Webbook is that it does not tell you have the thermodynamic properties change with pressure. Luckily, those changes tend to be small.
 
 I noticed a different behavior in interpolation between scipy.interpolate.interp1d and Matlab's interp1. The scipy function returns an interpolating function, whereas the Matlab function directly interpolates new values, and returns the actual interpolated data. 
-** Constrained minimization to find equilibrium compositions
+** DONE Constrained minimization to find equilibrium compositions
+   CLOSED: [2014-10-14 Tue 14:52]
    :PROPERTIES:
    :categories: optimization
    :date:     2013/02/05 09:00:00
-   :updated:  2013/03/06 16:28:41
+   :updated:  2014/10/14 14:52:25
    :tags:     thermodynamics, reaction engineering
    :END:
 
@@ -12502,21 +12479,22 @@ Here we define the Gibbs free energy of the mixture as a function of the reactio
 #+BEGIN_SRC python  :session
 import numpy as np
 
+
 def gibbs(E):
     'function defining Gibbs free energy as a function of reaction extents'
     e1 = E[0]
     e2 = E[1]
     # known equilibrium constants and initial amounts
-    K1 = 108; K2 = 284; P = 2.5;
-    yI0 = 0.5; yB0 = 0.5; yP10 = 0.0; yP20 = 0.0;
+    K1 = 108; K2 = 284; P = 2.5
+    yI0 = 0.5; yB0 = 0.5; yP10 = 0.0; yP20 = 0.0
     # compute mole fractions
-    d = 1 - e1 - e2;
-    yI = (yI0 - e1 - e2) / d;
-    yB = (yB0 - e1 - e2) / d;
-    yP1 = (yP10 + e1) / d;
-    yP2 = (yP20 + e2) / d;
+    d = 1 - e1 - e2
+    yI = (yI0 - e1 - e2) / d
+    yB = (yB0 - e1 - e2) / d
+    yP1 = (yP10 + e1) / d
+    yP2 = (yP20 + e2) / d
     G = (-(e1 * np.log(K1) + e2 * np.log(K2)) +
-         d * np.log(P) + yI * d * np.log(yI) + 
+         d * np.log(P) + yI * d * np.log(yI) +
          yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
     return G
 #+END_SRC
@@ -12549,9 +12527,11 @@ def constraint1(E):
     e1 = E[0]
     return e1
 
+
 def constraint2(E):
     e2 = E[1]
     return e2
+
 
 def constraint3(E):
     e1 = E[0]
@@ -12566,23 +12546,25 @@ Now, we minimize.
 #+BEGIN_SRC python :session
 from scipy.optimize import fmin_slsqp
 
-X0 = [0.133, 0.351]
-X = fmin_slsqp(gibbs, X0, ieqcons=[constraint1, constraint2, constraint3])
+X0 = [0.2, 0.2]
+X = fmin_slsqp(gibbs, X0, ieqcons=[constraint1, constraint2, constraint3],
+               bounds=((0.001, 0.499),
+                       (0.001, 0.499)))
 print X
 
 print gibbs(X)
-
 #+END_SRC
 
 #+RESULTS:
 : 
-: >>> >>> Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -2.55942338611
-:             Iterations: 1
-:             Function evaluations: 8
-:             Gradient evaluations: 1
-: [ 0.1330313   0.35101555]
-: >>> -2.55942338611
+: >>> >>> ... ... Optimization terminated successfully.    (Exit mode 0)
+:             Current function value: -2.55942394906
+:             Iterations: 7
+:             Function evaluations: 31
+:             Gradient evaluations: 7
+: [ 0.13336503  0.35066486]
+: >>> -2.55942394906
+
 
 
 One way we can verify our solution is to plot the gibbs function and see where the minimum is, and whether there is more than one minimum. We start by making grids over the range of 0 to 0.5. Note we actually start slightly above zero because at zero there are some numerical imaginary elements of the gibbs function or it is numerically not defined since there are logs of zero there. We also set all elements where the sum of the two extents is greater than 0.5 to near zero, since those regions violate the constraints. 
@@ -12628,7 +12610,7 @@ plt.xlabel('$\epsilon_1$')
 plt.ylabel('$\epsilon_2$')
 plt.colorbar()
 
-plt.plot([ 0.1330313],   [0.35101555], 'ro')
+plt.plot([0.13336503],  [0.35066486], 'ro')
 
 plt.savefig('images/gibbs-minimization-1.png')
 plt.savefig('images/gibbs-minimization-1.svg')
@@ -12648,10 +12630,10 @@ e2 = X[1];
 yI0 = 0.5; yB0 = 0.5; yP10 = 0; yP20 = 0; #initial mole fractions
 
 d = 1 - e1 - e2;
-yI = (yI0 - e1 - e2)/d;
-yB = (yB0 - e1 - e2)/d;
-yP1 = (yP10 + e1)/d;
-yP2 = (yP20 + e2)/d;
+yI = (yI0 - e1 - e2) / d
+yB = (yB0 - e1 - e2) / d
+yP1 = (yP10 + e1) / d
+yP2 = (yP20 + e2) / d
 
 print('y_I = {0:1.3f} y_B = {1:1.3f} y_P1 = {2:1.3f} y_P2 = {3:1.3f}'.format(yI,yB,yP1,yP2))
 #+END_SRC
@@ -15244,6 +15226,8 @@ http://scipy-lectures.github.com/index.html
 ;(princ "pycse is built"))
 #+END_SRC
    
+** pdf
+
 ** html
 #+BEGIN_SRC emacs-lisp
 (require 'ox-publish)
