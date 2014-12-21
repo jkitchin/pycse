@@ -1,3 +1,6 @@
+'''pycse is a set of python modules and functions for python calculations in Science and Engineering.
+'''
+
 __version__ = '1.50'
 '''
 9/16/2013 made odelay multivariable and return arrays
