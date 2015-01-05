@@ -7,6 +7,9 @@
 [[./pycse.png]]
  
 *  Overview
+  :PROPERTIES:
+  :ID:       20755EDC-9A7C-4159-885F-D28A9CE8A7F3
+  :END:
 This is a collection of examples of using python in the kinds of scientific and engineering computations I have used in classes and research. They are organized by topics.
 
 I recommend the Enthought python distribution (http://www.enthought.com). This distribution is free for academic use, and cheap otherwise. It is pretty complete in terms of mathematical, scientific and plotting modules. All of the examples in this book were created with the Enthought python distribution. 
@@ -9861,6 +9864,79 @@ plt.show()
 
 [[./images/interactive-labeled-points.png]]
 
+** Peak annotation in matplotlib
+   :PROPERTIES:
+   :categories: plotting
+   :END:
+This post is just some examples of annotating features in a plot in matplotlib. We illustrate finding peak maxima in a range, shading a region, shading peaks, and labeling a region of peaks. I find it difficult to remember the detailed syntax for these, so here are examples I could refer to later.
+
+#+BEGIN_SRC python
+import numpy as np
+import matplotlib.pyplot as plt
+
+w, i = np.loadtxt('data/raman.txt', usecols=(0, 1), unpack=True)
+
+plt.plot(w, i)
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)')
+
+ax = plt.gca()
+
+# put a shaded rectangle over a region
+ax.annotate('Some typical region', xy=(550, 15500), xycoords='data')
+ax.fill_between([700, 800], 0, [16000, 16000], facecolor='red', alpha=0.25)
+
+# shade the region in the spectrum
+ind = (w>1019) & (w<1054)
+ax.fill_between(w[ind], 0, i[ind], facecolor='gray', alpha=0.5)
+area = np.trapz(i[ind], w[ind])
+x,y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
+ax.annotate('Area = {0:1.2f}'.format(area), xy=(x, y),
+            xycoords='data',
+            xytext=(x + 50, y + 5000),
+            textcoords='data',
+            arrowprops=dict(arrowstyle="->",
+                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+
+
+# find a max in this region, and annotate it
+ind = (w>1250) & (w<1252)
+x,y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
+ax.annotate('A peak', xy=(x, y),
+            xycoords='data',
+            xytext=(x + 350, y + 2000),
+            textcoords='data',
+            arrowprops=dict(arrowstyle="->",
+                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+
+# find max in this region, and annotate it
+ind = (w>1380) & (w<1400)
+x,y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
+ax.annotate('Another peak', xy=(x, y),
+            xycoords='data',
+            xytext=(x + 50, y + 2000),
+            textcoords='data',
+            arrowprops=dict(arrowstyle="->",
+                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+
+# indicate a region with connected arrows
+ax.annotate('CH bonds', xy=(2780, 6000), xycoords='data')
+ax.annotate('', xy=(2800., 5000.),  xycoords='data',
+            xytext=(3050, 5000), textcoords='data',
+            # the arrows connect the xy to xytext coondinates
+            arrowprops=dict(arrowstyle="<->",
+                            connectionstyle="bar",
+                            ec="k",  # edge color
+                            shrinkA=0.1, shrinkB=0.1))
+
+plt.savefig('images/plot-annotes.png')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/plot-annotes.png]]
+
 *  Programming
 ** Some of this, sum of that
    :PROPERTIES:
@@ -12835,11 +12911,12 @@ print np.dot(reactants, atomic_masses) + np.dot(products, atomic_masses)
 
 That is all there is to mass conservation with reactions. Nothing changes if there are lots of reactions, as long as each reaction is properly balanced, and none of them are nuclear reactions!
 
-** Numerically calculating an effectiveness factor for a porous catalyst bead
+** DONE Numerically calculating an effectiveness factor for a porous catalyst bead
+   CLOSED: [2015-01-05 Mon 09:59]
    :PROPERTIES:
    :categories: BVP
    :date:     2013/02/13 09:00:00
-   :updated:  2013/03/06 18:23:23
+   :updated:  2015/01/05 09:59:14
    :tags:     reaction engineering
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/][Matlab post]]
@@ -12848,9 +12925,26 @@ If reaction rates are fast compared to diffusion in a porous catalyst pellet, th
 
 References: Ch 12. Elements of Chemical Reaction Engineering, Fogler, 4th edition.
 
-A mole balance on the particle volume in spherical coordinates with a first order reaction leads to: $\frac{d^2Ca}{dr^2} + \frac{2}{r}\frac{dCa}{dr}-\frac{k}{D_e}C_A=0$ with boundary conditions $C_A(R) = C_{As}$ and $\frac{dCa}{dr}=0$ at $r=0$. We convert this equation to a system of first order ODEs by letting $W_A=\frac{dCa}{dr}$.
+A mole balance on the particle volume in spherical coordinates with a first order reaction leads to: $\frac{d^2Ca}{dr^2} + \frac{2}{r}\frac{dCa}{dr}-\frac{k}{D_e}C_A=0$ with boundary conditions $C_A(R) = C_{As}$ and $\frac{dCa}{dr}=0$ at $r=0$. We convert this equation to a system of first order ODEs by letting $W_A=\frac{dCa}{dr}$. Then, our two equations become:
 
-We have a condition of no flux at r=0 and Ca(R) = CAs, which makes this a boundary value problem. We use the shooting method here, and guess what Ca(0) is and iterate the guess to get Ca(R) = CAs.
+\(\frac{dCa}{dr} = W_A\)
+
+and
+
+\(\frac{dW_A}{dr} = -\frac{2}{r} W_A + \frac{k}{D_E} C_A\)
+
+We have a condition of no flux ($W_A=0$) at r=0 and Ca(R) = CAs, which makes this a boundary value problem. We use the shooting method here, and guess what Ca(0) is and iterate the guess to get Ca(R) = CAs.
+
+The value of the second differential equation at r=0 is tricky because at this place we have a 0/0 term. We use L'Hopital's rule to evaluate it. The derivative of the top is $\frac{dW_A}{dr}$ and the derivative of the bottom is 1. So, we have 
+\(\frac{dW_A}{dr} = -2\frac{dW_A}{dr} + \frac{k}{D_E} C_A\)
+
+Which leads to:
+
+\(3 \frac{dW_A}{dr} =  \frac{k}{D_E} C_A\)
+
+or \(\frac{dW_A}{dr} =  \frac{3k}{D_E} C_A\) at $r=0$.
+
+Finally, we implement the equations in Python and solve.
 
 #+BEGIN_SRC python
 import numpy as np
@@ -12858,35 +12952,34 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
 De = 0.1    # diffusivity cm^2/s
-R  = 0.5    # particle radius, cm
-k  = 6.4    # rate constant (1/s)
+R = 0.5    # particle radius, cm
+k = 6.4    # rate constant (1/s)
 CAs = 0.2   # concentration of A at outer radius of particle (mol/L)
 
+
 def ode(Y, r):
-    Wa = Y[0] # molar rate of delivery of A to surface of particle
-    Ca = Y[1] # concentration of A in the particle at r
-
+    Wa = Y[0]  # molar rate of delivery of A to surface of particle
+    Ca = Y[1]  # concentration of A in the particle at r
+    # this solves the singularity at r = 0
     if r == 0:
-        dWadr = 0   #this solves the singularity at r = 0
+        dWadr = k / 3.0 * De * Ca
     else:
-        dWadr = -2*Wa/r + k/De*Ca
-
+        dWadr = -2 * Wa / r + k / De * Ca
     dCadr = Wa
-
     return [dWadr, dCadr]
 
 # Initial conditions
-Ca0 = 0.029315 # Ca(0) (mol/L) guessed to satisfy Ca(R) = CAs
-Wa0 = 0        # no flux at r=0 (mol/m^2/s)
+Ca0 = 0.029315  # Ca(0) (mol/L) guessed to satisfy Ca(R) = CAs
+Wa0 = 0         # no flux at r=0 (mol/m^2/s)
 
 rspan = np.linspace(0, R, 500)
 
 Y = odeint(ode, [Wa0, Ca0], rspan)
 
-Ca = Y[:,1]
+Ca = Y[:, 1]
 
 # here we check that Ca(R) = Cas
-print 'At r={0} Ca={1}'.format(rspan[-1],Ca[-1])
+print 'At r={0} Ca={1}'.format(rspan[-1], Ca[-1])
 
 plt.plot(rspan, Ca)
 plt.xlabel('Particle radius')
@@ -12894,18 +12987,25 @@ plt.ylabel('$C_A$')
 plt.savefig('images/effectiveness-factor.png')
 
 r = rspan
-eta_numerical = np.trapz(k*Ca*4*np.pi*(r**2), r)/np.trapz(k*CAs*4*np.pi*(r**2), r)
-print eta_numerical
+eta_numerical = (np.trapz(k * Ca * 4 * np.pi * (r**2), r)
+                 / np.trapz(k * CAs * 4 * np.pi * (r**2), r))
 
-phi = R*np.sqrt(k/De);
-eta_analytical = (3/phi**2)*(phi*(1.0 / np.tanh(phi))-1)
-print eta_analytical
+print(eta_numerical)
+
+phi = R * np.sqrt(k / De)
+eta_analytical = (3 / phi**2) * (phi * (1.0 / np.tanh(phi)) - 1)
+print(eta_analytical)
 #+END_SRC
 
 #+RESULTS:
 : At r=0.5 Ca=0.200001488652
+: [<matplotlib.lines.Line2D object at 0x114275550>]
+: <matplotlib.text.Text object at 0x10d5fe890>
+: <matplotlib.text.Text object at 0x10d5ff890>
 : 0.563011348314
+: 
 : 0.563003362801
+: 
 
 [[./images/effectiveness-factor.png]]
 
@@ -12918,6 +13018,8 @@ $$\eta = \frac{\int_0^R k'' a C_A(r) 4 \pi r^2 dr}{\int_0^R k'' a C_{As} 4 \pi r
 We will evaluate this numerically from our solution and compare it to the analytical solution. The results are in good agreement, and you can make the numerical estimate better by increasing the number of points in the solution so that the numerical integration is more accurate.
 
 Why go through the numerical solution when an analytical solution exists? The analytical solution here is only good for 1st order kinetics in a sphere. What would you do for a complicated rate law? You might be able to find some limiting conditions where the analytical equation above is relevant, and if you are lucky, they are appropriate for your problem. If not, it is a good thing you can figure this out numerically!
+
+Thanks to Radovan Omorjan for helping me figure out the ODE at r=0!
 
 ** Computing a pipe diameter
    :PROPERTIES:
