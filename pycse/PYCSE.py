@@ -1,3 +1,10 @@
+"""Module containing useful scientific and engineering functions.
+
+Linear and nonlinear regression.
+
+See http://kitchingroup.cheme.cmu.edu/pycse
+"""
+
 import warnings
 import numpy as np
 from scipy.stats.distributions import  t
@@ -5,7 +12,7 @@ from scipy.optimize import curve_fit, fsolve
 from scipy.integrate import odeint
 
 def regress(A, y, alpha=None):
-    '''linear regression with conf intervals
+    '''Linear regression with confidence intervals.
 
     A is a matrix of function values in columns, e.g.
     A = np.column_stack([T**0, T**1, T**2, T**3, T**4])
@@ -58,7 +65,8 @@ def regress(A, y, alpha=None):
     return (b, bint, se)
 
 def nlinfit(model, x, y, p0, alpha=0.05):
-    '''nonlinear regression with conf intervals
+    '''Nonlinear regression with confidence intervals.
+    
     x is the independent data
     y is the dependent data
     model has a signature of f(x, p0, p1, p2, ...)
@@ -88,7 +96,10 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     return (pars, np.array(pint), np.array(SE))
 
 def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs):
-    '''ode wrapper with events func is callable, with signature func(Y, x)
+    '''Solve an ODE with events.
+
+    func is callable, with signature func(Y, x)
+
     y0 are the initial conditions xspan is what you want to integrate
     over
 
@@ -98,7 +109,9 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
     TOLERANCE is what is used to identify when an event has occurred.
     
     [value, isterminal, direction] = event(Y, x)
-    value is the value of the event function. When value = 0, an event is  triggered
+
+    value is the value of the event function. When value = 0, an event
+    is triggered
 
     isterminal = True if the integration is to terminate at a zero of
     this event function, otherwise, False.
@@ -215,12 +228,15 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
             np.array(IE))
                
 def deriv(x, y, method='two-point'):
-    '''compute the numerical derivate dydx
+    '''Compute the numerical derivate dydx.
+    
     method = 'two-point': centered difference
              'four-point': centered 4-point difference
              'fft' is an experimental method usind fft.
+
     returns an array the same size as x and y.
     '''
+
     x = np.array(x)
     y = np.array(y)
     if method == 'two-point':
@@ -267,7 +283,8 @@ def deriv(x, y, method='two-point'):
 
 
 def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
-    '''solve the linear BVP with constant boundary conditions
+    '''Solve the linear BVP with constant boundary conditions.
+    
     y'' + p(x)y' + q(x)y = r(x)
     y(x0) = alpha
     y(xL) = beta
@@ -307,7 +324,8 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     return np.hstack([x0, X, xL]), np.hstack([alpha, y, beta])
 
 def BVP_sh(F, x1, x2, alpha, beta, init):
-    '''A shooting method to solve odes
+    '''A shooting method to solve odes.
+    
     solve y'(x) = f(x, y)
     y(x1) = alpha
     y(x2) = beta
@@ -334,9 +352,9 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
     return X, Y
 
 def BVP_nl(F, X, BCS, init, **kwargs):
-    '''solve nonlinear BVP y''(x) = F(x, y, y')
+    '''Solve nonlinear BVP y''(x) = F(x, y, y').
     
-    X is a vector to make finite differences over
+    X is a vector to make finite differences over.
 
     BCS is a function that returns the boundary conditions: a,b = BCS(X, Y)
         
@@ -374,7 +392,7 @@ def BVP_nl(F, X, BCS, init, **kwargs):
 
 def bvp_sh(odefun, bcfun, xspan, y0_guess):
     '''
-    solve Y' = f(Y, x) by shooting method
+    Solve Y' = f(Y, x) by shooting method.
 
     bcfun(Ya, Yb)
     '''
@@ -390,11 +408,13 @@ def bvp_sh(odefun, bcfun, xspan, y0_guess):
     return Y
     
 def bvp(odefun, bcfun, X, yinit):
-    '''
-    solve Y' = f(Y, x)
+    '''Solve Y' = f(Y, x).
 
     odefun is f(Y, x)
-    bcfun is a function that returns the residuals at the boundary conditions, g(ya, yb)
+    
+    bcfun is a function that returns the residuals at the boundary
+    conditions, g(ya, yb)
+
     X is a grid to discretize the region
     yinit is a guess of the solution on that grid
 
@@ -405,27 +425,27 @@ def bvp(odefun, bcfun, X, yinit):
     y(4) = -2
     
     def odefun(Y, x):
-        y1, y2 = Y
-        dy1dx = y2
-        dy2dx = -np.abs(y1)
-        return [dy1dx, dy2dx]
+    y1, y2 = Y
+    dy1dx = y2
+    dy2dx = -np.abs(y1)
+    return [dy1dx, dy2dx]
 
-    def bcfun(Y):
-        Ya = Y[:,0]
-        Yb = Y[:,1]
-        y1a, y2a = Ya
-        y1b, y2b = Yb
+    >>> def bcfun(Y):
+    ...    Ya = Y[:,0]
+    ...    Yb = Y[:,1]
+    ...    y1a, y2a = Ya
+    ...    y1b, y2b = Yb
 
-        return [y1a, -2 - y1b]
+    ...    return [y1a, -2 - y1b]
 
-    x = np.linspace(0, 4, 100)
+    >>> x = np.linspace(0, 4, 100)
 
-    y1 = x**0
-    y2 = 0.0 * x
+    >>> y1 = x**0
+    >>> y2 = 0.0 * x
 
-    Yinit = np.column_stack([y1, y2])
+    >>> Yinit = np.column_stack([y1, y2])
 
-    sol = bvp(odefun, bcfun, x, Yinit)
+    >>> sol = bvp(odefun, bcfun, x, Yinit)
     '''
         
     # we have to setup a series of equations equal to zero at the solution Y
