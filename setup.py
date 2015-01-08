@@ -1,7 +1,7 @@
 from distutils.core import setup
 import os
 from pycse import __version__
-  
+
 setup(name = 'pycse',
       version=__version__,
       description='python computations in science and engineering',
@@ -12,6 +12,7 @@ setup(name = 'pycse',
       platforms=['linux'],
       packages=['pycse'],
       scripts=['pycse/publish.py'],
+      install_requires=['quantities'],
       long_description='''\
 python computations in science and engineering
 ===============================================
