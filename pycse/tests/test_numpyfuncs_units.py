@@ -17,9 +17,9 @@ def test2():
     'min, max'
     u = units()
     a = np.linspace(-1, 1) * u.m
-    assert min(a) == -1*u.m
+    assert np.min(a) == -1*u.m
     assert a.min() == -1*u.m
-    assert max(a) == 1*u.m
+    assert np.max(a) == 1*u.m
     assert a.max() == 1*u.m
     assert np.amin(a) == -1*u.m
     assert np.amax(a) == 1*u.m

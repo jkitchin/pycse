@@ -38,6 +38,9 @@ Yinit = np.column_stack([ux, vx, wx, zx, yx])
 
 sol = bvp(odefun, bcfun, x, Yinit)
 
+
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 u = sol[:, 0]
 v = sol[:, 1]
