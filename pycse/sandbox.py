@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+'''Module that runs as a script to redirect stderr to stdout.
+Output is designed for org-mode.'''
+
 from cStringIO import StringIO
-import os, sys
+import sys
 
 content = sys.stdin.read()
-     
+
 old_stdout = sys.stdout
 old_stderr = sys.stderr
 redirected_output = sys.stdout = StringIO()
@@ -11,9 +14,9 @@ redirected_error = sys.stderr = StringIO()
 
 out, err, exc = None, None, None
 
-# execute the code    
+# execute the code
 exec(content)
-  
+
 out = redirected_output.getvalue()
 err = redirected_error.getvalue()
 
@@ -36,4 +39,4 @@ if exc:
 '''.format(exc)
 
 # print final result to stdout
-print s
+print(s)
