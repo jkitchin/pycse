@@ -13,6 +13,7 @@ setup(name = 'pycse',
       packages=['pycse'],
       scripts=['pycse/publish.py'],
       install_requires=['quantities'],
+      data_files=['requirements.txt'],
       long_description='''\
 python computations in science and engineering
 ===============================================

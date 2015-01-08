@@ -29,8 +29,8 @@ print 8.1 - 5
 #+END_SRC
 
 #+RESULTS:
-| pycse-content | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | org  | :publishing-directory | ~/Dropbox/books/pycse/gh-pages/ | :recursive | t    | :exclude | aspen\ | sandbox\ | python\ | data\ | gh-pages | :publishing-function | org-html-publish-to-html | :headline-levels      |                               5 | :auto-preamble | t        |            |   |                      |                        |
-| pycse-static  | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | css\ | js\                   | png\                            | jpg\       | gif\ | pdf\     | mp3\   | ogg\     | swf\    | dat\  | mat\     | txt\                 | svg                      | :publishing-directory | ~/Dropbox/books/pycse/gh-pages/ | :exclude       | gh-pages | :recursive | t | :publishing-function | org-publish-attachment |
+| pycse-content | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | org  | :publishing-directory | ~/Dropbox/books/pycse/gh-pages/ | :recursive | t    | :exclude | aspen\ | sandbox\ | python\ | data\ | gh-pages\ | octave-3.6.4 | :publishing-function | org-html-publish-to-html | :headline-levels                |        5 | :auto-preamble | t          |   |                      |                        |
+| pycse-static  | :base-directory | ~/Dropbox/books/pycse/ | :base-extension | css\ | js\                   | png\                            | jpg\       | gif\ | pdf\     | mp3\   | ogg\     | swf\    | dat\  | mat\      | txt\         | svg                  | :publishing-directory    | ~/Dropbox/books/pycse/gh-pages/ | :exclude | gh-pages       | :recursive | t | :publishing-function | org-publish-attachment |
 
 Multiplication is equally straightforward.
 #+BEGIN_SRC python 
@@ -15237,6 +15237,8 @@ http://scipy-lectures.github.com/index.html
 #+LANGUAGE:  en
 #+OPTIONS:   H:5 num:t toc:t \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
+
+# this option uses figures for images so it loads quickly
 #+OPTIONS: tex:dvipng
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
@@ -15247,88 +15249,16 @@ http://scipy-lectures.github.com/index.html
 #+STYLE: <link rel="stylesheet" typxe="text/css" href="pycse.css" />
 #+Latex_header: \makeindex
 
-** DEPRECATED pdf
-#+BEGIN_SRC emacs-lisp
-(let ((org-latex-classes '(("article"                          ;class-name
-			    "\\documentclass{article}"        ; header-string
-			    ("\\section{%s}" . "\\section*{%s}")
-			    ("\\subsection{%s}" . "\\subsection*{%s}")
-			    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-			    ("\\paragraph{%s}" . "\\paragraph*{%s}")
-			    ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))  
-      (org-latex-default-packages-alist '(("AUTO" "inputenc" t)
-					  ("T1" "fontenc" t)
-					  ("" "fixltx2e" nil)
-					  ("" "graphicx" t)
-					  ("" "longtable" nil)
-					  ("" "float" nil)
-					  ("" "wrapfig" nil)
-					  ("normalem" "ulem" t)
-					  ("" "textcomp" t)
-					  ("" "marvosym" t)
-					  ("" "wasysym" t)
-					  ("" "latexsym" t)
-					  ("" "amssymb" t)
-					  ("" "amstext" nil)
-					  ("" "minted" nil)
-					  ("" "underscore" nil)
-					  ("" "imakeidx" nil)
-					  ("linktocpage,
-                                    pdfstartview=FitH,
-                                    colorlinks,
-                                    linkcolor=blue,
-                                    anchorcolor=blue,
-                                    citecolor=blue,
-                                    filecolor=blue,
-                                    menucolor=blue,
-                                    urlcolor=blue" "hyperref" nil)
-					  "\\tolerance=1000"))
-      ;; these variables are for the export command
-      (async nil)
-      (subtreep nil)
-      (visible-only nil)
-      (body-only nil)
-      (ext-plist nil)
-      (org-latex-to-pdf-process '("texi2dvi --pdf --clean --verbose --batch %f")))
 
-  (ignore-errors
-    (delete-file "pycse.aux")
-    (delete-file "pycse.bbl")
-    (delete-file "pycse.pdf"))
-  (org-latex-export-to-pdf async subtreep visible-only body-only ext-plist))
-
-;  (org-latex-export-to-latex async subtreep visible-only body-only ext-plist))
-
-
-
-;  
-
-;  
-
-;(progn 
-;    (ignore-errors
-;    (delete-file "pycse.aux")
-;    (delete-file "pycse.bbl")
-;    (delete-file "pycse.pdf"))
-;    (setq org-latex-to-pdf-process '("texi2dvi --pdf --clean --verbose --batch %f"))
-;    (org-latex-export-to-pdf))
-
-;; these are actually best run at the cmd line. On windows the pygmentize sometimes has a file lock issue.
-;;! I can't write on file `pycse.pyg'.
-;;<to be read again>
-;;                   \relax
-;;l.10799 ...s,fontsize=\scriptsize,linenos]{python}
-;; this does not happen in linux.
-;(shell-command "pdflatex -shell-escape pycse")
-;(shell-command "bibtex pycse")   ; no citations at the moment
-;(shell-command "pdflatex -shell-escape pycse")
-;(shell-command "pdflatex -shell-escape pycse")
-
-;(save-buffer)
-;(princ "pycse is built"))
-#+END_SRC
-   
 ** pdf
+This takes a long time.
+
+#+BEGIN_SRC emacs-lisp
+(org-latex-export-to-pdf)
+(org-open-file "pycse.pdf")
+#+END_SRC
+
+#+RESULTS:
 
 ** html
 #+BEGIN_SRC emacs-lisp
@@ -15339,7 +15269,7 @@ http://scipy-lectures.github.com/index.html
 	  :base-extension "org"
 	  :publishing-directory "~/Dropbox/books/pycse/gh-pages/"
 	  :recursive t
-	  :exclude "aspen\\|sandbox\\|python\\|data\\|gh-pages"
+	  :exclude "aspen\\|sandbox\\|python\\|data\\|gh-pages\\|octave-3.6.4"
 	  :publishing-function org-html-publish-to-html
 	  :headline-levels 5             ; Just the default for this project.
 	  :auto-preamble t
@@ -15358,3 +15288,17 @@ http://scipy-lectures.github.com/index.html
 
 (org-publish "pycse")
 #+END_SRC
+
+Now publish it to github
+#+BEGIN_SRC sh
+cd gh-pages
+git add images
+git add -f ltxpng
+git commit -am "new build"
+git push
+#+END_SRC
+
+#+RESULTS:
+: [gh-pages cec4ba8] new build
+:  2 files changed, 2 insertions(+), 2 deletions(-)
+
