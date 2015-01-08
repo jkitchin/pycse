@@ -22,7 +22,7 @@ This package provides some utilities to perform:
 1. linear and nonlinear regression with confidence intervals
 2. Solve some boundary value problems.
 
-See http://jkitchin.github.io/pycse for documentation.
+See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
 
       ''')
 
