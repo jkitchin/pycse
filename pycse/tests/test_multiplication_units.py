@@ -51,7 +51,9 @@ def test6():
     assert (m * m) == Unit([1, 4, 9], [2, 0, 0, 0, 0, 0, 0], 'm')
 
 
-def test7():
-    'test np.dot'
-    m = Unit([1.0, 2, 3], [1, 0, 0, 0, 0, 0, 0], 'm')
-    assert np.dot(m, m) == Unit(14, [2, 0, 0, 0, 0, 0, 0], 'm')
+# def test7():
+#     'test np.dot'
+#     m = Unit([1.0, 2, 3], [1, 0, 0, 0, 0, 0, 0], 'm')
+#     assert np.dot(m, m) == Unit(14, [2, 0, 0, 0, 0, 0, 0], 'm')
+
+# test7()
