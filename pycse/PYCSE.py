@@ -3,6 +3,9 @@
 Linear and nonlinear regression.
 
 See http://kitchingroup.cheme.cmu.edu/pycse
+
+Copyright 2015, John Kitchin
+(see accompanying license files for details).
 """
 
 import warnings
@@ -27,10 +30,10 @@ def regress(A, y, alpha=None):
       se is an array of standard error for each parameter.
 
     The confidence intervals account for sample size using a student T multiplier.
-    
+
     This code is derived from the descriptions at http://www.weibull.com/DOEWeb/confidence_intervals_in_multiple_linear_regression.htm and http://www.weibull.com/DOEWeb/estimating_regression_models_using_least_squares.htm
     '''
-    
+
     b, res, rank, s = np.linalg.lstsq(A, y)
 
     bint, se = None, None
@@ -44,17 +47,17 @@ def regress(A, y, alpha=None):
         sigma2 = np.sum(errors**2) / (n - k)  # RMSE
 
         covariance =  np.linalg.inv(np.dot(A.T, A))
-                
-        C = sigma2 * covariance 
+
+        C = sigma2 * covariance
         dC = np.diag(C)
-        
+
         if (dC < 0.0).any():
             warnings.warn('\n{0}\ndetected a negative number in your'
                           'covariance matrix. Taking the absolute value'
                           'of the diagonal. something is probably wrong'
                           'with your data or model'.format(dC))
             dC = np.abs(dC)
-            
+
         se = np.sqrt(dC) # standard error
 
         sT = t.ppf(1.0 - alpha/2.0, n - k - 1) # student T multiplier
@@ -66,7 +69,7 @@ def regress(A, y, alpha=None):
 
 def nlinfit(model, x, y, p0, alpha=0.05):
     '''Nonlinear regression with confidence intervals.
-    
+
     x is the independent data
     y is the dependent data
     model has a signature of f(x, p0, p1, p2, ...)
@@ -84,7 +87,7 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     dof = max(0, n - p) # number of degrees of freedom
 
     # student-t value for the dof and confidence level
-    tval = t.ppf(1.0-alpha/2., dof) 
+    tval = t.ppf(1.0-alpha/2., dof)
 
     SE = []
     pint = []
@@ -107,7 +110,7 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
     These functions return zero when an event has happened.
 
     TOLERANCE is what is used to identify when an event has occurred.
-    
+
     [value, isterminal, direction] = event(Y, x)
 
     value is the value of the event function. When value = 0, an event
@@ -121,7 +124,7 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
     only zeros where the event function is decreasing.
 
     fsolve_args is a dictionary of options for fsolve
-    
+
     kwargs are any additional options you want to send to odeint.
 
     Returns [x, y, te, ye, ie]
@@ -142,7 +145,7 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
     X = [x0]
     sol = [y0]
     TE, YE, IE = [], [], [] # to store where events occur
-    
+
     # initial value of events
     e = np.zeros((len(events), len(xspan)))
     for i,event in enumerate(events):
@@ -154,17 +157,17 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
         f1 = sol[i]
 
         f2 = odeint(func, f1, [x1, x2], **kwargs)
-        
+
         X += [x2]
         sol += [f2[-1,:]]
 
         # check event functions. At each step we compute the event
         # functions, and check if they have changed sign since the
         # last step. If they changed sign, it implies a zero was
-        # crossed.        
+        # crossed.
         for j, event in enumerate(events):
             e[j, i + 1], isterminal, direction = event(sol[i + 1], X[i + 1])
-                
+
             if ((e[j, i + 1] * e[j, i] < 0)        # sign change in
                                                    # event means zero
                                                    # crossing
@@ -205,7 +208,7 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
                     COLLECTEVENT = True
                 elif (e[j, i + 1] < e[j, i] ) and direction == -1:
                     COLLECTEVENT = True
-                
+
                 if COLLECTEVENT:
                     TE.append(xZ)
                     YE.append(fZ)
@@ -214,22 +217,22 @@ def odelay(func, y0, xspan, events, TOLERANCE = 1e-6, fsolve_args=None, **kwargs
                     if isterminal:
                         X[-1] = xZ
                         sol[-1] = fZ
-                        return (np.array(X), 
-                                np.array(sol), 
-                                np.array(TE), 
-                                np.array(YE), 
+                        return (np.array(X),
+                                np.array(sol),
+                                np.array(TE),
+                                np.array(YE),
                                 np.array(IE))
 
     # at the end, return what we have
-    return (np.array(X), 
-            np.array(sol), 
-            np.array(TE), 
-            np.array(YE), 
+    return (np.array(X),
+            np.array(sol),
+            np.array(TE),
+            np.array(YE),
             np.array(IE))
-               
+
 def deriv(x, y, method='two-point'):
     '''Compute the numerical derivate dydx.
-    
+
     method = 'two-point': centered difference
              'four-point': centered 4-point difference
              'fft' is an experimental method usind fft.
@@ -266,10 +269,10 @@ def deriv(x, y, method='two-point'):
         # translate back
         xp = np.array(x)
         xp -= x[0]
-        
+
         N = len(xp)
         L = xp[-1]
-        
+
         if N % 2 == 0:
             k = np.asarray(range(0, N / 2) + [0] + range(-N / 2 + 1,0))
         else:
@@ -284,7 +287,7 @@ def deriv(x, y, method='two-point'):
 
 def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     '''Solve the linear BVP with constant boundary conditions.
-    
+
     y'' + p(x)y' + q(x)y = r(x)
     y(x0) = alpha
     y(xL) = beta
@@ -295,7 +298,7 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
 
     h = (xL - x0) / (npoints - 3)
     X = np.linspace(x0 + h, xL - h, npoints - 2)
-    
+
     # we do not do endpoints on A
     A = np.zeros((npoints - 2, npoints - 2))
 
@@ -310,7 +313,7 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     b[-1] =  h**2 * r(X[-1]) - beta * (1.0 - h / 2.0 * p (X[-1]))
 
     # now fill in the matrix
-    for i in range(1, npoints - 3):          
+    for i in range(1, npoints - 3):
         A[i][i-1] = 1.0 - h / 2.0 * p(X[i])
         A[i][i] = -2.0 + h**2 * q(X[i])
         A[i][i + 1] = 1 + h / 2.0 * p(X[i])
@@ -325,7 +328,7 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
 
 def BVP_sh(F, x1, x2, alpha, beta, init):
     '''A shooting method to solve odes.
-    
+
     solve y'(x) = f(x, y)
     y(x1) = alpha
     y(x2) = beta
@@ -340,7 +343,7 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
     '''
 
     X = np.linspace(x1, x2)
-    
+
     def objective(y20):
         y = odeint(F, [alpha, y20], X)
         y2 = y[:, 0]
@@ -353,11 +356,11 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
 
 def BVP_nl(F, X, BCS, init, **kwargs):
     '''Solve nonlinear BVP y''(x) = F(x, y, y').
-    
+
     X is a vector to make finite differences over.
 
     BCS is a function that returns the boundary conditions: a,b = BCS(X, Y)
-        
+
     init is a vector of initial guess
     '''
 
@@ -403,15 +406,15 @@ def bvp_sh(odefun, bcfun, xspan, y0_guess):
         return res
 
     Y0 = fsolve(objective, y0_guess)
-    
+
     Y = odeint(odefun, Y0, xspan)
     return Y
-    
+
 def bvp(odefun, bcfun, X, yinit):
     '''Solve Y' = f(Y, x).
 
     odefun is f(Y, x)
-    
+
     bcfun is a function that returns the residuals at the boundary
     conditions, g(ya, yb)
 
@@ -423,7 +426,7 @@ def bvp(odefun, bcfun, X, yinit):
     y'' + |y| = 0
     y(0) = 0
     y(4) = -2
-    
+
     def odefun(Y, x):
     y1, y2 = Y
     dy1dx = y2
@@ -447,20 +450,20 @@ def bvp(odefun, bcfun, X, yinit):
 
     >>> sol = bvp(odefun, bcfun, x, Yinit)
     '''
-        
+
     # we have to setup a series of equations equal to zero at the solution Y
     # we will end up with nX * neq equations.
     # at each x point between the boundaries we approximate the derivative by central difference
     # neq of these will be the boundary conditions
     # neq * (nX - 1) of them will be the derivatives at the interior points
-    def objective(Yflat):        
+    def objective(Yflat):
         Y = Yflat.reshape(yinit.shape)
 
         nX, neq = Y.shape
-        
+
         # these are ultimately the "zeros" we solve for
         # The first set are the boundary conditions
-        res = bcfun(Y)  
+        res = bcfun(Y)
 
         ode = np.array(odefun(Y, X)) # evaluate odefun for this Y
 
@@ -470,9 +473,9 @@ def bvp(odefun, bcfun, X, yinit):
         # I need column wise, centered finite difference from 1 to nX-2
 
         dYdt = (Y[2:,:] - Y[0:-2,:]) / (X[2:,np.newaxis] - X[0:-2,np.newaxis])
-        
+
         Z = ode[1:-1,:] - dYdt
-        
+
         res += Z.flat
 
         # finally, we need to estimate the derivatives at one end point
@@ -486,7 +489,7 @@ def bvp(odefun, bcfun, X, yinit):
     solflat = fsolve(objective, yinit.flat)
 
     sol = solflat.reshape(yinit.shape)
-    
+
     return sol
 
 
@@ -506,19 +509,19 @@ if __name__ == '__main__':
 
     def ode(Y, x):
         return [1, 2]
-       
+
     def event(Y, x):
         y1, y2 = Y
         isterminal = True
         direction = 0
         value = y2 - 2
         return value, isterminal, direction
-    
+
     import matplotlib.pyplot as plt
-    
+
     Y0 = [0,0]
     xspan = np.linspace(0, 5)
-    
+
     X, Y, XE, YE, IE = odelay(ode, Y0, xspan, events=(event,))
     plt.plot(np.array(X), np.array(Y))
     plt.show()
