@@ -1,5 +1,7 @@
-from distutils.core import setup
+# Copyright 2015, John Kitchin
+# (see accompanying license files for details).
 
+from distutils.core import setup
 
 setup(name='pycse',
       version='0.52',
