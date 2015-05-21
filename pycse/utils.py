@@ -1,3 +1,5 @@
+# Copyright 2015, John Kitchin
+# (see accompanying license files for details).
 import numpy as np
 
 def feq(x, y, epsilon=np.spacing(1)):
@@ -19,8 +21,8 @@ def fle(x, y, epsilon=np.spacing(1)):
 def fge(x, y, epsilon=np.spacing(1)):
     'x >= y with tolerance'
     return not(x < (y - epsilon))
-    
-    
+
+
 from contextlib import contextmanager
 @contextmanager
 def ignore_exception(*exceptions):
