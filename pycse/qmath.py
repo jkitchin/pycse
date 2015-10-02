@@ -7,6 +7,7 @@ import numpy as np
 
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import odeint as _odeint
+print 'imported'
 
 def fsolve(func, t0, args=(),
            fprime=None, full_output=0, col_deriv=0,
@@ -18,7 +19,8 @@ def fsolve(func, t0, args=(),
     fsolve from scipy. '''
 
     try:
-        tU = [t / float(t) for t in t0]  # units on initial guess, normalized
+        # units on initial guess, normalized
+        tU = [t / float(t) for t in t0]
     except TypeError:
         tU = t0 / float(t0)
 
@@ -67,6 +69,7 @@ def odeint(func, y0, t, args=(),
         # check for units so we don't put them on twice
         if not hasattr(T, 'units') and hasattr(t, 'units'):
             T = T * t.units
+
         # now for the dependent variable units. Y0 may be a scalar or
         # a list or an array. we want to check each element of y0 for
         # units, and add them to the corresponding element of Y0 if we
@@ -84,7 +87,9 @@ def odeint(func, y0, t, args=(),
             if not hasattr(Y0, 'units') and hasattr(y0, 'units'):
                 uY0 = Y0 * y0.units
 
-        val = func(uY0, t, *args)
+        # It is necessary to rescale this to prevent issues with non-simplified
+        # units.
+        val = func(uY0, t, *args).rescale(y0.units / t.units)
 
         try:
             return np.array([float(x) for x in val])
