@@ -7,7 +7,7 @@ import numpy as np
 
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import odeint as _odeint
-print 'imported'
+
 
 def fsolve(func, t0, args=(),
            fprime=None, full_output=0, col_deriv=0,
