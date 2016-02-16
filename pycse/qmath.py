@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
     tguess = 4 * u.s
     sol1, = fsolve(func, tguess)
-    print 'sol1 = ', sol1
+    print('sol1 = ', sol1)
 
     # Problem 2
     def func2(X):
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     Xguess = [2.2*u.kg, 5.2*u.J]
     sol, infodict, ier, mesg = fsolve(func2, Xguess, full_output=1)
     s2a, s2b = sol
-    print 's2a = {0}\ns2b = {1}'.format(s2a, s2b)
+    print('s2a = {0}\ns2b = {1}'.format(s2a, s2b))
 
     # Problem 3 - with an arg
     def func3(a, arg):
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     arg = 0.0 * u.kg
 
     sol3, = fsolve(func3, Xguess, args=(arg,))
-    print'sol3 = ', sol3
+    print('sol3 = ', sol3)
 
     ##################################################################
     # test a single ODE
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     tspan = np.linspace(0, 5) * u.s
     sol = odeint(dCadt, Ca0, tspan)
 
-    print sol[-1]
+    print(sol[-1])
 
     import matplotlib.pyplot as plt
     plt.plot(tspan, sol)
@@ -213,9 +213,9 @@ if __name__ == '__main__':
     sol = odeint(dFdW, F0, wspan, args=(alpha,))
     X, y = sol
 
-    print 'Test 2'
-    print X[-1]
-    print y[-1]
+    print('Test 2')
+    print(X[-1])
+    print(y[-1])
 
     plt.figure()
     plt.plot(wspan, X, wspan, y)

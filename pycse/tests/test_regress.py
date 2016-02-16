@@ -13,9 +13,9 @@ E = np.array([  6.5742 ,   6.56969,   6.64349,   6.78516,   6.85911,
 def test():
     A = np.column_stack([T**0, T**1, T**2, T**3, T**4])
     p, pint, se = regress(A, E, alpha=0.05)
-    print p
-    print pint
-    print se
+    print(p)
+    print(pint)
+    print(se)
     # there should not be any np.nan in se
     assert ~np.isnan(se).all()
 
