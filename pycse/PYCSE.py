@@ -485,8 +485,8 @@ def bvp(odefun, bcfun, X, yinit):
         # Y is nX rows by neq columns
         # I need column wise, centered finite difference from 1 to nX-2
 
-        dYdt = (Y[2:, :] - Y[0:-2, :]) / (X[2:, np.newaxis] -
-                                          X[0:-2, np.newaxis])
+        dYdt = (Y[2:, :] - Y[0:-2, :]) / (X[np.newaxis, 2:] -
+                                          X[np.newaxis, 0:-2])
 
         Z = ode[1:-1, :] - dYdt
 
