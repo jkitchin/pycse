@@ -1,6 +1,6 @@
-'''
+"""
 Module for functions that are wrapped to use quantities.
-'''
+"""
 
 import quantities as u
 import numpy as np
@@ -13,10 +13,13 @@ def fsolve(func, t0, args=(),
            fprime=None, full_output=0, col_deriv=0,
            xtol=1.49012e-08, maxfev=0, band=None,
            epsfcn=0.0, factor=100, diag=None):
-    '''wrapped fsolve command to work with units. We get the units on
-    the function argument, then wrap the function so we can add units
-    to the argument and return floats. Finally we call the original
-    fsolve from scipy. '''
+    """wrapped fsolve command to work with units.
+
+    We get the units on the function argument, then wrap the function so we can
+    add units to the argument and return floats. Finally we call the original
+    fsolve from scipy.
+
+    """
 
     try:
         # units on initial guess, normalized
@@ -62,7 +65,7 @@ def odeint(func, y0, t, args=(),
            tcrit=None, h0=0.0, hmax=0.0, hmin=0.0,
            ixpr=0, mxstep=0, mxhnil=0, mxordn=12,
            mxords=5, printmessg=0):
-    "wrapper for scipy.integrate.odeint to work with quantities."
+    """wrapper for scipy.integrate.odeint to work with quantities."""
 
     def wrapped_func(Y0, T, *args):
         # put units on T if they are on the original t
