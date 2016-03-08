@@ -22,8 +22,7 @@ from scipy.integrate import odeint
 def regress(A, y, alpha=None):
     """Linear least squares regression with confidence intervals.
 
-    Solve the matrix equation \(A x = y\) for x.
-
+    Solve the matrix equation \(A p = y\) for p.
 
     The confidence intervals account for sample size using a student T
     multiplier.
@@ -41,6 +40,15 @@ def regress(A, y, alpha=None):
     y : a vector of values you want to fit
 
     alpha : 100*(1 - alpha) confidence level
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> x = np.array([0, 1, 2])
+    >>> y = np.array([0, 2, 4])
+    >>> X = np.column_stack([x**0, x])
+    >>> regress(X, y)
+    (array([ -5.12790050e-16,   2.00000000e+00]), None, None)
 
     Returns
     -------
@@ -98,6 +106,20 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     p0 : array of the initial guess of the parameters
     alpha : 100*(1 - alpha) is the confidence interval
         i.e. alpha = 0.05 is 95% confidence
+
+    Example
+    -------
+    Fit a line \(y = mx + b\) to some data.
+
+    >>> import numpy as np
+    >>> def f(x, m, b):
+    ...    return m * x + b
+    ...
+    >>> X = np.array([0, 1, 2])
+    >>> y = np.array([0, 2, 4])
+    >>> nlinfit(f, X, y, [0, 1])
+    (array([  2.00000000e+00,  -2.18062024e-12]), array([[  2.00000000e+00,   2.00000000e+00],
+           [ -2.18315458e-12,  -2.17808591e-12]]), array([  1.21903752e-12,   1.99456367e-16]))
 
     Returns
     -------
@@ -461,27 +483,28 @@ def bvp(odefun, bcfun, X, yinit):
     y(0) = 0
     y(4) = -2
 
-    >>> def odefun(Y, x):
-    ...    y1, y2 = Y
-    ...    dy1dx = y2
-    ...    dy2dx = -np.abs(y1)
-    ...    return [dy1dx, dy2dx]
+    Example
+    -------
+    def odefun(Y, x):
+        y1, y2 = Y
+        dy1dx = y2
+        dy2dx = -np.abs(y1)
+        return [dy1dx, dy2dx]
 
-    >>> def bcfun(Y):
-    ...    Ya = Y[:,0]
-    ...    Yb = Y[:,1]
-    ...    y1a, y2a = Ya
-    ...    y1b, y2b = Yb
-    ...    return [y1a, -2 - y1b]
+    def bcfun(Y):
+        Ya = Y[:,0]
+        Yb = Y[:,1]
+        y1a, y2a = Ya
+        y1b, y2b = Yb
+        return [y1a, -2 - y1b]
 
-    >>> x = np.linspace(0, 4, 100)
+    x = np.linspace(0, 4, 100)
 
-    >>> y1 = x**0
-    >>> y2 = 0.0 * x
+    y1 = x**0
+    y2 = 0.0 * x
+    Yinit = np.column_stack([y1, y2])
 
-    >>> Yinit = np.column_stack([y1, y2])
-
-    >>> sol = bvp(odefun, bcfun, x, Yinit)
+    sol = bvp(odefun, bcfun, x, Yinit)
 
     Returns
     -------
@@ -602,22 +625,24 @@ def deriv(x, y, method='two-point'):
 
 # * End
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
 
-    def ode(Y, x):
-        return [1, 2]
+    # def ode(Y, x):
+    #     return [1, 2]
 
-    def event(Y, x):
-        y1, y2 = Y
-        isterminal = True
-        direction = 0
-        value = y2 - 2
-        return value, isterminal, direction
+    # def event(Y, x):
+    #     y1, y2 = Y
+    #     isterminal = True
+    #     direction = 0
+    #     value = y2 - 2
+    #     return value, isterminal, direction
 
-    import matplotlib.pyplot as plt
+    # import matplotlib.pyplot as plt
 
-    Y0 = [0, 0]
-    xspan = np.linspace(0, 5)
+    # Y0 = [0, 0]
+    # xspan = np.linspace(0, 5)
 
-    X, Y, XE, YE, IE = odelay(ode, Y0, xspan, events=(event,))
-    plt.plot(np.array(X), np.array(Y))
-    plt.show()
+    # X, Y, XE, YE, IE = odelay(ode, Y0, xspan, events=(event,))
+    # plt.plot(np.array(X), np.array(Y))
+    # plt.show()
