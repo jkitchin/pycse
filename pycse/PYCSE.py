@@ -1,6 +1,8 @@
 """Module containing useful scientific and engineering functions.
 
-Linear and nonlinear regression.
+- Linear regression
+- Nonlinear regression.
+- Differential equation solvers.
 
 See http://kitchingroup.cheme.cmu.edu/pycse
 
@@ -14,21 +16,14 @@ from scipy.stats.distributions import t
 from scipy.optimize import curve_fit, fsolve
 from scipy.integrate import odeint
 
+# * Linear regression
+
 
 def regress(A, y, alpha=None):
-    '''Linear regression with confidence intervals.
+    """Linear least squares regression with confidence intervals.
 
-    A is a matrix of function values in columns, e.g.
-    A = np.column_stack([T**0, T**1, T**2, T**3, T**4])
+    Solve the matrix equation \(A x = y\) for x.
 
-    y is a vector of values you want to fit
-
-    alpha is for the 100*(1 - alpha) confidence level
-
-    returns: [b, bint, se]
-      b is a vector of the fitted parameters
-      bint is a 2D array of confidence intervals
-      se is an array of standard error for each parameter.
 
     The confidence intervals account for sample size using a student T
     multiplier.
@@ -38,7 +33,23 @@ def regress(A, y, alpha=None):
     and
     http://www.weibull.com/DOEWeb/estimating_regression_models_using_least_squares.htm
 
-    '''
+    Parameters
+    ----------
+    A : a matrix of function values in columns, e.g.
+        A = np.column_stack([T**0, T**1, T**2, T**3, T**4])
+
+    y : a vector of values you want to fit
+
+    alpha : 100*(1 - alpha) confidence level
+
+    Returns
+    -------
+      [b, bint, se]
+      b is a vector of the fitted parameters
+      bint is a 2D array of confidence intervals
+      se is an array of standard error for each parameter.
+
+    """
 
     b, res, rank, s = np.linalg.lstsq(A, y)
 
@@ -73,20 +84,29 @@ def regress(A, y, alpha=None):
 
     return (b, bint, se)
 
+# * Nonlinear regression
+
 
 def nlinfit(model, x, y, p0, alpha=0.05):
-    '''Nonlinear regression with confidence intervals.
+    """Nonlinear regression with confidence intervals.
 
-    x is the independent data
-    y is the dependent data
-    model has a signature of f(x, p0, p1, p2, ...)
-    p0 is the initial guess of the parameters
+    Parameters
+    ----------
+    model : function f(x, p0, p1, ...) = y
+    x : array of the independent data
+    y : array of the dependent data
+    p0 : array of the initial guess of the parameters
+    alpha : 100*(1 - alpha) is the confidence interval
+        i.e. alpha = 0.05 is 95% confidence
 
-    returns [p, pint, SE]
+    Returns
+    -------
+    [p, pint, SE]
       p is an array of the fitted parameters
       pint is an array of confidence intervals
       SE is an array of standard errors for the parameters.
-    '''
+
+    """
     pars, pcov = curve_fit(model, x, y, p0=p0)
     n = len(y)    # number of data points
     p = len(pars)  # number of parameters
@@ -105,10 +125,13 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, np.array(pint), np.array(SE))
 
+# * Differential equations
+# ** Ordinary differential equations
+
 
 def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
            fsolve_args=None, **kwargs):
-    '''Solve an ODE with events.
+    """Solve an ODE with events.
 
     func is callable, with signature func(Y, x)
 
@@ -142,7 +165,7 @@ def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
     te is an array of independent variable values where events occurred
     ye is an array of the solution at the points where events occurred
     ie is an array of indices indicating which event function occurred.
-    '''
+    """
     if 'full_output' in kwargs:
         raise Exception('full_output not supported as an option')
 
@@ -186,7 +209,6 @@ def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
 
                 xLt = X[-1]       # Last point
                 fLt = sol[-1]
-#                 eLt = e[j, i+1]
 
                 # we need to find a value of x that makes the event zero
                 def objective(x):
@@ -239,16 +261,299 @@ def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
             np.array(YE),
             np.array(IE))
 
+# ** Boundary value solvers
 
+
+def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
+    """Solve the linear BVP with constant boundary conditions.
+
+    \\begin{equation}
+    y'' + p(x)y' + q(x)y = r(x) \\
+    y(x0) = \alpha \\
+    y(xL) = \beta
+    \end{equation}
+
+    Parameters
+    ----------
+    p : a function p(x)
+    q : a function q(x)
+    r : a function r(x)
+    x0 : The left-most boundary
+    xL : The right-most boundary
+    alpha : y(x0), it is constant
+    beta : y(xL), it is constant
+    npoints : int
+        The number of points to discretize between x0 and xL.
+
+    Returns
+    -------
+    [X, Y] where X is the vector of x-values where solutions exist,
+    and Y is the solutions at those points.
+
+    """
+
+    h = (xL - x0) / (npoints - 3)
+    X = np.linspace(x0 + h, xL - h, npoints - 2)
+
+    # we do not do endpoints on A
+    A = np.zeros((npoints - 2, npoints - 2))
+
+    # special end point cases
+    A[0][0] = -2.0 + h**2 * q(X[0])
+    A[0][1] = 1.0 + h / 2.0 * p(X[0])
+    A[-1][-2] = 1.0 - h / 2.0 * p(X[-1])
+    A[-1][-1] = -2.0 + h**2 * q(X[-1])
+
+    b = np.zeros(npoints - 2)
+    b[0] = h**2 * r(X[0]) - alpha * (1.0 - h / 2.0 * p(X[0]))
+    b[-1] = h**2 * r(X[-1]) - beta * (1.0 - h / 2.0 * p(X[-1]))
+
+    # now fill in the matrix
+    for i in range(1, npoints - 3):
+        A[i][i-1] = 1.0 - h / 2.0 * p(X[i])
+        A[i][i] = -2.0 + h**2 * q(X[i])
+        A[i][i + 1] = 1 + h / 2.0 * p(X[i])
+
+        b[i] = h**2 * r(X[i])
+
+    # solve the equations
+    y = np.linalg.solve(A, b)
+
+    # add the boundary values back to the solution.
+    return np.hstack([x0, X, xL]), np.hstack([alpha, y, beta])
+
+
+def BVP_sh(F, x1, x2, alpha, beta, init):
+    """A shooting method to solve odes.
+
+    \begin{equation}
+    y'(x) = F(x, y)
+    y(x1) = \alpha
+    y(x2) = \beta
+    \end{equation}
+
+    Parameters
+    ----------
+    F : function of first order derivatives.
+    x0 :
+    xL :
+    alpha : y(x1)
+    beta : y(x2)
+    init : A guess for y2(x1)
+
+
+    y' is a system of ODES
+    y1' = f(x, y1, y2)
+    y2' = g(x, y1, y2)
+
+    Returns
+    -------
+    The solution vectors [X, Y] where X is the vector of x-values for
+    solutions, and Y is the array of solutions.
+
+    """
+
+    X = np.linspace(x1, x2)
+
+    def objective(y20):
+        y = odeint(F, [alpha, y20], X)
+        y2 = y[:, 0]
+        return beta - y2[-1]
+
+    y20, = fsolve(objective, init)
+
+    Y = odeint(F, [alpha, y20], X)
+    return X, Y
+
+
+def BVP_nl(F, X, BCS, init, **kwargs):
+    """Solve nonlinear BVP \(y''(x) = F(x, y, y')\).
+
+    Parameters
+    ----------
+    F : Function
+
+    X : Uniformly spaced array from x1 to x2.
+
+    BCS : Function that returns the boundary conditions: a, b = BCS(X, Y)
+
+    init : Vector of initial guess values at the X points.
+
+    kwargs are passed to fsolve.
+
+    Returns
+    -------
+    The solution array: Y
+
+    """
+
+    x1, x2 = X[0], X[-1]
+    N = len(X)
+    h = (x2 - x1) / (N - 1)
+
+    def residuals(y):
+        """When we have the right values of y, this function will be zero."""
+
+        res = np.zeros(y.shape)
+
+        a, b = BCS(X, y)
+
+        res[0] = a
+
+        for i in range(1, N - 1):
+            x = X[i]
+            YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
+            YP = (y[i + 1] - y[i - 1]) / (2 * h)
+            res[i] = YPP - F(x, y[i], YP)
+
+        res[-1] = b
+        return res
+
+    Y, something, flag, msg = fsolve(residuals, init, full_output=1, **kwargs)
+    if flag != 1:
+        print(flag, msg)
+        raise Exception(msg)
+    return Y
+
+
+def bvp_sh(odefun, bcfun, xspan, y0_guess):
+    """Solve \(Y' = f(Y, x)\) by shooting method.
+
+    Parameters
+    ----------
+    odefun : a function
+    bcfun : bcfun(Ya, Yb) = 0
+    xspan :
+    y0_guess : Initial guess of the solution.
+
+    Returns
+    -------
+    The solution array: Y
+    """
+
+    def objective(yinit):
+        sol = odeint(odefun, yinit, xspan)
+        res = bcfun(sol[0, :], sol[-1, :])
+        return res
+
+    Y0 = fsolve(objective, y0_guess)
+
+    Y = odeint(odefun, Y0, xspan)
+    return Y
+
+
+def bvp(odefun, bcfun, X, yinit):
+    """Solve \(Y' = f(Y, x)\).
+
+    Parameters
+    ----------
+    odefun : \(f(Y, x)\)
+
+    bcfun : function that returns the residuals at the boundary
+        conditions, \(g(ya, yb)\)
+
+    X : is a grid to discretize the region
+    yinit :  guess of the solution on that grid
+
+    Example:
+    ========
+    y'' + |y| = 0
+    y(0) = 0
+    y(4) = -2
+
+    >>> def odefun(Y, x):
+    ...    y1, y2 = Y
+    ...    dy1dx = y2
+    ...    dy2dx = -np.abs(y1)
+    ...    return [dy1dx, dy2dx]
+
+    >>> def bcfun(Y):
+    ...    Ya = Y[:,0]
+    ...    Yb = Y[:,1]
+    ...    y1a, y2a = Ya
+    ...    y1b, y2b = Yb
+    ...    return [y1a, -2 - y1b]
+
+    >>> x = np.linspace(0, 4, 100)
+
+    >>> y1 = x**0
+    >>> y2 = 0.0 * x
+
+    >>> Yinit = np.column_stack([y1, y2])
+
+    >>> sol = bvp(odefun, bcfun, x, Yinit)
+
+    Returns
+    -------
+    Solution array.
+
+    """
+
+    # we have to setup a series of equations equal to zero at the solution Y we
+    # will end up with nX * neq equations. at each x point between the
+    # boundaries we approximate the derivative by central difference neq of
+    # these will be the boundary conditions neq * (nX - 1) of them will be the
+    # derivatives at the interior points
+    def objective(Yflat):
+        Y = Yflat.reshape(yinit.shape)
+
+        nX, neq = Y.shape
+
+        # these are ultimately the "zeros" we solve for
+        # The first set are the boundary conditions
+        res = bcfun(Y)
+
+        ode = np.array(odefun(Y, X))  # evaluate odefun for this Y
+
+        # now we estimate dYdt from the solution and subtract it from ode
+        # that will be zero at the solution
+        # Y is nX rows by neq columns
+        # I need column wise, centered finite difference from 1 to nX-2
+
+        dYdt = (Y[2:, :] - Y[0:-2, :]) / (X[2:, np.newaxis] -
+                                          X[0:-2, np.newaxis])
+
+        Z = ode[1:-1, :] - dYdt
+
+        res += Z.flat
+
+        # we need to estimate the derivatives at one end point We use a 3 point
+        # formula to estimate this derivative at the left boundary
+        yjprime = (-3.0 * Y[0, :] + 4.0 * Y[1, :] - Y[2, :]) / (X[2] - X[0])
+        z = ode[0, :] - yjprime
+        res += z.flat
+
+        return res
+
+    solflat = fsolve(objective, yinit.flat)
+
+    sol = solflat.reshape(yinit.shape)
+
+    return sol
+
+
+# * Numerical methods
 def deriv(x, y, method='two-point'):
-    '''Compute the numerical derivate dydx.
+    """Compute the numerical derivative dy/dx for y(x)
+    represented as arrays of y and x.
 
-    method = 'two-point': centered difference
-             'four-point': centered 4-point difference
-             'fft' is an experimental method usind fft.
+    .
 
-    returns an array the same size as x and y.
-    '''
+    Parameters
+    ----------
+    x : list of x-points
+    y : list of y-values
+    method : string
+        Possible values are:
+        'two-point': centered difference
+        'four-point': centered 4-point difference
+        'fft' is an experimental method usind fft.
+
+    Returns
+    -------
+    an array the same size as x and y.
+
+    """
 
     x = np.array(x)
     y = np.array(y)
@@ -295,218 +600,7 @@ def deriv(x, y, method='two-point'):
         return np.real(fd)
 
 
-def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
-    '''Solve the linear BVP with constant boundary conditions.
-
-    y'' + p(x)y' + q(x)y = r(x)
-    y(x0) = alpha
-    y(xL) = beta
-
-    npoints is the number of discretizations. Two points count as the
-    boundary values.
-    '''
-
-    h = (xL - x0) / (npoints - 3)
-    X = np.linspace(x0 + h, xL - h, npoints - 2)
-
-    # we do not do endpoints on A
-    A = np.zeros((npoints - 2, npoints - 2))
-
-    # special end point cases
-    A[0][0] = -2.0 + h**2 * q(X[0])
-    A[0][1] = 1.0 + h / 2.0 * p(X[0])
-    A[-1][-2] = 1.0 - h / 2.0 * p(X[-1])
-    A[-1][-1] = -2.0 + h**2 * q(X[-1])
-
-    b = np.zeros(npoints - 2)
-    b[0] = h**2 * r(X[0]) - alpha * (1.0 - h / 2.0 * p(X[0]))
-    b[-1] = h**2 * r(X[-1]) - beta * (1.0 - h / 2.0 * p(X[-1]))
-
-    # now fill in the matrix
-    for i in range(1, npoints - 3):
-        A[i][i-1] = 1.0 - h / 2.0 * p(X[i])
-        A[i][i] = -2.0 + h**2 * q(X[i])
-        A[i][i + 1] = 1 + h / 2.0 * p(X[i])
-
-        b[i] = h**2 * r(X[i])
-
-    # solve the equations
-    y = np.linalg.solve(A, b)
-
-    # add the boundary values back to the solution.
-    return np.hstack([x0, X, xL]), np.hstack([alpha, y, beta])
-
-
-def BVP_sh(F, x1, x2, alpha, beta, init):
-    '''A shooting method to solve odes.
-
-    solve y'(x) = f(x, y)
-    y(x1) = alpha
-    y(x2) = beta
-
-    y' is a system of ODES
-    y1' = f(x, y1, y2)
-    y2' = g(x, y1, y2)
-
-    we know y1(0) = alpha
-
-    init is your guess for y2(0)
-    '''
-
-    X = np.linspace(x1, x2)
-
-    def objective(y20):
-        y = odeint(F, [alpha, y20], X)
-        y2 = y[:, 0]
-        return beta - y2[-1]
-
-    y20, = fsolve(objective, init)
-
-    Y = odeint(F, [alpha, y20], X)
-    return X, Y
-
-
-def BVP_nl(F, X, BCS, init, **kwargs):
-    '''Solve nonlinear BVP y''(x) = F(x, y, y').
-
-    X is a vector to make finite differences over.
-
-    BCS is a function that returns the boundary conditions: a,b = BCS(X, Y)
-
-    init is a vector of initial guess
-    '''
-
-    x1, x2 = X[0], X[-1]
-    N = len(X)
-    h = (x2 - x1) / (N - 1)
-
-    def residuals(y):
-        '''When we have the right values of y, this function will be zero.'''
-
-        res = np.zeros(y.shape)
-
-        a, b = BCS(X, y)
-
-        res[0] = a
-
-        for i in range(1, N - 1):
-            x = X[i]
-            YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
-            YP = (y[i + 1] - y[i - 1]) / (2 * h)
-            res[i] = YPP - F(x, y[i], YP)
-
-        res[-1] = b
-        return res
-
-    Y, something, flag, msg = fsolve(residuals, init, full_output=1)
-    if flag != 1:
-        print(flag, msg)
-        raise Exception(msg)
-    return Y
-
-
-def bvp_sh(odefun, bcfun, xspan, y0_guess):
-    '''
-    Solve Y' = f(Y, x) by shooting method.
-
-    bcfun(Ya, Yb)
-    '''
-
-    def objective(yinit):
-        sol = odeint(odefun, yinit, xspan)
-        res = bcfun(sol[0, :], sol[-1, :])
-        return res
-
-    Y0 = fsolve(objective, y0_guess)
-
-    Y = odeint(odefun, Y0, xspan)
-    return Y
-
-
-def bvp(odefun, bcfun, X, yinit):
-    '''Solve Y' = f(Y, x).
-
-    odefun is f(Y, x)
-
-    bcfun is a function that returns the residuals at the boundary
-    conditions, g(ya, yb)
-
-    X is a grid to discretize the region
-    yinit is a guess of the solution on that grid
-
-    Example:
-    ========
-    y'' + |y| = 0
-    y(0) = 0
-    y(4) = -2
-
-    def odefun(Y, x):
-    y1, y2 = Y
-    dy1dx = y2
-    dy2dx = -np.abs(y1)
-    return [dy1dx, dy2dx]
-
-    >>> def bcfun(Y):
-    ...    Ya = Y[:,0]
-    ...    Yb = Y[:,1]
-    ...    y1a, y2a = Ya
-    ...    y1b, y2b = Yb
-
-    ...    return [y1a, -2 - y1b]
-
-    >>> x = np.linspace(0, 4, 100)
-
-    >>> y1 = x**0
-    >>> y2 = 0.0 * x
-
-    >>> Yinit = np.column_stack([y1, y2])
-
-    >>> sol = bvp(odefun, bcfun, x, Yinit)
-    '''
-
-    # we have to setup a series of equations equal to zero at the solution Y we
-    # will end up with nX * neq equations. at each x point between the
-    # boundaries we approximate the derivative by central difference neq of
-    # these will be the boundary conditions neq * (nX - 1) of them will be the
-    # derivatives at the interior points
-    def objective(Yflat):
-        Y = Yflat.reshape(yinit.shape)
-
-        nX, neq = Y.shape
-
-        # these are ultimately the "zeros" we solve for
-        # The first set are the boundary conditions
-        res = bcfun(Y)
-
-        ode = np.array(odefun(Y, X))  # evaluate odefun for this Y
-
-        # now we estimate dYdt from the solution and subtract it from ode
-        # that will be zero at the solution
-        # Y is nX rows by neq columns
-        # I need column wise, centered finite difference from 1 to nX-2
-
-        dYdt = (Y[2:, :] - Y[0:-2, :]) / (X[2:, np.newaxis] -
-                                          X[0:-2, np.newaxis])
-
-        Z = ode[1:-1, :] - dYdt
-
-        res += Z.flat
-
-        # we need to estimate the derivatives at one end point We use a 3 point
-        # formula to estimate this derivative at the left boundary
-        yjprime = (-3.0 * Y[0, :] + 4.0 * Y[1, :] - Y[2, :]) / (X[2] - X[0])
-        z = ode[0, :] - yjprime
-        res += z.flat
-
-        return res
-
-    solflat = fsolve(objective, yinit.flat)
-
-    sol = solflat.reshape(yinit.shape)
-
-    return sol
-
-
+# * End
 if __name__ == '__main__':
 
     def ode(Y, x):
