@@ -1,9 +1,18 @@
+# * IPython magic
+"""IPython magic functions.
+
+March 7, 2016
+I don't use these often, and I am not sure they still work.
+"""
+
+# ** Imports
+from setuptools.command import easy_install
 # http://ipython.org/ipython-doc/dev/interactive/qtconsole.html#display
 from IPython.display import display
 from subprocess import Popen, PIPE
 
 # set images to inline by default
-c = c = get_ipython().config
+c = get_ipython().config
 c.IPKernelApp.pylab = 'inline'
 
 ip = get_ipython()
@@ -14,39 +23,41 @@ exec ip.compile('from __future__ import division', '<input>', 'single') \
 
 ############################################################
 
+# ** Publish from IPython
 def magic_publish(self, args):
-    '''magic function to publish a python file in ipython
+    """magic function to publish a python file in ipython
 
     This is some wicked hackery. You cannot directly call the publish module
-    more than once because of namespace pollution. We cannot directly
-    call publish.py with subprocess because it does not recognize it as an executable,
-    even though you can call it from a shell.
+    more than once because of namespace pollution. We cannot directly call
+    publish.py with subprocess because it does not recognize it as an
+    executable, even though you can call it from a shell.
 
     so we basically pipe a script to a python interpreter and execute it
     in its own process, with a new namespace each time.
 
     this is not pretty, but it works for now.
-    '''
-    
-    # this is some new code inspired by some magic methods in Ipython. 
+
+    """
+
+    # this is some new code inspired by some magic methods in Ipython.
     # It seems to be a cleaner approach.
     code = '''from pycse.publish import publish
 publish(u'{0}')'''.format(args)
-    
+
     p = Popen('python', stdout=PIPE, stderr=PIPE, stdin=PIPE)
     out, err = p.communicate(code)
-    print out, err
+    print(out, err)
 ip.define_magic('publish', magic_publish)
 
-###########################################################################
-from setuptools.command import easy_install
+# ** Install magic
+
 
 def magic_easy_install(self, package):
     easy_install.main( [args, package] )
-    
+
 ip.define_magic('easy_install', magic_easy_install)
-    
-##################################################################
+
+# ** Update pycse automatically
 def magic_pycse_update(self, args):
     # for installing magic IPython stuff
 
@@ -64,8 +75,8 @@ def magic_pycse_update(self, args):
     IPydir = os.path.join(IPython.utils.path.get_ipython_dir(),
                       'profile_default',
                       'startup')
-                      
-    print 'Installing ipython magic to : ',IPydir
+
+    print('Installing ipython magic to : ', IPydir)
 
     if not os.path.exists(IPydir):
         raise Exception('No ipython directory found')
@@ -73,21 +84,20 @@ def magic_pycse_update(self, args):
     url = 'https://raw.github.com/jkitchin/pycse/master/pycse/00-pycse-magic.py'
 
     import urllib
-    urllib.urlretrieve (url, os.path.join(IPydir,'00-pycse-magic.py')) 
-    print 'Ipython magic installed now!'
+    urllib.urlretrieve(url, os.path.join(IPydir, '00-pycse-magic.py'))
+    print('Ipython magic installed now!')
 
     # extra packages
-    for pkg in ['quantities', 
+    for pkg in ['quantities',
                 'uncertainties']:
         cmd = [args, pkg] if args else [pkg]
         easy_install.main(cmd)
 
-    print 'Extra packages now installed.'
-    
+    print('Extra packages now installed.')
+
 ip.define_magic('pycse_update', magic_pycse_update)
 
-##################################################################
-## pycse_test magic
+# * pycse_test magic
 
 def magic_pycse_test(self, args):
     PASSED = True
@@ -118,13 +128,13 @@ def magic_pycse_test(self, args):
 
     import uncertainties
     s += ['uncertainties version: {0}'.format(uncertainties.__version__)]
-    
+
     return '\n'.join(s)
 
 ip.define_magic('pycse_test', magic_pycse_test)
 
-###########################################################################    
-## load some common libraries
+
+# * load some common libraries
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -132,4 +142,4 @@ import matplotlib.pyplot as plt
 import quantities as u
 import uncertainties as unc
 
-print 'pycse-magic loaded.'
+print('pycse-magic loaded.')
