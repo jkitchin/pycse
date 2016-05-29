@@ -139,3 +139,28 @@ def figure(fname, caption=None, label=None, attributes=None):
         s += ['[[file:{}]]'.format(fname)]
 
     print('\n'.join(s))
+
+
+def verbatim(s):
+    """Print the string s in verbatim.
+
+    If s is one line, print it in ==, otherwise use a block.
+    """
+    if '\n' in s:
+        print('\n#+BEGIN_EXAMPLE\n{}\n#+END_EXAMPLE\n'.format(s))
+    else:
+        print('={}='.format(s))
+
+
+def fixed_width(s):
+    """Print s as a fixed-width element."""
+    print('\n'.join([': ' + x for x in s.split('\n')]))
+
+def latex(s):
+    """Print s as a latex block."""
+    print('\n#+BEGIN_LATEX\n{}\n#+END_LATEX\n'.format(s))
+
+
+def org(s):
+    """Print s as it is."""
+    print(s)
