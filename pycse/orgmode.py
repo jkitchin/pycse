@@ -50,6 +50,12 @@ def git_hash(string):
 
 
 def myshow(*args, **kwargs):
+    """Wrap matplotlib.pyplot.show for orgmode
+
+    Saves the figure in a directory called pyshow with the filename derived from
+    its git-hash.
+
+    """
     format = "png"
     sio = io.BytesIO()
     original_savefig(sio, format=format)
