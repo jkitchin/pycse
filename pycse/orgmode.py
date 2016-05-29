@@ -164,3 +164,44 @@ def latex(s):
 def org(s):
     """Print s as it is."""
     print(s)
+
+def headline(headline, level=1, todo=None, tags=(),
+             deadline=None,
+             scheduled=None,
+             properties=None,
+             body=None):
+    """Print an org headline.
+
+    :level: an integer for number of stars in the headline
+
+    :tags: a list of strings as tags for the headline
+    :properties: A dictionary of property: value pairs
+    :body: a string representing the body.
+
+    """
+    s = '*' * level + ' '
+    if todo is not None:
+        s += '{} '.format(todo)
+
+    s += headline
+    if tags:
+        s += ' :' + ":".join(tags) + ':'
+    s += '\n'
+
+    if scheduled and deadline:
+        s += '  SCHEDULED: {} DEADLINE: {}\n'.format(scheduled,
+                                                     deadline)
+    elif scheduled:
+        s += '  SCHEDULED: {}\n'.format(scheduled)
+    elif deadline:
+        s += '  DEADLINE: {}\n'.format(deadline)
+    if properties:
+        s += '  :PROPERTIES:\n'
+        for key, val in properties.items():
+            s += '  :{}: {}\n'.format(key, val)
+        s += '  :END:\n\n'
+
+    if body:
+        s += body + '\n'
+
+    print(s)
