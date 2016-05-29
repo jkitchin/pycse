@@ -165,7 +165,8 @@ def org(s):
     """Print s as it is."""
     print(s)
 
-def headline(headline, level=1, todo=None, tags=(),
+def headline(headline, level=1,
+             todo=None, tags=(),
              deadline=None,
              scheduled=None,
              properties=None,
