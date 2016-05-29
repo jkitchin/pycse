@@ -13,8 +13,14 @@
 # (see accompanying license files for details).
 """
 
-import sys
-sys.stderr = sys.stdout
+def stderr_to_stdout():
+    """Redirect stderr to stdout so it can be captured.
+
+    Note: if your python returns an error, you may see nothing from this.
+
+    """
+    import sys
+    sys.stderr = sys.stdout
 
 # Matplotlib modifications
 import io
@@ -152,6 +158,20 @@ def verbatim(s):
         print('={}='.format(s))
 
 
+def comment(s):
+    """Print s as a comment
+
+    If s is one line, print it in #, otherwise use a block.
+    """
+    if '\n' in s:
+        print('\n#+BEGIN_COMMENT\n{}\n#+END_COMMENT\n'.format(s))
+    else:
+        import textwrap
+        print(textwrap.fill(s, initial_indent='# ',
+                            subsequent_indent='# ',
+                            width=79))
+
+
 def fixed_width(s):
     """Print s as a fixed-width element."""
     print('\n'.join([': ' + x for x in s.split('\n')]))
@@ -164,6 +184,7 @@ def latex(s):
 def org(s):
     """Print s as it is."""
     print(s)
+
 
 def headline(headline, level=1,
              todo=None, tags=(),
@@ -204,5 +225,26 @@ def headline(headline, level=1,
 
     if body:
         s += body + '\n'
+
+    print(s)
+
+
+def link(type=None,
+         path=None,
+         desc=None):
+    """Print an org link [[type:path][desc]].
+
+    :path: is all that is mandatory.
+    """
+
+    s = '[['
+    if type is not None:
+        s += type + ':'
+    s += path + ']'
+
+    if desc is not None:
+        s += '[{}]'.format(desc)
+
+    s += ']'
 
     print(s)
