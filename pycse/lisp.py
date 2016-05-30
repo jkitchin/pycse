@@ -171,3 +171,39 @@ class Vector(object):
 
     def __str__(self):
         return self.lisp
+
+
+class Comma(object):
+    def __init__(self, form):
+        self.form = form
+
+    @property
+    def lisp(self):
+        return ',{}'.format(self.form.lisp)
+
+    def __str__(self):
+        return self.lisp
+
+
+class Splice(object):
+    def __init__(self, form):
+        self.form = form
+
+    @property
+    def lisp(self):
+        return ',@{}'.format(self.form.lisp)
+
+    def __str__(self):
+        return self.lisp
+
+
+class Backquote(object):
+    def __init__(self, form):
+        self.form = form
+
+    @property
+    def lisp(self):
+        return '`{}'.format(self.form.lisp)
+
+    def __str__(self):
+        return self.lisp
