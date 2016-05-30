@@ -148,11 +148,11 @@ def figure(fname, caption=None, label=None, attributes=None):
 
 
 def verbatim(s):
-    """Print the string s in verbatim.
+    """Print s in verbatim.
 
     If s is one line, print it in ==, otherwise use a block.
     """
-    if '\n' in s:
+    if '\n' in str(s):
         print('\n#+BEGIN_EXAMPLE\n{}\n#+END_EXAMPLE\n'.format(s))
     else:
         print('={}='.format(s))
@@ -163,7 +163,7 @@ def comment(s):
 
     If s is one line, print it in #, otherwise use a block.
     """
-    if '\n' in s:
+    if '\n' in str(s):
         print('\n#+BEGIN_COMMENT\n{}\n#+END_COMMENT\n'.format(s))
     else:
         import textwrap
@@ -174,7 +174,13 @@ def comment(s):
 
 def fixed_width(s):
     """Print s as a fixed-width element."""
-    print('\n'.join([': ' + x for x in s.split('\n')]))
+    print('\n'.join([': ' + x for x in str(s).split('\n')]))
+
+
+def result(s):
+    """Convenience for fixed_width. An org src block result."""
+    return fixed_width(str(s))
+
 
 def latex(s):
     """Print s as a latex block."""
@@ -193,6 +199,8 @@ def headline(headline, level=1,
              properties=None,
              body=None):
     """Print an org headline.
+
+    :headline: A string for the headline
 
     :level: an integer for number of stars in the headline
 
