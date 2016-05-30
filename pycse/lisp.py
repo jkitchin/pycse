@@ -49,17 +49,22 @@ def get_dict(object):
 get_dict(str)['lisp'] = property(lambda s:'"{}"'.format(str(s)))
 get_dict(float)['lisp'] = property(lambda f:'{}'.format(str(f)))
 get_dict(int)['lisp'] = property(lambda f:'{}'.format(str(f)))
+get_dict(np.int64)['lisp'] = property(lambda f:'{}'.format(str(f)))
 
 
 def lispify(L):
     """Convert a Python object L to a lisp representation."""
     if (isinstance(L, str)
         or isinstance(L, float)
-        or isinstance(L, int)):
-        return L.lisp()
+        or isinstance(L, int)
+        or isinstance(L, np.int64)
+    ):
+        return L.lisp
     elif (isinstance(L, list)
           or isinstance(L, tuple)
-          or isinstance(L, np.ndarray)):
+          or isinstance(L, np.ndarray)
+
+    ):
         s = [element.lisp for element in L]
         return '(' + ' '.join(s) + ')'
     elif isinstance(L, dict):
@@ -71,6 +76,7 @@ get_dict(list)['lisp'] = property(lispify)
 get_dict(tuple)['lisp'] = property(lispify)
 get_dict(dict)['lisp'] = property(lispify)
 get_dict(np.ndarray)['lisp'] = property(lispify)
+
 
 # Some tools for generating lisp code
 
@@ -85,6 +91,9 @@ class Symbol(object):
     @property
     def lisp(self):
         return self.sym
+
+    def __str__(self):
+        return self.lisp
 
 
 class Quote(object):
@@ -101,6 +110,8 @@ class Quote(object):
             s = self.sym.lisp
         return "'{}".format(s)
 
+    def __str__(self):
+        return self.lisp
 
 class SharpQuote(object):
     """Used to SharpQuote a symbol or form."""
@@ -115,6 +126,9 @@ class SharpQuote(object):
             s = self.sym.lisp
         return "#'{}".format(s)
 
+    def __str__(self):
+        return self.lisp
+
 
 class Cons(object):
     """A cons cell."""
@@ -126,6 +140,9 @@ class Cons(object):
     def lisp(self):
         return '({} . {})'.format(self.car.lisp,
                                   self.cdr.lisp)
+
+    def __str__(self):
+        return self.lisp
 
 
 class Alist(object):
@@ -140,6 +157,8 @@ class Alist(object):
         alist = [Cons(key, val) for key, val in zip(keys, vals)]
         return alist.lisp
 
+    def __str__(self):
+        return self.lisp
 
 class Vector(object):
     """A lisp vector."""
@@ -149,3 +168,6 @@ class Vector(object):
     @property
     def lisp(self):
         return "[{}]".format(' '.join([x.lisp for x in self.list]))
+
+    def __str__(self):
+        return self.lisp
