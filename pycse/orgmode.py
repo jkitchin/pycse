@@ -7,10 +7,14 @@
 
 2. Modify matplotlib.pyplot.savefig and show
 
-3. Provide table and figure commands.
+3. Provide table and figure commands that generate org-markup.
+
+4. Provide functions that generate org markup, e.g. results, comments, headlines
+and links.
 
 # Copyright 2015, John Kitchin
 # (see accompanying license files for details).
+
 """
 
 def stderr_to_stdout():
