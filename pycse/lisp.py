@@ -174,6 +174,7 @@ class Vector(object):
 
 
 class Comma(object):
+    """The comma operator."""
     def __init__(self, form):
         self.form = form
 
@@ -186,6 +187,7 @@ class Comma(object):
 
 
 class Splice(object):
+    """A Splice object."""
     def __init__(self, form):
         self.form = form
 
@@ -198,12 +200,26 @@ class Splice(object):
 
 
 class Backquote(object):
+    """A Backquoted item."""
     def __init__(self, form):
         self.form = form
 
     @property
     def lisp(self):
         return '`{}'.format(self.form.lisp)
+
+    def __str__(self):
+        return self.lisp
+
+
+class Comment(object):
+    """A commented item in lisp."""
+    def __init__(self, s):
+        self.s = s
+
+    @property
+    def lisp(self):
+        return '; {}'.format(self.s.lisp)
 
     def __str__(self):
         return self.lisp
