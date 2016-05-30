@@ -1,5 +1,29 @@
 """Library to convert Python data structures to lisp data structures.
 
+This module adds a lisp property to the basic Python types which returns a
+string of the data type in Lisp.
+
+
+The module also provides some classes to help with more sophisticated data structures like alists, cons cells
+
+Here are the transformations:
+
+string     -> "string"
+int, float -> number
+[1, 2, 3]  -> (1 2 3)
+(1, 2, 3)  -> (1 2 3)
+{"a": 6}   -> (:a 6)  p-list
+
+Symbol("lambda")     -> lambda
+Cons(a, b)           -> (a . b)
+Alist(["A" 2 "B" 5]) -> (("A" . 2) ("B" 5))
+Quote("symbol")      -> 'symbol
+Quote([1, 2, 3])     -> '(1 2 3)
+SharpQuote("symbol") -> #'symbol
+Vector([1, 2, 3])    -> [1 2 3]
+
+You should be able to nest these to make complex programs. If you use custom data structures/classes, they need to have a lisp property defined.
+
 http://kitchingroup.cheme.cmu.edu/blog/2015/05/16/Python-data-structures-to-lisp/
 
 """
@@ -62,6 +86,7 @@ class Symbol(object):
     def lisp(self):
         return self.sym
 
+
 class Quote(object):
     """Used to quote a symbol or form."""
     def __init__(self, sym):
@@ -75,6 +100,7 @@ class Quote(object):
             # This is a list/vector
             s = self.sym.lisp
         return "'{}".format(s)
+
 
 class SharpQuote(object):
     """Used to SharpQuote a symbol or form."""
