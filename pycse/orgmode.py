@@ -87,7 +87,9 @@ matplotlib.pyplot.show = myshow
 
 
 # Tables and figures
-def table(data, name=None, caption=None, label=None, attributes=None):
+def table(data, name=None,
+          caption=None, label=None, attributes=None,
+          none=''):
     """Return a formatted table.
 
     :data: A list-like data structure. A None value is converted to hline.
@@ -95,6 +97,7 @@ def table(data, name=None, caption=None, label=None, attributes=None):
     :caption: The caption text
     :label: Label text
     :attributes: [(backend, 'attributes')]
+    :none: A string for None values
 
     """
     s = []
@@ -115,7 +118,8 @@ def table(data, name=None, caption=None, label=None, attributes=None):
         if row is None:
             s += ['|-']
         else:
-            s += ['| ' + ' | '.join([str(x) for x in row]) + '|']
+            s += ['| ' + ' | '.join([str(x) if x is not None else none
+                                     for x in row]) + '|']
 
     print('\n'.join(s))
 
