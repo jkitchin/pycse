@@ -58,6 +58,9 @@ def git_hash(string):
     s.update(string)
     return s.hexdigest()
 
+original_show = matplotlib.pyplot.show
+
+SHOW = True
 
 def myshow(*args, **kwargs):
     """Wrap matplotlib.pyplot.show for orgmode
@@ -82,6 +85,9 @@ def myshow(*args, **kwargs):
         f.write(fig_contents)
 
     print('[[file:{}]]'.format(png))
+
+    if SHOW:
+        original_show(*args, **kwargs)
 
 matplotlib.pyplot.show = myshow
 
