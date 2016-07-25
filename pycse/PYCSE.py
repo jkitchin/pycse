@@ -155,38 +155,47 @@ def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
            fsolve_args=None, **kwargs):
     """Solve an ODE with events.
 
-    func is callable, with signature func(Y, x)
+    Parameters
+    ----------
+    func : y' = func(Y, x)
+        func takes an independent variable x, and the Y value(s),
+        and returns y'.
 
-    y0 are the initial conditions xspan is what you want to integrate
-    over
+    y0 : The initial conditions at xspan[0].
 
-    events is a list of callable functions with signature event(Y, x).
-    These functions return zero when an event has happened.
+    xspan : array to integrate the solution at.
+        The initial condition is at xspan[0].
 
-    TOLERANCE is what is used to identify when an event has occurred.
+    events : list of callable functions with signature event(Y, x).
+        These functions return zero when an event has happened.
 
-    [value, isterminal, direction] = event(Y, x)
+        [value, isterminal, direction] = event(Y, x)
 
-    value is the value of the event function. When value = 0, an event
-    is triggered
+        value is the value of the event function. When value = 0, an event
+        is triggered
 
-    isterminal = True if the integration is to terminate at a zero of
-    this event function, otherwise, False.
+        isterminal = True if the integration is to terminate at a zero of
+        this event function, otherwise, False.
 
-    direction = 0 if all zeros are to be located (the default), +1
-    if only zeros where the event function is increasing, and -1 if
-    only zeros where the event function is decreasing.
+        direction = 0 if all zeros are to be located (the default), +1
+        if only zeros where the event function is increasing, and -1 if
+        only zeros where the event function is decreasing.
 
-    fsolve_args is a dictionary of options for fsolve
+    TOLERANCE : float
+        Used to identify when an event has occurred.
 
-    kwargs are any additional options you want to send to odeint.
+    fsolve_args : a dictionary of options for fsolve
 
-    Returns [x, y, te, ye, ie]
-    x is the independent variable array
-    y is the solution
-    te is an array of independent variable values where events occurred
-    ye is an array of the solution at the points where events occurred
-    ie is an array of indices indicating which event function occurred.
+    kwargs : Additional keyword options you want to send to odeint.
+
+    Returns
+    -------
+    [x, y, te, ye, ie]
+        x is the independent variable array
+        y is the solution
+        te is an array of independent variable values where events occurred
+        ye is an array of the solution at the points where events occurred
+        ie is an array of indices indicating which event function occurred.
     """
     if 'full_output' in kwargs:
         raise Exception('full_output not supported as an option')
@@ -285,14 +294,16 @@ def odelay(func, y0, xspan, events, TOLERANCE=1e-6,
 
 # ** Boundary value solvers
 
+# *** Linear BVP
+
 
 def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     """Solve the linear BVP with constant boundary conditions.
 
     \\begin{equation}
     y'' + p(x)y' + q(x)y = r(x) \\
-    y(x0) = \alpha \\
-    y(xL) = \beta
+    y(x0) = \\alpha \\
+    y(xL) = \\beta
     \end{equation}
 
     Parameters
@@ -306,6 +317,27 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
     beta : y(xL), it is constant
     npoints : int
         The number of points to discretize between x0 and xL.
+
+    Example
+    -------
+    Solve y''(x) = -100
+
+    >>> def p(x): return 0
+    >>> def q(x): return 0
+    >>> def r(x): return -100
+    >>> x1 = 0; alpha = 0.0
+    >>> x2 = 0.1; beta = 0.0
+    >>> npoints = 100
+
+    >>> x, y = bvp_L0(p, q, r, x1, x2, alpha, beta, npoints=100)
+    >>> print(len(x))
+    100
+    >>> import matplotlib.pyplot as plt
+    >>> plt.figure()
+    >>> p = plt.plot(x, y)
+    >>> plt.savefig('images/bvp-pycse.png')
+
+    [[./images/bvp-pycse.png]]
 
     Returns
     -------
@@ -348,10 +380,10 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
 def BVP_sh(F, x1, x2, alpha, beta, init):
     """A shooting method to solve odes.
 
-    \begin{equation}
+    \\begin{equation}
     y'(x) = F(x, y)
-    y(x1) = \alpha
-    y(x2) = \beta
+    y(x1) = \\alpha
+    y(x2) = \\beta
     \end{equation}
 
     Parameters
@@ -362,7 +394,6 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
     alpha : y(x1)
     beta : y(x2)
     init : A guess for y2(x1)
-
 
     y' is a system of ODES
     y1' = f(x, y1, y2)
@@ -388,20 +419,48 @@ def BVP_sh(F, x1, x2, alpha, beta, init):
     return X, Y
 
 
+# ** Nonlinear BVP_nl
+
+
 def BVP_nl(F, X, BCS, init, **kwargs):
-    """Solve nonlinear BVP \(y''(x) = F(x, y, y')\).
+    """Solve nonlinear BVP \(y''(x) = F(x, y, y')\)
+    with boundary conditions at y(x1) = a and y(x2) = b.
 
     Parameters
     ----------
-    F : Function
+    F : Function f(x, y, yprime)
 
     X : Uniformly spaced array from x1 to x2.
 
-    BCS : Function that returns the boundary conditions: a, b = BCS(X, Y)
+    BCS : Function that is zero at the boundary conditions. BCS(X, Y)
 
-    init : Vector of initial guess values at the X points.
+    init : Vector of initial guess solution values at the X points.
 
-    kwargs are passed to fsolve.
+    kwargs are passed to :func:`scipy.optimize.fsolve`.
+
+    Example
+    -------
+    Solve \(y'' = 3 y y'\) with boundary conditions y(0) = 0, and y(2) = 1.
+
+    >>> import numpy as np
+    >>> x1 = 0.0; x2 = 2.0
+    >>> alpha = 0.0; beta = 1.0
+    >>> def Ypp(x, y, yprime):
+    ...    '''define y'' = 3*y*y' '''
+    ...    return -3.0 * y * yprime
+    ...
+    >>> def BC(X, Y):
+    ...    return [alpha - Y[0], beta - Y[-1]]
+    ...
+    >>> X = np.linspace(x1, x2)
+    >>> init = alpha + (beta - alpha) / (x2 - x1) * X
+    >>> y = BVP_nl(Ypp, X, BC, init)
+    >>> import matplotlib.pyplot as plt
+    >>> plt.figure()
+    >>> p = plt.plot(X, y)
+    >>> plt.savefig('images/bvp-nonlinear-2.png')
+
+    [[./images/bvp-nonlinear-2.png]]
 
     Returns
     -------
@@ -483,28 +542,24 @@ def bvp(odefun, bcfun, X, yinit):
     y(0) = 0
     y(4) = -2
 
-    Example
-    -------
-    def odefun(Y, x):
-        y1, y2 = Y
-        dy1dx = y2
-        dy2dx = -np.abs(y1)
-        return [dy1dx, dy2dx]
-
-    def bcfun(Y):
-        Ya = Y[:,0]
-        Yb = Y[:,1]
-        y1a, y2a = Ya
-        y1b, y2b = Yb
-        return [y1a, -2 - y1b]
-
-    x = np.linspace(0, 4, 100)
-
-    y1 = x**0
-    y2 = 0.0 * x
-    Yinit = np.column_stack([y1, y2])
-
-    sol = bvp(odefun, bcfun, x, Yinit)
+    >>> def odefun(Y, x):
+    ...     y1, y2 = Y
+    ...     dy1dx = y2
+    ...     dy2dx = -np.abs(y1)
+    ...     return [dy1dx, dy2dx]
+    ...
+    >>> def bcfun(Y):
+    ...     Ya = Y[0, :]
+    ...     Yb = Y[-1, :]
+    ...     y1a, y2a = Ya
+    ...     y1b, y2b = Yb
+    ...     return [y1a, -2 - y1b]
+    ...
+    >>> x = np.linspace(0, 4, 100)
+    >>> y1 = x**0
+    >>> y2 = 0.0 * x
+    >>> Yinit = np.column_stack([y1, y2])
+    >>> sol = bvp(odefun, bcfun, x, Yinit)
 
     Returns
     -------
@@ -560,17 +615,22 @@ def deriv(x, y, method='two-point'):
     """Compute the numerical derivative dy/dx for y(x)
     represented as arrays of y and x.
 
-    .
-
     Parameters
     ----------
-    x : list of x-points
-    y : list of y-values
+    x : list/array of x-points
+    y : list/array of y-values corresponding to y(x)
     method : string
         Possible values are:
         'two-point': centered difference
         'four-point': centered 4-point difference
         'fft' is an experimental method usind fft.
+
+    Example
+    -------
+    >>> x = [0, 1, 2]
+    >>> y = [0, 2, 4]
+    >>> deriv(x, y)
+    array([ 2.,  2.,  2.])
 
     Returns
     -------
@@ -627,22 +687,3 @@ def deriv(x, y, method='two-point'):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-    # def ode(Y, x):
-    #     return [1, 2]
-
-    # def event(Y, x):
-    #     y1, y2 = Y
-    #     isterminal = True
-    #     direction = 0
-    #     value = y2 - 2
-    #     return value, isterminal, direction
-
-    # import matplotlib.pyplot as plt
-
-    # Y0 = [0, 0]
-    # xspan = np.linspace(0, 5)
-
-    # X, Y, XE, YE, IE = odelay(ode, Y0, xspan, events=(event,))
-    # plt.plot(np.array(X), np.array(Y))
-    # plt.show()

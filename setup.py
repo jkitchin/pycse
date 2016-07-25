@@ -2,11 +2,9 @@
 # (see accompanying license files for details).
 
 from distutils.core import setup
-from pip.req import parse_requirements
-install_reqs = parse_requirements("requirements.txt")
 
 setup(name='pycse',
-      version='0.6.0',
+      version='0.6.2',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -15,7 +13,7 @@ setup(name='pycse',
       platforms=['linux'],
       packages=['pycse'],
       scripts=['pycse/publish.py'],
-      install_requires=install_reqs,
+      install_requires=['quantities==0.10.1'],
       data_files=['requirements.txt', 'LICENSE'],
       long_description='''\
 python computations in science and engineering
