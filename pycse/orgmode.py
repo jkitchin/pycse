@@ -107,8 +107,6 @@ def table(data, name=None,
 
     """
     s = []
-    if name is not None:
-        s += ['#+TBLNAME: {}'.format(name)]
 
     if caption is not None:
         s += ['#+CAPTION: {}'.format(caption)]
@@ -119,6 +117,9 @@ def table(data, name=None,
     if attributes is not None:
         for backend, attrs in attributes:
             s += ['#+ATTR_{}: {}'.format(backend, attrs)]
+
+    if name is not None:
+        s += ['#+NAME: {}'.format(name)]
 
     for row in data:
         if row is None:
