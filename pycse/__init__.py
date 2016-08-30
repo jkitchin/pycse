@@ -3,7 +3,7 @@ Science and Engineering.
 
 '''
 
-__version__ = '1.6'
+__version__ = '1.6.3'
 '''
 9/16/2013 made odelay multivariable and return arrays
 10/19/2013 changed bvp to work for multiple first order equations.
