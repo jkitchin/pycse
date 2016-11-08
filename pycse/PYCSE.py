@@ -346,7 +346,7 @@ def bvp_L0(p, q, r, x0, xL, alpha, beta, npoints=100):
 
     """
 
-    h = (xL - x0) / (npoints - 3)
+    h = (xL - x0) / (npoints - 1)
     X = np.linspace(x0 + h, xL - h, npoints - 2)
 
     # we do not do endpoints on A
