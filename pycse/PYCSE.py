@@ -568,8 +568,8 @@ def bvp(odefun, bcfun, X, yinit):
     """
 
     # we have to setup a series of equations equal to zero at the solution Y we
-    # will end up with nX * neq equations. at each x point between the
-    # boundaries we approximate the derivative by central difference neq of
+    # will end up with nX * neq equations. At each x point between the
+    # boundaries we approximate the derivative by central difference. neq of
     # these will be the boundary conditions neq * (nX - 1) of them will be the
     # derivatives at the interior points
     def objective(Yflat):
@@ -577,8 +577,9 @@ def bvp(odefun, bcfun, X, yinit):
 
         nX, neq = Y.shape
 
-        # these are ultimately the "zeros" we solve for
+        # The "zeros" we solve for are in res
         # The first set are the boundary conditions
+
         res = bcfun(Y)
 
         ode = np.array(odefun(Y, X))  # evaluate odefun for this Y
@@ -588,8 +589,12 @@ def bvp(odefun, bcfun, X, yinit):
         # Y is nX rows by neq columns
         # I need column wise, centered finite difference from 1 to nX-2
 
-        dYdt = (Y[2:, :] - Y[0:-2, :]) / (X[2:, np.newaxis] -
-                                          X[0:-2, np.newaxis])
+        dy = (Y[2:, :] - Y[0:-2, :])
+        dx = (X[2:] - X[0:-2])
+        # May 17, 2017 I had to change how we compute these. For some reason,
+        # the array broadcasting seems to have changed since I first wrote this.
+        # So, here we just use a list comprehension to compute this.
+        dYdt =  np.array([DY / dx for DY in dy.T]).T
 
         Z = ode[1:-1, :] - dYdt
 
