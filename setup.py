@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='pycse',
-      version='1.6.3',
+      version='1.6.4',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -28,4 +28,4 @@ See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
       ''')
 
 # python setup.py register to setup user
-# to push to pypi - python setup.py sdist upload
+# to push to pypi - (shell-command "python setup.py sdist upload")
