@@ -72,3 +72,20 @@ def test_nth():
 @raises(Exception)
 def test_nth_a():
     assert nth(a, 6) == None
+
+def test_integrate():
+    assert integrate(lambda x: 1, 0, 1) == 1
+
+from pycse import feq
+
+def test_nsolve():
+    assert feq(nsolve(lambda x: x - 3, 2), 3)
+
+def test_heaviside_1():
+    assert feq(0, heaviside(-1))
+
+def test_heaviside_2():
+    assert feq(1, heaviside(1))
+
+def test_heaviside_3():
+    assert feq(0.5, heaviside(0))

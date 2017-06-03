@@ -10,7 +10,7 @@ elements. There is also a cut function to avoid list slicing syntax. The point
 of these is to delay introducing indexing syntax.
 
 """
-
+import numpy as np
 import collections
 
 def first(x):
