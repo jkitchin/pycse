@@ -1,30 +1,34 @@
-# adapted from https://gist.github.com/dan-blanchard/7045057
+# adapted from https://conda.io/docs/travis.html
 language: python
+
 python:
   - 2.7
   - 3.5
   - 3.6
 
-notifications:
-  email: false
 
-# Setup anaconda
-before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH="$HOME/miniconda2/bin:$PATH"
-  - hash -r
-  - pwd
-  - ls ~/
-  - ls ~/miniconda2/bin
-  - conda update --yes conda
-
-# Install packages
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose
-  - pip install quantities python-coveralls nose-cov
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  # Replace dep1 dep2 ... with your dependencies
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose quantities python-coveralls nose-cov
+  - source activate test-environment
   - python setup.py install
+
 
 # Run test
 script:
