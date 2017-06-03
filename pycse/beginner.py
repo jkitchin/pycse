@@ -167,8 +167,8 @@ def integrate(f, a, b, *args, **kwargs):
 
     if second(results) > tolerance:
         raise Exception('Your integral error {} is too large. '.format(err)
-                        '{} '.format(fourth(results))
-                        'See your instructor for help')
+                        + '{} '.format(fourth(results))
+                        + 'See your instructor for help')
     return first(results)
 
 
