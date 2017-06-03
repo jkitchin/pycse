@@ -30,14 +30,16 @@ y0 = 0
 
 X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[minima, maxima])
 print(IE)
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-plt.plot(X, Y)
 
-# blue is maximum, red is minimum
-colors = 'rb'
-for xe, ye, ie in zip(XE, YE, IE):
-    plt.plot([xe], [ye], 'o', color=colors[ie])
+if __name__ == '__main__':
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    plt.plot(X, Y)
 
-# plt.show()
+    # blue is maximum, red is minimum
+    colors = 'rb'
+    for xe, ye, ie in zip(XE, YE, IE):
+        plt.plot([xe], [ye], 'o', color=colors[ie])
+
+    # plt.show()

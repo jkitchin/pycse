@@ -21,9 +21,10 @@ xspan = np.linspace(0, 3)
 y0 = 1
 
 
-for k in [2, 3, 4]:
-    X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[event], args=(k,))
-    plt.plot(X, Y)
+if __name__ == '__main__':
+    for k in [2, 3, 4]:
+        X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[event], args=(k,))
+        plt.plot(X, Y)
 
 
-# plt.show()
+    # plt.show()
