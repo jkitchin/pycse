@@ -28,8 +28,10 @@ xspan = np.linspace(0.0, 20.0, 100)
 
 y0 = 0
 
-X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[minima, maxima])
-print(IE)
+def test_odelay_minmax():
+    X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[minima, maxima])
+    assert (IE == [0, 1, 0, 1, 0, 1, 0]).all()
+
 
 if __name__ == '__main__':
     import matplotlib

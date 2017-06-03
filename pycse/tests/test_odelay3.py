@@ -1,14 +1,8 @@
-from pycse import odelay
+from pycse import odelay, feq
 import numpy as np
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
-
 def ode(y, x, k):
-    return -k * y
-
+    return k
 
 def event(y, x):
     value = y - 0.3
@@ -18,13 +12,10 @@ def event(y, x):
 
 xspan = np.linspace(0, 3)
 
-y0 = 1
+y0 = 0
 
+k = 1
 
-if __name__ == '__main__':
-    for k in [2, 3, 4]:
-        X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[event], args=(k,))
-        plt.plot(X, Y)
-
-
-    # plt.show()
+def test_odelay_event():
+    X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[event], args=(k,))
+    assert feq(XE[0], 0.3)
