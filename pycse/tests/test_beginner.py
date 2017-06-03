@@ -63,6 +63,10 @@ def test_rest():
 def test_last():
     assert last(a) == 5
 
+@raises(Exception)
+def test_last_b():
+    assert last(5)
+
 def test_butlast():
     assert butlast(a) == [1, 2, 3, 4]
 
@@ -73,6 +77,11 @@ def test_nth():
 def test_nth_a():
     assert nth(a, 6) == None
 
+
+def test_cut_a():
+    print(cut(a, 1, 2))
+    assert cut(a, 1, None, 2) == [2, 4]
+
 def test_integrate():
     assert integrate(lambda x: 1, 0, 1) == 1
 
@@ -80,6 +89,14 @@ from pycse import feq
 
 def test_nsolve():
     assert feq(nsolve(lambda x: x - 3, 2), 3)
+
+@raises(Exception)
+def test_nsolve_2():
+    assert feq(nsolve(lambda x: x + 3, 2), 3)
+
+
+def test_nsolve_3():
+    assert (nsolve(lambda X: [X[0] - 3, X[1] - 4], [2, 2]) == [3, 4]).all()
 
 def test_heaviside_1():
     assert feq(0, heaviside(-1))
