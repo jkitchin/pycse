@@ -60,6 +60,10 @@ def test_fifth_c ():
 def test_rest():
     assert rest(a) == [2, 3, 4, 5]
 
+@raises(Exception)
+def test_rest_2():
+    assert rest(1) == [2, 3, 4, 5]
+
 def test_last():
     assert last(a) == 5
 
@@ -77,10 +81,17 @@ def test_nth():
 def test_nth_a():
     assert nth(a, 6) == None
 
+@raises(Exception)
+def test_nth_a():
+    assert nth(6) == None
+
 
 def test_cut_a():
-    print(cut(a, 1, 2))
     assert cut(a, 1, None, 2) == [2, 4]
+
+@raises(Exception)
+def test_cut_a():
+    assert cut(1, 1, None, 2) == [2, 4]
 
 def test_integrate():
     assert integrate(lambda x: 1, 0, 1) == 1
