@@ -1,4 +1,4 @@
-from pycse import bvp
+from pycse.PYCSE import bvp
 import numpy as np
 
 # example from http://200.13.98.241/~martin/irq/tareas1/bvp_paper.pdf
@@ -38,16 +38,16 @@ Yinit = np.column_stack([ux, vx, wx, zx, yx])
 
 sol = bvp(odefun, bcfun, x, Yinit)
 
+if __name__ == '__main__':
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    u = sol[:, 0]
+    v = sol[:, 1]
+    w = sol[:, 2]
+    z = sol[:, 3]
+    y = sol[:, 4]
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-u = sol[:, 0]
-v = sol[:, 1]
-w = sol[:, 2]
-z = sol[:, 3]
-y = sol[:, 4]
-
-plt.plot(x, u, x, v, x, w, x, z + 10, x, y)
-plt.legend(['u', 'v', 'w', 'z', 'y'], loc='best')
-plt.show()
+    plt.plot(x, u, x, v, x, w, x, z + 10, x, y)
+    plt.legend(['u', 'v', 'w', 'z', 'y'], loc='best')
+    plt.show()

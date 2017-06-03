@@ -70,7 +70,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import quad, odeint
 from scipy.interpolate import interp1d
 
-from .PYCSE import regress, nlinfit, deriv, odelay
+from .PYCSE import regress, nlinfit, deriv, odelay, bvp
 from .beginner import *
 
 import quantities as u
