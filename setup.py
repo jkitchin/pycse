@@ -1,7 +1,6 @@
 # Copyright 2015, John Kitchin
 # (see accompanying license files for details).
-
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='pycse',
       version='2.0',
@@ -12,7 +11,7 @@ setup(name='pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      install_requires=['quantities==0.11.1', 'uncertainties'],
+      setup_requires=['nose>=1.0'],
       data_files=['requirements.txt', 'LICENSE'],
       long_description='''\
 python computations in science and engineering
