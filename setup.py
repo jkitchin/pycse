@@ -12,7 +12,7 @@ setup(name='pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      install_requires=['quantities==0.10.1'],
+      install_requires=['quantities==0.11.1', 'uncertainties'],
       data_files=['requirements.txt', 'LICENSE'],
       long_description='''\
 python computations in science and engineering
