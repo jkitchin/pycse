@@ -17,15 +17,11 @@ before_install:
   - ls ~/
   - ls ~/miniconda2/bin
   - conda update --yes conda
-  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-#  - sudo rm -rf /dev/shm
-#  - sudo ln -s /run/shm /dev/shm
+
 # Install packages
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose
   - pip install quantities python-coveralls nose-cov
-  # Coverage packages are on my binstar channel
-  # - conda install --yes -c dan_blanchard 
   - python setup.py install
 
 # Run test
