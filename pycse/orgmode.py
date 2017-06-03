@@ -131,12 +131,12 @@ def table(data, name=None,
     print('\n'.join(s))
 
 
-def figure(fname, caption=None, label=None, attributes=None):
+def figure(fname, caption=None, name=None, attributes=None):
     """Return a formatted figure.
 
     :fname: A string for the filename.
     :caption: A string of the caption text.
-    :label: A string for a label.
+    :name: A string for a label.
     :attributes: [(backend, 'attributes')]
 
     """
@@ -145,8 +145,8 @@ def figure(fname, caption=None, label=None, attributes=None):
     if caption is not None:
         s += ['#+CAPTION: {}'.format(caption)]
 
-    if label is not None:
-        s += ['#+LABEL: {}'.format(label)]
+    if name is not None:
+        s += ['#+NAME: {}'.format(name)]
 
     if attributes is not None:
         for backend, attrs in attributes:
