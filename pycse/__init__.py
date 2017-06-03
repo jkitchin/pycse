@@ -12,38 +12,42 @@ from IPython.core.magic import (register_line_magic, register_cell_magic,
                                 register_line_cell_magic)
 
 # Make inline figures the default
-from IPython.core.pylabtools import backends
-import matplotlib as mpl
-mpl.interactive(True)
-mpl.use(backends['inline'])
-
+try:
+    from IPython.core.pylabtools import backends
+    import matplotlib as mpl
+    mpl.interactive(True)
+    mpl.use(backends['inline'])
+except:
+    pass
 
 # * IPython magic for pycse
 # IPython magic functions.
 # Adapated from
 # http://ipython.readthedocs.io/en/stable/config/custommagics.html
 
-@register_line_magic
-def pycse_test(line):
-    PASSED = True
-    import pycse
-    s = []
-    s += ['pycse version: {0}'.format(pycse.__version__)]
+try:
+    @register_line_magic
+    def pycse_test(line):
+        PASSED = True
+        import pycse
+        s = []
+        s += ['pycse version: {0}'.format(pycse.__version__)]
 
-    import numpy
-    s += ['numpy version: {0}'.format(numpy.__version__)]
+        import numpy
+        s += ['numpy version: {0}'.format(numpy.__version__)]
 
-    import scipy
-    s += ['scipy version: {0}'.format(scipy.__version__)]
+        import scipy
+        s += ['scipy version: {0}'.format(scipy.__version__)]
 
-    import matplotlib
-    s += ['matplotlib version: {0}'.format(matplotlib.__version__)]
+        import matplotlib
+        s += ['matplotlib version: {0}'.format(matplotlib.__version__)]
 
-    import IPython
-    s += ['IPython version: {0}'.format(IPython.__version__)]
+        import IPython
+        s += ['IPython version: {0}'.format(IPython.__version__)]
 
-    return '\n'.join(s)
-
+        return '\n'.join(s)
+except:
+    pass
 
 
 # * load some common libraries
