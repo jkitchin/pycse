@@ -160,8 +160,8 @@ def integrate(f, a, b, *args, tolerance=1e-6, **kwargs):
         kwargs['full_output'] = 1
     results = quad(f, a, b, *args, **kwargs)
     if second(results) > tolerance:
-        raise Exception(f'Your integral error {err} is too large. '
-                        f'{fourth(results)} '
+        raise Exception('Your integral error {} is too large. '.format(err)
+                        '{} '.format(fourth(results))
                         'See your instructor for help')
     return first(results)
 
