@@ -133,7 +133,10 @@ def nsolve(objective, x0, *args, **kwargs):
     Returns:
        If there is only one result it returns a float, otherwise it returns an array.
     """
-    ans, info, flag, msg = _fsolve(objective, x0, full_output=1, *args, **kwargs)
+    if 'full_output' not in kwargs:
+        kwargs['full_output'] = 1
+
+    ans, info, flag, msg = _fsolve(objective, x0, *args, **kwargs)
 
     if flag != 1:
         raise Exception('nsolve did not finish cleanly: {}'.format(msg))
@@ -146,7 +149,7 @@ def nsolve(objective, x0, *args, **kwargs):
 # The quad function returns the integral and error estimate. We rarely use the
 # error estimate, so here we eliminate it from the output.
 
-def integrate(f, a, b, *args, tolerance=1e-6, **kwargs):
+def integrate(f, a, b, *args, **kwargs):
     """Integrate the function f(x) from a to b.
 
     This wraps scipy.integrate.quad to eliminate the error estimate and provide
@@ -159,6 +162,9 @@ def integrate(f, a, b, *args, tolerance=1e-6, **kwargs):
     if 'full_output' not in kwargs:
         kwargs['full_output'] = 1
     results = quad(f, a, b, *args, **kwargs)
+
+    tolerance = kwargs.get('tolerance', 1e-6)
+
     if second(results) > tolerance:
         raise Exception('Your integral error {} is too large. '.format(err)
                         '{} '.format(fourth(results))
