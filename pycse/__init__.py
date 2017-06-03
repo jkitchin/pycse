@@ -71,6 +71,8 @@ from scipy.integrate import quad, odeint
 from scipy.interpolate import interp1d
 
 from .PYCSE import regress, nlinfit, deriv, odelay, bvp
+from .utils import feq, flt, fgt, fle, fge
+
 from .beginner import *
 
 import quantities as u
