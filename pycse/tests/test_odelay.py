@@ -1,6 +1,7 @@
 from pycse import odelay
 
 import matplotlib
+matplotlib.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -29,6 +30,5 @@ V, F, TE, YE, IE = odelay(ode, Ca0 * v0, Vspan, events=[event1])
 print('Solution is at {0} L'.format(V[-1]))
 
 
-matplotlib.use('Agg')
-
-plt.plot(V, F)
+if __name__ == '__main__':
+    plt.plot(V, F)
