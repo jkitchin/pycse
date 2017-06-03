@@ -34,7 +34,7 @@ def ignore_exception(*exceptions):
     """Decorator to ignore exceptions.
 
     >>> with ignore_exception(ZeroDivisionError):
-    ...     print 1/0
+    ...     print(1/0)
 
     """
     try:
@@ -47,4 +47,4 @@ def ignore_exception(*exceptions):
 
 if __name__ == '__main__':
     with ignore_exception(ZeroDivisionError):
-        print 1/0
+        print(1/0)
