@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='pycse',
-      version='1.6.4',
+      version='2.0',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -12,16 +12,14 @@ setup(name='pycse',
       license='GPL',
       platforms=['linux'],
       packages=['pycse'],
-      scripts=['pycse/publish.py'],
       install_requires=['quantities==0.10.1'],
       data_files=['requirements.txt', 'LICENSE'],
       long_description='''\
 python computations in science and engineering
 ===============================================
 
-This package provides some utilities to perform:
-1. linear and nonlinear regression with confidence intervals
-2. Solve some boundary value problems.
+This package provides functions that are useful in science and engineering
+computations.
 
 See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
 
