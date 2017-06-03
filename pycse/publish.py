@@ -306,7 +306,8 @@ grade.value = cChoice;
 
 \usepackage{bookmark}''', tex_string)
          
-        print >>fileobject, tex_string
+        #print >>fileobject, tex_string
+        fileobject.write(tex_string)
 
     def compile2pdf(self, output_list, fileobject, options):
         """ Compiles the output_list to the tex file given the filename
@@ -388,7 +389,7 @@ def mysave(*args, **kwargs):
             os.unlink(args[0])
         else:
             self.figure_list += (figure_name, )
-            print "Here goes figure %s" % figure_name
+            print("Here goes figure %s" % figure_name)
         return
     
     # first save what the user wants
@@ -407,7 +408,7 @@ def mysave(*args, **kwargs):
     this_hash = git_hash(figure_name)
     if not this_hash in current_hashes:
         self.figure_list += (figure_name, )
-        print "Here goes figure %s" % figure_name
+        print("Here goes figure %s" % figure_name)
     else:
         os.unlink(figure_name)
     
@@ -554,7 +555,7 @@ if __name__ == '__main__':
     from subprocess import Popen, PIPE
 
     if args.version:
-        print 'Version = {0}'.format(VERSION)
+        print('Version = {0}'.format(VERSION))
         import sys; sys.exit()
 
     
@@ -573,7 +574,7 @@ publish(u'{0}')'''.format(cmd)
     
         p = Popen('python', stdout=PIPE, stderr=PIPE, stdin=PIPE)
         out, err = p.communicate(code)
-        print out, err
+        print(out, err)
         
 
 
