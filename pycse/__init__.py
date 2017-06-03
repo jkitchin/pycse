@@ -7,12 +7,12 @@ Pycse is compatible with Python 3.6.
 __version__ = '2.0.0'
 
 # * Setup inline images for IPython
-from IPython import get_ipython
-from IPython.core.magic import (register_line_magic, register_cell_magic,
-                                register_line_cell_magic)
-
 # Make inline figures the default
 try:
+    from IPython import get_ipython
+    from IPython.core.magic import (register_line_magic, register_cell_magic,
+                                register_line_cell_magic)
+
     from IPython.core.pylabtools import backends
     import matplotlib as mpl
     mpl.interactive(True)
