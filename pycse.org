@@ -8671,12 +8671,13 @@ plt.savefig('images/bvp-another-nonlin-1.png')
 
 This example shows that a nonlinear BVP may have different solutions, and which one you get depends on the guess you make for the solution. This is analogous to solving nonlinear algebraic equations (which is what is done in solving this problem!).
 
-*** BROKEN Solving the Blasius equation
+*** DONE Solving the Blasius equation
+    CLOSED: [2017-05-17 Wed 11:05]
     :PROPERTIES:
     :categories: BVP
     :tags:     fluids
     :date:     2013/03/11 10:44:56
-    :updated:  2013/03/11 16:34:47
+    :updated:  2017/05/17 11:11:43
     :END:
 In fluid mechanics the Blasius equation comes up (http://en.wikipedia.org/wiki/Blasius_boundary_layer) to describe the boundary layer that forms near a flat plate with fluid moving by it. The nonlinear differential equation is:
 
@@ -8706,45 +8707,49 @@ We have to provide initial guesses for f_1, f_2 and f_3. This is the hardest par
 
 Finally, we let a solver iteratively find a solution for us, and find the answer we want. The solver is in the pycse module.
 
-
-#+BEGIN_SRC python
+#+BEGIN_SRC ipython :session :results output drawer
 import numpy as np
 from pycse import bvp
 
 def odefun(F, x):
-    f1, f2, f3 = F
-    return [f2,
-            f3,
-            -0.5 * f1 * f3]
+    f1, f2, f3 = F.T
+    return np.column_stack([f2,
+                            f3,
+                            -0.5 * f1 * f3])
 
-def bcfun(F):
-    return [F[0][0],        # f1(0) =  0
-            F[1][0],        # f2(0) = 0
-            1.0 - F[1][-1]]  # f2(inf) = 1
+def bcfun(Y):
+    fa, fb = Y[0, :], Y[-1, :]
+    return [fa[0],        # f1(0) =  0
+            fa[1],        # f2(0) = 0
+            1.0 - fb[1]]  # f2(inf) = 1
 
 eta = np.linspace(0, 6, 100)
 f1init = eta
 f2init = np.exp(-eta)
 f3init = np.exp(-eta)
 
-Finit = np.vstack([f1init, f2init, f3init])
+Finit = np.column_stack([f1init, f2init, f3init])
 
 sol = bvp(odefun, bcfun, eta, Finit)
+f1, f2, f3 = sol.T
 
-print("f''(0) = f_3(0) = {0}".format(sol[2, 0]))
+print("f''(0) = f_3(0) = {0}".format(f3[0]))
 
+%matplotlib inline
 import matplotlib.pyplot as plt
-plt.plot(eta, sol[0])
+plt.plot(eta, f1)
 plt.xlabel('$\eta$')
 plt.ylabel('$f(\eta)$')
-plt.savefig('images/blasius.png')
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+f''(0) = f_3(0) = 0.3324911095517483
+[[file:ipython-inline-images/ob-ipython-6d4955236f943adc107843ee3ac863aa.png]]
+:END:
 
-That solution agrees well with reported solutions.
+<2017-05-17 Wed> You need pycse 1.6.4 for this example.
 
-[[./images/blasius.png]]
 
 **  Partial differential equations
 *** Modeling a transient plug flow reactor
