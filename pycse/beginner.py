@@ -6,7 +6,8 @@ helpful error messages.
 
 There are a series of functions to access parts of a list, e.g. the first-fifth
 and nth elements, the last element, all but the first, and all but the last
-elements. There is also a cut function to avoid list slicing syntax.
+elements. There is also a cut function to avoid list slicing syntax. The point
+of these is to delay introducing indexing syntax.
 
 """
 
@@ -111,9 +112,17 @@ def butlast(x):
 
 
 # * Wrapped functions
-from scipy.optimize import fsolve as _fsolve
 
-def fsolve(objective, x0, *args, **kwargs):
+# These functions are wrapped to provide a simpler use for new students. Usually
+# that means there are fewer confusing outputs. For example fsolve returns an
+# array even for a single number which leads to the need to unpack it to get a
+# simple number. The nsolve function does not do that. It returns a float if the
+# result is a 1d array. It also is more explicit about checking for convergence.
+
+from scipy.optimize import fsolve as _fsolve
+from scipy.integrate import quad
+
+def nsolve(objective, x0, *args, **kwargs):
     """A Wrapped version of scipy.optimize.fsolve.
 
     objective: a callable function f(x) = 0
@@ -127,9 +136,38 @@ def fsolve(objective, x0, *args, **kwargs):
     ans, info, flag, msg = _fsolve(objective, x0, full_output=1, *args, **kwargs)
 
     if flag != 1:
-        raise Exception('fsolve did not finish cleanly: {}'.format(msg))
+        raise Exception('nsolve did not finish cleanly: {}'.format(msg))
 
     if len(ans) == 1:
         return float(ans)
     else:
         return ans
+
+# The quad function returns the integral and error estimate. We rarely use the
+# error estimate, so here we eliminate it from the output.
+
+def integrate(f, a, b, *args, tolerance=1e-6, **kwargs):
+    """Integrate the function f(x) from a to b.
+
+    This wraps scipy.integrate.quad to eliminate the error estimate and provide
+    better debugging information.
+
+    If the error estimate is greater than the tolerance argument, an exception
+    is raised.
+
+    """
+    if 'full_output' not in kwargs:
+        kwargs['full_output'] = 1
+    results = quad(f, a, b, *args, **kwargs)
+    if second(results) > tolerance:
+        raise Exception(f'Your integral error {err} is too large. '
+                        f'{fourth(results)} '
+                        'See your instructor for help')
+    return first(results)
+
+
+def heaviside(x):
+    """Return the heaviside function of x.
+    This is equal to zero for x < 0, 0.5 for x==0, and 1 for x > 0.
+    """
+    return 0.5 * (np.sign(x) + 1)
