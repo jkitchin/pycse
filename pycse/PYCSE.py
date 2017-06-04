@@ -497,32 +497,6 @@ def BVP_nl(F, X, BCS, init, **kwargs):
     return Y
 
 
-def bvp_sh(odefun, bcfun, xspan, y0_guess):
-    """Solve \(Y' = f(Y, x)\) by shooting method.
-
-    Parameters
-    ----------
-    odefun : a function
-    bcfun : bcfun(Ya, Yb) = 0
-    xspan :
-    y0_guess : Initial guess of the solution.
-
-    Returns
-    -------
-    The solution array: Y
-    """
-
-    def objective(yinit):
-        sol = odeint(odefun, yinit, xspan)
-        res = bcfun(sol[0, :], sol[-1, :])
-        return res
-
-    Y0 = fsolve(objective, y0_guess)
-
-    Y = odeint(odefun, Y0, xspan)
-    return Y
-
-
 def bvp(odefun, bcfun, X, yinit):
     """Solve \(Y' = f(Y, x)\).
 
@@ -677,10 +651,15 @@ def deriv(x, y, method='two-point'):
         L = xp[-1]
 
         if N % 2 == 0:
-            k = np.asarray(range(0, N / 2) + [0] + range(-N / 2 + 1, 0))
+            k = np.asarray(list(range(0, N // 2))
+                           + [0]
+                           + list(range(-N // 2 + 1, 0)),
+                           dtype=np.float64)
         else:
-            k = np.asarray(range(0, (N - 1) / 2) + [0] +
-                           range(-(N - 1) / 2, 0))
+            k = np.asarray(list(range(0, (N - 1) // 2))
+                           + [0]
+                           + list(range(-(N - 1) // 2, 0)),
+                           dtype=np.float64)
 
         k *= 2 * np.pi / L
 
