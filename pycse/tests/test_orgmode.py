@@ -86,20 +86,20 @@ def test_fig():
     assert sys.stdout.getvalue() == '[[file:test]]\n'
 
 def test_fig2():
-    figure("test_orgmode.py")
-    assert sys.stdout.getvalue() == '[[file:test_orgmode.py]]\n'
+    figure("pycse/tests/test_orgmode.py")
+    assert sys.stdout.getvalue() == '[[file:pycse/tests/test_orgmode.py]]\n'
 
 def test_fig3():
-    figure("test_orgmode.py", caption="test")
-    assert sys.stdout.getvalue() == '#+CAPTION: test\n[[file:test_orgmode.py]]\n'
+    figure("pycse/tests/test_orgmode.py", caption="test")
+    assert sys.stdout.getvalue() == '#+CAPTION: test\n[[file:pycse/tests/test_orgmode.py]]\n'
 
 def test_fig4():
-    figure("test_orgmode.py", caption="test", name='fig')
-    assert sys.stdout.getvalue() == '#+NAME: fig\n#+CAPTION: test\n[[file:test_orgmode.py]]\n'
+    figure("pycse/tests/test_orgmode.py", caption="test", name='fig')
+    assert sys.stdout.getvalue() == '#+NAME: fig\n#+CAPTION: test\n[[file:pycse/tests/test_orgmode.py]]\n'
 
 def test_fig5():
-    figure("test_orgmode.py", caption="test", name='fig', attributes=[('org', ':width 300')])
-    assert sys.stdout.getvalue() == '#+ATTR_org: :width 300\n#+NAME: fig\n#+CAPTION: test\n[[file:test_orgmode.py]]\n'
+    figure("pycse/tests/test_orgmode.py", caption="test", name='fig', attributes=[('org', ':width 300')])
+    assert sys.stdout.getvalue() == '#+ATTR_org: :width 300\n#+NAME: fig\n#+CAPTION: test\n[[file:pycse/tests/test_orgmode.py]]\n'
 
 def test_tab_1():
     table([[0, 1]])
