@@ -142,15 +142,15 @@ def figure(fname, caption=None, name=None, attributes=None):
     """
     s = []
 
-    if caption is not None:
-        s += ['#+CAPTION: {}'.format(caption)]
+    if attributes is not None:
+        for backend, attrs in attributes:
+            s += ['#+ATTR_{}: {}'.format(backend, attrs)]
 
     if name is not None:
         s += ['#+NAME: {}'.format(name)]
 
-    if attributes is not None:
-        for backend, attrs in attributes:
-            s += ['#+ATTR_{}: {}'.format(backend, attrs)]
+    if caption is not None:
+        s += ['#+CAPTION: {}'.format(caption)]
 
     if fname.startswith('[[file:'):
         s += [fname]
