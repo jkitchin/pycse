@@ -6,7 +6,7 @@ def ode(y, x):
 
 
 def minima(y, x):
-    '''Approaching a minumum, dydx is negative and going to zero. our event function
+    '''Approaching a minimum, dydx is negative and going to zero. our event function
 is increasing
 
     '''

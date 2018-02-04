@@ -238,7 +238,7 @@ It is possible to nest functions inside of functions like this.
 def wrapper(x):
     a = 4
     def func(x, a):
-        return a * x
+	return a * x
 
     return func(x, a)
 
@@ -341,7 +341,7 @@ It is occasionally useful to allow an arbitrary number of arguments in a functio
 def func(*args):
     sum = 0
     for arg in args:
-        sum += arg
+	sum += arg
     return sum
 
 print(func(1, 2, 3, 4))
@@ -367,7 +367,7 @@ It is possible to have arbitrary keyword arguments. This is a common pattern whe
 #+BEGIN_SRC python
 def func(**kwargs):
     for kw in kwargs:
-        print('{0} = {1}'.format(kw, kwargs[kw]))
+	print('{0} = {1}'.format(kw, kwargs[kw]))
 
 func(t1=6, color='blue')
 #+END_SRC
@@ -387,9 +387,9 @@ def myplot(x, y, fname=None, **kwargs):
     plt.ylabel('Y')
     plt.title('My plot')
     if fname:
-        plt.savefig(fname)
+	plt.savefig(fname)
     else:
-        plt.show()
+	plt.show()
 
 x = [1, 3, 4, 5]
 y = [3, 6, 9, 12]
@@ -417,7 +417,7 @@ import numpy as np
 def func(a, b=2, *args, **kwargs):
     "return a**b + sum(args) and print kwargs"
     for kw in kwargs:
-        print('kw: {0} = {1}'.format(kw, kwargs[kw]))
+	print('kw: {0} = {1}'.format(kw, kwargs[kw]))
 
     return a**b + np.sum(args)
 
@@ -1257,9 +1257,9 @@ If you want to access attributes on an object, you can specify them directly in 
 #+BEGIN_SRC python
 class A:
     def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
+	self.a = a
+	self.b = b
+	self.c = c
 
 mya = A(3,4,5)
 
@@ -1295,17 +1295,17 @@ There are three different ways to "print" an object. If an object has a __format
 #+BEGIN_SRC python
 class A:
     def __init__(self, a, b):
-        self.a = a; self.b = b
+	self.a = a; self.b = b
 
     def __format__(self, format):
-        s = 'a={{0:{0}}} b={{1:{0}}}'.format(format)
-        return s.format(self.a, self.b)
+	s = 'a={{0:{0}}} b={{1:{0}}}'.format(format)
+	return s.format(self.a, self.b)
 
     def __str__(self):
-        return 'str: class A, a={0} b={1}'.format(self.a, self.b)
+	return 'str: class A, a={0} b={1}'.format(self.a, self.b)
 
     def __repr__(self):
-        return 'representing: class A, a={0}, b={1}'.format(self.a, self.b)
+	return 'representing: class A, a={0}, b={1}'.format(self.a, self.b)
 
 mya = A(3, 4)
 
@@ -1725,7 +1725,7 @@ from scipy.integrate import quad
 
 def f_(z):
     def integrand(t):
-        return np.tan(t**3)
+	return np.tan(t**3)
     return quad(integrand, 0, z**2)
 
 f = np.vectorize(f_)
@@ -1766,13 +1766,13 @@ Today we examine a few ways to define a function like this. A simple way is to u
 #+BEGIN_SRC python :session
 def f1(x):
     if x < 0:
-        return 0
+	return 0
     elif (x >= 0) & (x < 1):
-        return x
+	return x
     elif (x >= 1) & (x < 2):
-        return 2.0 - x
+	return 2.0 - x
     else:
-        return 0
+	return 0
 
 print(f1(-1))
 #print(f1([0, 1, 2, 3]))  # does not work!
@@ -1828,13 +1828,13 @@ A third approach is to use Heaviside functions. The Heaviside function is define
 def heaviside(x):
     x = np.array(x)
     if x.shape != ():
-        y = np.zeros(x.shape)
-        y[x > 0.0] = 1
-        y[x == 0.0] = 0.5
+	y = np.zeros(x.shape)
+	y[x > 0.0] = 1
+	y[x == 0.0] = 0.5
     else: # special case for 0d array (a number)
-        if x > 0: y = 1
-        elif x == 0: y = 0.5
-        else: y = 0
+	if x > 0: y = 1
+	elif x == 0: y = 0.5
+	else: y = 0
     return y
 
 def f3(x):
@@ -1889,7 +1889,7 @@ def fF_turbulent_unvectorized(Re):
     # 1/np.sqrt(f) = (4.0*np.log10(Re*np.sqrt(f))-0.4)
     # we have to solve this equation to get f
     def func(f):
-        return 1/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
+	return 1/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
     fguess = 0.01
     f, = fsolve(func, fguess)
     return f
@@ -2262,7 +2262,7 @@ print(np.roots(ppar))
 #+RESULTS:
 : [ 5.09432376+0.j          4.40066810+1.43502848j  4.40066810-1.43502848j]
 
-Note that only one root is real (and even then, we have to interpet 0.j as not being imaginary. Also, in a cubic polynomial, there can only be two imaginary roots). In this case that means there is only one phase present.
+Note that only one root is real (and even then, we have to interpret 0.j as not being imaginary. Also, in a cubic polynomial, there can only be two imaginary roots). In this case that means there is only one phase present.
 
 *** Summary
 Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
@@ -2690,11 +2690,11 @@ def integrand(z, y, x):
     return y * np.sin(x) + z * np.cos(x)
 
 ans, err = tplquad(integrand,
-                   0, np.pi,  # x limits
-                   lambda x: 0,
-                   lambda x: 1, # y limits
-                   lambda x,y: -1,
-                   lambda x,y: 1) # z limits
+		   0, np.pi,  # x limits
+		   lambda x: 0,
+		   lambda x: 1, # y limits
+		   lambda x,y: -1,
+		   lambda x,y: 1) # z limits
 
 print (ans)
 #+END_SRC
@@ -3068,8 +3068,8 @@ When solving linear equations, we can represent them in matrix form. The we simp
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [20, 10, 0]])
+	      [0, 10, 25],
+	      [20, 10, 0]])
 
 b = np.array([0, 90, 80])
 
@@ -3098,8 +3098,8 @@ It can be useful to confirm there should be a solution, e.g. that the equations 
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [20, 10, 0]])
+	      [0, 10, 25],
+	      [20, 10, 0]])
 
 b = np.array([0, 90, 80])
 
@@ -3113,8 +3113,8 @@ print('# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE)))
 # to illustrate a case where there are only 2 independent rows
 # consider this case where row3 = 2*row2.
 A = np.array([[1, -1, 1],
-              [0, 10, 25],
-              [0, 20, 50]])
+	      [0, 10, 25],
+	      [0, 20, 50]])
 
 u, s, v = np.linalg.svd(A)
 
@@ -3159,7 +3159,7 @@ with a function.
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 # function
 print(np.transpose(A))
@@ -3182,7 +3182,7 @@ print(A.T)
 import numpy as np
 
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 print(np.all(A == (A.T).T))
 #+END_SRC
@@ -3195,7 +3195,7 @@ print(np.all(A == (A.T).T))
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 B = np.array([[3, 4, 5], [1, 2,3]])
 
@@ -3210,7 +3210,7 @@ print(np.all( A.T + B.T == (A + B).T))
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 c = 2.1
 
@@ -3225,11 +3225,11 @@ print(np.all((c*A).T == c*A.T))
 #+BEGIN_SRC python
 import numpy as np
 A = np.array([[5, -8, 1],
-              [4, 0, 0]])
+	      [4, 0, 0]])
 
 B = np.array([[0, 2],
-              [1, 2],
-              [6, 7]])
+	      [1, 2],
+	      [6, 7]])
 
 print(np.all(np.dot(A, B).T == np.dot(B.T, A.T)))
 #+END_SRC
@@ -3551,11 +3551,11 @@ labels = ['H2',  'H', 'Br2', 'Br', 'HBr']
 for row in reduced_form.tolist():
     s = '0 = '
     for nu,species in zip(row,labels):
-        if nu != 0:
+	if nu != 0:
 
-            s += ' {0:+d}{1}'.format(int(nu), species)
+	    s += ' {0:+d}{1}'.format(int(nu), species)
     if s != '0 = ':
-        print(s)
+	print(s)
 #+END_SRC
 
 #+RESULTS:
@@ -3585,8 +3585,8 @@ import numpy as np
 from sympy import Matrix
 
 A = np.array([[3, 2, 1],
-              [2, 1, 1],
-              [6, 2, 4]])
+	      [2, 1, 1],
+	      [6, 2, 4]])
 
 rA, pivots =  Matrix(A).rref()
 print(rA)
@@ -3604,8 +3604,8 @@ import numpy as np
 from sympy import Matrix
 
 A = np.array([[3, 2, 1],
-              [2, 1, 1],
-              [6, 2, 4]])
+	      [2, 1, 1],
+	      [6, 2, 4]])
 
 print(np.linalg.det(A))
 print(np.linalg.inv(A))
@@ -3644,8 +3644,8 @@ import numpy as np
 from scipy.linalg import lu
 
 A = np.array([[6, 2, 3],
-              [1, 1, 1],
-              [0, 4, 9]])
+	      [1, 1, 1],
+	      [0, 4, 9]])
 
 P, L, U = lu(A)
 
@@ -3687,10 +3687,10 @@ We solve $A x = b$ with
 \begin{equation}
 A = \left(
        \begin{array}{cccc}
-          -1.65 + 2.26 i & -2.05 - 0.85 i &  0.97 - 2.84 i &       0        \\
-                  6.30 i & -1.48 - 1.75 i & -3.99 + 4.01 i &  0.59 - 0.48 i \\
-                0        & -0.77 + 2.83 i & -1.06 + 1.94 i &  3.33 - 1.04 i \\
-                0        &       0        &  4.48 - 1.09 i & -0.46 - 1.72 i
+	  -1.65 + 2.26 i & -2.05 - 0.85 i &  0.97 - 2.84 i &       0        \\
+		  6.30 i & -1.48 - 1.75 i & -3.99 + 4.01 i &  0.59 - 0.48 i \\
+		0        & -0.77 + 2.83 i & -1.06 + 1.94 i &  3.33 - 1.04 i \\
+		0        &       0        &  4.48 - 1.09 i & -0.46 - 1.72 i
        \end{array}
        \right)
 \end{equation}
@@ -3700,10 +3700,10 @@ and
 \begin{equation}
 b = \left(
        \begin{array}{cc}
-           -1.06 + 21.50 i \\
-          -22.72 - 53.90 i \\
-           28.24 - 38.60 i \\
-          -34.56 + 16.73 i
+	   -1.06 + 21.50 i \\
+	  -22.72 - 53.90 i \\
+	   28.24 - 38.60 i \\
+	  -34.56 + 16.73 i
        \end{array}
        \right).
 \end{equation}
@@ -3715,9 +3715,9 @@ import scipy.linalg.lapack as la
 # http://www.nag.com/lapack-ex/node22.html
 import numpy as np
 A = np.array([[-1.65 + 2.26j, -2.05 - 0.85j,  0.97 - 2.84j,  0.0         ],
-              [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
-              [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
-              [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
+	      [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
+	      [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
+	      [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
 
 # construction of Ab is tricky.  Fortran indexing starts at 1, not
 # 0. This code is based on the definition of Ab at
@@ -3729,12 +3729,12 @@ n, kl, ku = 4, 1, 2
 
 for j in range(1, n + 1):
     for i in range(max(1, j - ku), min(n, j + kl) + 1):
-        Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
+	Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
 
 b = np.array([[-1.06  + 21.50j],
-              [-22.72 - 53.90j],
-              [28.24 - 38.60j],
-              [-34.56 + 16.73j]])
+	      [-22.72 - 53.90j],
+	      [28.24 - 38.60j],
+	      [-34.56 + 16.73j]])
 
 lub, piv, x, info = la.flapack.zgbsv(kl, ku, Ab, b)
 
@@ -3952,7 +3952,7 @@ x = np.linspace(-5, 5, 500)
 def fy(x):
     x0 = 0.0
     def tmp(y):
-        return f(x, y)
+	return f(x, y)
     y1, = fsolve(tmp, x0)
     return y1
 
@@ -3960,7 +3960,7 @@ def fy(x):
 def gy(x):
     x0 = 0.0
     def tmp(y):
-        return g(x, y)
+	return g(x, y)
     y1, = fsolve(tmp, x0)
     return y1
 
@@ -4003,7 +4003,7 @@ print(fsolve(func, [-2, -2]))
 : [ -1.00000000e+00   1.28730858e-15]
 
 
-We explore a method that bypasses this problem today. The principle is to introduce a new variable, $\lambda$, which will vary from 0 to 1. at $\lambda=0$ we will have a simpler equation, preferrably a linear one, which can be easily solved, or which can be analytically solved. At $\lambda=1$, we have the original equations. Then, we create a system of differential equations that start at the easy solution, and integrate from $\lambda=0$ to $\lambda=1$, to recover the final solution.
+We explore a method that bypasses this problem today. The principle is to introduce a new variable, $\lambda$, which will vary from 0 to 1. at $\lambda=0$ we will have a simpler equation, preferably a linear one, which can be easily solved, or which can be analytically solved. At $\lambda=1$, we have the original equations. Then, we create a system of differential equations that start at the easy solution, and integrate from $\lambda=0$ to $\lambda=1$, to recover the final solution.
 
 We rewrite the equations as:
 
@@ -4561,7 +4561,7 @@ print(tscore)
 
 *** Interpretation
 
-A way to approach determinining if the difference is significant or not is to ask, does our computed average fall within a confidence range of the hypothesized value (zero)? If it does, then we can attribute the difference to statistical variations at that confidence level. If it does not, we can say that statistical variations do not account for the difference at that confidence level, and hence the averages must be different.
+A way to approach determining if the difference is significant or not is to ask, does our computed average fall within a confidence range of the hypothesized value (zero)? If it does, then we can attribute the difference to statistical variations at that confidence level. If it does not, we can say that statistical variations do not account for the difference at that confidence level, and hence the averages must be different.
 
 Let us compute the t-value that corresponds to a 95% confidence level for a mean of zero with the degrees of freedom computed earlier. This means that 95% of the t-scores we expect to get will fall within ± t95.
 
@@ -4936,11 +4936,11 @@ print(np.sqrt(A_sigma**2 + B_sigma**2)) # the analytical std dev
 #+begin_example
 
 (array([  2.00000000e+00,   1.90000000e+01,   1.90000000e+02,
-         1.00800000e+03,   2.43300000e+03,   3.20400000e+03,
-         2.21700000e+03,   7.61000000e+02,   1.56000000e+02,
-         1.00000000e+01]), array([ 4.37827788,  4.78610393,  5.19392997,  5.60175601,  6.00958205,
-        6.4174081 ,  6.82523414,  7.23306018,  7.64088623,  8.04871227,
-        8.45653831]), <a list of 10 Patch objects>)
+	 1.00800000e+03,   2.43300000e+03,   3.20400000e+03,
+	 2.21700000e+03,   7.61000000e+02,   1.56000000e+02,
+	 1.00000000e+01]), array([ 4.37827788,  4.78610393,  5.19392997,  5.60175601,  6.00958205,
+	6.4174081 ,  6.82523414,  7.23306018,  7.64088623,  8.04871227,
+	8.45653831]), <a list of 10 Patch objects>)
 0.491531788514
 0.495333805189
 0.5
@@ -5034,7 +5034,7 @@ print(np.sqrt(vo_sigma**2 + t_mu**2 * a_sigma**2 + a_mu**2 * t_sigma**2))
     :last-published: 2013-02-16
     :END:
 
-You can numerically perform error propagation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propogation is you do not have to remember the error propagation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
+You can numerically perform error propagation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propagation is you do not have to remember the error propagation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
 
     1. You have to know the distribution of the errors in the parameters
     2. You have to assume the errors in parameters are uncorrelated.
@@ -5114,8 +5114,8 @@ import numpy as np
 import uncertainties as u
 
 x = np.array([u.ufloat((1, 0.01)),
-              u.ufloat((2, 0.1)),
-              u.ufloat((3, 0.1))])
+	      u.ufloat((2, 0.1)),
+	      u.ufloat((3, 0.1))])
 
 y = 2 * x
 
@@ -5243,7 +5243,7 @@ SOL = np.zeros((1, N))
 
 for i in range(N):
     def func(Ca):
-        return Fa0[0,i] - v0[0,i] * Ca + V[0,i] * (-k[0,i] * Ca**2)
+	return Fa0[0,i] - v0[0,i] * Ca + V[0,i] * (-k[0,i] * Ca**2)
     SOL[0,i] = fsolve(func, 0.1 * Fa0[0,i] / v0[0,i])[0]
 
 print('Ca(exit) = {0}+/-{1}'.format(np.mean(SOL), np.std(SOL)))
@@ -5849,8 +5849,8 @@ tval = t.ppf(1.0-alpha/2., dof)
 for i, p,var in zip(range(n), pars, np.diag(pcov)):
     sigma = var**0.5
     print('p{0}: {1} [{2}  {3}]'.format(i, p,
-                                        p - sigma*tval,
-                                        p + sigma*tval))
+					p - sigma*tval,
+					p + sigma*tval))
 
 import matplotlib.pyplot as plt
 plt.plot(x,y,'bo ')
@@ -5911,7 +5911,7 @@ for i, p,var in zip(range(n), pars, np.diag(pcov)):
     sigma = var**0.5
     print('c{0}: {1} [{2}  {3}]'.format(i, p,
 					p - sigma*tval,
-                                        p + sigma*tval))
+					p + sigma*tval))
 
 import matplotlib.pyplot as plt
 plt.plot(x,y,'bo ')
@@ -6052,7 +6052,7 @@ Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
 def fitfunc(t, k):
     'Function that returns Ca computed from an ODE for a k'
     def myode(Ca, t):
-        return -k * Ca
+	return -k * Ca
 
     Ca0 = Ca_data[0]
     Casol = odeint(myode, Ca0, t)
@@ -6263,9 +6263,9 @@ ig = interp1d(t, 1.0 / np.array(f))
 
 def ifunc(t):
     if t < 0.5:
-        t=0.5
+	t=0.5
     elif t > 6:
-        t = 6
+	t = 6
     return 100 - ig(t)
 
 initial_guess = 4.5
@@ -6634,9 +6634,9 @@ def dfunc(X):
     dLambda = np.zeros(len(X))
     h = 1e-3 # this is the step size used in the finite difference.
     for i in range(len(X)):
-        dX = np.zeros(len(X))
-        dX[i] = h
-        dLambda[i] = (func(X+dX)-func(X-dX))/(2*h);
+	dX = np.zeros(len(X))
+	dX[i] = h
+	dLambda[i] = (func(X+dX)-func(X-dX))/(2*h);
     return dLambda
 #+END_SRC
 
@@ -6968,11 +6968,11 @@ nu = 6.0  # L/min
 def Cs_in(t):
     'inlet concentration'
     if t < 0:
-        Cs = 0.0 # g/L
+	Cs = 0.0 # g/L
     elif (t > 0) and (t <= 10):
-        Cs = 4.0
+	Cs = 4.0
     else:
-        Cs = 2.0
+	Cs = 2.0
     return Cs
 
 def mass_balance(Ms, t):
@@ -7031,8 +7031,8 @@ while i < 100:   # take max of 100 steps
     f = odeint(dCadt, Ca, [t1, t2])
 
     if np.abs(Ca - 1.0) <= 1e-4:
-        print('Solution reached at i = {0}'.format(i))
-        break
+	print('Solution reached at i = {0}'.format(i))
+	break
 
     tspan += [t2]
     sol.append(f[-1][0])
@@ -7104,47 +7104,47 @@ while x2 <= xf: #stop integrating when we get to xf
     e += [event(sol[-1], X[-1])]
 
     if e[-1] * e[-2] < 0:
-        # Event detected where the sign of the event has changed. The
-        # event is between xPt = X[-2] and xLt = X[-1]. run a modified bisect
-        # function to narrow down to find where event = 0
-        xLt = X[-1]
-        fLt = sol[-1]
-        eLt = e[-1]
+	# Event detected where the sign of the event has changed. The
+	# event is between xPt = X[-2] and xLt = X[-1]. run a modified bisect
+	# function to narrow down to find where event = 0
+	xLt = X[-1]
+	fLt = sol[-1]
+	eLt = e[-1]
 
-        xPt = X[-2]
-        fPt = sol[-2]
-        ePt = e[-2]
+	xPt = X[-2]
+	fPt = sol[-2]
+	ePt = e[-2]
 
-        j = 0
-        while j < 100:
-            if np.abs(xLt - xPt) < 1e-6:
-                # we know the interval to a prescribed precision now.
-                print('x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt))
-                events += [(xLt, fLt)]
-                break # and return to integrating
+	j = 0
+	while j < 100:
+	    if np.abs(xLt - xPt) < 1e-6:
+		# we know the interval to a prescribed precision now.
+		print('x = {0}, event = {1}, f = {2}'.format(xLt, eLt, fLt))
+		events += [(xLt, fLt)]
+		break # and return to integrating
 
-            m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
-                                        #bracketing zero
+	    m = (ePt - eLt)/(xPt - xLt) #slope of line connecting points
+					#bracketing zero
 
-            #estimated x where the zero is
-            new_x = -ePt / m + xPt
+	    #estimated x where the zero is
+	    new_x = -ePt / m + xPt
 
-            # now get the new value of the integrated solution at that new x
-            f  = odeint(myode, fPt, [xPt, new_x])
-            new_f = f[-1][-1]
-            new_e = event(new_f, new_x)
+	    # now get the new value of the integrated solution at that new x
+	    f  = odeint(myode, fPt, [xPt, new_x])
+	    new_f = f[-1][-1]
+	    new_e = event(new_f, new_x)
 
-            # now check event sign change
-            if eLt * new_e > 0:
-                xPt = new_x
-                fPt = new_f
-                ePt = new_e
-            else:
-                xLt = new_x
-                fLt = new_f
-                eLt = new_e
+	    # now check event sign change
+	    if eLt * new_e > 0:
+		xPt = new_x
+		fPt = new_f
+		ePt = new_e
+	    else:
+		xLt = new_x
+		fLt = new_f
+		eLt = new_e
 
-            j += 1
+	    j += 1
 
 
 import matplotlib.pyplot as plt
@@ -7403,7 +7403,7 @@ def ode(y, x):
     return np.sin(x) * np.exp(-0.05 * x)
 
 def minima(y, x):
-    '''Approaching a minumum, dydx is negatime and going to zero. our event function is increasing'''
+    '''Approaching a minimum, dydx is negatime and going to zero. our event function is increasing'''
     value = ode(y, x)
     direction = 1
     isterminal = False
@@ -7674,10 +7674,10 @@ Y0 = [0, 3]
 for mu in MU:
     # define the ODE
     def vdpol(Y, t):
-        x,y = Y
-        dxdt = y
-        dydt = -x + mu * (1 - x**2) * y
-        return  [dxdt, dydt]
+	x,y = Y
+	dxdt = y
+	dydt = -x + mu * (1 - x**2) * y
+	return  [dxdt, dydt]
 
     Y = odeint(vdpol, Y0, tspan)
 
@@ -7857,11 +7857,11 @@ NI, NJ = Y1.shape
 
 for i in range(NI):
     for j in range(NJ):
-        x = Y1[i, j]
-        y = Y2[i, j]
-        yprime = f([x, y], t)
-        u[i,j] = yprime[0]
-        v[i,j] = yprime[1]
+	x = Y1[i, j]
+	y = Y2[i, j]
+	yprime = f([x, y], t)
+	u[i,j] = yprime[0]
+	v[i,j] = yprime[1]
 
 
 Q = plt.quiver(Y1, Y2, u, v, color='r')
@@ -7957,7 +7957,7 @@ In this example, we evaluate the solution using linear algebra. The initial cond
 import numpy as np
 
 A = np.array([[-0.02,  0.02],
-              [ 0.02, -0.02]])
+	      [ 0.02, -0.02]])
 
 # Return the eigenvalues and eigenvectors of a Hermitian or symmetric matrix.
 evals, evecs = np.linalg.eigh(A)
@@ -8286,23 +8286,23 @@ for i in range(npoints - 1):
     ri = r(X[i])
 
     if i == 0:
-        # first boundary condition
-        b[i] = -h**2 * ri + (1 + h / 2 * pi)*alpha;
+	# first boundary condition
+	b[i] = -h**2 * ri + (1 + h / 2 * pi)*alpha;
     elif i == npoints - 1:
-        # second boundary condition
-        b[i] = -h**2 * ri + (1 - h / 2 * pi)*beta;
+	# second boundary condition
+	b[i] = -h**2 * ri + (1 - h / 2 * pi)*beta;
     else:
-        b[i] = -h**2 * ri # intermediate points
+	b[i] = -h**2 * ri # intermediate points
 
     for j in range(npoints - 1):
-        if j == i: # the diagonal
-            A[i,j] = 2 + h**2 * qi
-        elif j == i - 1: # left of the diagonal
-            A[i,j] = -1 - h / 2 * pi
-        elif j == i + 1: # right of the diagonal
-            A[i,j] = -1 + h / 2 * pi
-        else:
-            A[i,j] = 0 # off the tri-diagonal
+	if j == i: # the diagonal
+	    A[i,j] = 2 + h**2 * qi
+	elif j == i - 1: # left of the diagonal
+	    A[i,j] = -1 - h / 2 * pi
+	elif j == i + 1: # right of the diagonal
+	    A[i,j] = -1 + h / 2 * pi
+	else:
+	    A[i,j] = 0 # off the tri-diagonal
 
 # solve the equations A*y = b for Y
 Y = np.linalg.solve(A,b)
@@ -8394,12 +8394,12 @@ A = np.zeros((npoints, npoints));
 #now we populate the A-matrix and b vector elements
 for i in range(npoints ):
     for j in range(npoints):
-        if j == i: # the diagonal
-            A[i,j] = -2
-        elif j == i - 1: # left of the diagonal
-            A[i,j] = 1
-        elif j == i + 1: # right of the diagonal
-            A[i,j] = 1
+	if j == i: # the diagonal
+	    A[i,j] = -2
+	elif j == i - 1: # left of the diagonal
+	    A[i,j] = 1
+	elif j == i + 1: # right of the diagonal
+	    A[i,j] = 1
 
 # solve the equations A*y = b for Y
 Y = np.linalg.solve(A,b)
@@ -8538,10 +8538,10 @@ def residuals(y):
     res[0] = y[0] - alpha
 
     for i in range(1, N - 1):
-        x = X[i]
-        YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
-        YP = (y[i + 1] - y[i - 1]) / (2 * h)
-        res[i] = YPP - Ypp(x, y[i], YP)
+	x = X[i]
+	YPP = (y[i - 1] - 2 * y[i] + y[i + 1]) / h**2
+	YP = (y[i + 1] - y[i - 1]) / (2 * h)
+	res[i] = YPP - Ypp(x, y[i], YP)
 
     res[-1] = y[-1] - beta
     return res
@@ -8714,14 +8714,14 @@ from pycse import bvp
 def odefun(F, x):
     f1, f2, f3 = F.T
     return np.column_stack([f2,
-                            f3,
-                            -0.5 * f1 * f3])
+			    f3,
+			    -0.5 * f1 * f3])
 
 def bcfun(Y):
     fa, fb = Y[0, :], Y[-1, :]
     return [fa[0],        # f1(0) =  0
-            fa[1],        # f2(0) = 0
-            1.0 - fb[1]]  # f2(inf) = 1
+	    fa[1],        # f2(0) = 0
+	    1.0 - fb[1]]  # f2(inf) = 1
 
 eta = np.linspace(0, 6, 100)
 f1init = eta
@@ -8804,7 +8804,7 @@ def method_of_lines(C, t):
     'coupled ODES at each node point'
     D = -vo * np.diff(C) / np.diff(V) - k * C[1:]**2
     return np.concatenate([[0], #C0 is constant at entrance
-                            D])
+			    D])
 
 sol = odeint(method_of_lines, init, tspan)
 
@@ -8928,7 +8928,7 @@ def odefunc(u, t):
 
     # now for the internal nodes
     for i in range(1, N-1):
-        dudt[i] = k * (u[i + 1] - 2*u[i] + u[i - 1]) / h**2
+	dudt[i] = k * (u[i + 1] - 2*u[i] + u[i - 1]) / h**2
 
     return dudt
 
@@ -9069,7 +9069,7 @@ for j in range(1, Ntsteps):
 
     # plot selective solutions
     if j in [1,2,5,10,20,50,100,200,500]:
-        plt.plot(X, N, label='t={0:1.2f}'.format(t[j]))
+	plt.plot(X, N, label='t={0:1.2f}'.format(t[j]))
 
 plt.xlabel('Position in rod')
 plt.ylabel('Concentration')
@@ -9410,7 +9410,7 @@ plt.savefig('images/blues-1.png')
 
 [[./images/blues-1.png]]
 
-Picasso copied the table availabe at http://en.wikipedia.org/wiki/List_of_colors and parsed it into a dictionary of hex codes for new colors. That allowed him to specify a list of beautiful blues for his graph. Picasso eventually gave up on python as an artform, and moved on to painting.
+Picasso copied the table available at http://en.wikipedia.org/wiki/List_of_colors and parsed it into a dictionary of hex codes for new colors. That allowed him to specify a list of beautiful blues for his graph. Picasso eventually gave up on python as an artform, and moved on to painting.
 
 #+BEGIN_SRC python
 import numpy as np
@@ -9419,10 +9419,10 @@ import matplotlib.pyplot as plt
 c = {}
 with open('color.table') as f:
     for line in f:
-        fields = line.split('\t')
-        colorname = fields[0].lower()
-        hexcode = fields[1]
-        c[colorname] = hexcode
+	fields = line.split('\t')
+	colorname = fields[0].lower()
+	hexcode = fields[1]
+	c[colorname] = hexcode
 
 names = c.keys()
 names = sorted(names)
@@ -9430,18 +9430,18 @@ names = sorted(names)
 print(names)
 
 blues = [c['alice blue'],
-         c['light blue'],
-         c['baby blue'],
-         c['light sky blue'],
-         c['maya blue'],
-         c['cornflower blue'],
-         c['bleu de france'],
-         c['azure'],
-         c['blue sapphire'],
-         c['cobalt'],
-         c['blue'],
-         c['egyptian blue'],
-         c['duke blue']]
+	 c['light blue'],
+	 c['baby blue'],
+	 c['light sky blue'],
+	 c['maya blue'],
+	 c['cornflower blue'],
+	 c['bleu de france'],
+	 c['azure'],
+	 c['blue sapphire'],
+	 c['cobalt'],
+	 c['blue'],
+	 c['egyptian blue'],
+	 c['duke blue']]
 
 ax = plt.gca()
 ax.set_color_cycle(blues)
@@ -9492,12 +9492,12 @@ def onclick(event):
     P = (event.xdata, event.ydata)
 
     def objective(X):
-        x,y = X
-        return np.sqrt((x - P[0])**2 + (y - P[1])**2)
+	x,y = X
+	return np.sqrt((x - P[0])**2 + (y - P[1])**2)
 
     def c1(X):
-        x,y = X
-        return f(x) - y
+	x,y = X
+	return f(x) - y
 
     X = fmin_cobyla(objective, x0=[P[0], f(P[0])], cons=[c1])
 
@@ -9533,12 +9533,12 @@ def onclick(event):
     ax.set_title('x={0:1.2f} y={1:1.2f} button={2}'.format(event.xdata, event.ydata, event.button))
     colors = ' rbg'
     print('button={0} (dblclick={2}). making a {1} dot'.format(event.button,
-                                                               colors[event.button],
-                                                               event.dblclick))
+							       colors[event.button],
+							       event.dblclick))
 
     ms=5 # marker size
     if event.dblclick: #make marker bigger
-        ms = 10
+	ms = 10
 
     ax.plot([event.xdata], [event.ydata], 'o', color=colors[event.button], ms=ms)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9572,9 +9572,9 @@ def press(event):
     print('press', event.key)
     sys.stdout.flush()
     if event.key == 'x':
-        visible = xl.get_visible()
-        xl.set_visible(not visible)
-        fig.canvas.draw()
+	visible = xl.get_visible()
+	xl.set_visible(not visible)
+	fig.canvas.draw()
 
 fig, ax = plt.subplots()
 
@@ -9611,11 +9611,11 @@ def onclick(event):
     ax = plt.gca()
     ax.set_title('x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata))
     if event.key == 'shift+control':
-        color = 'red'
+	color = 'red'
     elif event.key == 'shift':
-        color = 'yellow'
+	color = 'yellow'
     else:
-        color = 'blue'
+	color = 'blue'
 
     ax.plot([event.xdata], [event.ydata], 'o', color=color)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9713,11 +9713,11 @@ def onpress(event):
     ax = plt.gca()
     ax.set_title('key={2} at x={0:1.2f} y={1:1.2f}'.format(event.xdata, event.ydata, event.key))
     if event.key == 'r':
-        color = 'red'
+	color = 'red'
     elif event.key == 'y':
-        color = 'yellow'
+	color = 'yellow'
     else:
-        color = 'blue'
+	color = 'blue'
 
     ax.plot([event.xdata], [event.ydata], 'o', color=color)
     ax.figure.canvas.draw()  # this line is critical to change the title
@@ -9755,7 +9755,7 @@ def onpick(event):
 
     # reset all lines to thin
     for line in [L1, L2]:
-        line.set_lw(1)
+	line.set_lw(1)
 
     thisline.set_lw(5) # make selected line thick
     ax.figure.canvas.draw()  # this line is critical to change the linewidth
@@ -9831,42 +9831,42 @@ ax.fill_between(w[ind], 0, i[ind], facecolor='gray', alpha=0.5)
 area = np.trapz(i[ind], w[ind])
 x, y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
 ax.annotate('Area = {0:1.2f}'.format(area), xy=(x, y),
-            xycoords='data',
-            xytext=(x + 50, y + 5000),
-            textcoords='data',
-            arrowprops=dict(arrowstyle="->",
-                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+	    xycoords='data',
+	    xytext=(x + 50, y + 5000),
+	    textcoords='data',
+	    arrowprops=dict(arrowstyle="->",
+			    connectionstyle="angle,angleA=0,angleB=90,rad=10"))
 
 
 # find a max in this region, and annotate it
 ind = (w>1250) & (w<1252)
 x,y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
 ax.annotate('A peak', xy=(x, y),
-            xycoords='data',
-            xytext=(x + 350, y + 2000),
-            textcoords='data',
-            arrowprops=dict(arrowstyle="->",
-                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+	    xycoords='data',
+	    xytext=(x + 350, y + 2000),
+	    textcoords='data',
+	    arrowprops=dict(arrowstyle="->",
+			    connectionstyle="angle,angleA=0,angleB=90,rad=10"))
 
 # find max in this region, and annotate it
 ind = (w>1380) & (w<1400)
 x,y = w[ind][np.argmax(i[ind])], i[ind][np.argmax(i[ind])]
 ax.annotate('Another peak', xy=(x, y),
-            xycoords='data',
-            xytext=(x + 50, y + 2000),
-            textcoords='data',
-            arrowprops=dict(arrowstyle="->",
-                            connectionstyle="angle,angleA=0,angleB=90,rad=10"))
+	    xycoords='data',
+	    xytext=(x + 50, y + 2000),
+	    textcoords='data',
+	    arrowprops=dict(arrowstyle="->",
+			    connectionstyle="angle,angleA=0,angleB=90,rad=10"))
 
 # indicate a region with connected arrows
 ax.annotate('CH bonds', xy=(2780, 6000), xycoords='data')
 ax.annotate('', xy=(2800., 5000.),  xycoords='data',
-            xytext=(3050, 5000), textcoords='data',
-            # the arrows connect the xy to xytext coondinates
-            arrowprops=dict(arrowstyle="<->",
-                            connectionstyle="bar",
-                            ec="k",  # edge color
-                            shrinkA=0.1, shrinkB=0.1))
+	    xytext=(3050, 5000), textcoords='data',
+	    # the arrows connect the xy to xytext coondinates
+	    arrowprops=dict(arrowstyle="<->",
+			    connectionstyle="bar",
+			    ec="k",  # edge color
+			    shrinkA=0.1, shrinkB=0.1))
 
 plt.savefig('images/plot-annotes.png')
 plt.show()
@@ -9918,7 +9918,7 @@ Suppose now we have nested lists. This kind of structured data might come up if 
 Department 1: 1 person
 Department 2: group of 2 and group of 3
 Department 3: group of 4 and 11, with a subgroups of 5 and 6 making
-              up the group of 11.
+	      up the group of 11.
 Department 4: 7 people
 Department 5: one group of 8 and one group of 9.
 
@@ -9935,13 +9935,13 @@ def recursive_sum(X):
     s = 0 # initial value of the sum
 
     for i in range(len(X)):
-        import types  # we use this to test if we got a number
-        if isinstance(X[i], (int, float, complex)):
-            # this is the terminal step
-            s += X[i]
-        else:
-            # we did not get a number, so we recurse
-            s += recursive_sum(X[i])
+	import types  # we use this to test if we got a number
+	if isinstance(X[i], (int, float, complex)):
+	    # this is the terminal step
+	    s += X[i]
+	else:
+	    # we did not get a number, so we recurse
+	    s += recursive_sum(X[i])
     return s
 
 print(recursive_sum(v))
@@ -9952,7 +9952,7 @@ print(recursive_sum([1, 2, 3, 4, 5, 6, 7, 8, 9])) # test on non-nested list
 : 45
 : 45
 
-In [[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Post 1970]] we examined recursive functions that could be replaced by loops. Here we examine a function that can only work with recursion because the nature of the nested data structure is arbitrary. There are arbitary branches and depth in the data structure. Recursion is nice because you do not have to define that structure in advance.
+In [[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Post 1970]] we examined recursive functions that could be replaced by loops. Here we examine a function that can only work with recursion because the nature of the nested data structure is arbitrary. There are arbitrary branches and depth in the data structure. Recursion is nice because you do not have to define that structure in advance.
 ** Sorting in python
    :PROPERTIES:
    :categories: python
@@ -10021,18 +10021,18 @@ Here is a more complex sorting problem. We have a list of tuples with group name
 #+BEGIN_SRC python
 
 groups = [('group1', 'B'),
-          ('group2', 'A+'),
-          ('group3', 'A')]
+	  ('group2', 'A+'),
+	  ('group3', 'A')]
 
 def grade_key(gtup):
     '''gtup is a tuple of ('groupname', 'lettergrade')'''
     lettergrade = gtup[1]
 
     grades = ['A++', 'A+', 'A', 'A-', 'A/B'
-              'B+', 'B', 'B-', 'B/C',
-              'C+', 'C', 'C-', 'C/D',
-              'D+', 'D', 'D-', 'D/R',
-              'R+', 'R', 'R-', 'R--']
+	      'B+', 'B', 'B-', 'B/C',
+	      'C+', 'C', 'C-', 'C/D',
+	      'D+', 'D', 'D-', 'D/R',
+	      'R+', 'R', 'R-', 'R--']
 
     return grades.index(lettergrade)
 
@@ -10095,9 +10095,9 @@ def recursive_factorial(n):
     number in, this function will never end. We also do not check if
     n is an integer.'''
     if n == 0:
-        return 1
+	return 1
     else:
-        return n * recursive_factorial(n - 1)
+	return n * recursive_factorial(n - 1)
 
 print(recursive_factorial(5))
 #+END_SRC
@@ -10152,8 +10152,8 @@ Let us define some commands that will take datasring as an argument, and return 
 
 #+BEGIN_SRC python :session
 text = r'''Here is some text. use the :cmd:`open` to get the text into
-          a variable. It might also be possible to get a multiline
-            :red:`line
+	  a variable. It might also be possible to get a multiline
+	    :red:`line
      2` directive.'''
 
 print(text)
@@ -10275,10 +10275,10 @@ A slightly harder example is to find all the words that are actually numbers. We
 #+BEGIN_SRC python :session
 def float_p(word):
     try:
-        float(word)
-        return True
+	float(word)
+	return True
     except ValueError:
-        return False
+	return False
 
 print([word for word in words if float_p(word)])
 
@@ -10295,8 +10295,8 @@ Finally, we consider filtering the list to find all words that contain certain s
 def punctuation_p(word):
     S = './=*#'
     for s in S:
-        if s in word:
-            return True
+	if s in word:
+	    return True
     return False
 
 print([word for word in words if punctuation_p(word)])
@@ -10724,11 +10724,11 @@ import sys
 print('before: ', sys.stdout)
 try:
     with open('data/debug-2.txt', 'w') as f:
-        sys.stdout = f
-        # print to the original stdout
-        print('during: ', sys.stdout, file=sys.__stdout__)
-        debug()
-        raise Exception('something bad happened')
+	sys.stdout = f
+	# print to the original stdout
+	print('during: ', sys.stdout, file=sys.__stdout__)
+	debug()
+	raise Exception('something bad happened')
 finally:
     # reset stdout
     sys.stdout = sys.__stdout__
@@ -10764,16 +10764,16 @@ import sys
 
 class redirect:
     def __init__(self, f=sys.stdout):
-        "redirect print statement to f. f must be a file-like object"
-        self.f = f
-        self.stdout = sys.stdout
-        print('init stdout: ', sys.stdout, file=sys.__stdout__)
+	"redirect print statement to f. f must be a file-like object"
+	self.f = f
+	self.stdout = sys.stdout
+	print('init stdout: ', sys.stdout, file=sys.__stdout__)
     def __enter__(self):
-        sys.stdout = self.f
-        print('stdout in context-manager: ',sys.stdout, f=sys.__stdout__)
+	sys.stdout = self.f
+	print('stdout in context-manager: ',sys.stdout, f=sys.__stdout__)
     def __exit__(self, *args):
-        sys.stdout = self.stdout
-        print('__stdout__ at exit = ',sys.__stdout__)
+	sys.stdout = self.stdout
+	print('__stdout__ at exit = ',sys.__stdout__)
 
 # regular printing
 with redirect():
@@ -10782,18 +10782,18 @@ with redirect():
 # write to a file
 with open('data/debug-3.txt', 'w') as f:
     with redirect(f):
-        debug()
+	debug()
 
 # mixed regular and
 with open('data/debug-4.txt', 'w') as f:
     with redirect(f):
-        print('testing redirect')
-        with redirect():
-            print('temporary console printing')
-            debug()
-        print('Now outside the inner context. This should go to data/debug-4.txt')
-        debug()
-        raise Exception('something else bad happened')
+	print('testing redirect')
+	with redirect():
+	    print('temporary console printing')
+	    debug()
+	print('Now outside the inner context. This should go to data/debug-4.txt')
+	debug()
+	raise Exception('something else bad happened')
 
 print(sys.stdout)
 #+END_SRC
@@ -10836,9 +10836,9 @@ L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
 d = {}
 for el in L:
     if el in d:
-        d[el] += 1
+	d[el] += 1
     else:
-        d[el] = 1
+	d[el] = 1
 
 print(d)
 #+END_SRC
@@ -10999,12 +10999,12 @@ def cd(path):
     os.chdir(path)
     print('inside {0}'.format(os.getcwd()))
     try:
-        yield
+	yield
     except:
-        print('Exception caught: ',sys.exc_info()[0])
+	print('Exception caught: ',sys.exc_info()[0])
     finally:
-        print('finally inside {0}'.format(os.getcwd()))
-        os.chdir(CWD)
+	print('finally inside {0}'.format(os.getcwd()))
+	os.chdir(CWD)
 
 # Now we use the context manager
 with cd('data'):
@@ -11346,10 +11346,10 @@ with open(datafile) as f:
 
 for i,line in enumerate(lines):
     if '# of Points' in line:
-        npoints = int(line.split()[-1])
+	npoints = int(line.split()[-1])
     elif 'R.Time\tIntensity' in line:
-        i += 1
-        break
+	i += 1
+	break
 
 # now get the data
 t, intensity = [], []
@@ -11410,7 +11410,7 @@ def asym_peak(t, pars):
     a2 = pars[2]  # width of gaussian
     a3 = pars[3]  # exponential damping term
     f = (a0/2/a3*np.exp(a2**2/2.0/a3**2 + (a1 - t)/a3)
-         *(erf((t-a1)/(np.sqrt(2.0)*a2) - a2/np.sqrt(2.0)/a3) + 1.0))
+	 *(erf((t-a1)/(np.sqrt(2.0)*a2) - a2/np.sqrt(2.0)/a3) + 1.0))
     return f
 #+END_SRC
 
@@ -11562,13 +11562,13 @@ Liquid water (\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Ma
 Hf_liq = -285.830   # kJ/mol
 S_liq = 0.06995     # kJ/mol/K
 shomateL = [-203.6060,
-            1523.290,
-           -3196.413,
-            2474.455,
-               3.855326,
-            -256.5478,
-            -488.7163,
-            -285.8304]
+	    1523.290,
+	   -3196.413,
+	    2474.455,
+	       3.855326,
+	    -256.5478,
+	    -488.7163,
+	    -285.8304]
 #+END_SRC
 
 #+RESULTS:
@@ -11582,13 +11582,13 @@ Hf_gas = -241.826  # kJ/mol
 S_gas = 0.188835   # kJ/mol/K
 
 shomateG = [30.09200,
-             6.832514,
-             6.793435,
-            -2.534480,
-             0.082139,
-          -250.8810,
-           223.3967,
-          -241.8264]
+	     6.832514,
+	     6.793435,
+	    -2.534480,
+	     0.082139,
+	  -250.8810,
+	   223.3967,
+	  -241.8264]
 #+END_SRC
 
 #+RESULTS:
@@ -11602,22 +11602,22 @@ T = np.linspace(0, 200) + 273.15
 t = T / 1000.0
 
 sTT = np.vstack([np.log(t),
-                 t,
-                 (t**2) / 2.0,
-                 (t**3) / 3.0,
-                 -1.0 / (2*t**2),
-                 0 * t,
-                 t**0,
-                 0 * t**0]).T / 1000.0
+		 t,
+		 (t**2) / 2.0,
+		 (t**3) / 3.0,
+		 -1.0 / (2*t**2),
+		 0 * t,
+		 t**0,
+		 0 * t**0]).T / 1000.0
 
 hTT = np.vstack([t,
-                 (t**2)/2.0,
-                 (t**3)/3.0,
-                 (t**4)/4.0,
-                 -1.0 / t,
-                 1 * t**0,
-                 0 * t**0,
-                 -1 * t**0]).T
+		 (t**2)/2.0,
+		 (t**3)/3.0,
+		 (t**4)/4.0,
+		 -1.0 / t,
+		 1 * t**0,
+		 0 * t**0,
+		 -1 * t**0]).T
 
 Gliq = Hf_liq + np.dot(hTT, shomateL) - T*(np.dot(sTT, shomateL))
 Ggas = Hf_gas + np.dot(hTT, shomateG) - T*(np.dot(sTT, shomateG))
@@ -11741,13 +11741,13 @@ We impose the constraint that all atoms are conserved from the initial condition
 
 #+BEGIN_SRC python :session
 Aeq = np.array([[ 1,    0,    1,    0],  # C balance
-                [ 1,    1,    2,    0],  # O balance
-                [ 0,    2,    0,    2]]) # H balance
+		[ 1,    1,    2,    0],  # O balance
+		[ 0,    2,    0,    2]]) # H balance
 
 # equimolar feed of 1 mol H2O and 1 mol CO
 beq = np.array([1,  # mol C fed
-                2,  # mol O fed
-                2]) # mol H fed
+		2,  # mol O fed
+		2]) # mol H fed
 
 def ec1(nj):
     'conservation of atoms constraint'
@@ -11770,13 +11770,13 @@ print N
 #+begin_example
 
 Optimization terminated successfully.    (Exit mode 0)
-            Current function value: -91.204832308
-            Iterations: 2
-            Function evaluations: 13
-            Gradient evaluations: 2
+	    Current function value: -91.204832308
+	    Iterations: 2
+	    Function evaluations: 13
+	    Gradient evaluations: 2
 File "<stdin>", line 1
     print N
-          ^
+	  ^
 SyntaxError: Missing parentheses in call to 'print'
 #+end_example
 
@@ -11862,13 +11862,13 @@ The total number of each type of atom must be the same as what entered the react
 
 #+BEGIN_SRC python :session
 Aeq = np.array([[0,   0,    0,   2,   1,  2,  0,  1,   0],      # oxygen balance
-                [4,   4,    2,   0,   0,  0,  2,  2,   6],      # hydrogen balance
-                [1,   2,    2,   1,   1,  0,  0,  0,   2]])     # carbon balance
+		[4,   4,    2,   0,   0,  0,  2,  2,   6],      # hydrogen balance
+		[1,   2,    2,   1,   1,  0,  0,  0,   2]])     # carbon balance
 
 # the incoming feed was 4 mol H2O and 1 mol ethane
 beq = np.array([4,  # moles of oxygen atoms coming in
-                14, # moles of hydrogen atoms coming in
-                2]) # moles of carbon atoms coming in
+		14, # moles of hydrogen atoms coming in
+		2]) # moles of carbon atoms coming in
 
 def ec1(n):
     'equality constraint'
@@ -11909,10 +11909,10 @@ print(np.all( np.abs( np.dot(Aeq, X) - beq) < 1e-12))
 
 -104.429439817
 Iteration limit exceeded    (Exit mode 9)
-            Current function value: nan
-            Iterations: 101
-            Function evaluations: 2101
-            Gradient evaluations: 101
+	    Current function value: nan
+	    Iterations: 101
+	    Function evaluations: 2101
+	    Gradient evaluations: 101
 CH4        nan
 C2H4       nan
 C2H2       nan
@@ -12023,9 +12023,9 @@ def Gwigglewiggle(extentp):
     diffg = Grxn * extentp
     sum_nu_j = np.sum(nu_j)
     for i,y in enumerate(yj0):
-        x1 = yj0[i] + nu_j[i] * extentp
-        x2 = x1 / (1.0 + extentp*sum_nu_j)
-        diffg += R * T * x1 * np.log(x2 * P / P0)
+	x1 = yj0[i] + nu_j[i] * extentp
+	x2 = x1 / (1.0 + extentp*sum_nu_j)
+	diffg += R * T * x1 * np.log(x2 * P / P0)
     return diffg
 #+END_SRC
 
@@ -12439,8 +12439,8 @@ def gibbs(E):
     yP1 = (yP10 + e1) / d
     yP2 = (yP20 + e2) / d
     G = (-(e1 * np.log(K1) + e2 * np.log(K2)) +
-         d * np.log(P) + yI * d * np.log(yI) +
-         yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+	 d * np.log(P) + yI * d * np.log(yI) +
+	 yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
     return G
 #+END_SRC
 
@@ -12493,8 +12493,8 @@ from scipy.optimize import fmin_slsqp
 
 X0 = [0.2, 0.2]
 X = fmin_slsqp(gibbs, X0, ieqcons=[constraint1, constraint2, constraint3],
-               bounds=((0.001, 0.499),
-                       (0.001, 0.499)))
+	       bounds=((0.001, 0.499),
+		       (0.001, 0.499)))
 print(X)
 
 print(gibbs(X))
@@ -12531,8 +12531,8 @@ def gibbs(E):
     yP1 = (yP10 + e1)/d;
     yP2 = (yP20 + e2)/d;
     G = (-(e1 * np.log(K1) + e2 * np.log(K2)) +
-         d * np.log(P) + yI * d * np.log(yI) +
-         yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+	 d * np.log(P) + yI * d * np.log(yI) +
+	 yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
     return G
 
 
@@ -12635,9 +12635,9 @@ def ec2(w):
 w0 = np.array([0.0, 0.0, 0.5, 0.5]) # guess weight fractions
 
 y = fmin_slsqp(G,
-               w0,
-               eqcons=[ec1, ec2],
-               bounds=[(0,1)]*len(w0))
+	       w0,
+	       eqcons=[ec1, ec2],
+	       bounds=[(0,1)]*len(w0))
 
 for ci, wi in zip(COMPOSITIONS, y):
     print('{0:8s} {1:+8.2%}'.format(ci, wi))
@@ -12685,9 +12685,9 @@ def ec2(n):
 n0 = np.array([0.0, 0.0, 0.45, 0.55]) # initial guess of mole fractions
 
 y = fmin_slsqp(G,
-               n0,
-               eqcons=[ec1, ec2],
-               bounds=[(0, 1)]*(len(n0)))
+	       n0,
+	       eqcons=[ec1, ec2],
+	       bounds=[(0, 1)]*(len(n0)))
 
 for ci, xi in zip(COMPOSITIONS, y):
     print('{0:8s} {1:+8.2%}'.format(ci, xi))
@@ -12763,7 +12763,7 @@ For any balanced chemical equation, there are the same number of each kind of at
 
 #+BEGIN_SRC python :session
 import numpy as np
-            # C   O   H
+	    # C   O   H
 reactants = [-1, -2, -2]
 products  = [ 1,  2,  2]
 
@@ -12828,9 +12828,9 @@ def ode(Y, r):
     Ca = Y[1]  # concentration of A in the particle at r
     # this solves the singularity at r = 0
     if r == 0:
-        dWadr = k / 3.0 * De * Ca
+	dWadr = k / 3.0 * De * Ca
     else:
-        dWadr = -2 * Wa / r + k / De * Ca
+	dWadr = -2 * Wa / r + k / De * Ca
     dCadr = Wa
     return [dWadr, dCadr]
 
@@ -12854,7 +12854,7 @@ plt.savefig('images/effectiveness-factor.png')
 
 r = rspan
 eta_numerical = (np.trapz(k * Ca * 4 * np.pi * (r**2), r)
-                 / np.trapz(k * CAs * 4 * np.pi * (r**2), r))
+		 / np.trapz(k * CAs * 4 * np.pi * (r**2), r))
 
 print(eta_numerical)
 
@@ -12923,7 +12923,7 @@ def mu(T):
 
 def fanning_friction_factor_(Re):
     if Re < 2100:
-        raise Exception('Flow is probably not turbulent, so this correlation is not appropriate.')
+	raise Exception('Flow is probably not turbulent, so this correlation is not appropriate.')
     # solve the Nikuradse correlation to get the friction factor
     def fz(f): return 1.0/np.sqrt(f) - (4.0*np.log10(Re*np.sqrt(f))-0.4)
     sol, = fsolve(fz, 0.01)
@@ -12999,17 +12999,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 data = np.loadtxt('data/antoine_data.dat',
-                  dtype=[('id', np.int),
-                         ('formula', 'S8'),
-                         ('name', 'S28'),
-                         ('A', np.float),
-                         ('B', np.float),
-                         ('C', np.float),
-                         ('Tmin', np.float),
-                         ('Tmax', np.float),
-                         ('??', 'S4'),
-                         ('?', 'S4')],
-                  skiprows=7)
+		  dtype=[('id', np.int),
+			 ('formula', 'S8'),
+			 ('name', 'S28'),
+			 ('A', np.float),
+			 ('B', np.float),
+			 ('C', np.float),
+			 ('Tmin', np.float),
+			 ('Tmax', np.float),
+			 ('??', 'S4'),
+			 ('?', 'S4')],
+		  skiprows=7)
 
 names = data['name']
 
@@ -13079,31 +13079,31 @@ from scipy.optimize import fsolve
 
 # load our thermodynamic data
 data = np.loadtxt('data/antoine_data.dat',
-                  dtype=[('id', np.int),
-                         ('formula', 'S8'),
-                         ('name', 'S28'),
-                         ('A', np.float),
-                         ('B', np.float),
-                         ('C', np.float),
-                         ('Tmin', np.float),
-                         ('Tmax', np.float),
-                         ('??', 'S4'),
-                         ('?', 'S4')],
-                  skiprows=7)
+		  dtype=[('id', np.int),
+			 ('formula', 'S8'),
+			 ('name', 'S28'),
+			 ('A', np.float),
+			 ('B', np.float),
+			 ('C', np.float),
+			 ('Tmin', np.float),
+			 ('Tmax', np.float),
+			 ('??', 'S4'),
+			 ('?', 'S4')],
+		  skiprows=7)
 
 compounds = ['benzene', 'toluene', 'chloroform', 'acetone', 'methanol']
 
 # extract the data we want
 A = np.array([data[data['name'] == x.encode(encoding='UTF-8')]['A'][0]
-              for x in compounds])
+	      for x in compounds])
 B = np.array([data[data['name'] == x.encode(encoding='UTF-8')]['B'][0]
-              for x in compounds])
+	      for x in compounds])
 C = np.array([data[data['name'] == x.encode(encoding='UTF-8')]['C'][0]
-              for x in compounds])
+	      for x in compounds])
 Tmin = np.array([data[data['name'] == x.encode(encoding='UTF-8')]['Tmin'][0]
-                 for x in compounds])
+		 for x in compounds])
 Tmax = np.array([data[data['name'] == x.encode(encoding='UTF-8')]['Tmax'][0]
-                 for x in compounds])
+		 for x in compounds])
 
 # we have an equimolar mixture
 x = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
@@ -13468,7 +13468,7 @@ Ca0 = u.ufloat((1.0, 0.01))# mol/L
 @u.wrap
 def func(k, Ca0):
     def integrand(X):
-        return 1./(k*Ca0)*(1./(1-X)**2)
+	return 1./(k*Ca0)*(1./(1-X)**2)
     integral, abserr = quad(integrand, 0, 0.9)
     return integral
 
@@ -13839,26 +13839,26 @@ Here is the boundary and region we consider in this example:
 
 #+BEGIN_SRC python :session
 boundary = [[0.1, 0],
-            [0.25, 0.1],
-            [0.3, 0.2],
-            [0.35, 0.34],
-            [0.4, 0.43],
-            [0.51, 0.47],
-            [0.48, 0.55],
-            [0.44, 0.62],
-            [0.5, 0.66],
-            [0.55,0.57],
-            [0.556, 0.48],
-            [0.63, 0.43],
-            [0.70, 0.44],
-            [0.8, 0.51],
-            [0.91, 0.57],
-            [1.0, 0.6]]
+	    [0.25, 0.1],
+	    [0.3, 0.2],
+	    [0.35, 0.34],
+	    [0.4, 0.43],
+	    [0.51, 0.47],
+	    [0.48, 0.55],
+	    [0.44, 0.62],
+	    [0.5, 0.66],
+	    [0.55,0.57],
+	    [0.556, 0.48],
+	    [0.63, 0.43],
+	    [0.70, 0.44],
+	    [0.8, 0.51],
+	    [0.91, 0.57],
+	    [1.0, 0.6]]
 
 import matplotlib.pyplot as plt
 plt.clf()
 plt.plot([p[0] for p in boundary],
-         [p[1] for p in boundary])
+	 [p[1] for p in boundary])
 plt.ylim([0, 1])
 plt.savefig('images/boundary-1.png')
 #+END_SRC
@@ -13916,21 +13916,21 @@ def fge(x, y, epsilon=TOLERANCE):
     return not(x < (y - epsilon))
 
 boundary = [[0.1, 0],
-            [0.25, 0.1],
-            [0.3, 0.2],
-            [0.35, 0.34],
-            [0.4, 0.43],
-            [0.51, 0.47],
-            [0.48, 0.55],
-            [0.44, 0.62],
-            [0.5, 0.66],
-            [0.55,0.57],
-            [0.556, 0.48],
-            [0.63, 0.43],
-            [0.70, 0.44],
-            [0.8, 0.51],
-            [0.91, 0.57],
-            [1.0, 0.6]]
+	    [0.25, 0.1],
+	    [0.3, 0.2],
+	    [0.35, 0.34],
+	    [0.4, 0.43],
+	    [0.51, 0.47],
+	    [0.48, 0.55],
+	    [0.44, 0.62],
+	    [0.5, 0.66],
+	    [0.55,0.57],
+	    [0.556, 0.48],
+	    [0.63, 0.43],
+	    [0.70, 0.44],
+	    [0.8, 0.51],
+	    [0.91, 0.57],
+	    [1.0, 0.6]]
 
 def intersects(p, isegment):
     'p is a point (x1, y1), isegment is an integer indicating which segment starting with 0'
@@ -13938,40 +13938,40 @@ def intersects(p, isegment):
     bx1, by1 = boundary[isegment]
     bx2, by2 = boundary[isegment + 1]
     if feq(bx1, bx2) and feq(x1, 0.0): # both segments are vertical
-        if feq(bx1, x1):
-            return True
-        else:
-            return False
+	if feq(bx1, x1):
+	    return True
+	else:
+	    return False
     elif feq(bx1, bx2):  # segment is vertical
-        m1 = y1 / x1 # slope of reference line
-        y = m1 * bx1 # value of reference line at bx1
-        if ((fge(y, by1) and flt(y, by2))
-            or (fle(y, by1) and fgt(y,by2))):
-            # reference line intersects the segment
-            return True
-        else:
-            return False
+	m1 = y1 / x1 # slope of reference line
+	y = m1 * bx1 # value of reference line at bx1
+	if ((fge(y, by1) and flt(y, by2))
+	    or (fle(y, by1) and fgt(y,by2))):
+	    # reference line intersects the segment
+	    return True
+	else:
+	    return False
     else: # neither reference line nor segment is vertical
-        m = (by2 - by1) / (bx2 - bx1) # segment slope
-        m1 = y1 / x1
-        if feq(m, m1): # line and segment are parallel
-            if feq(y1, m * bx1):
-                return True
-            else:
-                return False
-        else: # lines are not parallel
-            x = (m * bx1 - by1) / (m - m1) # x at intersection
-            if ((fge(x, bx1) and flt(x, bx2))
-                or (fle(x, bx1) and fgt(x, bx2))) and fle(x, x1):
-                return True
-            else:
-                return False
+	m = (by2 - by1) / (bx2 - bx1) # segment slope
+	m1 = y1 / x1
+	if feq(m, m1): # line and segment are parallel
+	    if feq(y1, m * bx1):
+		return True
+	    else:
+		return False
+	else: # lines are not parallel
+	    x = (m * bx1 - by1) / (m - m1) # x at intersection
+	    if ((fge(x, bx1) and flt(x, bx2))
+		or (fle(x, bx1) and fgt(x, bx2))) and fle(x, x1):
+		return True
+	    else:
+		return False
     raise Exception('you should not get here')
 
 import matplotlib.pyplot as plt
 
 plt.plot([p[0] for p in boundary],
-         [p[1] for p in boundary], 'go-')
+	 [p[1] for p in boundary], 'go-')
 plt.ylim([0, 1])
 
 N = 100
@@ -13980,12 +13980,12 @@ X = np.linspace(0, 1, N)
 
 for x in X:
     for y in X:
-        p = (x, y)
-        nintersections = sum([intersects(p, i) for i in range(len(boundary) - 1)])
-        if nintersections % 2 == 0:
-            plt.plot(x, y, 'r.')
-        else:
-            plt.plot(x, y, 'b.')
+	p = (x, y)
+	nintersections = sum([intersects(p, i) for i in range(len(boundary) - 1)])
+	if nintersections % 2 == 0:
+	    plt.plot(x, y, 'r.')
+	else:
+	    plt.plot(x, y, 'b.')
 
 plt.savefig('images/boundary-2.png')
 #+END_SRC
@@ -14074,7 +14074,7 @@ CA = UnitScalar(0.01, units = mol / liter)
 k = UnitScalar(1.0, units = 1 / second)
 
 @has_units(inputs="t::units=s",
-           outputs="result::units=mol/liter")
+	   outputs="result::units=mol/liter")
 def func(t):
     z = CA - CA0 * float(np.exp(-k*t))
     return z
@@ -14160,8 +14160,8 @@ def fsolve(func, t0):
     'wrapped fsolve command to work with units'
     tU = t0 / float(t0)  # units on initial guess, normalized
     def wrapped_func(t):
-        't will be unitless, so we add unit to it. t * tU has units.'
-        return float(func(t * tU))
+	't will be unitless, so we add unit to it. t * tU has units.'
+	return float(func(t * tU))
 
     sol, = _fsolve(wrapped_func, t0)
     return sol * tU
@@ -14190,27 +14190,27 @@ def fsolve(func, t0):
     to fsolve.'''
 
     try:
-        tU = [t / float(t) for t in t0]  # units on initial guess, normalized
+	tU = [t / float(t) for t in t0]  # units on initial guess, normalized
     except TypeError:
-        tU = t0 / float(t0)
+	tU = t0 / float(t0)
 
     def wrapped_func(t):
-        't will be unitless, so we add unit to it. t * tU has units.'
-        try:
-            T = [x1 * x2 for x1,x2 in zip(t, tU)]
-        except TypeError:
-            T = t * tU
+	't will be unitless, so we add unit to it. t * tU has units.'
+	try:
+	    T = [x1 * x2 for x1,x2 in zip(t, tU)]
+	except TypeError:
+	    T = t * tU
 
-        try:
-            return [float(x) for x in func(T)]
-        except TypeError:
-            return float(func(T))
+	try:
+	    return [float(x) for x in func(T)]
+	except TypeError:
+	    return float(func(T))
 
     sol = _fsolve(wrapped_func, t0)
     try:
-        return [x1 * x2 for x1,x2 in zip(sol, tU)]
+	return [x1 * x2 for x1,x2 in zip(sol, tU)]
     except TypeError:
-        return sol * tU
+	return sol * tU
 
 ### Problem 1
 CA0 = 1 * u.mol / u.L
@@ -14229,7 +14229,7 @@ print('sol1 = ',sol1)
 def func2(X):
     a,b = X
     return [a**2 - 4*u.kg**2,
-            b**2 - 25*u.J**2]
+	    b**2 - 25*u.J**2]
 
 Xguess = [2.2*u.kg, 5.2*u.J]
 s2a, s2b = fsolve(func2, Xguess)
@@ -14250,49 +14250,49 @@ import numpy as np
 from scipy.optimize import fsolve as _fsolve
 
 def fsolve(func, t0, args=(),
-           fprime=None, full_output=0, col_deriv=0,
-           xtol=1.49012e-08, maxfev=0, band=None,
-           epsfcn=0.0, factor=100, diag=None):
+	   fprime=None, full_output=0, col_deriv=0,
+	   xtol=1.49012e-08, maxfev=0, band=None,
+	   epsfcn=0.0, factor=100, diag=None):
     '''wrapped fsolve command to work with units. We get the units on
     the function argument, then wrap the function so we can add units
     to the argument and return floats. Finally we call the original
     fsolve from scipy. '''
 
     try:
-        tU = [t / float(t) for t in t0]  # units on initial guess, normalized
+	tU = [t / float(t) for t in t0]  # units on initial guess, normalized
     except TypeError:
-        tU = t0 / float(t0)
+	tU = t0 / float(t0)
 
     def wrapped_func(t, *args):
-        't will be unitless, so we add unit to it. t * tU has units.'
-        try:
-            T = [x1 * x2 for x1,x2 in zip(t, tU)]
-        except TypeError:
-            T = t * tU
+	't will be unitless, so we add unit to it. t * tU has units.'
+	try:
+	    T = [x1 * x2 for x1,x2 in zip(t, tU)]
+	except TypeError:
+	    T = t * tU
 
-        try:
-            return [float(x) for x in func(T, *args)]
-        except TypeError:
-            return float(func(T))
+	try:
+	    return [float(x) for x in func(T, *args)]
+	except TypeError:
+	    return float(func(T))
 
     sol = _fsolve(wrapped_func, t0, args,
-           fprime, full_output, col_deriv,
-           xtol, maxfev, band,
-           epsfcn, factor, diag)
+	   fprime, full_output, col_deriv,
+	   xtol, maxfev, band,
+	   epsfcn, factor, diag)
 
     if full_output:
-        x, infodict, ier, mesg = sol
-        try:
-            x = [x1 * x2 for x1,x2 in zip(x, tU)]
-        except TypeError:
-            x = x * tU
-        return x, infodict, ier, mesg
+	x, infodict, ier, mesg = sol
+	try:
+	    x = [x1 * x2 for x1,x2 in zip(x, tU)]
+	except TypeError:
+	    x = x * tU
+	return x, infodict, ier, mesg
     else:
-        try:
-            x = [x1 * x2 for x1,x2 in zip(sol, tU)]
-        except TypeError:
-            x = sol * tU
-        return x
+	try:
+	    x = [x1 * x2 for x1,x2 in zip(sol, tU)]
+	except TypeError:
+	    x = sol * tU
+	return x
 
 ### Problem 1
 CA0 = 1 * u.mol / u.L
@@ -14311,7 +14311,7 @@ print('sol1 = ',sol1)
 def func2(X):
     a,b = X
     return [a**2 - 4*u.kg**2,
-            b**2 - 25*u.J**2]
+	    b**2 - 25*u.J**2]
 
 Xguess = [2.2*u.kg, 5.2*u.J]
 sol, infodict, ier, mesg = fsolve(func2, Xguess, full_output=1)
@@ -14396,78 +14396,78 @@ import numpy as np
 from scipy.integrate import odeint as _odeint
 
 def odeint(func, y0, t, args=(),
-           Dfun=None, col_deriv=0, full_output=0,
-           ml=None, mu=None, rtol=None, atol=None,
-           tcrit=None, h0=0.0, hmax=0.0, hmin=0.0,
-           ixpr=0, mxstep=0, mxhnil=0, mxordn=12,
-           mxords=5, printmessg=0):
+	   Dfun=None, col_deriv=0, full_output=0,
+	   ml=None, mu=None, rtol=None, atol=None,
+	   tcrit=None, h0=0.0, hmax=0.0, hmin=0.0,
+	   ixpr=0, mxstep=0, mxhnil=0, mxordn=12,
+	   mxords=5, printmessg=0):
 
     def wrapped_func(Y0, T, *args):
-        # put units on T if they are on the original t
-        # check for units so we don't put them on twice
-        if not hasattr(T, 'units') and hasattr(t, 'units'):
-            T = T * t.units
-        # now for the dependent variable units. Y0 may be a scalar or
-        # a list or an array. we want to check each element of y0 for
-        # units, and add them to the corresponding element of Y0 if we
-        # need to.
-        try:
-            uY0 = [x for x in Y0] # a list copy of contents of Y0
-            # this works if y0 is an iterable, eg. a list or array
-            for i, yi in enumerate(y0):
-                if not hasattr(uY0[i],'units') and hasattr(yi, 'units'):
+	# put units on T if they are on the original t
+	# check for units so we don't put them on twice
+	if not hasattr(T, 'units') and hasattr(t, 'units'):
+	    T = T * t.units
+	# now for the dependent variable units. Y0 may be a scalar or
+	# a list or an array. we want to check each element of y0 for
+	# units, and add them to the corresponding element of Y0 if we
+	# need to.
+	try:
+	    uY0 = [x for x in Y0] # a list copy of contents of Y0
+	    # this works if y0 is an iterable, eg. a list or array
+	    for i, yi in enumerate(y0):
+		if not hasattr(uY0[i],'units') and hasattr(yi, 'units'):
 
-                    uY0[i] = uY0[i] * yi.units
+		    uY0[i] = uY0[i] * yi.units
 
-        except TypeError:
-            # we have a scalar
-            if not hasattr(Y0, 'units') and hasattr(y0, 'units'):
-                uY0 = Y0 * y0.units
+	except TypeError:
+	    # we have a scalar
+	    if not hasattr(Y0, 'units') and hasattr(y0, 'units'):
+		uY0 = Y0 * y0.units
 
-        val = func(uY0, t, *args)
+	val = func(uY0, t, *args)
 
-        try:
-            return np.array([float(x) for x in val])
-        except TypeError:
-            return float(val)
+	try:
+	    return np.array([float(x) for x in val])
+	except TypeError:
+	    return float(val)
 
     if full_output:
-        y, infodict = _odeint(wrapped_func, y0, t, args,
-                              Dfun, col_deriv, full_output,
-                              ml, mu, rtol, atol,
-                              tcrit, h0, hmax, hmin,
-                              ixpr, mxstep, mxhnil, mxordn,
-                              mxords, printmessg)
+	y, infodict = _odeint(wrapped_func, y0, t, args,
+			      Dfun, col_deriv, full_output,
+			      ml, mu, rtol, atol,
+			      tcrit, h0, hmax, hmin,
+			      ixpr, mxstep, mxhnil, mxordn,
+			      mxords, printmessg)
     else:
-        y = _odeint(wrapped_func, y0, t, args,
-                    Dfun, col_deriv, full_output,
-                    ml, mu, rtol, atol,
-                    tcrit, h0, hmax, hmin,
-                    ixpr, mxstep, mxhnil, mxordn,
-                    mxords, printmessg)
+	y = _odeint(wrapped_func, y0, t, args,
+		    Dfun, col_deriv, full_output,
+		    ml, mu, rtol, atol,
+		    tcrit, h0, hmax, hmin,
+		    ixpr, mxstep, mxhnil, mxordn,
+		    mxords, printmessg)
 
     # now we need to put units onto the solution units should be the
     # same as y0. We cannot put mixed units in an array, so, we return a list
     m,n = y.shape # y is an ndarray, so it has a shape
     if n > 1: # more than one equation, we need a list
-        uY = [0 for yi in range(n)]
+	uY = [0 for yi in range(n)]
 
-        for i, yi in enumerate(y0):
-            if not hasattr(uY[i],'units') and hasattr(yi, 'units'):
-                uY[i] = y[:,i] * yi.units
-            else:
-                uY[i] = y[:,i]
+	for i, yi in enumerate(y0):
+	    if not hasattr(uY[i],'units') and hasattr(yi, 'units'):
+		uY[i] = y[:,i] * yi.units
+	    else:
+		uY[i] = y[:,i]
 
     else:
-        uY = y * y0.units
+	uY = y * y0.units
 
     y = uY
 
 
     if full_output:
-        return y, infodict
+	return y, infodict
     else:
-        return y
+	return y
 
 ##################################################################
 # test a single ODE
@@ -14637,8 +14637,8 @@ That is pretty much it. Using dimensionless quantities simplifies the need to wr
 
 * GNU Free Documentation License
 #+begin_example
-                GNU Free Documentation License
-                 Version 1.3, 3 November 2008
+		GNU Free Documentation License
+		 Version 1.3, 3 November 2008
 
 
  Copyright (C) 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
