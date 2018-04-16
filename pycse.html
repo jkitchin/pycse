@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-04-15 Sun 21:20 -->
+<!-- 2018-04-15 Sun 21:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>pycse - Python3 Computations in Science and Engineering</title>
@@ -262,6 +262,206 @@ Twitter: <a href="https://twitter.com/johnkitchin">@johnkitchin</a>
 <div class="figure">
 <p><img src="./pycse.png" alt="pycse.png" />
 </p>
+</div>
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgab7dca8">1. Overview</a></li>
+<li><a href="#org63302c2">2. Basic python usage</a>
+<ul>
+<li><a href="#org2c857cb">2.1. Basic math</a></li>
+<li><a href="#org1d19e65">2.2. Advanced mathematical operators</a></li>
+<li><a href="#org10b535c">2.3. Creating your own functions</a></li>
+<li><a href="#orgb571537">2.4. Defining functions in python</a></li>
+<li><a href="#org026c0c7">2.5. Advanced function creation</a></li>
+<li><a href="#orgb066603">2.6. Lambda Lambda Lambda</a></li>
+<li><a href="#orga65ad09">2.7. Creating arrays in python</a></li>
+<li><a href="#orgcdeb623">2.8. Functions on arrays of values</a></li>
+<li><a href="#orga52d0cb">2.9. Some basic data structures in python</a></li>
+<li><a href="#orgf40700c">2.10. Indexing vectors and arrays in Python</a></li>
+<li><a href="#org4659b47">2.11. Controlling the format of printed variables</a></li>
+<li><a href="#org4ed4fad">2.12. Advanced string formatting</a></li>
+</ul>
+</li>
+<li><a href="#org24228bf">3. Math</a>
+<ul>
+<li><a href="#orga462972">3.1. Numeric derivatives by differences</a></li>
+<li><a href="#org57b379b">3.2. Vectorized numeric derivatives</a></li>
+<li><a href="#orgf0e7eab">3.3. 2-point vs. 4-point numerical derivatives</a></li>
+<li><a href="#orge730a1a">3.4. Derivatives by polynomial fitting</a></li>
+<li><a href="#orgfebe93e">3.5. Derivatives by fitting a function and taking the analytical derivative</a></li>
+<li><a href="#org1d2d82d">3.6. Derivatives by FFT</a></li>
+<li><a href="#org4ca2c90">3.7. A novel way to numerically estimate the derivative of a function - complex-step derivative approximation</a></li>
+<li><a href="#org97f21ea">3.8. Vectorized piecewise functions</a></li>
+<li><a href="#orgffe51fa">3.9. Smooth transitions between discontinuous functions</a></li>
+<li><a href="#orgd085fb1">3.10. Smooth transitions between two constants</a></li>
+<li><a href="#org65f170b">3.11. On the quad or trapz'd in ChemE heaven</a></li>
+<li><a href="#org5803b33">3.12. Polynomials in python</a></li>
+<li><a href="#orge7169d7">3.13. Wilkinson's polynomial</a></li>
+<li><a href="#org0d25d08">3.14. The trapezoidal method of integration</a></li>
+<li><a href="#orgaa041f8">3.15. Numerical Simpsons rule</a></li>
+<li><a href="#org04d25ff">3.16. Integrating functions in python</a></li>
+<li><a href="#org5b7f569">3.17. Integrating equations in python</a></li>
+<li><a href="#org15beaf3">3.18. Function integration by the Romberg method</a></li>
+<li><a href="#orge7cc054">3.19. Symbolic math in python</a></li>
+<li><a href="#org0b4dc29">3.20. Is your ice cream float bigger than mine</a></li>
+</ul>
+</li>
+<li><a href="#orgdc87f47">4. Linear algebra</a>
+<ul>
+<li><a href="#org00ce8bc">4.1. Potential gotchas in linear algebra in numpy</a></li>
+<li><a href="#org726b659">4.2. Solving linear equations</a></li>
+<li><a href="#org1173abe">4.3. Rules for transposition</a></li>
+<li><a href="#org2833d68">4.4. Sums products and linear algebra notation - avoiding loops where possible</a></li>
+<li><a href="#org2f48b9e">4.5. Determining linear independence of a set of vectors</a></li>
+<li><a href="#orga928d2a">4.6. Reduced row echelon form</a></li>
+<li><a href="#org1829432">4.7. Computing determinants from matrix decompositions</a></li>
+<li><a href="#orgd6542a3">4.8. Calling lapack directly from scipy</a></li>
+</ul>
+</li>
+<li><a href="#org6119002">5. Nonlinear algebra</a>
+<ul>
+<li><a href="#org4f76dbe">5.1. Know your tolerance</a></li>
+<li><a href="#org5083022">5.2. Solving integral equations with fsolve</a></li>
+<li><a href="#orgc60dcee">5.3. Method of continuity for nonlinear equation solving</a></li>
+<li><a href="#orgd76d9af">5.4. Method of continuity for solving nonlinear equations - Part II</a></li>
+<li><a href="#org0d1b775">5.5. Counting roots</a></li>
+<li><a href="#orgba4212e">5.6. Finding the nth root of a periodic function</a></li>
+<li><a href="#orgc8a2049">5.7. Coupled nonlinear equations</a></li>
+</ul>
+</li>
+<li><a href="#orga4a49e6">6. Statistics</a>
+<ul>
+<li><a href="#orga1098f9">6.1. Introduction to statistical data analysis</a></li>
+<li><a href="#org2110be8">6.2. Basic statistics</a></li>
+<li><a href="#org2da48b0">6.3. Confidence interval on an average</a></li>
+<li><a href="#org131d732">6.4. Are averages different</a></li>
+<li><a href="#org0ceb38e">6.5. Model selection</a></li>
+<li><a href="#orgd9596c3">6.6. Numerical propagation of errors</a></li>
+<li><a href="#orgee781b4">6.7. Another approach to error propagation</a></li>
+<li><a href="#org10d9063">6.8. Random thoughts</a></li>
+</ul>
+</li>
+<li><a href="#orgeb75ca3">7. Data analysis</a>
+<ul>
+<li><a href="#org1b7225d">7.1. Fit a line to numerical data</a></li>
+<li><a href="#orgdc91860">7.2. Linear least squares fitting with linear algebra</a></li>
+<li><a href="#orgeac75b3">7.3. Linear regression with confidence intervals (updated)</a></li>
+<li><a href="#org1963713">7.4. Linear regression with confidence intervals.</a></li>
+<li><a href="#orgd48bf20">7.5. Nonlinear curve fitting</a></li>
+<li><a href="#org62e0a71">7.6. Nonlinear curve fitting by direct least squares minimization</a></li>
+<li><a href="#org11b5acf">7.7. Parameter estimation by directly minimizing summed squared errors</a></li>
+<li><a href="#org1274ad7">7.8. Nonlinear curve fitting with parameter confidence intervals</a></li>
+<li><a href="#org4de09f2">7.9. Nonlinear curve fitting with confidence intervals</a></li>
+<li><a href="#orgb2c96ce">7.10. Graphical methods to help get initial guesses for multivariate nonlinear regression</a></li>
+<li><a href="#orga222818">7.11. Fitting a numerical ODE solution to data</a></li>
+<li><a href="#org99a62db">7.12. Reading in delimited text files</a></li>
+</ul>
+</li>
+<li><a href="#org74c57fe">8. Interpolation</a>
+<ul>
+<li><a href="#org79e2b93">8.1. Better interpolate than never</a></li>
+<li><a href="#org0cf30bb">8.2. Interpolation of data</a></li>
+<li><a href="#orge7090ef">8.3. Interpolation with splines</a></li>
+</ul>
+</li>
+<li><a href="#org7ffe7b3">9. Optimization</a>
+<ul>
+<li><a href="#orgfacf4c0">9.1. Constrained optimization</a></li>
+<li><a href="#org526ed7a">9.2. Finding the maximum power of a photovoltaic device.</a></li>
+<li><a href="#orga18eaa9">9.3. Using Lagrange multipliers in optimization</a></li>
+<li><a href="#orgac73511">9.4. Linear programming example with inequality constraints</a></li>
+<li><a href="#org9b55e35">9.5. Find the minimum distance from a point to a curve.</a></li>
+</ul>
+</li>
+<li><a href="#orgff9d768">10. Differential equations</a>
+<ul>
+<li><a href="#orgd746abd">10.1. Ordinary differential equations</a></li>
+<li><a href="#orgcdaaa1a">10.2. Delay Differential Equations</a></li>
+<li><a href="#orgda92e77">10.3. Differential algebraic systems of equations</a></li>
+<li><a href="#orgcdb725d">10.4. Boundary value equations</a></li>
+<li><a href="#org473d837">10.5. Partial differential equations</a></li>
+</ul>
+</li>
+<li><a href="#org6e91cae">11. Plotting</a>
+<ul>
+<li><a href="#orgcac7191">11.1. Plot customizations - Modifying line, text and figure properties</a></li>
+<li><a href="#orga1b4a56">11.2. Plotting two datasets with very different scales</a></li>
+<li><a href="#org8cedd4a">11.3. Customizing plots after the fact</a></li>
+<li><a href="#org2fa775e">11.4. Fancy, built-in colors in Python</a></li>
+<li><a href="#org2220c51">11.5. Picasso's short lived blue period with Python</a></li>
+<li><a href="#org2771d6d">11.6. Interactive plotting</a></li>
+<li><a href="#orgdd2a691">11.7. key events not working on Mac/org-mode</a></li>
+<li><a href="#orgacf80ae">11.8. Peak annotation in matplotlib</a></li>
+</ul>
+</li>
+<li><a href="#orgd2958e3">12. Programming</a>
+<ul>
+<li><a href="#orgce7d9aa">12.1. Some of this, sum of that</a></li>
+<li><a href="#org305bb89">12.2. Sorting in python</a></li>
+<li><a href="#org52f5e76">12.3. Unique entries in a vector</a></li>
+<li><a href="#org44553fe">12.4. Lather, rinse and repeat</a></li>
+<li><a href="#org79a5cfd">12.5. Brief intro to regular expressions</a></li>
+<li><a href="#org91dd73f">12.6. Working with lists</a></li>
+<li><a href="#org6b21b6e">12.7. Making word files in python</a></li>
+<li><a href="#orgd947a33">12.8. Interacting with Excel in python</a></li>
+<li><a href="#org962407c">12.9. Using Excel in Python</a></li>
+<li><a href="#org769a729">12.10. Running Aspen via Python</a></li>
+<li><a href="#orgcc63a68">12.11. Using an external solver with Aspen</a></li>
+<li><a href="#org358f74d">12.12. Redirecting the print function</a></li>
+<li><a href="#orgb970427">12.13. Getting a dictionary of counts</a></li>
+<li><a href="#org2323882">12.14. About your python</a></li>
+<li><a href="#org8037e39">12.15. Automatic, temporary directory changing</a></li>
+</ul>
+</li>
+<li><a href="#orgeada2d7">13. Miscellaneous</a>
+<ul>
+<li><a href="#org99d9fc3">13.1. Mail merge with python</a></li>
+</ul>
+</li>
+<li><a href="#org07c140f">14. Worked examples</a>
+<ul>
+<li><a href="#orge62880a">14.1. Peak finding in Raman spectroscopy</a></li>
+<li><a href="#orgd404980">14.2. Curve fitting to get overlapping peak areas</a></li>
+<li><a href="#org5f343d8">14.3. Estimating the boiling point of water</a></li>
+<li><a href="#org7149fbb">14.4. Gibbs energy minimization and the NIST webbook</a></li>
+<li><a href="#orgbaecf89">14.5. Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers</a></li>
+<li><a href="#org2bd5a60">14.6. The Gibbs free energy of a reacting mixture and the equilibrium composition</a></li>
+<li><a href="#org45b48e4">14.7. Water gas shift equilibria via the NIST Webbook</a></li>
+<li><a href="#org4ccf0b4">14.8. Constrained minimization to find equilibrium compositions</a></li>
+<li><a href="#org42ce49d">14.9. Using constrained optimization to find the amount of each phase present</a></li>
+<li><a href="#orga791d0a">14.10. Conservation of mass in chemical reactions</a></li>
+<li><a href="#org598fb69">14.11. Numerically calculating an effectiveness factor for a porous catalyst bead</a></li>
+<li><a href="#orge61b6fd">14.12. Computing a pipe diameter</a></li>
+<li><a href="#orge3ab157">14.13. Reading parameter database text files in python</a></li>
+<li><a href="#org4d79055">14.14. Calculating a bubble point pressure of a mixture</a></li>
+<li><a href="#orgf742103">14.15. The equal area method for the van der Waals equation</a></li>
+<li><a href="#org77f0bc8">14.16. Time dependent concentration in a first order reversible reaction in a batch reactor</a></li>
+<li><a href="#org9bbace4">14.17. Finding equilibrium conversion</a></li>
+<li><a href="#org25b1a28">14.18. Integrating a batch reactor design equation</a></li>
+<li><a href="#org99d5527">14.19. Uncertainty in an integral equation</a></li>
+<li><a href="#orgf900a98">14.20. Integrating the batch reactor mole balance</a></li>
+<li><a href="#orgeb60e47">14.21. Plug flow reactor with a pressure drop</a></li>
+<li><a href="#orgcf82d46">14.22. Solving CSTR design equations</a></li>
+<li><a href="#org1b69413">14.23. Meet the steam tables</a></li>
+<li><a href="#org58ed0f0">14.24. What region is a point in</a></li>
+</ul>
+</li>
+<li><a href="#org38680c0">15. Units</a>
+<ul>
+<li><a href="#org6b91cd7">15.1. Using units in python</a></li>
+<li><a href="#org17147d1">15.2. Handling units with the quantities module</a></li>
+<li><a href="#orga9073a5">15.3. Units in ODEs</a></li>
+<li><a href="#org0a1a2ab">15.4. Handling units with dimensionless equations</a></li>
+</ul>
+</li>
+<li><a href="#org1560f60">16. GNU Free Documentation License</a></li>
+<li><a href="#orgf127a32">17. References</a></li>
+<li><a href="#org46eb054">18. Index</a></li>
+</ul>
+</div>
 </div>
 
 <div id="outline-container-orgab7dca8" class="outline-2">
@@ -1010,8 +1210,8 @@ We can evaluate the integral \(\int_0^2 x^2 dx\) with a lambda function.
 </div>
 </div>
 
-<div id="outline-container-orgcd5334b" class="outline-4">
-<h4 id="orgcd5334b"><span class="section-number-4">2.6.2</span> Summary</h4>
+<div id="outline-container-orge612501" class="outline-4">
+<h4 id="orge612501"><span class="section-number-4">2.6.2</span> Summary</h4>
 <div class="outline-text-4" id="text-2-6-2">
 <p>
 Lambda functions can be helpful. They are never necessary. You can always define a function using <code>def</code>, but for some small, single-use functions, a lambda function could make sense. Lambda functions have some limitations, including that they are limited to a single expression, and they lack documentation strings.
@@ -1467,8 +1667,8 @@ dict_values([1211.0, 'benzene', 6.9056])
 </div>
 
 
-<div id="outline-container-orgcb84dcb" class="outline-4">
-<h4 id="orgcb84dcb"><span class="section-number-4">2.9.5</span> Summary</h4>
+<div id="outline-container-orgd262d40" class="outline-4">
+<h4 id="orgd262d40"><span class="section-number-4">2.9.5</span> Summary</h4>
 <div class="outline-text-4" id="text-2-9-5">
 <p>
 We have examined four data structures in python. Note that none of these types are arrays/vectors with defined mathematical operations. For those, you need to consider numpy.array.
@@ -1697,8 +1897,8 @@ The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think
 </div>
 
 
-<div id="outline-container-orgf507e02" class="outline-4">
-<h4 id="orgf507e02"><span class="section-number-4">2.10.4</span> Summary</h4>
+<div id="outline-container-orgb1f6248" class="outline-4">
+<h4 id="orgb1f6248"><span class="section-number-4">2.10.4</span> Summary</h4>
 <div class="outline-text-4" id="text-2-10-4">
 <p>
 The most common place to use indexing is probably when a function returns an array with the independent variable in column 1 and solution in column 2, and you want to plot the solution. Second is when you want to analyze one part of the solution. There are also applications in numerical methods, for example in assigning values to the elements of a matrix or vector.
@@ -2828,8 +3028,8 @@ plt.savefig(<span style="color: #008000;">'images/smooth-transitions-morrison.pn
 </div>
 </div>
 
-<div id="outline-container-orgcb072a1" class="outline-4">
-<h4 id="orgcb072a1"><span class="section-number-4">3.9.1</span> Summary</h4>
+<div id="outline-container-orgac8de3e" class="outline-4">
+<h4 id="orgac8de3e"><span class="section-number-4">3.9.1</span> Summary</h4>
 <div class="outline-text-4" id="text-3-9-1">
 <p>
 The approach demonstrated here allows one to smoothly join two discontinuous functions that describe physics in different regimes, and that must transition over some range of data. It should be emphasized that the method has no physical basis, it simply allows one to create a mathematically smooth function, which could be necessary for some optimizers or solvers to work.
@@ -3059,8 +3259,8 @@ These approaches are very similar, and both rely on linear interpolation. The se
 </div>
 </div>
 
-<div id="outline-container-org2c08793" class="outline-4">
-<h4 id="org2c08793"><span class="section-number-4">3.11.3</span> Summary</h4>
+<div id="outline-container-org0b0f36a" class="outline-4">
+<h4 id="org0b0f36a"><span class="section-number-4">3.11.3</span> Summary</h4>
 <div class="outline-text-4" id="text-3-11-3">
 <p>
 trapz and quad are functions for getting integrals. Both can be used with numerical data if interpolation is used. The syntax for the quad and trapz function is different in scipy than in Matlab.
@@ -3199,8 +3399,8 @@ Note that only one root is real (and even then, we have to interpret 0.j as not 
 </p>
 </div>
 
-<div id="outline-container-org9f9dbbc" class="outline-4">
-<h4 id="org9f9dbbc"><span class="section-number-4">3.12.1</span> Summary</h4>
+<div id="outline-container-org763ac13" class="outline-4">
+<h4 id="org763ac13"><span class="section-number-4">3.12.1</span> Summary</h4>
 <div class="outline-text-4" id="text-3-12-1">
 <p>
 Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
@@ -3752,8 +3952,8 @@ we use the tplquad command  to integrate \(f(x,y,z)=y sin(x)+z cos(x)\) over the
 </div>
 </div>
 
-<div id="outline-container-org830c2f2" class="outline-4">
-<h4 id="org830c2f2"><span class="section-number-4">3.16.2</span> Summary</h4>
+<div id="outline-container-orgb008fe1" class="outline-4">
+<h4 id="orgb008fe1"><span class="section-number-4">3.16.2</span> Summary</h4>
 <div class="outline-text-4" id="text-3-16-2">
 <p>
 scipy.integrate offers the same basic functionality as Matlab does. The syntax differs significantly for these simple examples, but the use of functions for the limits enables freedom to integrate over non-constant limits.
@@ -4459,8 +4659,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orgc097827" class="outline-4">
-<h4 id="orgc097827"><span class="section-number-4">4.3.6</span> Summary</h4>
+<div id="outline-container-orgbcefa17" class="outline-4">
+<h4 id="orgbcefa17"><span class="section-number-4">4.3.6</span> Summary</h4>
 <div class="outline-text-4" id="text-4-3-6">
 <p>
 That wraps up showing numerically the transpose rules work for these examples.
@@ -4686,8 +4886,8 @@ Consider the sum of the product of three vectors. Let \(y = \sum\limits_{i=1}^n 
 </div>
 
 
-<div id="outline-container-orge62160f" class="outline-4">
-<h4 id="orge62160f"><span class="section-number-4">4.4.6</span> Summary</h4>
+<div id="outline-container-org45b7ff7" class="outline-4">
+<h4 id="org45b7ff7"><span class="section-number-4">4.4.6</span> Summary</h4>
 <div class="outline-text-4" id="text-4-4-6">
 <p>
 We showed examples of the following equalities between traditional
@@ -5389,8 +5589,8 @@ The exit concentration is 0.01 mol/L
 </pre>
 </div>
 
-<div id="outline-container-org253ee5c" class="outline-4">
-<h4 id="org253ee5c"><span class="section-number-4">5.2.1</span> Summary notes</h4>
+<div id="outline-container-orgb1d6685" class="outline-4">
+<h4 id="orgb1d6685"><span class="section-number-4">5.2.1</span> Summary notes</h4>
 <div class="outline-text-4" id="text-5-2-1">
 <p>
 This example seemed a little easier in Matlab, where the quad function seemed to get automatically vectorized. Here we had to do it by hand.
@@ -5768,8 +5968,8 @@ Now we consider several approaches to counting the number of roots in this inter
 </div>
 </div>
 
-<div id="outline-container-org9407430" class="outline-4">
-<h4 id="org9407430"><span class="section-number-4">5.5.2</span> method 1</h4>
+<div id="outline-container-orgfabc4ff" class="outline-4">
+<h4 id="orgfabc4ff"><span class="section-number-4">5.5.2</span> method 1</h4>
 <div class="outline-text-4" id="text-5-5-2">
 <p>
 Count the number of times the sign changes in the interval. What we have to do is multiply neighboring elements together, and look for negative values. That indicates a sign change. For example the product of two positive or negative numbers is a positive number. You only get a negative number from the product of a positive and negative number, which means the sign changed.
@@ -6849,8 +7049,8 @@ let v = v0 + a*t, with uncertainties in vo,a and t
 </div>
 </div>
 
-<div id="outline-container-orgd15e6ca" class="outline-4">
-<h4 id="orgd15e6ca"><span class="section-number-4">6.6.6</span> Summary</h4>
+<div id="outline-container-orgaf7b29d" class="outline-4">
+<h4 id="orgaf7b29d"><span class="section-number-4">6.6.6</span> Summary</h4>
 <div class="outline-text-4" id="text-6-6-6">
 <p>
 You can numerically perform error propagation analysis if you know the underlying distribution of errors on the parameters in your equations. One benefit of the numerical propagation is you do not have to remember the error propagation rules, and you directly look at the distribution in nonlinear cases. Some limitations of this approach include
@@ -7129,8 +7329,8 @@ I am pretty content those are the same!
 </p>
 </div>
 
-<div id="outline-container-org7cf2bf7" class="outline-4">
-<h4 id="org7cf2bf7"><span class="section-number-4">6.7.1</span> Summary</h4>
+<div id="outline-container-orga5951f7" class="outline-4">
+<h4 id="orga5951f7"><span class="section-number-4">6.7.1</span> Summary</h4>
 <div class="outline-text-4" id="text-6-7-1">
 <p>
 The uncertainties module is pretty amazing. It automatically propagates errors through a pretty broad range of computations. It is a little tricky for third-party packages, but it seems doable.
@@ -7311,8 +7511,8 @@ samples &gt;= mu-sigma will return a vector of ones where the inequality is true
 </pre>
 </div>
 
-<div id="outline-container-orgdde85a9" class="outline-4">
-<h4 id="orgdde85a9"><span class="section-number-4">6.8.1</span> Summary</h4>
+<div id="outline-container-org6987dbd" class="outline-4">
+<h4 id="org6987dbd"><span class="section-number-4">6.8.1</span> Summary</h4>
 <div class="outline-text-4" id="text-6-8-1">
 <p>
 We only considered the numpy.random functions here, and not all of them. There are many distributions of random numbers to choose from. There are also random numbers in the python random module. Remember these are only <a href="http://en.wikipedia.org/wiki/Pseudorandom_number_generator">pseudorandom</a> numbers, but they are still useful for many applications.
@@ -8347,8 +8547,8 @@ It is easy to interpolate a new value of f given a value of t. What if we want t
 </p>
 </div>
 
-<div id="outline-container-orgfabc4ff" class="outline-5">
-<h5 id="orgfabc4ff"><span class="section-number-5">8.1.3.1</span> method 1</h5>
+<div id="outline-container-org0896ff1" class="outline-5">
+<h5 id="org0896ff1"><span class="section-number-5">8.1.3.1</span> method 1</h5>
 <div class="outline-text-5" id="text-8-1-3-1">
 <p>
 We setup a function that we can use fsolve on. The function will be equal to zero at the time. The second function will look like 0 = 0.2 - f(t). The answer for 0.2=exp(-t) is t = 1.6094. Since we use interpolation here, we will get an approximate answer.
@@ -8947,8 +9147,8 @@ The function we defined above (dfunc) will equal zero at a maximum or minimum. I
 </div>
 </div>
 
-<div id="outline-container-org3a621f7" class="outline-4">
-<h4 id="org3a621f7"><span class="section-number-4">9.3.4</span> Summary</h4>
+<div id="outline-container-orgdaa54b0" class="outline-4">
+<h4 id="orgdaa54b0"><span class="section-number-4">9.3.4</span> Summary</h4>
 <div class="outline-text-4" id="text-9-3-4">
 <p>
 Three dimensional plots in matplotlib are a little more difficult than in Matlab (where the code is almost the same as 2D plots, just different commands, e.g. plot vs plot3). In Matplotlib you have to import additional modules in the right order, and use the object oriented approach to plotting as shown here.
@@ -13754,8 +13954,8 @@ wb.save(<span style="color: #008000;">'data/example2.xls'</span>)
 </div>
 </div>
 
-<div id="outline-container-orgeca27f3" class="outline-4">
-<h4 id="orgeca27f3"><span class="section-number-4">12.8.3</span> Summary</h4>
+<div id="outline-container-org0cca3a5" class="outline-4">
+<h4 id="org0cca3a5"><span class="section-number-4">12.8.3</span> Summary</h4>
 <div class="outline-text-4" id="text-12-8-3">
 <p>
 Matlab has better support for interacting with Excel than python does right now. You could get better Excel interaction via COM, but that is Windows specific, and requires you to have Excel installed on your computer.
@@ -14725,8 +14925,8 @@ In the end, we have illustrated how to construct a spline smoothing interpolatio
 </p>
 </div>
 
-<div id="outline-container-orgb1d6685" class="outline-4">
-<h4 id="orgb1d6685"><span class="section-number-4">14.1.1</span> Summary notes</h4>
+<div id="outline-container-orgcb702cf" class="outline-4">
+<h4 id="orgcb702cf"><span class="section-number-4">14.1.1</span> Summary notes</h4>
 <div class="outline-text-4" id="text-14-1-1">
 <p>
 Using org-mode with :session allows a large script to be broken up into mini sections. However, it only seems to work with the default python mode in Emacs, and it does not work with emacs-for-python or the latest python-mode. I also do not really like the output style, e.g. the output from the plotting commands.
@@ -15138,8 +15338,8 @@ plt.savefig(<span style="color: #008000;">'images/boiling-water.png'</span>)
 </div>
 </div>
 
-<div id="outline-container-org7de5b85" class="outline-4">
-<h4 id="org7de5b85"><span class="section-number-4">14.3.1</span> Summary</h4>
+<div id="outline-container-orgd886b41" class="outline-4">
+<h4 id="orgd886b41"><span class="section-number-4">14.3.1</span> Summary</h4>
 <div class="outline-text-4" id="text-14-3-1">
 <p>
 The answer we get us 0.05 K too high, which is not bad considering we estimated it using parameters that were fitted to thermodynamic data and that had finite precision and extrapolated the steam properties below the region the parameters were stated to be valid for.
@@ -15504,8 +15704,8 @@ Clearly, there is an equilibrium between these species that prevents the complet
 </div>
 </div>
 
-<div id="outline-container-org8fe44d5" class="outline-4">
-<h4 id="org8fe44d5"><span class="section-number-4">14.5.4</span> Summary</h4>
+<div id="outline-container-orge8b6204" class="outline-4">
+<h4 id="orge8b6204"><span class="section-number-4">14.5.4</span> Summary</h4>
 <div class="outline-text-4" id="text-14-5-4">
 <p>
 This is an appealing way to minimize the Gibbs energy of a mixture. No assumptions about reactions are necessary, and the constraints are easy to identify. The Gibbs energy function is especially easy to code.
@@ -15719,8 +15919,8 @@ These results are very close, and only disagree because of the default tolerance
 </p>
 </div>
 
-<div id="outline-container-orgfc720a0" class="outline-4">
-<h4 id="orgfc720a0"><span class="section-number-4">14.6.1</span> Summary</h4>
+<div id="outline-container-org88812db" class="outline-4">
+<h4 id="org88812db"><span class="section-number-4">14.6.1</span> Summary</h4>
 <div class="outline-text-4" id="text-14-6-1">
 <p>
 In this post we derived an equation for the Gibbs free energy of a reacting mixture and used it to find the equilibrium composition. In future posts we will examine some alternate forms of the equations that may be more useful in some circumstances.
@@ -16117,8 +16317,8 @@ They are the same.
 </div>
 </div>
 
-<div id="outline-container-org1b8ce0a" class="outline-4">
-<h4 id="org1b8ce0a"><span class="section-number-4">14.7.12</span> Summary</h4>
+<div id="outline-container-orgc0d30a1" class="outline-4">
+<h4 id="orgc0d30a1"><span class="section-number-4">14.7.12</span> Summary</h4>
 <div class="outline-text-4" id="text-14-7-12">
 <p>
 The NIST Webbook provides a plethora of data for computing thermodynamic properties. It is a little tedious to enter it all into Matlab, and a little tricky to use the data to estimate temperature dependent reaction energies. A limitation of the Webbook is that it does not tell you have the thermodynamic properties change with pressure. Luckily, those changes tend to be small.
@@ -17896,8 +18096,8 @@ plt.savefig(<span style="color: #008000;">'images/iawps-steam-2.svg'</span>)
 </div>
 </div>
 
-<div id="outline-container-orge612501" class="outline-4">
-<h4 id="orge612501"><span class="section-number-4">14.23.8</span> Summary</h4>
+<div id="outline-container-org11b95ef" class="outline-4">
+<h4 id="org11b95ef"><span class="section-number-4">14.23.8</span> Summary</h4>
 <div class="outline-text-4" id="text-14-23-8">
 <p>
 This was an interesting exercise. On one hand, the tedium of interpolating the steam tables is gone. On the other hand, you still have to know exactly what to ask for to get an answer that is correct. The iapws interface is a little clunky, and takes some getting used to. It does not seem as robust as the Xsteam module I used in Matlab.
@@ -19322,7 +19522,7 @@ Then again no package does yet!
 </div></div>
 <div id="postamble" class="status">
 <p class="date">Date: 2018-04-15</p>
-<p class="date">Created: 2018-04-15 Sun 21:20</p>
+<p class="date">Created: 2018-04-15 Sun 21:25</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
