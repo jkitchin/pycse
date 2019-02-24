@@ -156,8 +156,11 @@ def figure(fname, caption=None, name=None, attributes=None):
         s += [fname]
     else:
         if not os.path.exists(fname):
-            raise Exception('{} does not exist!'.format(fname))
-        s += ['[[file:{}]]'.format(fname)]
+            if not os.path.exists(os.path.dirname(fname)):
+                os.makedirs(os.path.dirname(fname), exist_ok=True)
+            s += [mysave(fname)]
+        else:
+            s += ['[[file:{}]]'.format(fname)]
 
     print('\n'.join(s))
 
