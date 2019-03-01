@@ -1,7 +1,12 @@
+import matplotlib
+matplotlib.use('Agg')
+
 from nose.tools import raises
 from pycse.orgmode import (link, headline, org, latex,
                            fixed_width, table, comment,
                            verbatim, figure)
+
+
 from io import StringIO
 import sys
 sys.stdout = StringIO()
