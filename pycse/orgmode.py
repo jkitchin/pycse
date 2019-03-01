@@ -17,6 +17,13 @@ and links.
 
 """
 
+# Matplotlib modifications
+import io
+import os
+import matplotlib.pyplot
+from hashlib import sha1
+
+
 def stderr_to_stdout():
     """Redirect stderr to stdout so it can be captured.
 
@@ -25,12 +32,6 @@ def stderr_to_stdout():
     """
     import sys
     sys.stderr = sys.stdout
-
-# Matplotlib modifications
-import io
-import os
-import matplotlib.pyplot
-from hashlib import sha1
 
 
 original_savefig = matplotlib.pyplot.savefig
@@ -46,6 +47,7 @@ def mysave(fname, *args, **kwargs):
     original_savefig(fname, *args, **kwargs)
     return '[[file:{}]]'.format(fname)
 
+
 matplotlib.pyplot.savefig = mysave
 
 
@@ -58,9 +60,11 @@ def git_hash(string):
     s.update(string)
     return s.hexdigest()
 
+
 original_show = matplotlib.pyplot.show
 
 SHOW = True
+
 
 def myshow(*args, **kwargs):
     """Wrap matplotlib.pyplot.show for orgmode
@@ -89,19 +93,19 @@ def myshow(*args, **kwargs):
     if SHOW:
         original_show(*args, **kwargs)
 
+
 matplotlib.pyplot.show = myshow
 
 
 # Tables and figures
 def table(data, name=None,
-          caption=None, label=None, attributes=None,
+          caption=None, attributes=None,
           none=''):
     """Return a formatted table.
 
     :data: A list-like data structure. A None value is converted to hline.
     :name: The name of the table
     :caption: The caption text
-    :label: Label text
     :attributes: [(backend, 'attributes')]
     :none: A string for None values
 
@@ -109,17 +113,14 @@ def table(data, name=None,
     s = []
 
     if caption is not None:
-        s += ['#+CAPTION: {}'.format(caption)]
-
-    if label is not None:
-        s += ['#+LABEL: {}'.format(label)]
+        s += ['#+caption: {}'.format(caption)]
 
     if attributes is not None:
         for backend, attrs in attributes:
-            s += ['#+ATTR_{}: {}'.format(backend, attrs)]
+            s += ['#+attr_{}: {}'.format(backend.lower(), attrs)]
 
     if name is not None:
-        s += ['#+NAME: {}'.format(name)]
+        s += ['#+name: {}'.format(name)]
 
     for row in data:
         if row is None:
@@ -144,13 +145,13 @@ def figure(fname, caption=None, name=None, attributes=None):
 
     if attributes is not None:
         for backend, attrs in attributes:
-            s += ['#+ATTR_{}: {}'.format(backend, attrs)]
+            s += ['#+attr_{}: {}'.format(backend.lower(), attrs)]
 
     if name is not None:
-        s += ['#+NAME: {}'.format(name)]
+        s += ['#+name: {}'.format(name)]
 
     if caption is not None:
-        s += ['#+CAPTION: {}'.format(caption)]
+        s += ['#+caption: {}'.format(caption)]
 
     if fname.startswith('[[file:'):
         s += [fname]
@@ -158,9 +159,7 @@ def figure(fname, caption=None, name=None, attributes=None):
         if not os.path.exists(fname):
             if not os.path.exists(os.path.dirname(fname)):
                 os.makedirs(os.path.dirname(fname), exist_ok=True)
-            s += [mysave(fname)]
-        else:
-            s += ['[[file:{}]]'.format(fname)]
+        s += [mysave(fname)]
 
     print('\n'.join(s))
 
@@ -202,7 +201,7 @@ def result(s):
 
 def latex(s):
     """Print s as a latex block."""
-    print('\n#+BEGIN_LATEX\n{}\n#+END_LATEX\n'.format(s))
+    print('\n#+begin_latex\n{}\n#+end_latex\n'.format(s))
 
 
 def org(s):
