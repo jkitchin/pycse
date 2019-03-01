@@ -1,9 +1,9 @@
-# Copyright 2015, John Kitchin
+# Copyright 2015-2019 John Kitchin
 # (see accompanying license files for details).
 from setuptools import setup
 
 setup(name='pycse',
-      version='2.0',
+      version='2.0.1',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
