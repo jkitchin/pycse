@@ -126,7 +126,7 @@ def test_fig3():
 
 def test_fig4():
     figure("pycse/tests/test_orgmode.png", caption="test", name='fig')
-    assert sys.stdout.getvalue() == ('#+NAME: fig\n#+caption: test\n'
+    assert sys.stdout.getvalue() == ('#+name: fig\n#+caption: test\n'
                                      '[[file:pycse/tests/test_orgmode.png]]\n')
 
 
