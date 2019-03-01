@@ -9,8 +9,8 @@
 
 3. Provide table and figure commands that generate org-markup.
 
-4. Provide functions that generate org markup, e.g. results, comments, headlines
-and links.
+4. Provide functions that generate org markup, e.g. results, comments,
+headlines and links.
 
 # Copyright 2015, John Kitchin
 # (see accompanying license files for details).
@@ -69,8 +69,8 @@ SHOW = True
 def myshow(*args, **kwargs):
     """Wrap matplotlib.pyplot.show for orgmode
 
-    Saves the figure in a directory called pyshow with the filename derived from
-    its git-hash.
+    Saves the figure in a directory called pyshow with the filename derived
+    from its git-hash.
 
     """
     format = "png"
@@ -170,7 +170,7 @@ def verbatim(s):
     If s is one line, print it in ==, otherwise use a block.
     """
     if '\n' in str(s):
-        print('\n#+BEGIN_EXAMPLE\n{}\n#+END_EXAMPLE\n'.format(s))
+        print('\n#+begin_example\n{}\n#+end_example\n'.format(s))
     else:
         print('={}='.format(s))
 
@@ -181,7 +181,7 @@ def comment(s):
     If s is one line, print it in #, otherwise use a block.
     """
     if '\n' in str(s):
-        print('\n#+BEGIN_COMMENT\n{}\n#+END_COMMENT\n'.format(s))
+        print('\n#+begin_comment\n{}\n#+end_comment\n'.format(s))
     else:
         import textwrap
         print(textwrap.fill(s, initial_indent='# ',
