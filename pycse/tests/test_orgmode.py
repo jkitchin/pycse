@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use('Agg')
-
 from nose.tools import raises
 from pycse.orgmode import (link, headline, org, latex,
                            fixed_width, table, comment,
