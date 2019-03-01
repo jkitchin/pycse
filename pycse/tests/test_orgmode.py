@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.pyplot.switch_backend('agg')
 from nose.tools import raises
 from pycse.orgmode import (link, headline, org, latex,
                            fixed_width, table, comment,
