@@ -17,11 +17,13 @@ headlines and links.
 
 """
 
+
 # Matplotlib modifications
 import io
 import os
 import matplotlib.pyplot
 from hashlib import sha1
+import sys
 
 
 def stderr_to_stdout():
@@ -32,6 +34,29 @@ def stderr_to_stdout():
     """
     import sys
     sys.stderr = sys.stdout
+
+
+class print_redirect:
+    '''Context manager for pycse.orgmode
+    Most functions print to stdout. Use this to capture it in a file.
+    with print_redirect(some_file):
+        org()
+        print(something)
+
+    mode='w' overwrites the file
+    mode='a' appends to the file
+    '''
+    def __init__(self, fname, mode='w'):
+        self.fname = fname
+        self.mode = mode
+
+    def __enter__(self):
+        sys.stdout = open(self.fname, self.mode)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = sys.__stdout__
 
 
 original_savefig = matplotlib.pyplot.savefig
