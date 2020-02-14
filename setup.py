@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='pycse',
-      version='2.0.1',
+      version='2.0.4',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -13,6 +13,7 @@ setup(name='pycse',
       packages=['pycse'],
       setup_requires=['nose>=1.0'],
       data_files=['requirements.txt', 'LICENSE'],
+      install_requires=['uncertainties', 'quantities', 'numpy', 'scipy'],
       long_description='''\
 python computations in science and engineering
 ===============================================
@@ -24,5 +25,10 @@ See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
 
       ''')
 
-# python setup.py register to setup user
+# (shell-command "python setup.py register") to setup user
 # to push to pypi - (shell-command "python setup.py sdist upload")
+
+
+# Set TWINE_USERNAME and TWINE_PASSWORD in .bashrc
+# python setup.py sdist bdist_wheel
+# twine upload dist/*
