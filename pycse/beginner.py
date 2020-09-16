@@ -12,6 +12,9 @@ of these is to delay introducing indexing syntax.
 """
 import numpy as np
 import collections
+from scipy.optimize import fsolve as _fsolve
+from scipy.integrate import quad
+
 
 def first(x):
     """Return the first element of x if it is iterable, else return x."""
@@ -119,8 +122,6 @@ def butlast(x):
 # simple number. The nsolve function does not do that. It returns a float if the
 # result is a 1d array. It also is more explicit about checking for convergence.
 
-from scipy.optimize import fsolve as _fsolve
-from scipy.integrate import quad
 
 def nsolve(objective, x0, *args, **kwargs):
     """A Wrapped version of scipy.optimize.fsolve.
@@ -148,6 +149,7 @@ def nsolve(objective, x0, *args, **kwargs):
 
 # The quad function returns the integral and error estimate. We rarely use the
 # error estimate, so here we eliminate it from the output.
+
 
 def integrate(f, a, b, *args, **kwargs):
     """Integrate the function f(x) from a to b.
@@ -177,3 +179,8 @@ def heaviside(x):
     This is equal to zero for x < 0, 0.5 for x==0, and 1 for x > 0.
     """
     return 0.5 * (np.sign(x) + 1)
+
+
+def step(x):
+    """Alias for heaviside(x)."""
+    return heaviside(x)
