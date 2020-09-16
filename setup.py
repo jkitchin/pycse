@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='pycse',
-      version='2.0.4',
+      version='2.1.0',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -13,7 +13,7 @@ setup(name='pycse',
       packages=['pycse'],
       setup_requires=['nose>=1.0'],
       data_files=['requirements.txt', 'LICENSE'],
-      install_requires=['uncertainties', 'quantities', 'numpy', 'scipy'],
+      install_requires=['numpy', 'scipy'],
       long_description='''\
 python computations in science and engineering
 ===============================================
