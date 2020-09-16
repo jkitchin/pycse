@@ -265,9 +265,11 @@ def gopen(fid_or_url, mode='r'):
         # it could be a path
         if os.path.isfile(fid_or_url):
             fid = get_id(fid_or_url)
+            print('path: ', fid_or_url, fid)
         else:
             # assume it is an fid
             fid = fid_or_url
+            print('fid: ', fid)
 
     request = drive_service.files().get_media(fileId=fid)
     downloaded = io.BytesIO()
