@@ -3,7 +3,7 @@ import glob
 import io
 from IPython.core.magic import register_line_magic
 from IPython.display import HTML
-from nbconvert import HTMLExporter, PDFExporter, WebPDFExporter
+from nbconvert import HTMLExporter, PDFExporter
 import nbformat
 import os
 import requests
