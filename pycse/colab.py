@@ -262,7 +262,12 @@ def gopen(fid_or_url, mode='r'):
     if fid_or_url.startswith('http'):
         fid = fid_from_url(fid_or_url)
     else:
-        fid = fid_or_url
+        # it could be a path
+        if os.path.isfile(fid_or_url):
+            fid = get_id(fid_or_url)
+        else:
+            # assume it is an fid
+            fid = fid_or_url
 
     request = drive_service.files().get_media(fileId=fid)
     downloaded = io.BytesIO()
