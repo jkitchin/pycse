@@ -1,7 +1,9 @@
+from datetime import datetime
+import glob
 import io
 from IPython.core.magic import register_line_magic
-
-from nbconvert import HTMLExporter, PDFExporter
+from IPython.display import HTML
+from nbconvert import HTMLExporter, PDFExporter, WebPDFExporter
 import nbformat
 import os
 import requests
@@ -168,6 +170,9 @@ def pdf_from_latex(pdf=None):
         print(f'{apdf} not found')
 
 
+
+
+
 @register_line_magic
 def pdf(line):
     '''Line magic to export a colab to PDF.
@@ -211,22 +216,49 @@ def fid_from_url(url):
                 return item[3:]
 
     # A colab url
+    # https://colab.research.google.com/drive/1YcD5OXL-CNBO2h_OXZFb-mY6-LqgcLkB#scrollTo=0qkiF99z01pc
     elif (u.netloc == 'colab.research.google.com'):
         return u.path.split('/')[2]
 
-    elif 'folders' in u.path:
-        raise Exception('You seem to be opening a folder.')
+    # 'https://docs.google.com/document/d/1lvDK2GisDM5aBnImtHNwOmLsU9jxg1NaPC46rB4bVqw/edit?usp=sharing'
+    elif (u.netloc == 'docs.google.com') and u.path.startswith('/document/d/'):
+        p = u.path
+        p = p.replace('/document/d/', '')
+        p = p.replace('/edit', '')
+        return p
+
+    # https://docs.google.com/spreadsheets/d/1qSaBe73Pd8L3jJyOL68klp6yRArW7Nce/edit#gid=1923176268
+    elif (u.netloc == 'docs.google.com') and u.path.startswith('/spreadsheets/d/'):
+        p = u.path
+        p = p.replace('/spreadsheets/d/', '')
+        p = p.replace('/edit', '')
+        return p
+
+    #https://docs.google.com/presentation/d/1poP1gvWlfeZCR_5FsIzlRPMAYlBUR827wKPjbWGzW9M/edit#slide=id.p
+    elif (u.netloc == 'docs.google.com') and u.path.startswith('/presentation/d/'):
+        p = u.path
+        p = p.replace('/presentation/d/', '')
+        p = p.replace('/edit', '')
+        return p
+
+    # https://drive.google.com/drive/u/0/folders/1aTs-_bhjT1GXy2P2hStzn31qAihRq2sl
+    elif (u.netloc == 'drive.google.com') and 'folders' in u.path:
+        return u.path.split('folders')[1][1:]
 
     else:
         raise Exception(f'Cannot parse {url} yet.')
 
 
-def gopen(fid_or_url):
+def gopen(fid_or_url, mode='r'):
     '''Open a file on Gdrive by its ID or sharing link.
     Returns a file-like object you can read from.
     Note this reads the whole file into memory, so it may not
-    be good for large files. Returns an io.StringIO
+    be good for large files. Returns an io.StringIO if mode is "r"
+    or io.BytesIO if mode is "rb".
     '''
+    if mode not in ['r', 'rb']:
+        raise Exception(f'mode must be "r" or "rb"')
+
     if fid_or_url.startswith('http'):
         fid = fid_from_url(fid_or_url)
     else:
@@ -243,7 +275,10 @@ def gopen(fid_or_url):
 
     # I prefer strings to bytes.
     downloaded.seek(0)
-    return io.TextIOWrapper(downloaded)
+    if mode == 'r':
+        return io.TextIOWrapper(downloaded)
+    else:
+        return downloaded
 
 # Path utilities
 # This is tricky, paths are not deterministic in GDrive the way we are used to.
@@ -251,7 +286,7 @@ def gopen(fid_or_url):
 # shared with you.
 
 
-def _get_path(fid_or_url):
+def get_path(fid_or_url):
     """Return the path to an fid or url.
     The path is relative to the mount point."""
     if fid_or_url.startswith('http'):
@@ -289,4 +324,136 @@ def _get_path(fid_or_url):
     dirs += ['/gdrive']
 
     dirs.reverse()
-    return os.path.sep.join(dirs)
+    p = os.path.sep.join(dirs)
+
+    # Sometimes, it appears we are missing an extension, because the name does
+    # not always include the extension. We glob through matches to get the match
+    # in this case.
+    if not os.path.exists(p):
+        for f in glob.glob(f'{p}*'):
+            if get_id(f) == fid:
+                return f
+    else:
+        return p
+
+
+def get_id(path):
+    '''Given a path, return an id to it.'''
+    if not shutil.which('xattr'):
+        aptinstall('xattr')
+
+    path = os.path.abspath(path)
+
+    if os.path.isfile(path):
+        return subprocess.getoutput(f"xattr -p 'user.drive.id' '{path}'")
+
+    elif os.path.isdir(path):
+        # Strip the / gdrive off
+        path = path.split('/')[2:]
+
+        if path[0] == 'My Drive' and len(path) == 1:
+            return 0
+
+        if path[0] == 'My Drive':
+            drive_id = 'root'
+            id = 'root'
+
+        elif path[0] == 'Shared drives':
+            drives = drive_service.drives().list().execute()['drives']
+            for drv in drives:
+                if drv['name'] == path[1]:
+                    drive_id = drv['id']
+                    id = drv['id']
+                    break
+
+        path = path[1:]
+
+        found = False
+        for d in path:
+            dsf = drive_service.files()
+            args = dict(q=f"'{id}' in parents")
+            if drive_id != 'root':
+                args['corpora'] = 'drive'
+                args['supportsAllDrives'] = True
+                args['includeItemsFromAllDrives'] = True
+                args['driveId'] = drive_id
+
+            file_list = dsf.list(**args).execute()
+
+            found = False
+            for file1 in file_list.get('files', []):
+                if file1['name'] == d:
+                    found = True
+                    id = file1['id']
+                    break
+
+        if found:
+            return id
+
+        else:
+            raise Exception(f'Something went wrong with {path}')
+
+    else:
+        raise Exception(f'{path} does not seem to be a file or directory')
+
+
+def get_link(path):
+    '''Returns a clickable link for path.'''
+    fid = get_id(os.path.abspath(path))
+    x = drive_service.files().get(fileId=fid,
+                                  supportsAllDrives=True,
+                                  fields='webViewLink').execute()
+    url = x.get('webViewLink', 'No web link found')
+    return HTML(f"<a href={url} target=_blank>{path}</a>")
+
+
+def gchdir(path=None):
+    '''Change working dir to path.
+    if path is None, default to working directory of current notebook.
+    '''
+    if path is None:
+        path = os.path.dirname(get_path(current_notebook()[1]))
+
+    if os.path.isabs(path):
+        os.chdir(path)
+    else:
+        os.chdir(os.path.abspath(path))
+
+
+def gdownload(*FILES, **kwargs):
+    '''Download files. Each arg can be a path, or pattern.
+    If you have more than one file, a zip is downloaded.
+    You can specify a zip file name as a kwarg:
+
+    gdownload("*", zip="test.zip")
+
+    The zip file will be deleted unless you use keep=True as a kwarg.
+
+    '''
+    fd = []
+    for f in FILES:
+        for g in glob.glob(f):
+            fd += [g]
+
+    if (len(fd) == 1) and (os.path.isfile(fd[0])):
+        files.download(fd[0])
+    else:
+        if 'zip' in kwargs:
+            zip = kwargs['zip']
+        else:
+            now = datetime.now()
+            zip = now.strftime("%m-%d-%YT%H-%M-%S.zip")
+
+        if os.path.exists(zip):
+            os.unlink(zip)
+
+        s = subprocess.run(['zip', zip, *fd],
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+        if s.returncode != 0:
+            print(f'zip did not fully succeed:\n'
+                  f'{s.stdout.decode()}\n'
+                  f'{s.stderr.decode()}\n')
+        files.download(zip)
+        if not kwargs.get('keep', False):
+            os.unlink(zip)
