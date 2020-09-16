@@ -265,7 +265,6 @@ def gopen(fid_or_url_or_path, mode='r'):
         # it could be a path
         if os.path.isfile(fid_or_url_or_path):
             fid = get_id(fid_or_url_or_path)
-            print('path: ', fid_or_url_or_path, fid)
         else:
             # assume it is an fid
             fid = fid_or_url_or_path
@@ -446,22 +445,22 @@ def gdownload(*FILES, **kwargs):
         files.download(fd[0])
     else:
         if 'zip' in kwargs:
-            zip = kwargs['zip']
+            zipfile = kwargs['zip']
         else:
             now = datetime.now()
-            zip = now.strftime("%m-%d-%YT%H-%M-%S.zip")
+            zipfile = now.strftime("%m-%d-%YT%H-%M-%S.zip")
 
-        if os.path.exists(zip):
-            os.unlink(zip)
+        if os.path.exists(zipfile):
+            os.unlink(zipfile)
 
-        s = subprocess.run(['zip', zip, *fd],
+        s = subprocess.run(['zip', '-r', zipfile, *fd],
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
         if s.returncode != 0:
             print(f'zip did not fully succeed:\n'
                   f'{s.stdout.decode()}\n'
                   f'{s.stderr.decode()}\n')
-        files.download(zip)
+        files.download(zipfile)
 #        if not kwargs.get('keep', False):
 #            os.unlink(zip)
 
