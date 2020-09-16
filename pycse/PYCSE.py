@@ -6,7 +6,7 @@
 
 See http://kitchingroup.cheme.cmu.edu/pycse
 
-Copyright 2015, John Kitchin
+Copyright 2020, John Kitchin
 (see accompanying license files for details).
 """
 
