@@ -457,3 +457,5 @@ def gdownload(*FILES, **kwargs):
         files.download(zip)
         if not kwargs.get('keep', False):
             os.unlink(zip)
+
+print('pycse.colab imported')

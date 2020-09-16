@@ -74,3 +74,5 @@ from .PYCSE import regress, nlinfit
 from .utils import feq, flt, fgt, fle, fge
 
 from .beginner import *
+
+from .colab import *
