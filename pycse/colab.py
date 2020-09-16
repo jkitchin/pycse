@@ -249,8 +249,8 @@ def fid_from_url(url):
         raise Exception(f'Cannot parse {url} yet.')
 
 
-def gopen(fid_or_url, mode='r'):
-    '''Open a file on Gdrive by its ID or sharing link.
+def gopen(fid_or_url_or_path, mode='r'):
+    '''Open a file on Gdrive by its ID, sharing link or path.
     Returns a file-like object you can read from.
     Note this reads the whole file into memory, so it may not
     be good for large files. Returns an io.StringIO if mode is "r"
@@ -259,16 +259,16 @@ def gopen(fid_or_url, mode='r'):
     if mode not in ['r', 'rb']:
         raise Exception(f'mode must be "r" or "rb"')
 
-    if fid_or_url.startswith('http'):
-        fid = fid_from_url(fid_or_url)
+    if fid_or_url_or_path.startswith('http'):
+        fid = fid_from_url(fid_or_url_or_path)
     else:
         # it could be a path
-        if os.path.isfile(fid_or_url):
-            fid = get_id(fid_or_url)
-            print('path: ', fid_or_url, fid)
+        if os.path.isfile(fid_or_url_or_path):
+            fid = get_id(fid_or_url_or_path)
+            print('path: ', fid_or_url_or_path, fid)
         else:
             # assume it is an fid
-            fid = fid_or_url
+            fid = fid_or_url_or_path
             print('fid: ', fid)
 
     request = drive_service.files().get_media(fileId=fid)
