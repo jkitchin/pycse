@@ -126,9 +126,9 @@ def pdf_from_html(pdf=None, debug=False):
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
     if s.returncode != 0:
-        print('Conversion exited with non-zero status.\n'
-              f'{s.stdout}\n'
-              f'{s.stderr}')
+        print('Conversion exited with non-zero status: {s.returncode}.\n'
+              f'{s.stdout.decode()}\n'
+              f'{s.stderr.decode()}')
 
     if os.path.exists(apdf):
         files.download(apdf)
