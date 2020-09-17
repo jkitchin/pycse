@@ -133,8 +133,9 @@ def pdf_from_html(pdf=None, debug=False):
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf', ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
-    if s.returncode != 0:
-        print('Conversion exited with non-zero status: {s.returncode}.\n'
+    # This is not exactly a success, but at 1 it seems to work
+    if s.returncode != 1:
+        print(f'Conversion exited with non-zero status: {s.returncode}.\n'
               f'{s.stdout.decode()}\n'
               f'{s.stderr.decode()}')
 
