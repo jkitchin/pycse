@@ -535,10 +535,9 @@ def gsuite(fid_or_url, width=1200, height=1000):
 
     display(HTML(f'''<a href="{url}" target="_blank">Link</a><br>'''))
 
-    # For some reason we cannot embed jamboards. They refuse to connect in the iframe.
-    if url.startswith('https://jamboard.google.com/d/'):
-        print('Jamboards cannot be embedded yet :(')
-        url = None
-
-    if url is not None:
+    g = requests.get(url)
+    xframeoptions = g.headers.get('X-Frame-Options', '').lower()
+    if  xframeoptions in ['deny', 'sameorigin']:
+        print(f'X-Frame-Option = {xframeoptions}\nEmbedding in IFrame is not allowed for {url}.')
+    else:
         return IFrame(url, width, height)
