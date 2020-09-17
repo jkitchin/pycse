@@ -509,8 +509,6 @@ def gsuite(fid_or_url, width=1200, height=1000):
         print('Jamboards cannot be embedded yet :(')
         url = None
 
-    html = f'''<a href="{url}" target="_blank">Link</a><br>'''
+    display(f'''<a href="{url}" target="_blank">Link</a><br>''')
     if url is not None:
-        url +=  '''<iframe src="{url}" width="{width}" height="{height}"></iframe>'''
-
-    return HTML(html)
+        return IFrame(url, width, height)
