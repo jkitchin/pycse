@@ -2,7 +2,7 @@ from datetime import datetime
 import glob
 import io
 from IPython.core.magic import register_line_magic
-from IPython.display import HTML
+from IPython.display import HTML, IFrame
 from nbconvert import HTMLExporter, PDFExporter
 import nbformat
 import os
@@ -460,6 +460,34 @@ def gdownload(*FILES, **kwargs):
         files.download(zipfile)
 #        if not kwargs.get('keep', False):
 #            os.unlink(zip)
+
+##################################################################
+# Get to a shell
+##################################################################
+def gconsole():
+    '''Open a shell in colab.
+    Adapted from https://github.com/airesearch-in-th/kora/blob/master/kora/console.py'''
+
+    url = "https://github.com/gravitational/teleconsole/releases/download/0.4.0/teleconsole-v0.4.0-linux-amd64.tar.gz"
+    os.system(f"curl -L {url} | tar xz")  # download & extract
+    os.system("mv teleconsole /usr/local/bin/")  # in PATH
+
+    # Set PS1, directory
+    with open("/root/.bashrc", "a") as f:
+        f.write('PS1="\e[1;36m\w\e[m# "\n')
+        f.write("cd /content \n")
+    f.write("PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools/node/bin:/tools/google-cloud-sdk/bin:/opt/bin \n")
+
+
+    process = subprocess.Popen("teleconsole", shell=True,
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    for i in range(6):
+        line = process.stdout.readline()
+
+    url = line.decode().strip().split()[-1]
+    print("Console URL:", url)
+    return IFrame(url, width=800, height=600)
+
 
 ##################################################################
 # Fancy outputs
