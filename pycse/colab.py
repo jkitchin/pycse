@@ -108,9 +108,13 @@ def pdf_from_html(pdf=None, debug=False):
 
     ahtml = os.path.join(tmpdirname, html)
     apdf = os.path.join(tmpdirname, pdf)
+    css = os.path.join(tmpdirname, 'custom.css')
 
     with open(ahtml, 'w') as f:
         f.write(body)
+
+    with open(css, 'w'):
+        f.write('\n'.join(resources['inlining']['css']))
 
     if not shutil.which('xvfb-run'):
         aptinstall('xvfb')
