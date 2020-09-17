@@ -91,7 +91,7 @@ def notebook_string(fid):
     return ipynb
 
 
-def pdf_from_html(pdf=None, debug=False):
+def pdf_from_html(pdf=None, verbose=False):
     '''Export the current notebook as a PDF.
     pdf is the name of the PDF to export.
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
@@ -133,8 +133,8 @@ def pdf_from_html(pdf=None, debug=False):
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf', ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
-    # This is not exactly a success, but at 1 it seems to work
-    if s.returncode != 1:
+
+    if verbose:
         print(f'Conversion exited with non-zero status: {s.returncode}.\n'
               f'{s.stdout.decode()}\n'
               f'{s.stderr.decode()}')
@@ -147,7 +147,7 @@ def pdf_from_html(pdf=None, debug=False):
         print(apdf)
 
 
-def pdf_from_latex(pdf=None):
+def pdf_from_latex(pdf=None, verbose=False):
     '''Export the notebook to PDF via LaTeX.
     This is not fast because you have to install texlive.'''
 
@@ -197,10 +197,11 @@ def pdf(line=''):
     else:
         pdf = None
 
+    verbose = '-v' in args
     if '-l' in args:
-        pdf_from_latex(pdf)
+        pdf_from_latex(pdf, verbose)
     else:
-        pdf_from_html(pdf)
+        pdf_from_html(pdf, verbose)
 
 
 ##################################################################
