@@ -149,7 +149,9 @@ def pdf_from_html(pdf=None, verbose=False):
 
 def pdf_from_latex(pdf=None, verbose=False):
     '''Export the notebook to PDF via LaTeX.
-    This is not fast because you have to install texlive.'''
+    This is not fast because you have to install texlive.
+    verbose is not used right now.
+    '''
 
     if not shutil.which('xelatex'):
         aptinstall('texlive-xetex')
