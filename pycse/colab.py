@@ -25,6 +25,7 @@ DRIVE = None
 
 def gdrive():
     '''Get the drive service, authenticate if needed.'''
+    global DRIVE
     if DRIVE is None:
         auth.authenticate_user()
         DRIVE = build('drive', 'v3')
