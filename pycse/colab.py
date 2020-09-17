@@ -95,7 +95,7 @@ def pdf_from_html(pdf=None, debug=False):
 
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
-    print('resources: ', resources)
+
 
     html = fname.replace(".ipynb", ".html")
     if pdf is None:
@@ -113,7 +113,7 @@ def pdf_from_html(pdf=None, debug=False):
     with open(ahtml, 'w') as f:
         f.write(body)
 
-    with open(css, 'w'):
+    with open(css, 'w') as f:
         f.write('\n'.join(resources['inlining']['css']))
 
     if not shutil.which('xvfb-run'):
@@ -126,9 +126,9 @@ def pdf_from_html(pdf=None, debug=False):
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
     if s.returncode != 0:
-        raise Exception('PDF conversion failed.\n'
-                        f'{s.stdout}\n'
-                        f'{s.stderr}')
+        print('Conversion exited with non-zero status.\n'
+              f'{s.stdout}\n'
+              f'{s.stderr}')
 
     if os.path.exists(apdf):
         files.download(apdf)
