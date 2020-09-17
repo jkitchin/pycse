@@ -21,7 +21,6 @@ from google.colab import auth
 from googleapiclient.discovery import build
 
 
-auth.authenticate_user()
 drive_service = build('drive', 'v3')
 
 
@@ -68,6 +67,7 @@ def current_notebook():
 
 def notebook_string(fid):
     '''Return noteook json data in string form for notebook at FID.'''
+    auth.authenticate_user()
     request = drive_service.files().get_media(fileId=fid)
     downloaded = io.BytesIO()
     downloader = MediaIoBaseDownload(downloaded, request)
@@ -272,6 +272,7 @@ def gopen(fid_or_url_or_path, mode='r'):
             fid = fid_or_url_or_path
             print('fid: ', fid)
 
+    auth.authenticate_user()
     request = drive_service.files().get_media(fileId=fid)
     downloaded = io.BytesIO()
     downloader = MediaIoBaseDownload(downloaded, request)
@@ -302,6 +303,7 @@ def get_path(fid_or_url):
     else:
         fid = fid_or_url
 
+    auth.authenticate_user()
     x = drive_service.files().get(fileId=fid,
                                   supportsAllDrives=True,
                                   fields='parents,name').execute()
@@ -347,6 +349,8 @@ def get_path(fid_or_url):
 
 def get_id(path):
     '''Given a path, return an id to it.'''
+    auth.authenticate_user()
+
     if not shutil.which('xattr'):
         aptinstall('xattr')
 
@@ -408,6 +412,7 @@ def get_id(path):
 def get_link(path):
     '''Returns a clickable link for path.'''
     fid = get_id(os.path.abspath(path))
+    auth.authenticate_user()
     x = drive_service.files().get(fileId=fid,
                                   supportsAllDrives=True,
                                   fields='webViewLink').execute()
@@ -500,6 +505,7 @@ def gconsole():
 
 def gsuite(fid_or_url, width=1200, height=1000):
     '''Return an iframe that renders the item in a colab.'''
+    auth.authenticate_user()
     if fid_or_url.startswith('http'):
         url = fid_or_url
     else:
