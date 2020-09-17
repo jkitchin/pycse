@@ -498,9 +498,8 @@ def gsuite(fid_or_url, width=1200, height=1000):
     if fid_or_url.startswith('http'):
         url = fid_or_url
     else:
-        fid = fid_from_url(fid_or_url)
-
-        x = drive_service.files().get(fileId=fid,
+        # Assume we have an fid
+        x = drive_service.files().get(fileId=fid_or_url,
                                       supportsAllDrives=True,
                                       fields='webViewLink').execute()
         url = x.get('webViewLink', 'No web link found.')
