@@ -170,9 +170,6 @@ def pdf_from_latex(pdf=None):
         print(f'{apdf} not found')
 
 
-
-
-
 @register_line_magic
 def pdf(line):
     '''Line magic to export a colab to PDF.
@@ -464,4 +461,23 @@ def gdownload(*FILES, **kwargs):
 #        if not kwargs.get('keep', False):
 #            os.unlink(zip)
 
-print('pycse.colab imported')
+##################################################################
+# Fancy outputs
+##################################################################
+
+def gsuite(fid_or_url, width=1200, height=1000):
+    '''Return an iframe that renders the item in a colab.'''
+    if fid_or_url.startswith('http'):
+        url = fid_or_url
+    else:
+        fid = fid_from_url(fid_or_url)
+
+        x = drive_service.files().get(fileId=fid,
+                                      supportsAllDrives=True,
+                                      fields='webViewLink').execute()
+        url = x.get('webViewLink', 'No web link found')
+
+    html = f'''<a href="{url}" target="_blank">Link</a><br>
+    <iframe src="{url}" width="{width}" height="{height}"></iframe>'''
+
+    return HTML(html)
