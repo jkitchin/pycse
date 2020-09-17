@@ -1,6 +1,7 @@
 from datetime import datetime
 import glob
 import io
+from IPython import get_ipython
 from IPython.core.magic import register_line_magic
 from IPython.display import HTML, IFrame
 from nbconvert import HTMLExporter, PDFExporter
