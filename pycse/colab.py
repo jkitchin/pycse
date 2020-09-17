@@ -504,11 +504,13 @@ def gsuite(fid_or_url, width=1200, height=1000):
                                       fields='webViewLink').execute()
         url = x.get('webViewLink', 'No web link found.')
 
+    display(HTML(f'''<a href="{url}" target="_blank">Link</a><br>'''))
+
     # For some reason we cannot embed jamboards. They refuse to connect in the iframe.
     if url.startswith('https://jamboard.google.com/d/'):
         print('Jamboards cannot be embedded yet :(')
         url = None
 
-    display(f'''<a href="{url}" target="_blank">Link</a><br>''')
+
     if url is not None:
         return IFrame(url, width, height)
