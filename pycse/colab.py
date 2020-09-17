@@ -171,7 +171,7 @@ def pdf_from_latex(pdf=None):
 
 
 @register_line_magic
-def pdf(line):
+def pdf(line=''):
     '''Line magic to export a colab to PDF.
     You can have an optional arg -l to use LaTeX, defaults to html->PDF.
     You can have an optional last argument for the filename of the pdf
@@ -510,7 +510,6 @@ def gsuite(fid_or_url, width=1200, height=1000):
     if url.startswith('https://jamboard.google.com/d/'):
         print('Jamboards cannot be embedded yet :(')
         url = None
-
 
     if url is not None:
         return IFrame(url, width, height)
