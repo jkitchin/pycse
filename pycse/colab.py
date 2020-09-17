@@ -50,14 +50,14 @@ def aptinstall(apt_pkg):
                         f'{s.stderr.decode()}')
 
 
-@register_line_magic
-def gimport(fid_or_url):
-    '''Load the python code at fid or url.
-    Also a line magic.'''
-    with gopen(fid_or_url) as f:
-        py = f.read()
-        g = globals()
-        exec(py, g)
+# @register_line_magic
+# def gimport(fid_or_url):
+#     '''Load the python code at fid or url.
+#     Also a line magic.'''
+#     with gopen(fid_or_url) as f:
+#         py = f.read()
+#         g = globals()
+#         exec(py, g)
 
 ##################################################################
 # Exporting functions
@@ -187,7 +187,6 @@ def pdf_from_latex(pdf=None, verbose=False):
         print(f'{apdf} not found')
 
 
-@register_line_magic
 def pdf(line=''):
     '''Line magic to export a colab to PDF.
     You can have an optional arg -l to use LaTeX, defaults to html->PDF.
@@ -207,6 +206,12 @@ def pdf(line=''):
         pdf_from_html(pdf, verbose)
 
 
+# this is hackery so that CI works.
+# it is an error to do this when there is not IPython
+try:
+    pdf = register_line_magic(pdf)
+except:
+    pass
 ##################################################################
 # File utilities
 ##################################################################
