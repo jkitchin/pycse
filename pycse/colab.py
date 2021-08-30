@@ -98,6 +98,7 @@ def pdf_from_html(pdf=None, verbose=False):
     pdf is the name of the PDF to export.
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
     '''
+    print('PDF via wkhtmltopdf')
     fname, fid = current_notebook()
     ipynb = notebook_string(fid)
 
@@ -153,6 +154,7 @@ def pdf_from_weasy(pdf=None, verbose=False):
     pdf is the name of the PDF to export.
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
     '''
+    print('PDF via Weasy')
     fname, fid = current_notebook()
     ipynb = notebook_string(fid)
 
@@ -203,7 +205,7 @@ def pdf_from_latex(pdf=None, verbose=False):
     This is not fast because you have to install texlive.
     verbose is not used right now.
     '''
-
+    print('PDF via LaTeX')
     if not shutil.which('xelatex'):
         aptinstall('texlive-xetex')
 
