@@ -24,6 +24,7 @@ from googleapiclient.discovery import build
 
 DRIVE = None
 
+
 def gdrive():
     '''Get the drive service, authenticate if needed.'''
     global DRIVE
@@ -105,7 +106,6 @@ def pdf_from_html(pdf=None, verbose=False):
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
 
-
     html = fname.replace(".ipynb", ".html")
     if pdf is None:
         pdf = html.replace(".html", ".pdf")
@@ -132,6 +132,56 @@ def pdf_from_html(pdf=None, verbose=False):
         aptinstall('wkhtmltopdf')
 
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf', ahtml, apdf],
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+
+    if verbose:
+        print(f'Conversion exited with non-zero status: {s.returncode}.\n'
+              f'{s.stdout.decode()}\n'
+              f'{s.stderr.decode()}')
+
+    if os.path.exists(apdf):
+        files.download(apdf)
+    else:
+        print('no pdf found.')
+        print(ahtml)
+        print(apdf)
+
+
+def pdf_from_weasy(pdf=None, verbose=False):
+    '''Export the current notebook as a PDF.
+    pdf is the name of the PDF to export.
+    The pdf is not saved in GDrive. Conversion is done from an HTML export.
+    '''
+    fname, fid = current_notebook()
+    ipynb = notebook_string(fid)
+
+    exporter = HTMLExporter()
+
+    nb = nbformat.reads(ipynb, as_version=4)
+    body, resources = exporter.from_notebook_node(nb)
+
+    html = fname.replace(".ipynb", ".html")
+    if pdf is None:
+        pdf = html.replace(".html", ".pdf")
+
+    tmpdirname = tempfile.TemporaryDirectory().name
+
+    if not os.path.isdir(tmpdirname):
+        os.mkdir(tmpdirname)
+
+    ahtml = os.path.join(tmpdirname, html)
+    apdf = os.path.join(tmpdirname, pdf)
+    css = os.path.join(tmpdirname, 'custom.css')
+
+    with open(ahtml, 'w') as f:
+        f.write(body)
+
+    with open(css, 'w') as f:
+        f.write('\n'.join(resources['inlining']['css']))
+
+    subprocess.run(['pip', 'install', 'weasyprint'])
+    subprocess.run(['weasyprint', ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
 
@@ -202,6 +252,8 @@ def pdf(line=''):
     verbose = '-v' in args
     if '-l' in args:
         pdf_from_latex(pdf, verbose)
+    if '-w' in args:
+        pdf_from_weasy(pdf, verbose)
     else:
         pdf_from_html(pdf, verbose)
 
@@ -212,9 +264,12 @@ try:
     pdf = register_line_magic(pdf)
 except:
     pass
+
+
 ##################################################################
 # File utilities
 ##################################################################
+
 
 def fid_from_url(url):
     '''Return a file ID for a file on GDrive from its url.'''
