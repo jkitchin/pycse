@@ -107,7 +107,7 @@ def pdf_from_html(pdf=None, verbose=False):
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
 
-
+    print(f'args: pdf={pdf}, verbose={verbose}')
     if pdf is None:
         html = fname.replace(".ipynb", ".html")
         pdf = html.replace(".html", ".pdf")
