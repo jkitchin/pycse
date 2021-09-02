@@ -113,7 +113,7 @@ def pdf_from_html(pdf=None, verbose=False):
         pdf = html.replace(".html", ".pdf")
     else:
         html = pdf.replace(".pdf", ".html")
-
+    print(f'using html = {html}')
     tmpdirname = tempfile.TemporaryDirectory().name
 
     if not os.path.isdir(tmpdirname):
