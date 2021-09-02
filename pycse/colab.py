@@ -107,9 +107,12 @@ def pdf_from_html(pdf=None, verbose=False):
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
 
-    html = fname.replace(".ipynb", ".html")
+
     if pdf is None:
+        html = fname.replace(".ipynb", ".html")
         pdf = html.replace(".html", ".pdf")
+    else:
+        html = pdf.replace(".pdf", ".html")
 
     tmpdirname = tempfile.TemporaryDirectory().name
 
