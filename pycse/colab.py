@@ -155,14 +155,14 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
 
-    if verbose:
+    if verbose and s.returncode != 0:
         print(f'Conversion exited with non-zero status: {s.returncode}.\n'
               f'{s.stdout.decode()}\n'
               f'{s.stderr.decode()}')
 
     if os.path.exists(apdf):
         files.download(apdf)
-    else:
+    else:1
         print('no pdf found.')
         print(ahtml)
         print(apdf)
