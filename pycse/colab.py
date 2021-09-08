@@ -135,7 +135,11 @@ def pdf_from_html(pdf=None, verbose=False):
     if not shutil.which('wkhtmltopdf'):
         aptinstall('wkhtmltopdf')
 
-    s = subprocess.run(['xvfb-run', 'wkhtmltopdf', ahtml, apdf],
+    s = subprocess.run(['xvfb-run', 'wkhtmltopdf',
+                        '--enable-javascript',
+                        '--no-stop-slow-scripts',
+                        '--javascript-delay', '1000',
+                        ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
 
