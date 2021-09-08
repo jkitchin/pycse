@@ -93,10 +93,12 @@ def notebook_string(fid):
     return ipynb
 
 
-def pdf_from_html(pdf=None, verbose=False):
+def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
     '''Export the current notebook as a PDF.
     pdf is the name of the PDF to export.
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
+    javascript_delay is in ms, and is how long to wait in wkhtmltopdf to let
+    javascript, especially mathjax finish.
     '''
     print('PDF via wkhtmltopdf')
     fname, fid = current_notebook()
@@ -117,6 +119,7 @@ def pdf_from_html(pdf=None, verbose=False):
 
     if verbose:
         print(f'using html = {html}')
+
     tmpdirname = tempfile.TemporaryDirectory().name
 
     if not os.path.isdir(tmpdirname):
@@ -144,7 +147,7 @@ def pdf_from_html(pdf=None, verbose=False):
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf',
                         '--enable-javascript',
                         '--no-stop-slow-scripts',
-                        '--javascript-delay', '5000',
+                        '--javascript-delay', str(javascript_delay),
                         ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
@@ -265,10 +268,13 @@ def pdf(line=''):
         pdf = None
 
     verbose = '-v' in args
+
+    if verbose:
+        print(f'%pdf args = {args}')
+
     if '-l' in args:
         pdf_from_latex(pdf, verbose)
-    if '-w' in args:
-        pdf_from_weasy(pdf, verbose)
+
     else:
         pdf_from_html(pdf, verbose)
 
@@ -385,7 +391,7 @@ def gopen(fid_or_url_or_path, mode='r'):
 
 def get_path(fid_or_url):
     """Return the path to an fid or url.
-    The path is relative to the mount point."""
+    The path i's relative to the mount point."""
     if fid_or_url.startswith('http'):
         fid = fid_from_url(fid_or_url)
     else:
