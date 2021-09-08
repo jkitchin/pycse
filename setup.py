@@ -1,4 +1,4 @@
-# Copyright 2015-2019 John Kitchin
+# Copyright 2015-2021 John Kitchin
 # (see accompanying license files for details).
 from setuptools import setup
 
