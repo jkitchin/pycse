@@ -278,7 +278,7 @@ def pdf(line=''):
     if '-l' in args:
         pdf_from_latex(pdf, verbose)
 
-    else:1
+    else:
         pdf_from_html(pdf, verbose)
 
 
