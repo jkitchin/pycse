@@ -107,13 +107,16 @@ def pdf_from_html(pdf=None, verbose=False):
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
 
-    print(f'args: pdf={pdf}, verbose={verbose}')
+    if verbose:
+        print(f'args: pdf={pdf}, verbose={verbose}')
     if pdf is None:
         html = fname.replace(".ipynb", ".html")
         pdf = html.replace(".html", ".pdf")
     else:
         html = pdf.replace(".pdf", ".html")
-    print(f'using html = {html}')
+
+    if verbose:
+        print(f'using html = {html}')
     tmpdirname = tempfile.TemporaryDirectory().name
 
     if not os.path.isdir(tmpdirname):
@@ -135,12 +138,13 @@ def pdf_from_html(pdf=None, verbose=False):
     if not shutil.which('wkhtmltopdf'):
         aptinstall('wkhtmltopdf')
 
-    print('Running with delay')
+    if verbose:
+        print('Running with delay')
 
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf',
                         '--enable-javascript',
                         '--no-stop-slow-scripts',
-                        '--javascript-delay', '1000',
+                        '--javascript-delay', '5000',
                         ahtml, apdf],
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
