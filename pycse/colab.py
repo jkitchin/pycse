@@ -100,7 +100,9 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
     javascript_delay is in ms, and is how long to wait in wkhtmltopdf to let
     javascript, especially mathjax finish.
     '''
-    print('PDF via wkhtmltopdf')
+    if verbose:
+        print('PDF via wkhtmltopdf')
+
     fname, fid = current_notebook()
     ipynb = notebook_string(fid)
 
@@ -170,7 +172,8 @@ def pdf_from_weasy(pdf=None, verbose=False):
     pdf is the name of the PDF to export.
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
     '''
-    print('PDF via Weasy')
+    if verbose:
+        print('PDF via Weasy')
     fname, fid = current_notebook()
     ipynb = notebook_string(fid)
 
@@ -200,8 +203,8 @@ def pdf_from_weasy(pdf=None, verbose=False):
 
     subprocess.run(['pip', 'install', 'weasyprint'])
     subprocess.run(['weasyprint', ahtml, apdf],
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE)
+                   stdout=subprocess.PIPE,
+                   stderr=subprocess.PIPE)
 
     if verbose:
         print(f'Conversion exited with non-zero status: {s.returncode}.\n'
@@ -275,7 +278,7 @@ def pdf(line=''):
     if '-l' in args:
         pdf_from_latex(pdf, verbose)
 
-    else:
+    else:1
         pdf_from_html(pdf, verbose)
 
 
