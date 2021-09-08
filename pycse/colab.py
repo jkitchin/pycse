@@ -162,7 +162,7 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
 
     if os.path.exists(apdf):
         files.download(apdf)
-    else:1
+    else:
         print('no pdf found.')
         print(ahtml)
         print(apdf)
