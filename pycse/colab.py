@@ -113,6 +113,7 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
 
     if verbose:
         print(f'args: pdf={pdf}, verbose={verbose}')
+
     if pdf is None:
         html = fname.replace(".ipynb", ".html")
         pdf = html.replace(".html", ".pdf")
@@ -144,7 +145,7 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
         aptinstall('wkhtmltopdf')
 
     if verbose:
-        print('Running with delay')
+        print(f'Running with delay: {javascript_delay}')
 
     s = subprocess.run(['xvfb-run', 'wkhtmltopdf',
                         '--enable-javascript',
@@ -167,56 +168,57 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
         print(apdf)
 
 
-def pdf_from_weasy(pdf=None, verbose=False):
-    '''Export the current notebook as a PDF.
-    pdf is the name of the PDF to export.
-    The pdf is not saved in GDrive. Conversion is done from an HTML export.
-    '''
-    if verbose:
-        print('PDF via Weasy')
-    fname, fid = current_notebook()
-    ipynb = notebook_string(fid)
+        # This never worked for me in colab2
+# def pdf_from_weasy(pdf=None, verbose=False):
+#     '''Export the current notebook as a PDF.
+#     pdf is the name of the PDF to export.
+#     The pdf is not saved in GDrive. Conversion is done from an HTML export.
+#     '''
+#     if verbose:
+#         print('PDF via Weasy')
+#     fname, fid = current_notebook()
+#     ipynb = notebook_string(fid)
 
-    exporter = HTMLExporter()
+#     exporter = HTMLExporter()
 
-    nb = nbformat.reads(ipynb, as_version=4)
-    body, resources = exporter.from_notebook_node(nb)
+#     nb = nbformat.reads(ipynb, as_version=4)
+#     body, resources = exporter.from_notebook_node(nb)
 
-    html = fname.replace(".ipynb", ".html")
-    if pdf is None:
-        pdf = html.replace(".html", ".pdf")
+#     html = fname.replace(".ipynb", ".html")
+#     if pdf is None:
+#         pdf = html.replace(".html", ".pdf")
 
-    tmpdirname = tempfile.TemporaryDirectory().name
+#     tmpdirname = tempfile.TemporaryDirectory().name
 
-    if not os.path.isdir(tmpdirname):
-        os.mkdir(tmpdirname)
+#     if not os.path.isdir(tmpdirname):
+#         os.mkdir(tmpdirname)
 
-    ahtml = os.path.join(tmpdirname, html)
-    apdf = os.path.join(tmpdirname, pdf)
-    css = os.path.join(tmpdirname, 'custom.css')
+#     ahtml = os.path.join(tmpdirname, html)
+#     apdf = os.path.join(tmpdirname, pdf)
+#     css = os.path.join(tmpdirname, 'custom.css')
 
-    with open(ahtml, 'w') as f:
-        f.write(body)
+#     with open(ahtml, 'w') as f:
+#         f.write(body)
 
-    with open(css, 'w') as f:
-        f.write('\n'.join(resources['inlining']['css']))
+#     with open(css, 'w') as f:
+#         f.write('\n'.join(resources['inlining']['css']))
 
-    subprocess.run(['pip', 'install', 'weasyprint'])
-    subprocess.run(['weasyprint', ahtml, apdf],
-                   stdout=subprocess.PIPE,
-                   stderr=subprocess.PIPE)
+#     subprocess.run(['pip', 'install', 'weasyprint'])
+#     subprocess.run(['weasyprint', ahtml, apdf],
+#                    stdout=subprocess.PIPE,
+#                    stderr=subprocess.PIPE)
 
-    if verbose:
-        print(f'Conversion exited with non-zero status: {s.returncode}.\n'
-              f'{s.stdout.decode()}\n'
-              f'{s.stderr.decode()}')
+#     if verbose:
+#         print(f'Conversion exited with non-zero status: {s.returncode}.\n'
+#               f'{s.stdout.decode()}\n'
+#               f'{s.stderr.decode()}')
 
-    if os.path.exists(apdf):
-        files.download(apdf)
-    else:
-        print('no pdf found.')
-        print(ahtml)
-        print(apdf)
+#     if os.path.exists(apdf):
+#         files.download(apdf)
+#     else:
+#         print('no pdf found.')
+#         print(ahtml)
+#         print(apdf)
 
 
 def pdf_from_latex(pdf=None, verbose=False):
@@ -261,6 +263,7 @@ def pdf_from_latex(pdf=None, verbose=False):
 def pdf(line=''):
     '''Line magic to export a colab to PDF.
     You can have an optional arg -l to use LaTeX, defaults to html->PDF.
+    You can have an optional arg -d integer for a delay in seconds for the html to pdf.
     You can have an optional last argument for the filename of the pdf
     '''
     args = shlex.split(line)
@@ -279,7 +282,14 @@ def pdf(line=''):
         pdf_from_latex(pdf, verbose)
 
     else:
-        pdf_from_html(pdf, verbose)
+        if '-d' in args:
+            i = args.index('-d')
+            # The delay should be in microseconds.
+            delay = int(args[i + 1]) * 1000
+        else:
+            delay = 10000
+
+        pdf_from_html(pdf, verbose, delay)
 
 
 # this is hackery so that CI works.
