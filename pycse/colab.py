@@ -267,7 +267,7 @@ def pdf(line=''):
     You can have an optional last argument for the filename of the pdf
     '''
     args = shlex.split(line)
-    print(f'%PDF args = {args}')
+
     if args and args[-1].endswith('.pdf'):
         pdf = args[-1]
     else:
