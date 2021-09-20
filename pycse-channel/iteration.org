@@ -1,0 +1,285 @@
+[[elisp:(progn (org-show-mode) (org-show-start-slideshow))]]
+
+* Iteration in Python                                                 :slide:
+
+#+BEGIN_SRC emacs-lisp-slide
+(org-show-animate `("Let's get loopy - Iteration in Python" "John Kitchin"))
+#+END_SRC
+
+** Getting started with loops                                         :slide:
+#+attr_org: :width 300
+[[././screenshots/2021-09-19:15:51:28.png]]
+
+We use iteration to repeat tasks in Python, for example:
+- to do something to each item in a list
+  - like accumulate a value (sum, product, ...)
+  - filter them to identify subsets
+  - create new lists
+
+A crucial idea in Python is that some objects are /iterable/, which means we can conveniently loop over every item in an iterable object, temporarily assign it to a variable, and do something with the variable in a loop.
+
+Here are a few things that are iterable:
+- lists :: each item in the list
+- tuples :: each item in the tuple
+- strings :: each character
+- numpy.arrays :: each item in the array
+- dictionaries :: each key in the dictionary
+- sets :: each item in the set
+- generators :: whatever the next generated item is
+
+In this example we will focus on lists and built-in generators like ~range~
+
+** for loops on iterables                                             :slide:
+
+#+BEGIN_SRC jupyter-python
+for item in [1, 2, 3, 4]:
+    print(item)
+#+END_SRC
+
+#+RESULTS:
+: 1
+: 2
+: 3
+: 4
+
+#+BEGIN_SRC jupyter-python
+for item in '1, 2, 3, 4':
+    print(item)
+#+END_SRC
+
+#+RESULTS:
+: 1
+: ,
+:
+: 2
+: ,
+:
+: 3
+: ,
+:
+: 4
+
+*** enumerate                                                         :slide:
+
+#+BEGIN_SRC jupyter-python
+B = ['a', 'b', 'c', 'd']
+for i, item in enumerate([1, 2, 3 ,4]):
+    print(f'{i}. {item} {B[i]}')
+#+END_SRC
+
+#+RESULTS:
+: 0. 1 a
+: 1. 2 b
+: 2. 3 c
+: 3. 4 d
+
+
+*** zip                                                               :slide:
+
+
+#+BEGIN_SRC jupyter-python
+A = [1, 2, 3, 4]
+B = ['a', 'b', 'c', 'd']
+
+
+for i, (a, b) in enumerate(zip(A, B)):
+    print(i, a, b)
+#+END_SRC
+
+#+RESULTS:
+: 0 1 a
+: 1 2 b
+: 2 3 c
+: 3 4 d
+
+*** gotcha                                                            :slide:
+
+#+BEGIN_SRC jupyter-python
+i = 42  # this important answer
+
+for i, (a, b) in enumerate(zip(A, B)):
+    print(i, a, b)
+
+i
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: 0 1 a
+: 1 2 b
+: 2 3 c
+: 3 4 d
+: 3
+:END:
+
+** list comprehension                                                 :slide:
+
+#+BEGIN_SRC jupyter-python
+A = 1, 2, 3, 4
+
+x = 42
+result = [2 * x for x in A]
+result, x
+#+END_SRC
+
+#+RESULTS:
+| (2 4 6 8) | 42 |
+
+
+#+BEGIN_SRC jupyter-python
+result = []
+for x in A:
+    result += [2 * x]
+result, x
+#+END_SRC
+
+#+RESULTS:
+| (2 4 6 8) | 4 |
+
+#+BEGIN_SRC jupyter-python
+for i in range(3):
+    print(i)
+#+END_SRC
+
+#+RESULTS:
+: 0
+: 1
+: 2
+
+
+** while loop                                                         :slide:
+
+
+#+BEGIN_SRC jupyter-python
+a = 10
+while a > 1:
+    a /= 2
+    print(a)
+#+END_SRC
+
+#+RESULTS:
+: 5.0
+: 2.5
+: 1.25
+: 0.625
+
+*** break                                                             :slide:
+
+#+BEGIN_SRC jupyter-python
+a = 10
+i = 0
+while True:
+    if (a == 0) or (i >= 10):
+        break
+    a /= 2
+    print(a)
+    i += 1
+
+print(a, i)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+5.0
+2.5
+1.25
+0.625
+0.3125
+0.15625
+0.078125
+0.0390625
+0.01953125
+0.009765625
+0.009765625 10
+#+end_example
+
+** Nested loops                                                       :slide:
+
+#+BEGIN_SRC jupyter-python
+for i in range(3):
+    for j in range(3):
+        print(i, j)
+        if i == 1 and j == 1:
+            break
+#+END_SRC
+
+#+RESULTS:
+: 0 0
+: 0 1
+: 0 2
+: 1 0
+: 1 1
+: 2 0
+: 2 1
+: 2 2
+
+
+*** Breaking out of nested loops                                      :slide:
+
+**** boolean flags                                                    :slide:
+
+#+BEGIN_SRC jupyter-python
+nonlocal_exit = False
+
+for i in range(3):
+    if nonlocal_exit:
+        break
+    for j in range(3):
+        print(i, j)
+        if i == 1 and j == 1:
+            nonlocal_exit = True
+            break
+#+END_SRC
+
+#+RESULTS:
+: 0 0
+: 0 1
+: 0 2
+: 1 0
+: 1 1
+
+**** return from a function                                           :slide:
+
+#+BEGIN_SRC jupyter-python
+def func():
+    for i in range(3):
+        for j in range(3):
+            print(i, j)
+            if i==1 and j==1:
+                return
+func()
+#+END_SRC
+
+#+RESULTS:
+: 0 0
+: 0 1
+: 0 2
+: 1 0
+: 1 1
+
+
+**** catching Exceptions                                              :slide:
+
+#+BEGIN_SRC jupyter-python
+class NonlocalExit(Exception):
+    pass
+
+try:
+    for i in range(3):
+        for j in range(3):
+            print(i, j)
+            if i == 1 and j == 1:
+                raise NonlocalExit
+except NonlocalExit:
+    pass
+
+#+END_SRC
+
+#+RESULTS:
+: 0 0
+: 0 1
+: 0 2
+: 1 0
+: 1 1
+
+** The end!
