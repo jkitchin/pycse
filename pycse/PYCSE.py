@@ -14,7 +14,7 @@ import warnings
 import numpy as np
 from scipy.stats.distributions import t
 from scipy.optimize import curve_fit
-
+from scipy.integrate import solve_ivp
 
 # * Linear regression
 
@@ -147,6 +147,41 @@ def nlinfit(model, x, y, p0, alpha=0.05):
 
     return (pars, np.array(pint), np.array(SE))
 
+# * ivp
+
+
+def ivp(f, tspan, y0, *args, **kwargs):
+    """A friendlier version of solve_ivp.
+
+    Parameters
+    ----------
+
+    f : function
+    callable y'(x, y) = f(x, y)
+
+    tspan : array
+    The x points you want the solution at
+
+    y0 : array
+    Initial conditions
+
+    *args : type
+    arbitrary positional arguments to pass to solve_ivp
+
+    **kwargs : type
+    arbitrary kwargs to pass to solve_ivp
+
+    Returns
+    -------
+    solution from solve_ivp
+    """
+    t0, tf = tspan[0], tspan[-1]
+
+    # make the max_Step the smallest step in tspan, or what is in kwargs.
+    max_step = kwargs.get('max_step', min(np.diff(tspan)))
+    sol = solve_ivp(f, (t0, tf), y0, t_eval=tspan, max_step=max_step,
+                    *args, **kwargs)
+    return sol
 
 
 # * End
