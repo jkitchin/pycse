@@ -1,0 +1,835 @@
+* Linear algebra
+** Potential gotchas in linear algebra in numpy
+   :PROPERTIES:
+   :categories: linear algebra, gotcha
+   :date:     2013/03/12 22:19:53
+   :updated:  2013/03/12 22:19:53
+   :END:
+Numpy has some gotcha features for linear algebra purists. The first is that a 1d array is neither a row, nor a column vector. That is, $a$ = $a^T$ if $a$ is a 1d array. That means you can take the dot product of $a$ with itself, without transposing the second argument. This would not be allowed in Matlab.
+
+#+BEGIN_SRC python :session
+import numpy as np
+
+a = np.array([0, 1, 2])
+print(a.shape)
+print(a)
+print(a.T)
+
+
+print(np.dot(a, a))
+print(np.dot(a, a.T))
+#+END_SRC
+
+#+RESULTS:
+: (3,)
+: [0 1 2]
+: [0 1 2]
+: 5
+: 5
+
+Compare the syntax to the new Python 3.5 syntax:
+
+#+BEGIN_SRC python :session
+print(a @ a)
+#+END_SRC
+
+#+RESULTS:
+: 5
+
+Compare the previous behavior with this 2d array. In this case, you cannot take the dot product of $b$ with itself, because the dimensions are incompatible. You must transpose the second argument to make it dimensionally consistent. Also, the result of the dot product is not a simple scalar, but a 1 \times 1 array.
+
+#+BEGIN_SRC python :session
+b = np.array([[0, 1, 2]])
+print(b.shape)
+print(b)
+print(b.T)
+
+print(np.dot(b, b))    # this is not ok, the dimensions are wrong.
+print(np.dot(b, b.T))
+print(np.dot(b, b.T).shape)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+(1, 3)
+[[0 1 2]]
+[[0]
+ [1]
+ [2]]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: shapes (1,3) and (1,3) not aligned: 3 (dim 1) != 1 (dim 0)
+[[5]]
+(1, 1)
+#+end_example
+
+Try to figure this one out! x is a column vector, and y is a 1d vector. Just by adding them you get a 2d array.
+#+BEGIN_SRC python :session
+x = np.array([[2], [4], [6], [8]])
+y = np.array([1, 1, 1, 1, 1, 2])
+print(x + y)
+#+END_SRC
+
+#+RESULTS:
+: [[ 3  3  3  3  3  4]
+:  [ 5  5  5  5  5  6]
+:  [ 7  7  7  7  7  8]
+:  [ 9  9  9  9  9 10]]
+
+Or this crazy alternative way to do the same thing.
+#+BEGIN_SRC python :session
+x = np.array([2, 4, 6, 8])
+y = np.array([1, 1, 1, 1, 1, 1, 2])
+
+print(x[:, np.newaxis] + y)
+#+END_SRC
+
+#+RESULTS:
+: [[ 3  3  3  3  3  3  4]
+:  [ 5  5  5  5  5  5  6]
+:  [ 7  7  7  7  7  7  8]
+:  [ 9  9  9  9  9  9 10]]
+
+In the next example,  we have a 3 element vector and a 4 element vector. We convert $b$ to a 2D array with np.newaxis, and compute the outer product of the two arrays. The result is a 4 \times 3 array.
+#+BEGIN_SRC python :session
+a = np.array([1, 2, 3])
+b = np.array([10, 20, 30, 40])
+
+print(a * b[:, np.newaxis])
+#+END_SRC
+
+#+RESULTS:
+: [[ 10  20  30]
+:  [ 20  40  60]
+:  [ 30  60  90]
+:  [ 40  80 120]]
+
+These concepts are known in numpy as array broadcasting. See http://www.scipy.org/EricsBroadcastingDoc and http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html for more details.
+
+These are points to keep in mind, as the operations do not strictly follow the conventions of linear algebra, and may be confusing at times.
+
+** Solving linear equations
+   :PROPERTIES:
+   :categories: Linear algebra
+   :date:     2013/02/27 13:13:06
+   :updated:  2013/02/27 13:13:06
+   :END:
+Given these equations, find [x1, x2, x3]
+\begin{eqnarray}
+x_1 - x_2 + x_3 &=& 0 \\
+10 x_2 + 25 x_3 &=& 90 \\
+20 x_1 + 10 x_2 &=& 80
+\end{eqnarray}
+
+reference: Kreysig, Advanced Engineering Mathematics, 9th ed. Sec. 7.3
+
+When solving linear equations, we can represent them in matrix form. The we simply use =numpy.linalg.solve= to get the solution.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [20, 10, 0]])
+
+b = np.array([0, 90, 80])
+
+x = np.linalg.solve(A, b)
+print(x)
+print(np.dot(A,x))
+
+# Let us confirm the solution.
+# this shows one element is not equal because of float tolerance
+print(np.dot(A,x) == b)
+
+# here we use a tolerance comparison to show the differences is less
+# than a defined tolerance.
+TOLERANCE = 1e-12
+print(np.abs((np.dot(A, x) - b)) <= TOLERANCE)
+#+END_SRC
+
+#+RESULTS:
+: [ 2.  4.  2.]
+: [  3.10862447e-15   9.00000000e+01   8.00000000e+01]
+: [False  True  True]
+: [ True  True  True]
+
+It can be useful to confirm there should be a solution, e.g. that the equations are all independent. The matrix rank will tell us that. Note that numpy:rank does not give you the matrix rank, but rather the number of dimensions of the array. We compute the rank by computing the number of singular values of the matrix that are greater than zero, within a prescribed tolerance. We use the =numpy.linalg.svd= function for that. In Matlab you would use the rref command to see if there are any rows that are all zero, but this command does not exist in numpy. That command does not have practical use in numerical linear algebra and has not been implemented.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [20, 10, 0]])
+
+b = np.array([0, 90, 80])
+
+# determine number of independent rows in A we get the singular values
+# and count the number greater than 0.
+TOLERANCE = 1e-12
+u, s, v = np.linalg.svd(A)
+print('Singular values: {0}'.format(s))
+print('# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE)))
+
+# to illustrate a case where there are only 2 independent rows
+# consider this case where row3 = 2*row2.
+A = np.array([[1, -1, 1],
+              [0, 10, 25],
+              [0, 20, 50]])
+
+u, s, v = np.linalg.svd(A)
+
+print('Singular values: {0}'.format(s))
+print('# of independent rows: {0}'.format(np.sum(np.abs(s) > TOLERANCE)))
+#+END_SRC
+
+#+RESULTS:
+: Singular values: [ 27.63016717  21.49453733   1.5996022 ]
+: # of independent rows: 3
+: Singular values: [  6.02105520e+01   1.63994657e+00   1.72274992e-15]
+: # of independent rows: 2
+
+[[http://matlab.cheme.cmu.edu/2011/08/01/solving-linear-equations/][Matlab comparison]]
+** Rules for transposition
+   :PROPERTIES:
+   :categories: Linear algebra
+   :date:     2013/02/27 13:12:45
+   :updated:  2013/02/27 13:12:45
+   :END:
+index:transpose
+[[http://matlab.cheme.cmu.edu/2011/08/01/illustrating-matrix-transpose-rules-in-matrix-multiplication/][Matlab comparison]]
+
+Here are the four rules for matrix multiplication and transposition
+
+1. $(\mathbf{A}^T)^T = \mathbf{A}$
+
+2. $(\mathbf{A}+\mathbf{B})^T = \mathbf{A}^T+\mathbf{B}^T$
+
+3. $(\mathit{c}\mathbf{A})^T = \mathit{c}\mathbf{A}^T$
+
+4. $(\mathbf{AB})^T = \mathbf{B}^T\mathbf{A}^T$
+
+reference: Chapter 7.2 in Advanced Engineering Mathematics, 9th edition.
+by E. Kreyszig.
+
+*** The transpose in Python
+
+There are two ways to get the transpose of a matrix: with a notation, and
+with a function.
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+# function
+print(np.transpose(A))
+
+# notation
+print(A.T)
+#+END_SRC
+
+#+RESULTS:
+: [[ 5  4]
+:  [-8  0]
+:  [ 1  0]]
+: [[ 5  4]
+:  [-8  0]
+:  [ 1  0]]
+
+*** Rule 1
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+print(np.all(A == (A.T).T))
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 2
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+B = np.array([[3, 4, 5], [1, 2,3]])
+
+print(np.all( A.T + B.T == (A + B).T))
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 3
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+c = 2.1
+
+print(np.all((c*A).T == c*A.T))
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Rule 4
+
+#+BEGIN_SRC python
+import numpy as np
+A = np.array([[5, -8, 1],
+              [4, 0, 0]])
+
+B = np.array([[0, 2],
+              [1, 2],
+              [6, 7]])
+
+print(np.all(np.dot(A, B).T == np.dot(B.T, A.T)))
+#+END_SRC
+
+#+RESULTS:
+: True
+
+*** Summary
+That wraps up showing numerically the transpose rules work for these examples.
+** Sums products and linear algebra notation - avoiding loops where possible
+   :PROPERTIES:
+   :categories: Linear algebra
+   :date:     2013/02/26 09:00:00
+   :updated:  2013/02/27 13:12:15
+   :END:
+
+[[http://matlab.cheme.cmu.edu/2012/01/03/sums-products-and-linear-algebra-notation-avoiding-loops-where-possible/][Matlab comparison]]
+
+Today we examine some methods of linear algebra that allow us to
+avoid writing explicit loops in Matlab for some kinds of
+mathematical operations.
+
+Consider the operation on two vectors $\bf{a}$
+and $\bf{b}$.
+
+
+ $$y=\sum\limits_{i=1}^n a_ib_i$$
+
+a = [1 2 3 4 5]
+
+b = [3 6 8 9 10]
+
+*** Old-fashioned way with a loop
+We can compute this with a loop, where you initialize y, and then
+ add the product of the ith elements of a and b to y in each
+iteration of the loop. This is known to be slow for large vectors
+
+#+BEGIN_SRC python
+a = [1, 2, 3, 4, 5]
+b = [3, 6, 8, 9, 10]
+
+sum = 0
+for i in range(len(a)):
+    sum = sum + a[i] * b[i]
+print(sum)
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+This is an old fashioned style of coding. A more modern, pythonic approach is:
+#+BEGIN_SRC python
+a = [1, 2, 3, 4, 5]
+b = [3, 6, 8, 9, 10]
+
+sum = 0
+for x,y in zip(a,b):
+    sum += x * y
+print(sum)
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** The numpy approach
+The most compact method is to use the  methods in numpy.
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+b = np.array([3, 6, 8, 9, 10])
+
+print(np.sum(a * b))
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** Matrix algebra approach.
+The operation defined above is actually a dot product. We an directly compute the dot product in numpy. Note that with 1d arrays, python knows what to do and does not require any transpose operations.
+
+#+BEGIN_SRC python
+import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+b = np.array([3, 6, 8, 9, 10])
+
+print(np.dot(a, b))
+#+END_SRC
+
+#+RESULTS:
+: 125
+
+*** Another example
+Consider $y = \sum\limits_{i=1}^n w_i x_i^2$. This operation is like a weighted sum of squares.
+The old-fashioned way to do this is with a loop.
+
+#+BEGIN_SRC python
+w = [0.1, 0.25, 0.12, 0.45, 0.98];
+x = [9, 7, 11, 12, 8];
+y = 0
+for wi, xi in zip(w,x):
+   y += wi * xi**2
+print(y)
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+Compare this to the more modern numpy approach.
+
+#+BEGIN_SRC python
+import numpy as np
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.sum(w * x**2)
+print(y)
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+We can also express this in matrix algebra form. The operation is equivalent to $y = \vec{x} \cdot D_w \cdot \vec{x}^T$ where $D_w$ is a diagonal matrix with the weights on the diagonal.
+
+#+BEGIN_SRC python
+import numpy as np
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.dot(x, np.dot(np.diag(w), x))
+print(y)
+#+END_SRC
+
+#+RESULTS:
+: 162.39
+
+This last form avoids explicit loops and sums, and relies on fast linear algebra routines.
+
+*** Last example
+Consider the sum of the product of three vectors. Let $y = \sum\limits_{i=1}^n w_i x_i y_i$. This is like a weighted sum of products.
+
+#+BEGIN_SRC python
+import numpy as np
+
+w = np.array([0.1, 0.25, 0.12, 0.45, 0.98])
+x = np.array([9, 7, 11, 12, 8])
+y = np.array([2, 5, 3, 8, 0])
+
+print(np.sum(w * x * y))
+print(np.dot(w, np.dot(np.diag(x), y)))
+#+END_SRC
+
+#+RESULTS:
+: 57.71
+: 57.71
+
+
+*** Summary
+We showed examples of the following equalities between traditional
+sum notations and linear algebra
+
+
+ $$\bf{a}\bf{b}=\sum\limits_{i=1}^n a_ib_i$$
+
+ $$\bf{x}\bf{D_w}\bf{x^T}=\sum\limits_{i=1}^n w_ix_i^2$$
+
+
+ $$\bf{x}\bf{D_w}\bf{y^T}=\sum\limits_{i=1}^n w_i x_i y_i$$
+
+These relationships enable one to write the sums as a single line of
+python code, which utilizes fast linear algebra subroutines, avoids
+the construction of slow loops, and reduces the opportunity for
+errors in the code. Admittedly, it introduces the opportunity for
+new types of errors, like using the wrong relationship, or linear
+algebra errors due to matrix size mismatches.
+** Determining linear independence of a set of vectors
+   :PROPERTIES:
+   :categories: Linear algebra
+   :date:     2013/03/01 16:44:46
+   :updated:  2013/05/05 14:10:05
+   :tags:     reaction engineering
+   :END:
+ [[http://matlab.cheme.cmu.edu/2011/08/02/determining-linear-independence-of-a-set-of-vectors/][Matlab post]]
+Occasionally we have a set of vectors and we need to determine whether the vectors are linearly independent of each other. This may be necessary to determine if the vectors form a basis, or to determine how many independent equations there are, or to determine how many independent reactions there are.
+
+Reference: Kreysig, Advanced Engineering Mathematics, sec. 7.4
+
+Matlab provides a rank command which gives you the number of singular values greater than some tolerance. The numpy.rank function, unfortunately, does not do that. It returns the number of dimensions in the array. We will just compute the rank from singular value decomposition.
+
+The default tolerance used in Matlab is max(size(A))*eps(norm(A)). Let us break that down. eps(norm(A)) is the positive distance from abs(X) to the next larger in magnitude floating point number of the same precision as X. Basically, the smallest significant number. We multiply that by the size of A, and take the largest number. We have to use some judgment in what the tolerance is, and what "zero" means.
+
+#+BEGIN_SRC python :session
+import numpy as np
+v1 = [6, 0, 3, 1, 4, 2];
+v2 = [0, -1, 2, 7, 0, 5];
+v3 = [12, 3, 0, -19, 8, -11];
+
+A = np.row_stack([v1, v2, v3])
+
+# matlab definition
+eps = np.finfo(np.linalg.norm(A).dtype).eps
+TOLERANCE = max(eps * np.array(A.shape))
+
+U, s, V = np.linalg.svd(A)
+print(s)
+print(np.sum(s > TOLERANCE))
+
+TOLERANCE = 1e-14
+print(np.sum(s > TOLERANCE))
+#+END_SRC
+
+#+RESULTS:
+: [  2.75209239e+01   9.30584482e+00   1.15680550e-15]
+: 2
+: 2
+
+You can see if you choose too small a TOLERANCE, nothing looks like zero. the result with TOLERANCE=1e-14 suggests the rows are not linearly independent. Let us show that one row can be expressed as a linear combination of the other rows.
+
+The number of rows is greater than the rank, so these vectors are not
+independent. Let's demonstrate that one vector can be defined as a linear
+combination of the other two vectors. Mathematically we represent this
+as:
+
+$x_1 \mathit{v1} + x_2 \mathit{v2} = v3$
+
+or
+
+$[x_1 x_2][v1; v2] = v3$
+
+This is not the usual linear algebra form of Ax = b. To get there, we
+transpose each side of the equation to get:
+
+ [v1.T v2.T][x_1; x_2] = v3.T
+
+which is the form Ax = b. We solve it in a least-squares sense.
+
+#+BEGIN_SRC python :session
+A = np.column_stack([v1, v2])
+x = np.linalg.lstsq(A, v3)
+print(x[0])
+#+END_SRC
+
+#+RESULTS:
+: [ 2. -3.]
+
+This shows that v3 = 2*v1 - 3*v2
+
+*** another example
+#+BEGIN_SRC python :session
+#Problem set 7.4 #17
+import numpy as np
+
+v1 = [0.2, 1.2, 5.3, 2.8, 1.6]
+v2 = [4.3, 3.4, 0.9, 2.0, -4.3]
+
+A = np.row_stack([v1, v2])
+U, s, V = np.linalg.svd(A)
+print(s)
+#+END_SRC
+
+#+RESULTS:
+: [ 7.57773162  5.99149259]
+
+You can tell by inspection the rank is 2 because there are no near-zero singular values.
+
+*** Near deficient rank
+
+the rank command roughly works in the following way: the matrix is converted to a reduced row echelon form, and then the number of rows that are not all equal to zero are counted. Matlab uses a tolerance to determine what is equal to zero. If there is uncertainty in the numbers, you may have to define what zero is, e.g. if the absolute value of a number is less than 1e-5, you may consider that close enough to be zero. The default tolerance is usually very small, of order 1e-15. If we believe that any number less than 1e-5 is practically equivalent to zero, we can use that information to compute the rank like this.
+
+#+BEGIN_SRC python
+import numpy as np
+
+A = [[1, 2, 3],
+     [0, 2, 3],
+     [0, 0, 1e-6]]
+
+U, s, V = np.linalg.svd(A)
+print(s)
+print(np.sum(np.abs(s) > 1e-15))
+print(np.sum(np.abs(s) > 1e-5))
+#+END_SRC
+
+#+RESULTS:
+: [  5.14874857e+00   7.00277208e-01   5.54700196e-07]
+: 3
+: 2
+
+*** Application to independent chemical reactions.
+
+reference: Exercise 2.4 in Chemical Reactor Analysis and Design Fundamentals by Rawlings and Ekerdt.
+
+The following reactions are proposed in the hydrogenation of bromine:
+
+Let this be our species vector: v = [H2 H Br2 Br HBr].T
+
+the reactions are then defined by M*v where M is a stoichometric matrix in which each row represents a reaction with negative stoichiometric coefficients for reactants, and positive stoichiometric coefficients for products. A stoichiometric coefficient of 0 is used for species not participating in the reaction.
+
+#+BEGIN_SRC python
+import numpy as np
+
+#    [H2  H Br2 Br HBr]
+M = [[-1,  0, -1,  0,  2],  # H2 + Br2 == 2HBR
+     [ 0,  0, -1,  2,  0],  # Br2 == 2Br
+     [-1,  1,  0, -1,  1],  # Br + H2 == HBr + H
+     [ 0, -1, -1,  1,  1],  # H + Br2 == HBr + Br
+     [ 1, -1,  0,  1,  -1], # H + HBr == H2 + Br
+     [ 0,  0,  1, -2,  0]]  # 2Br == Br2
+
+U, s, V = np.linalg.svd(M)
+print(s)
+print(np.sum(np.abs(s) > 1e-15))
+
+import sympy
+M = sympy.Matrix(M)
+reduced_form, inds = M.rref()
+
+print(reduced_form)
+
+labels = ['H2',  'H', 'Br2', 'Br', 'HBr']
+for row in reduced_form.tolist():
+    s = '0 = '
+    for nu,species in zip(row,labels):
+        if nu != 0:
+
+            s += ' {0:+d}{1}'.format(int(nu), species)
+    if s != '0 = ':
+        print(s)
+#+END_SRC
+
+#+RESULTS:
+: [  3.84742803e+00   3.32555975e+00   1.46217301e+00   4.15614917e-16
+:    2.11915542e-17]
+: 3
+: Matrix([[1, 0, 0, 2, -2], [0, 1, 0, 1, -1], [0, 0, 1, -2, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+: 0 =  +1H2 +2Br -2HBr
+: 0 =  +1H +1Br -1HBr
+: 0 =  +1Br2 -2Br
+
+6 reactions are given, but the rank of the matrix is only 3. so there
+are only three independent reactions. You can see that reaction 6 is just
+the opposite of reaction 2, so it is clearly not independent. Also,
+reactions 3 and 5 are just the reverse of each other, so one of them can
+also be eliminated. finally, reaction 4 is equal to reaction 1 minus
+reaction 3.
+
+There are many possible independent reactions. In the code above, we use sympy to put the matrix into reduced row echelon form, which enables us to identify three independent reactions, and shows that three rows are all zero, i.e. they are not independent of the other three reactions. The choice of independent reactions is not unique.
+
+** Reduced row echelon form
+
+There is a nice discussion [[http://numpy-discussion.10968.n7.nabble.com/Reduced-row-echelon-form-td16486.html][here]] on why there is not a rref command in numpy, primarily because one rarely actually needs it in linear algebra. Still, it is so often taught, and it helps visually see what the rank of a matrix is that I wanted to examine ways to get it.
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Matrix
+
+A = np.array([[3, 2, 1],
+              [2, 1, 1],
+              [6, 2, 4]])
+
+rA, pivots =  Matrix(A).rref()
+print(rA)
+#+END_SRC
+
+#+RESULTS:
+: Matrix([[1.00000000000000, 0, 0], [0, 1.00000000000000, 0], [0, 0, 1.00000000000000]])
+
+This rref form is a bit different than you might get from doing it by hand. The rows are also normalized.
+
+Based on this, we conclude the $A$ matrix has a rank of 2 since one row of the reduced form contains all zeros. That means the determinant will be zero, and it should not be possible to compute the inverse of the matrix, and there should be no solution to linear equations of $A x = b$. Let us check it out.
+
+#+BEGIN_SRC python
+import numpy as np
+from sympy import Matrix
+
+A = np.array([[3, 2, 1],
+              [2, 1, 1],
+              [6, 2, 4]])
+
+print(np.linalg.det(A))
+print(np.linalg.inv(A))
+
+b = np.array([3, 0, 6])
+
+print(np.linalg.solve(A, b))
+#+END_SRC
+
+#+RESULTS:
+: 6.66133814775e-16
+: [[  3.00239975e+15  -9.00719925e+15   1.50119988e+15]
+:  [ -3.00239975e+15   9.00719925e+15  -1.50119988e+15]
+:  [ -3.00239975e+15   9.00719925e+15  -1.50119988e+15]]
+: [  1.80143985e+16  -1.80143985e+16  -1.80143985e+16]
+
+There are "solutions", but there are a couple of red flags that should catch your eye. First, the determinant is within machine precision of zero. Second the elements of the inverse are all "large". Third, the solutions are all "large". All of these are indications of or artifacts of numerical imprecision.
+
+** Computing determinants from matrix decompositions
+   :PROPERTIES:
+   :categories: linear algebra
+   :date:     2013/04/01 19:57:29
+   :updated:  2013/04/02 08:18:25
+   :END:
+[[index:LU decomposition,determinant]]
+There are a few properties of a matrix that can make it easy to compute determinants.
+
+1. The determinant of a triangular matrix is the product of the elements on the diagonal.
+2. The determinant of a permutation matrix is (-1)**n where n is the number of permutations. Recall a permutation matrix is a matrix with a one in each row, and column, and zeros everywhere else.
+3. The determinant of a product of matrices is equal to the product of the determinant of the matrices.
+
+The LU decomposition computes three matrices such that $A = P L U$. Thus, $\det A = \det P \det L \det U$. $L$ and $U$ are triangular, so we just need to compute the product of the diagonals. $P$ is not triangular, but if the elements of the diagonal are not 1, they will be zero, and then there has been a swap. So we simply subtract the sum of the diagonal from the length of the diagonal and then subtract 1 to get the number of swaps.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.linalg import lu
+
+A = np.array([[6, 2, 3],
+              [1, 1, 1],
+              [0, 4, 9]])
+
+P, L, U = lu(A)
+
+nswaps = len(np.diag(P)) - np.sum(np.diag(P)) - 1
+
+detP = (-1)**nswaps
+detL =  np.prod(np.diag(L))
+detU = np.prod(np.diag(U))
+
+print(detP * detL * detU)
+
+print(np.linalg.det(A))
+#+END_SRC
+
+#+RESULTS:
+: 24.0
+: 24.0
+
+According to the numpy documentation, a method similar to this is used to compute the determinant.
+
+** Calling lapack directly from scipy
+   :PROPERTIES:
+   :date:     2013/05/21 11:28:27
+   :updated:  2013/06/26 18:55:43
+   :categories: linear algebra
+   :END:
+If the built in linear algebra functions in numpy and scipy do not meet your needs, it is often possible to directly call lapack functions. Here we call a function to solve a set of complex linear equations. The lapack function for this is ZGBSV. The description of this function (http://linux.die.net/man/l/zgbsv) is:
+
+ZGBSV computes the solution to a complex system of linear equations A * X = B, where A is a band matrix of order N with KL subdiagonals and KU superdiagonals, and X and B are N-by-NRHS matrices. The LU decomposition with partial pivoting and row interchanges is used to factor A as A = L * U, where L is a product of permutation and unit lower triangular matrices with KL subdiagonals, and U is upper triangular with KL+KU superdiagonals. The factored form of A is then used to solve the system of equations A * X = B.
+
+The python signature is (http://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lapack.zgbsv.html#scipy.linalg.lapack.zgbsv):
+
+lub,piv,x,info = zgbsv(kl,ku,ab,b,[overwrite_ab,overwrite_b])
+
+We will look at an example from http://www.nag.com/lapack-ex/node22.html.
+
+We solve $A x = b$ with
+
+\begin{equation}
+A = \left(
+       \begin{array}{cccc}
+          -1.65 + 2.26 i & -2.05 - 0.85 i &  0.97 - 2.84 i &       0        \\
+                  6.30 i & -1.48 - 1.75 i & -3.99 + 4.01 i &  0.59 - 0.48 i \\
+                0        & -0.77 + 2.83 i & -1.06 + 1.94 i &  3.33 - 1.04 i \\
+                0        &       0        &  4.48 - 1.09 i & -0.46 - 1.72 i
+       \end{array}
+       \right)
+\end{equation}
+
+and
+
+\begin{equation}
+b = \left(
+       \begin{array}{cc}
+           -1.06 + 21.50 i \\
+          -22.72 - 53.90 i \\
+           28.24 - 38.60 i \\
+          -34.56 + 16.73 i
+       \end{array}
+       \right).
+\end{equation}
+
+The $A$ matrix has one lower diagonal (kl = 1) and two upper diagonals (ku = 2), four equations (n = 4) and one right-hand side.
+#+BEGIN_SRC python
+import scipy.linalg.lapack as la
+
+# http://www.nag.com/lapack-ex/node22.html
+import numpy as np
+A = np.array([[-1.65 + 2.26j, -2.05 - 0.85j,  0.97 - 2.84j,  0.0         ],
+              [6.30j,         -1.48 - 1.75j, -3.99 + 4.01j,  0.59 - 0.48j],
+              [0.0,           -0.77 + 2.83j, -1.06 + 1.94j,  3.33 - 1.04j],
+              [0.0,            0.0,           4.48 - 1.09j, -0.46 - 1.72j]])
+
+# construction of Ab is tricky.  Fortran indexing starts at 1, not
+# 0. This code is based on the definition of Ab at
+# http://linux.die.net/man/l/zgbsv. First, we create the Fortran
+# indices based on the loops, and then subtract one from them to index
+# the numpy arrays.
+Ab = np.zeros((5,4),dtype=np.complex)
+n, kl, ku = 4, 1, 2
+
+for j in range(1, n + 1):
+    for i in range(max(1, j - ku), min(n, j + kl) + 1):
+        Ab[kl + ku + 1 + i - j - 1, j - 1] = A[i-1, j-1]
+
+b = np.array([[-1.06  + 21.50j],
+              [-22.72 - 53.90j],
+              [28.24 - 38.60j],
+              [-34.56 + 16.73j]])
+
+lub, piv, x, info = la.flapack.zgbsv(kl, ku, Ab, b)
+
+# compare to results at http://www.nag.com/lapack-ex/examples/results/zgbsv-ex.r
+print('x = ',x)
+print('info = ',info)
+
+# check solution
+print('solved: ',np.all(np.dot(A,x) - b < 1e-12))
+
+# here is the easy way!!!
+print('\n\nbuilt-in solver')
+print(np.linalg.solve(A,b))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+x =  [[-3.+2.j]
+ [ 1.-7.j]
+ [-5.+4.j]
+ [ 6.-8.j]]
+info =  0
+solved:  True
+
+
+built-in solver
+[[-3.+2.j]
+ [ 1.-7.j]
+ [-5.+4.j]
+ [ 6.-8.j]]
+#+end_example
+
+Some points of discussion.
+
+1. Kind of painful! but, nevertheless, possible. You have to do a lot more work figuring out the dimensions of the problem, how to setup the problem, keeping track of indices, etc...
+
+But, one day it might be helpful to know this can be done, e.g. to debug an installation, to validate an approach against known results, etc...

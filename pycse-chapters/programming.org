@@ -1,0 +1,1154 @@
+* Programming
+** Some of this, sum of that
+   :PROPERTIES:
+   :categories: miscellaneous, recursive
+   :date:     2013/02/02 09:00:00
+   :updated:  2013/02/27 14:44:46
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/29/some-of-this-sum-of-that/][Matlab plot]]
+
+Python provides a sum function to compute the sum of a list. However, the sum function does not work on every arrangement of numbers, and it certainly does not work on nested lists. We will solve this problem with recursion.
+
+Here is a simple example.
+
+#+BEGIN_SRC python
+v = [1, 2, 3, 4, 5, 6, 7, 8, 9] # a list
+print(sum(v))
+
+v = (1, 2, 3, 4, 5, 6, 7, 8, 9)  # a tuple
+print(sum(v))
+#+END_SRC
+
+#+RESULTS:
+: 45
+: 45
+
+If you have data in a dictionary, sum works by default on the keys. You can give the sum function the values like this.
+
+#+BEGIN_SRC python
+v = {'a':1, 'b':3, 'c':4}
+print(sum(v.values()))
+#+END_SRC
+
+#+RESULTS:
+: 8
+
+*** Nested lists
+
+Suppose now we have nested lists. This kind of structured data might come up if you had grouped several things together. For example, suppose we have 5 departments, with 1, 5, 15, 7 and 17 people in them, and in each department they are divided into groups.
+
+Department 1: 1 person
+Department 2: group of 2 and group of 3
+Department 3: group of 4 and 11, with a subgroups of 5 and 6 making
+              up the group of 11.
+Department 4: 7 people
+Department 5: one group of 8 and one group of 9.
+
+We might represent the data like this nested list. Now, if we want to compute the total number of people, we need to add up each group. We cannot simply sum the list, because some elements are single numbers, and others are lists, or lists of lists. We need to recurse through each entry until we get down to a number, which we can add to the running sum.
+#+BEGIN_SRC python
+v = [1,
+    [2, 3],
+    [4, [5, 6]],
+    7,
+    [8,9]]
+
+def recursive_sum(X):
+    'compute sum of arbitrarily nested lists'
+    s = 0 # initial value of the sum
+
+    for i in range(len(X)):
+        import types  # we use this to test if we got a number
+        if isinstance(X[i], (int, float, complex)):
+            # this is the terminal step
+            s += X[i]
+        else:
+            # we did not get a number, so we recurse
+            s += recursive_sum(X[i])
+    return s
+
+print(recursive_sum(v))
+print(recursive_sum([1, 2, 3, 4, 5, 6, 7, 8, 9])) # test on non-nested list
+#+END_SRC
+
+#+RESULTS:
+: 45
+: 45
+
+In [[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Post 1970]] we examined recursive functions that could be replaced by loops. Here we examine a function that can only work with recursion because the nature of the nested data structure is arbitrary. There are arbitrary branches and depth in the data structure. Recursion is nice because you do not have to define that structure in advance.
+
+** Sorting in python
+   :PROPERTIES:
+   :categories: python
+   :date:     2013/02/27 14:45:26
+   :updated:  2013/02/27 14:45:26
+   :END:
+index:sort
+[[http://matlab.cheme.cmu.edu/2011/11/12/sorting-in-matlab/][Matlab post]]
+
+Occasionally it is important to have sorted data. Python has a few sorting options.
+
+#+BEGIN_SRC python
+a = [4, 5, 1, 6, 8, 3, 2]
+print(a)
+a.sort()  # inplace sorting
+print(a)
+
+a.sort(reverse=True)
+print(a)
+#+END_SRC
+
+#+RESULTS:
+: [4, 5, 1, 6, 8, 3, 2]
+: [1, 2, 3, 4, 5, 6, 8]
+: [8, 6, 5, 4, 3, 2, 1]
+
+If you do not want to modify your list, but rather get a copy of a sorted list, use the sorted command.
+#+BEGIN_SRC python
+a = [4, 5, 1, 6, 8, 3, 2]
+print('sorted a = ',sorted(a))  # no change to a
+print('sorted a = ',sorted(a, reverse=True))  # no change to a
+print('a        = ',a)
+#+END_SRC
+
+#+RESULTS:
+: sorted a =  [1, 2, 3, 4, 5, 6, 8]
+: sorted a =  [8, 6, 5, 4, 3, 2, 1]
+: a        =  [4, 5, 1, 6, 8, 3, 2]
+
+This works for strings too:
+
+#+BEGIN_SRC python
+a = ['b', 'a', 'c', 'tree']
+print(sorted(a))
+#+END_SRC
+
+#+RESULTS:
+: ['a', 'b', 'c', 'tree']
+
+Here is a subtle point though. A capitalized letter comes before a lowercase letter. We can pass a function to the sorted command that is called on each element prior to the sort. Here we make each word lower case before sorting.
+
+#+BEGIN_SRC python
+a = ['B', 'a', 'c', 'tree']
+print(sorted(a))
+
+# sort by lower case letter
+print(sorted(a, key=str.lower))
+#+END_SRC
+
+#+RESULTS:
+: ['B', 'a', 'c', 'tree']
+: ['a', 'B', 'c', 'tree']
+
+Here is a more complex sorting problem. We have a list of tuples with group names and the letter grade. We want to sort the list by the letter grades. We do this by creating a function that maps the letter grades to the position of the letter grades in a sorted list. We use the list.index function to find the index of the letter grade, and then sort on that.
+
+#+BEGIN_SRC python
+
+groups = [('group1', 'B'),
+          ('group2', 'A+'),
+          ('group3', 'A')]
+
+def grade_key(gtup):
+    '''gtup is a tuple of ('groupname', 'lettergrade')'''
+    lettergrade = gtup[1]
+
+    grades = ['A++', 'A+', 'A', 'A-', 'A/B'
+              'B+', 'B', 'B-', 'B/C',
+              'C+', 'C', 'C-', 'C/D',
+              'D+', 'D', 'D-', 'D/R',
+              'R+', 'R', 'R-', 'R--']
+
+    return grades.index(lettergrade)
+
+print(sorted(groups, key=grade_key))
+#+END_SRC
+
+#+RESULTS:
+: [('group2', 'A+'), ('group3', 'A'), ('group1', 'B')]
+
+** Unique entries in a vector
+   :PROPERTIES:
+   :date:     2013/02/27 14:45:18
+   :updated:  2013/03/06 19:39:10
+   :categories: python
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/11/12/unique-entries-in-a-vector/][Matlab post]]
+
+It is surprising how often you need to know only the unique entries in a vector of entries. In python, we create a "set" from a list, which only contains unique entries. Then we convert the set back to a list.
+
+#+BEGIN_SRC python
+a = [1, 1, 2, 3, 4, 5, 3, 5]
+
+b = list(set(a))
+print(b)
+#+END_SRC
+
+#+RESULTS:
+: [1, 2, 3, 4, 5]
+
+#+BEGIN_SRC python
+a = ['a',
+    'b',
+    'abracadabra',
+    'b',
+    'c',
+    'd',
+    'b']
+
+print(list(set(a)))
+#+END_SRC
+
+#+RESULTS:
+: ['d', 'b', 'abracadabra', 'c', 'a']
+
+** Lather, rinse and repeat
+   :PROPERTIES:
+   :categories: math, recursive
+   :date:     2013/02/02 09:00:00
+   :updated:  2013/02/27 14:45:06
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/28/lather-rinse-and-repeat/][Matlab post]]
+
+Recursive functions are functions that call themselves repeatedly until some exit condition is met. Today we look at a classic example of recursive function for computing a factorial. The factorial of a non-negative integer n is denoted n!, and is defined as the product of all positive integers less than or equal to n.
+
+The key ideas in defining a recursive function is that there needs to be some logic to identify when to terminate the function. Then, you need logic that calls the function again, but with a smaller part of the problem. Here we recursively call the function with n-1 until it gets called with n=0. 0! is defined to be 1.
+
+#+BEGIN_SRC python
+def recursive_factorial(n):
+    '''compute the factorial recursively. Note if you put a negative
+    number in, this function will never end. We also do not check if
+    n is an integer.'''
+    if n == 0:
+        return 1
+    else:
+        return n * recursive_factorial(n - 1)
+
+print(recursive_factorial(5))
+#+END_SRC
+
+#+RESULTS:
+: 120
+
+#+BEGIN_SRC python
+from scipy.misc import factorial
+print(factorial(5))
+#+END_SRC
+
+#+RESULTS:
+: 120.0
+
+**** Compare to a loop solution
+
+This example can also be solved by a loop. This loop is easier to read and understand than the recursive function. Note the recursive nature of defining the variable as itself times a number.
+
+#+BEGIN_SRC python
+n = 5
+factorial_loop = 1
+for i in range(1, n + 1):
+    factorial_loop *= i
+
+print(factorial_loop)
+#+END_SRC
+
+#+RESULTS:
+: 120
+
+There are some significant differences in this example than in Matlab.
+
+  1. the syntax of the for loop is quite different with the use of the =in= operator.
+  2. python has the nice *= operator to replace a = a * i
+  3. We have to loop from 1 to n+1 because the last number in the range is not returned.
+
+*** Conclusions
+
+Recursive functions have a special niche in mathematical programming. There is often another way to accomplish the same goal. That is not always true though, and in a future post we will examine cases where recursion is the only way to solve a problem.
+** Brief intro to regular expressions
+   :PROPERTIES:
+   :categories: regular expressions
+   :date:     2013/03/03 15:04:31
+   :updated:  2013/03/03 15:04:31
+   :END:
+[[http://matlab.cheme.cmu.edu/2012/05/07/1701/][Matlab post]]
+
+This example shows how to use a regular expression to find strings matching the pattern :cmd:`datastring`. We want to find these strings, and then replace them with something that depends on what cmd is, and what datastring is.
+
+Let us define some commands that will take datasring as an argument, and return the modified text. The idea is to find all the cmds, and then run them. We use python's =eval= command to get the function handle from a string, and the cmd functions all take a datastring argument (we define them that way). We will create commands to replace :cmd:`datastring` with html code for a light gray background, and :red:`some text` with html code making the text red.
+
+#+BEGIN_SRC python :session
+text = r'''Here is some text. use the :cmd:`open` to get the text into
+          a variable. It might also be possible to get a multiline
+            :red:`line
+     2` directive.'''
+
+print(text)
+print('---------------------------------')
+#+END_SRC
+
+#+RESULTS:
+: Here is some text. use the :cmd:`open` to get the text into
+:           a variable. It might also be possible to get a multiline
+:             :red:`line
+:      2` directive.
+: ---------------------------------
+
+Now, we define our functions.
+#+BEGIN_SRC python :session
+def cmd(datastring):
+    ' replace :cmd:`datastring` with html code with light gray background'
+    s = '<FONT style="BACKGROUND-COLOR: LightGray">%{0}</FONT>';
+    html = s.format(datastring)
+    return html
+
+def red(datastring):
+    'replace :red:`datastring` with html code to make datastring in red font'
+    html = '<font color=red>{0}</font>'.format(datastring)
+    return html
+#+END_SRC
+
+#+RESULTS:
+
+Finally, we do the regular expression. Regular expressions are hard. There are whole books on them. The point of this post is to alert you to the possibilities. I will break this regexp down as follows. 1. we want everything between :*: as the directive. =([^:]*)= matches everything not a :. =:([^:]*):= matches the stuff between two :. 2. then we want everything between `*`. =([^`]*)= matches everything not a `. 3. The () makes a group that python stores so we can refer to them later.
+#+BEGIN_SRC python :session
+import re
+regex = ':([^:]*):`([^`]*)`'
+matches = re.findall(regex, text)
+for directive, datastring in matches:
+    directive = eval(directive) # get the function
+    text = re.sub(regex, directive(datastring), text)
+
+print('Modified text:')
+print(text)
+#+END_SRC
+
+#+RESULTS:
+: Modified text:
+: Here is some text. use the <FONT style="BACKGROUND-COLOR: LightGray">%open</FONT> to get the text into
+:           a variable. It might also be possible to get a multiline
+:             <FONT style="BACKGROUND-COLOR: LightGray">%open</FONT> directive.
+
+** Working with lists
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/04/09 21:54:22
+   :updated:  2013/05/19 11:27:26
+   :END:
+It is not too uncommon to have a list of data, and then to apply a function to every element, to filter the list, or extract elements that meet some criteria. In this example, we take a string and split it into words. Then, we will examine several ways to apply functions to the words, to filter the list to get data that meets some criteria. Here is the string splitting.
+
+#+BEGIN_SRC python :session
+text = '''
+ As we have seen, handling units with third party functions is fragile, and often requires additional code to wrap the function to handle the units. An alternative approach that avoids the wrapping is to rescale the equations so they are dimensionless. Then, we should be able to use all the standard external functions without modification. We obtain the final solutions by rescaling back to the answers we want.
+
+Before doing the examples, let us consider how the quantities package handles dimensionless numbers.
+
+import quantities as u
+
+a = 5 * u.m
+L = 10 * u.m # characteristic length
+
+print a/L
+print type(a/L)
+
+'''
+
+words = text.split()
+print(words)
+#+END_SRC
+
+#+RESULTS:
+: ['As', 'we', 'have', 'seen,', 'handling', 'units', 'with', 'third', 'party', 'functions', 'is', 'fragile,', 'and', 'often', 'requires', 'additional', 'code', 'to', 'wrap', 'the', 'function', 'to', 'handle', 'the', 'units.', 'An', 'alternative', 'approach', 'that', 'avoids', 'the', 'wrapping', 'is', 'to', 'rescale', 'the', 'equations', 'so', 'they', 'are', 'dimensionless.', 'Then,', 'we', 'should', 'be', 'able', 'to', 'use', 'all', 'the', 'standard', 'external', 'functions', 'without', 'modification.', 'We', 'obtain', 'the', 'final', 'solutions', 'by', 'rescaling', 'back', 'to', 'the', 'answers', 'we', 'want.', 'Before', 'doing', 'the', 'examples,', 'let', 'us', 'consider', 'how', 'the', 'quantities', 'package', 'handles', 'dimensionless', 'numbers.', 'import', 'quantities', 'as', 'u', 'a', '=', '5', '*', 'u.m', 'L', '=', '10', '*', 'u.m', '#', 'characteristic', 'length', 'print', 'a/L', 'print', 'type(a/L)']
+
+Let us get the length of each word.
+
+#+BEGIN_SRC python :session
+print([len(word) for word in words])
+
+# functional approach with a lambda function
+print(list(map(lambda word: len(word), words)))
+
+# functional approach with a builtin function
+print(list(map(len, words)))
+
+# functional approach with a user-defined function
+def get_length(word):
+    return len(word)
+
+print(list(map(get_length, words)))
+#+END_SRC
+
+#+RESULTS:
+: [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+: [2, 2, 4, 5, 8, 5, 4, 5, 5, 9, 2, 8, 3, 5, 8, 10, 4, 2, 4, 3, 8, 2, 6, 3, 6, 2, 11, 8, 4, 6, 3, 8, 2, 2, 7, 3, 9, 2, 4, 3, 14, 5, 2, 6, 2, 4, 2, 3, 3, 3, 8, 8, 9, 7, 13, 2, 6, 3, 5, 9, 2, 9, 4, 2, 3, 7, 2, 5, 6, 5, 3, 9, 3, 2, 8, 3, 3, 10, 7, 7, 13, 8, 6, 10, 2, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 3, 1, 14, 6, 5, 3, 5, 9]
+
+Now let us get all the words that start with the letter "a". This is sometimes called filtering a list. We use a string function =startswith= to check for upper and lower-case letters. We will use list comprehension with a condition.
+
+#+BEGIN_SRC python :session
+print([word for word in words if word.startswith('a') or word.startswith('A')])
+
+# make word lowercase to simplify the conditional statement
+print([word for word in words if word.lower().startswith('a')])
+#+END_SRC
+
+#+RESULTS:
+: ['As', 'and', 'additional', 'An', 'alternative', 'approach', 'avoids', 'are', 'able', 'all', 'answers', 'as', 'a', 'a/L']
+: ['As', 'and', 'additional', 'An', 'alternative', 'approach', 'avoids', 'are', 'able', 'all', 'answers', 'as', 'a', 'a/L']
+
+A slightly harder example is to find all the words that are actually numbers. We could use a regular expression for that, but we will instead use a function we create. We use a function that tries to cast a word as a float. If this fails, we know the word is not a float, so we return False.
+
+#+BEGIN_SRC python :session
+def float_p(word):
+    try:
+        float(word)
+        return True
+    except ValueError:
+        return False
+
+print([word for word in words if float_p(word)])
+
+# here is a functional approach
+print(list(filter(float_p, words)))
+#+END_SRC
+
+#+RESULTS:
+: ['5', '10']
+: ['5', '10']
+
+Finally, we consider filtering the list to find all words that contain certain symbols, say any character in this string "./=*#". Any of those characters will do, so we search each word for one of them, and return True if it contains it, and False if none are contained.
+#+BEGIN_SRC python :session
+def punctuation_p(word):
+    S = './=*#'
+    for s in S:
+        if s in word:
+            return True
+    return False
+
+print([word for word in words if punctuation_p(word)])
+print(filter(punctuation_p, words))
+#+END_SRC
+
+#+RESULTS:
+: ['units.', 'dimensionless.', 'modification.', 'want.', 'numbers.', '=', '*', 'u.m', '=', '*', 'u.m', '#', 'a/L', 'type(a/L)']
+: <filter object at 0x11034b780>
+
+In this section we examined a few ways to interact with lists using list comprehension and functional programming. These approaches make it possible to work on arbitrary size lists, without needing to know in advance how big the lists are. New lists are automatically generated as results, without the need to preallocate lists, i.e. you do not need to know the size of the output. This can be handy as it avoids needing to write loops in some cases and leads to more compact code.
+
+** Making word files in python
+ [[http://matlab.cheme.cmu.edu/2011/10/22/create-a-word-document-from-matlab/][Matlab post]]
+
+We can use COM automation in python to create Microsoft Word documents. This only works on windows, and Word must be installed.
+#+BEGIN_SRC python
+from win32com.client import constants, Dispatch
+import os
+
+word = Dispatch('Word.Application')
+word.Visible = True
+
+document = word.Documents.Add()
+selection = word.Selection
+
+selection.TypeText('Hello world. \n')
+selection.TypeText('My name is Professor Kitchin\n')
+selection.TypeParagraph
+selection.TypeText('How are you today?\n')
+selection.TypeParagraph
+selection.Style='Normal'
+
+
+selection.TypeText('Big Finale\n')
+selection.Style='Heading 1'
+selection.TypeParagraph
+
+H1 = document.Styles.Item('Heading 1')
+H1.Font.Name = 'Garamond'
+H1.Font.Size = 20
+H1.Font.Bold = 1
+H1.Font.TextColor.RGB=60000 # some ugly color green
+
+selection.TypeParagraph
+selection.TypeText('That is all for today!')
+
+
+document.SaveAs2(os.getcwd() + '/test.docx')
+word.Quit()
+#+END_SRC
+
+#+RESULTS:
+
+msx:./test.docx
+
+That is it! I would not call this extra convenient, but if you have a need to automate the production of Word documents from a program, this is an approach that you can use. You may find http://msdn.microsoft.com/en-us/library/kw65a0we%28v=vs.80%29.aspx a helpful link for documentation of what you can do.
+
+
+I was going to do this by docx, which does not require windows, but it appears broken. It is missing a template directory, and it does not match the github code. docx is not actively maintained anymore either.
+
+#+BEGIN_SRC python
+from docx import *
+
+# Make a new document tree - this is the main part of a Word document
+document = Docx()
+
+document.append(paragraph('Hello world. '
+'My name is Professor Kitchin'
+'How are you today?'))
+
+document.append(heading("Big Finale", 1))
+
+document.append(paragraph('That is all for today.'))
+
+document.save('test.doc')
+#+END_SRC
+
+#+RESULTS:
+
+** Interacting with Excel in python
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/03/08 14:39:29
+   :updated:  2013/03/08 14:39:29
+   :END:
+[[http://matlab.cheme.cmu.edu/2011/08/07/manipulating-excel-with-matlab/][Matlab post]]
+
+There will be times it is convenient to either read data from Excel, or write data to Excel. This is possible in python (http://www.python-excel.org/). You may also look at (https://bitbucket.org/ericgazoni/openpyxl/wiki/Home).
+
+#+BEGIN_SRC python
+import xlrd
+
+wb = xlrd.open_workbook('data/example.xlsx')
+sh1 = wb.sheet_by_name(u'Sheet1')
+
+print(sh1.col_values(0))  # column 0
+print(sh1.col_values(1))  # column 1
+
+sh2 = wb.sheet_by_name(u'Sheet2')
+
+x = sh2.col_values(0)  # column 0
+y = sh2.col_values(1)  # column 1
+
+import matplotlib.pyplot as plt
+plt.plot(x, y)
+plt.savefig('images/excel-1.png')
+#+END_SRC
+
+#+RESULTS:
+: ['value', 'function']
+: [2.0, 3.0]
+
+[[./images/excel-1.png]]
+
+*** Writing Excel workbooks
+Writing data to Excel sheets is pretty easy. Note, however, that this overwrites the worksheet if it already exists.
+
+#+BEGIN_SRC python
+import xlwt
+import numpy as np
+
+x = np.linspace(0, 2)
+y = np.sqrt(x)
+
+# save the data
+book = xlwt.Workbook()
+
+sheet1 = book.add_sheet('Sheet 1')
+
+for i in range(len(x)):
+    sheet1.write(i, 0, x[i])
+    sheet1.write(i, 1, y[i])
+
+book.save('data/example2.xls') # maybe can only write .xls format
+#+END_SRC
+
+#+RESULTS:
+
+*** BROKEN Updating an existing Excel workbook
+It turns out you have to make a copy of an existing workbook, modify the copy and then write out the results using the =xlwt= module.
+
+#+BEGIN_SRC python
+from xlrd import open_workbook
+
+from xlutils.copy import copy
+
+rb = open_workbook('data/example2.xls',formatting_info=True)
+rs = rb.sheet_by_index(0)
+
+wb = copy(rb)
+
+ws = wb.add_sheet('Sheet 2')
+ws.write(0, 0, "Appended")
+
+wb.save('data/example2.xls')
+#+END_SRC
+
+#+RESULTS:
+
+*** Summary
+Matlab has better support for interacting with Excel than python does right now. You could get better Excel interaction via COM, but that is Windows specific, and requires you to have Excel installed on your computer.
+If you only need to read or write data, then xlrd/xlwt or the openpyxl modules will server you well.
+** Using Excel in Python
+   :PROPERTIES:
+   :categories: programming
+   :tags: excel
+   :date:     2013/04/06 14:01:02
+   :updated:  2013/04/06 14:01:02
+   :END:
+index:Excel, index:COM
+There may be a time where you have an Excel sheet that already has a model built into it, and you normally change cells in the sheet, and it solves the model. It can be tedious to do that a lot, and we can use python to do that. Python has a COM interface that can communicate with Excel (and many other windows programs. see http://my.safaribooksonline.com/1565926218 for Python Programming on Win32). In this example, we will use a very simple Excel sheet that calculates the volume of a CSTR that runs a zeroth order reaction ($-r_A = k$) for a particular conversion. You set the conversion in the cell B1, and the volume is automatically computed in cell B6. We simply need to set the value of B1, and get the value of B6 for a range of different conversion values. In this example, the volume is returned in Liters.
+
+#+BEGIN_SRC python
+import win32com.client as win32
+excel = win32.Dispatch('Excel.Application')
+
+wb = excel.Workbooks.Open('c:/Users/jkitchin/Dropbox/pycse/data/cstr-zeroth-order.xlsx')
+ws = wb.Worksheets('Sheet1')
+
+X = [0.1, 0.5, 0.9]
+for x in X:
+    ws.Range("B1").Value = x
+    V = ws.Range("B6").Value
+    print 'at X = {0} V = {1:1.2f} L'.format(x, V)
+
+# we tell Excel the workbook is saved, even though it is not, so it
+# will quit without asking us to save.
+excel.ActiveWorkbook.Saved = True
+excel.Application.Quit()
+#+END_SRC
+
+#+RESULTS:
+: at X = 0.1 V = 22.73 L
+: at X = 0.5 V = 113.64 L
+: at X = 0.9 V = 204.55 L
+
+This was a simple example (one that did not actually need Excel at all) that illustrates the feasibility of communicating with Excel via a COM interface.
+
+Some links I have found that help figure out how to do this are:
+- http://www.numbergrinder.com/2008/11/pulling-data-from-excel-using-python-com/
+- http://www.numbergrinder.com/2008/11/closing-excel-using-python/
+- http://www.dzone.com/snippets/script-excel-python
+
+** Running Aspen via Python
+   :PROPERTIES:
+   :categories: programming
+   :tags:     Aspen
+   :date:     2013/06/14 10:23:27
+   :updated:  2013/06/14 10:23:27
+   :END:
+
+Aspen is a process modeling tool that simulates industrial processes. It has a GUI for setting up the flowsheet, defining all the stream inputs and outputs, and for running the simulation. For single calculations it is pretty convenient. For many calculations, all the pointing and clicking to change properties can be tedious, and difficult to reproduce. Here we show how to use Python to automate Aspen using the COM interface.
+
+We have an Aspen flowsheet setup for a flash operation. The feed consists of 91.095 mol% water and 8.905 mol% ethanol at 100 degF and 50 psia. 48.7488 lbmol/hr of the mixture is fed to the flash tank which is at 150 degF and 20 psia. We want to know the composition of the VAPOR and LIQUID streams. The simulation has been run once.
+
+[[./images/flash-flowsheet.png]]
+
+This is an example that just illustrates it is possible to access data from a simulation that has been run. You have to know quite a bit about the Aspen flowsheet before writing this code. Particularly, you need to open the Variable Explorer to find the "path" to the variables that you want, and to know what the units are of those variables are.
+
+#+BEGIN_SRC python
+import os
+import win32com.client as win32
+aspen = win32.Dispatch('Apwn.Document')
+
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+## Input variables
+feed_temp = aspen.Tree.FindNode('\Data\Streams\FEED\Input\TEMP\MIXED').Value
+print 'Feed temperature was {0} degF'.format(feed_temp)
+
+ftemp = aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value
+print 'Flash temperature = {0}'.format(ftemp)
+
+## Output variables
+eL_out = aspen.Tree.FindNode("\Data\Streams\LIQUID\Output\MOLEFLOW\MIXED\ETHANOL").Value
+wL_out = aspen.Tree.FindNode("\Data\Streams\LIQUID\Output\MOLEFLOW\MIXED\WATER").Value
+
+eV_out = aspen.Tree.FindNode("\Data\Streams\VAPOR\Output\MOLEFLOW\MIXED\ETHANOL").Value
+wV_out = aspen.Tree.FindNode("\Data\Streams\VAPOR\Output\MOLEFLOW\MIXED\WATER").Value
+
+tot = aspen.Tree.FindNode("\Data\Streams\FEED\Input\TOTFLOW\MIXED").Value
+
+print 'Ethanol vapor mol flow: {0} lbmol/hr'.format(eV_out)
+print 'Ethanol liquid mol flow: {0} lbmol/hr'.format(eL_out)
+
+print 'Water vapor mol flow: {0} lbmol/hr'.format(wV_out)
+print 'Water liquid mol flow: {0} lbmol/hr'.format(wL_out)
+
+print 'Total = {0}. Total in = {1}'.format(eV_out + eL_out + wV_out + wL_out,
+					   tot)
+
+aspen.Close()
+#+END_SRC
+
+#+RESULTS:
+: Feed temperature was 100.0 degF
+: Flash temperature = 150.0
+: Ethanol vapor mol flow: 3.89668323 lbmol/hr
+: Ethanol liquid mol flow: 0.444397241 lbmol/hr
+: Water vapor mol flow: 0.774592763 lbmol/hr
+: Water liquid mol flow: 43.6331268 lbmol/hr
+: Total = 48.748800034. Total in = 48.7488
+
+It is nice that we can read data from a simulation, but it would be helpful if we could change variable values and to rerun the simulations. That is possible. We simply set the value of the variable, and tell Aspen to rerun. Here, we will change the temperature of the Flash tank and plot the composition of the outlet streams as a function of that temperature.
+
+#+BEGIN_SRC python
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import win32com.client as win32
+
+aspen = win32.Dispatch('Apwn.Document')
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+T = np.linspace(150, 200, 10)
+
+x_ethanol, y_ethanol = [], []
+
+for temperature in T:
+    aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value = temperature
+    aspen.Engine.Run2()
+
+    x_ethanol.append(aspen.Tree.FindNode('\Data\Streams\LIQUID\Output\MOLEFRAC\MIXED\ETHANOL').Value)
+    y_ethanol.append(aspen.Tree.FindNode('\Data\Streams\VAPOR\Output\MOLEFRAC\MIXED\ETHANOL').Value)
+
+plt.plot(T, y_ethanol, T, x_ethanol)
+plt.legend(['vapor', 'liquid'])
+plt.xlabel('Flash Temperature (degF)')
+plt.ylabel('Ethanol mole fraction')
+plt.savefig('images/aspen-water-ethanol-flash.png')
+aspen.Close()
+#+END_SRC
+
+#+RESULTS:
+
+[[./images/aspen-water-ethanol-flash.png]]
+
+
+It takes about 30 seconds to run the previous example. Unfortunately, the way it is written, if you want to change anything, you have to run all of the calculations over again. How to avoid that is moderately tricky, and will be the subject of another example.
+
+In summary, it seems possible to do a lot with Aspen automation via python. This can also be done with Matlab, Excel, and other programming languages where COM automation is possible. The COM interface is not especially well documented, and you have to do a lot of digging to figure out some things. It is not clear how committed Aspen is to maintaining or improving the COM interface (http://www.chejunkie.com/aspen-plus/aspen-plus-activex-automation-server/). Hopefully they can keep it alive for power users who do not want to program in Excel!
+** Using an external solver with Aspen
+   :PROPERTIES:
+   :categories: programming
+   :tags:     aspen
+   :date:     2013/06/17 09:49:27
+   :updated:  2013/06/17 09:49:27
+   :END:
+One reason to interact with Aspen via python is to use external solvers to drive the simulations. Aspen has some built-in solvers, but it does not have everything. You may also want to integrate additional calculations, e.g. capital costs, water usage, etc... and integrate those results into a report.
+
+Here is a simple example where we use fsolve to find the temperature of the flash tank that will give a vapor phase mole fraction of ethanol of 0.8. It is a simple example, but it illustrates the possibility.
+
+#+BEGIN_SRC python
+import os
+import win32com.client as win32
+aspen = win32.Dispatch('Apwn.Document')
+
+aspen.InitFromArchive2(os.path.abspath('data\Flash_Example.bkp'))
+
+from scipy.optimize import fsolve
+
+def func(flashT):
+    flashT = float(flashT) # COM objects do not understand numpy types
+    aspen.Tree.FindNode('\Data\Blocks\FLASH\Input\TEMP').Value = flashT
+    aspen.Engine.Run2()
+    y = aspen.Tree.FindNode('\Data\Streams\VAPOR\Output\MOLEFRAC\MIXED\ETHANOL').Value
+    return y - 0.8
+
+sol, = fsolve(func, 150.0)
+print 'A flash temperature of {0:1.2f} degF will have y_ethanol = 0.8'.format(sol)
+#+END_SRC
+
+#+RESULTS:
+: A flash temperature of 157.38 degF will have y_ethanol = 0.8
+
+One unexpected detail was that the Aspen COM objects cannot be assigned numpy number types, so it was necessary to recast the argument as a float. Otherwise, this worked about as expected for an fsolve problem.
+
+** Redirecting the print function
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/05/19 11:19:36
+   :updated:  2013/05/19 11:19:36
+   :END:
+Ordinarily a print statement prints to stdout, or your terminal/screen. You can redirect this so that printing is done to a file, for example. This might be helpful if you use print statements for debugging, and later want to save what is printed to a file. Here we make a simple function that prints some things.
+
+#+BEGIN_SRC python :session
+def debug():
+    print('step 1')
+    print(3 + 4)
+    print('finished')
+
+debug()
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+Now, let us redirect the printed lines to a file. We create a file object, and set sys.stdout equal to that file object.
+#+BEGIN_SRC python :session
+import sys
+print('__stdout__ before = {0}'.format(sys.__stdout__), file=sys.stdout)
+print('stdout before = {0}'.format(sys.stdout), file=sys.stdout)
+
+f = open('data/debug.txt', 'w')
+sys.stdout = f
+
+# note that sys.__stdout__ does not change, but stdout does.
+print('__stdout__ after = {0}'.format(sys.__stdout__), file=sys.stdout)
+print('stdout after = {0}'.format(sys.stdout), file=sys.stdout)
+
+debug()
+
+# reset stdout back to console
+sys.stdout = sys.__stdout__
+
+print(f)
+f.close() # try to make it a habit to close files
+print(f)
+#+END_SRC
+
+#+RESULTS:
+: __stdout__ before = <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+: stdout before = <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+: <_io.TextIOWrapper name='data/debug.txt' mode='w' encoding='UTF-8'>
+: <_io.TextIOWrapper name='data/debug.txt' mode='w' encoding='UTF-8'>
+
+Note it can be important to close files. If you are looping through large numbers of files, you will eventually run out of file handles, causing an error. We can use a context manager to automatically close the file like this
+
+#+BEGIN_SRC python :session
+import sys
+
+# use the open context manager to automatically close the file
+with open('data/debug.txt', 'w') as f:
+    sys.stdout = f
+    debug()
+    print(f, file=sys.__stdout__)
+
+# reset stdout
+sys.stdout = sys.__stdout__
+print(f)
+#+END_SRC
+
+#+RESULTS:
+: <_io.TextIOWrapper name='data/debug.txt' mode='w' encoding='UTF-8'>
+: <_io.TextIOWrapper name='data/debug.txt' mode='w' encoding='UTF-8'>
+
+See, the file is closed for us! We can see the contents of our file like this.
+#+BEGIN_SRC sh
+cat data/debug.txt
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+The approaches above are not fault safe. Suppose our debug function raised an exception. Then, it could be possible the line to reset the stdout would not be executed. We can solve this with try/finally code.
+
+#+BEGIN_SRC python :session
+import sys
+
+print('before: ', sys.stdout)
+try:
+    with open('data/debug-2.txt', 'w') as f:
+        sys.stdout = f
+        # print to the original stdout
+        print('during: ', sys.stdout, file=sys.__stdout__)
+        debug()
+        raise Exception('something bad happened')
+finally:
+    # reset stdout
+    sys.stdout = sys.__stdout__
+
+print('after: ', sys.stdout)
+print(f) # verify it is closed
+print(sys.stdout) # verify this is reset
+#+END_SRC
+
+#+RESULTS:
+: before:  <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+: during:  <_io.TextIOWrapper name='data/debug-2.txt' mode='w' encoding='UTF-8'>
+: Traceback (most recent call last):
+:   File "<stdin>", line 7, in <module>
+: Exception: something bad happened
+: after:  <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+: <_io.TextIOWrapper name='data/debug-2.txt' mode='w' encoding='UTF-8'>
+: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+
+#+BEGIN_SRC sh
+cat data/debug-2.txt
+#+END_SRC
+
+#+RESULTS:
+: step 1
+: 7
+: finished
+
+This is the kind of situation where a context manager is handy. Context managers are typically a class that executes some code when you "enter" the context, and then execute some code when you "exit" the context. Here we want to change sys.stdout to a new value inside our context, and change it back when we exit the context. We will store the value of sys.stdout going in, and restore it on the way out.
+
+#+BEGIN_SRC python :session
+import sys
+
+class redirect:
+    def __init__(self, f=sys.stdout):
+        "redirect print statement to f. f must be a file-like object"
+        self.f = f
+        self.stdout = sys.stdout
+        print('init stdout: ', sys.stdout, file=sys.__stdout__)
+    def __enter__(self):
+        sys.stdout = self.f
+        print('stdout in context-manager: ',sys.stdout, f=sys.__stdout__)
+    def __exit__(self, *args):
+        sys.stdout = self.stdout
+        print('__stdout__ at exit = ',sys.__stdout__)
+
+# regular printing
+with redirect():
+    debug()
+
+# write to a file
+with open('data/debug-3.txt', 'w') as f:
+    with redirect(f):
+        debug()
+
+# mixed regular and
+with open('data/debug-4.txt', 'w') as f:
+    with redirect(f):
+        print('testing redirect')
+        with redirect():
+            print('temporary console printing')
+            debug()
+        print('Now outside the inner context. This should go to data/debug-4.txt')
+        debug()
+        raise Exception('something else bad happened')
+
+print(sys.stdout)
+#+END_SRC
+
+#+RESULTS:
+
+Here are the contents of the debug file.
+#+BEGIN_SRC sh
+cat data/debug-3.txt
+#+END_SRC
+
+#+RESULTS:
+
+The contents of the other debug file have some additional lines, because we printed some things while in the redirect context.
+#+BEGIN_SRC sh
+cat data/debug-4.txt
+#+END_SRC
+
+#+RESULTS:
+
+See http://www.python.org/dev/peps/pep-0343/ (number 5) for another example of redirecting using a function decorator. I think it is harder to understand, because it uses a generator.
+
+There were a couple of points in this section:
+
+1. You can control where things are printed in your programs by modifying the value of sys.stdout
+2. You can use try/except/finally blocks to make sure code gets executed in the event an exception is raised
+3. You can use context managers to make sure files get closed, and code gets executed if exceptions are raised.
+
+** Getting a dictionary of counts
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/05/29 20:18:27
+   :updated:  2013/05/29 20:20:50
+   :END:
+I frequently want to take a list and get a dictionary of keys that have the count of each element in the list. Here is how I have typically done this countless times in the past.
+
+#+BEGIN_SRC python
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+
+d = {}
+for el in L:
+    if el in d:
+        d[el] += 1
+    else:
+        d[el] = 1
+
+print(d)
+#+END_SRC
+
+#+RESULTS:
+: {'b': 2, 'a': 3, 'e': 2, 'd': 1}
+
+That seems like too much code, and that there must be a list comprehension approach combined with a dictionary constructor.
+
+#+BEGIN_SRC python
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+
+print(dict((el,L.count(el)) for el in L))
+#+END_SRC
+
+#+RESULTS:
+: {'b': 2, 'a': 3, 'd': 1, 'e': 2}
+
+Wow, that is a lot simpler! I suppose for large lists this might be slow, since count must look through the list for each element, whereas the longer code looks at each element once, and does one conditional analysis.
+
+Here is another example of much shorter and cleaner code.
+
+#+BEGIN_SRC python
+from collections import Counter
+L = ['a', 'a', 'b','d', 'e', 'b', 'e', 'a']
+print(Counter(L))
+print(Counter(L)['a'])
+#+END_SRC
+
+#+RESULTS:
+: Counter({'a': 3, 'e': 2, 'b': 2, 'd': 1})
+: 3
+
+** About your python
+#+BEGIN_SRC python
+import sys
+
+print(sys.version)
+
+print(sys.executable)
+
+print(sys.platform)
+
+# where the platform independent Python files are installed
+print(sys.prefix)
+#+END_SRC
+
+#+RESULTS:
+: 3.5.1 |Anaconda 2.5.0 (x86_64)| (default, Dec  7 2015, 11:24:55)
+: [GCC 4.2.1 (Apple Inc. build 5577)]
+: /Users/jkitchin/anaconda3/bin/python
+: darwin
+: /Users/jkitchin/anaconda3
+
+The =platform= module provides similar, complementary information.
+
+#+BEGIN_SRC python
+import platform
+
+print(platform.uname())
+print(platform.system())
+print(platform.architecture())
+print(platform.machine())
+print(platform.node())
+print(platform.platform())
+print(platform.processor())
+print(platform.python_build())
+print(platform.python_version())
+#+END_SRC
+
+#+RESULTS:
+: uname_result(system='Darwin', node='Johns-MacBook-Air.local', release='13.4.0', version='Darwin Kernel Version 13.4.0: Wed Mar 18 16:20:14 PDT 2015; root:xnu-2422.115.14~1/RELEASE_X86_64', machine='x86_64', processor='i386')
+: Darwin
+: ('64bit', '')
+: x86_64
+: Johns-MacBook-Air.local
+: Darwin-13.4.0-x86_64-i386-64bit
+: i386
+: ('default', 'Dec  7 2015 11:24:55')
+: 3.5.1
+
+** Automatic, temporary directory changing
+   :PROPERTIES:
+   :categories: programming
+   :date:     2013/06/16 09:09:22
+   :updated:  2013/06/16 09:09:22
+   :END:
+If you are doing some analysis that requires you to change directories, e.g. to read a file, and then change back to another directory to read another file, you have probably run into problems if there is an error somewhere. You would like to make sure that the code changes back to the original directory after each error. We will look at a few ways to accomplish that here.
+
+The try/except/finally method is the traditional way to handle exceptions, and make sure that some code "finally" runs. Let us look at two examples here. In the first example, we try to change into a directory that does not exist.
+
+#+BEGIN_SRC python
+import os, sys
+
+CWD = os.getcwd() # store initial position
+print('initially inside {0}'.format(os.getcwd()))
+TEMPDIR = 'data/run1' # this does not exist
+
+try:
+    os.chdir(TEMPDIR)
+    print('inside {0}'.format(os.getcwd()))
+except:
+    print('Exception caught: ',sys.exc_info()[0])
+finally:
+    print('Running final code')
+    os.chdir(CWD)
+    print('finally inside {0}'.format(os.getcwd()))
+#+END_SRC
+
+#+RESULTS:
+: initially inside /Users/jkitchin/Dropbox/books/pycse
+: Exception caught:  <class 'FileNotFoundError'>
+: Running final code
+: finally inside /Users/jkitchin/Dropbox/books/pycse
+
+
+Now, let us look at an example where the directory does exist. We will change into the directory, run some code, and then raise an Exception.
+
+#+BEGIN_SRC python
+import os, sys
+
+CWD = os.getcwd() # store initial position
+print('initially inside {0}'.format(os.getcwd()))
+TEMPDIR = 'data'
+
+try:
+    os.chdir(TEMPDIR)
+    print('inside {0}'.format(os.getcwd()))
+    print(os.listdir('.'))
+    raise Exception('boom')
+except:
+    print('Exception caught: ',sys.exc_info()[0])
+finally:
+    print('Running final code')
+    os.chdir(CWD)
+    print('finally inside {0}'.format(os.getcwd()))
+#+END_SRC
+
+#+RESULTS:
+: initially inside /Users/jkitchin/Dropbox/books/pycse
+: inside /Users/jkitchin/Dropbox/books/pycse/data
+: ['_0308azw.def', '_BaEA1C.tmp', 'antoine_data.dat', 'antoine_database.mat', 'commonshellsettings.xml', 'cstr-zeroth-order.xlsx', 'data.pckl', 'debug-2.txt', 'debug-3.txt', 'debug-4.txt', 'debug.txt', 'example.xlsx', 'example2.xls', 'example3.xls', 'example4.xls', 'example4.xlsx', 'Flash_Example.apw', 'Flash_Example.bkp', 'Flash_Example.def', 'gc-data-21.txt', 'memoize-aspen.pkl', 'PT.txt', 'raman.txt', 'run2', 'test.docx', 'testdata.txt']
+: Exception caught:  <class 'Exception'>
+: Running final code
+: finally inside /Users/jkitchin/Dropbox/books/pycse
+
+You can see that we changed into the directory, ran some code, and then caught an exception. Afterwards, we changed back to our original directory. This code works fine, but it is somewhat verbose, and tedious to write over and over. We can get a cleaner syntax with a context manager. The context manager uses the =with= keyword in python. In a context manager some code is executed on entering the "context", and code is run on exiting the context. We can use that to automatically change directory, and when done, change back to the original directory. We use the =contextlib.contextmanager= decorator on a function. With a function, the code up to a =yield= statement is run on entering the context, and the code after the yield statement is run on exiting. We wrap the yield statement in try/except/finally block to make sure our final code gets run.
+
+#+BEGIN_SRC python
+import contextlib
+import os, sys
+
+@contextlib.contextmanager
+def cd(path):
+    print('initially inside {0}'.format(os.getcwd()))
+    CWD = os.getcwd()
+
+    os.chdir(path)
+    print('inside {0}'.format(os.getcwd()))
+    try:
+        yield
+    except:
+        print('Exception caught: ',sys.exc_info()[0])
+    finally:
+        print('finally inside {0}'.format(os.getcwd()))
+        os.chdir(CWD)
+
+# Now we use the context manager
+with cd('data'):
+    print(os.listdir('.'))
+    raise Exception('boom')
+
+print
+with cd('data/run2'):
+    print(os.listdir('.'))
+#+END_SRC
+
+#+RESULTS:
+: initially inside /Users/jkitchin/Dropbox/books/pycse
+: inside /Users/jkitchin/Dropbox/books/pycse/data
+: ['_0308azw.def', '_BaEA1C.tmp', 'antoine_data.dat', 'antoine_database.mat', 'commonshellsettings.xml', 'cstr-zeroth-order.xlsx', 'data.pckl', 'debug-2.txt', 'debug-3.txt', 'debug-4.txt', 'debug.txt', 'example.xlsx', 'example2.xls', 'example3.xls', 'example4.xls', 'example4.xlsx', 'Flash_Example.apw', 'Flash_Example.bkp', 'Flash_Example.def', 'gc-data-21.txt', 'memoize-aspen.pkl', 'PT.txt', 'raman.txt', 'run2', 'test.docx', 'testdata.txt']
+: Exception caught:  <class 'Exception'>
+: finally inside /Users/jkitchin/Dropbox/books/pycse/data
+: initially inside /Users/jkitchin/Dropbox/books/pycse
+: inside /Users/jkitchin/Dropbox/books/pycse/data/run2
+: ['raman.txt']
+: finally inside /Users/jkitchin/Dropbox/books/pycse/data/run2
+
+One case that is not handled well with this code is if the directory you want to change into does not exist. In that case an exception is raised on entering the context when you try change into a directory that does not exist. An alternative class based context manager can be found [[http://code.activestate.com/recipes/576620-changedirectory-context-manager/][here]].
+

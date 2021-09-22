@@ -1,0 +1,641 @@
+* Units
+** Using units in python
+  :PROPERTIES:
+  :categories: python, units
+  :date:     2013/01/19 09:00:00
+  :updated:  2013/03/23 09:45:20
+  :END:
+[[http://matlab.cheme.cmu.edu/2011/08/05/using-cmu-units-in-matlab-for-basic-calculations/][Units in Matlab]]
+
+I think an essential feature in an engineering computational environment is properly handling units and unit conversions. Mathcad supports that pretty well. I wrote a [[https://github.com/jkitchin/matlab-cmu][package]] for doing it in Matlab. Today I am going to explore units in python. Here are some of the packages that I have found which support units to some extent
+
+1. http://pypi.python.org/pypi/units/
+2. http://packages.python.org/quantities/user/tutorial.html
+3. http://dirac.cnrs-orleans.fr/ScientificPython/ScientificPythonManual/Scientific.Physics.PhysicalQuantities-module.html
+4. http://home.scarlet.be/be052320/Unum.html
+5. https://simtk.org/home/python_units
+6. http://docs.enthought.com/scimath/units/intro.html
+
+The last one looks most promising.
+
+*** BROKEN scimath
+scimath may only wok in Python2.
+#+BEGIN_SRC python
+import numpy as np
+from scimath.units.volume import liter
+from scimath.units.substance import mol
+
+q = np.array([1, 2, 3]) * mol
+print(q)
+
+P = q / liter
+print(P)
+#+END_SRC
+
+#+RESULTS:
+
+That doesn't look too bad. It is a little clunky to have to import every unit, and it is clear the package is saving everything in SI units by default. Let us try to solve an equation.
+
+Find the time that solves this equation.
+
+$0.01 = C_{A0} e^{-kt}$
+
+First we solve without units. That way we know the answer.
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+
+CA0 = 1.0  # mol/L
+CA = 0.01  # mol/L
+k = 1.0    # 1/s
+
+def func(t):
+    z = CA - CA0 * np.exp(-k*t)
+    return z
+
+t0 = 2.3
+
+t, = fsolve(func, t0)
+print 't = {0:1.2f} seconds'.format(t)
+#+END_SRC
+
+#+RESULTS:
+: t = 4.61 seconds
+
+
+Now, with units. I note here that I tried the obvious thing of just importing the units, and adding them on, but the package is unable to work with floats that have units. For some functions, there must be an ndarray with units which is practically what the UnitScalar code below does.
+
+#+BEGIN_SRC python
+import numpy as np
+from scipy.optimize import fsolve
+from scimath.units.volume import liter
+from scimath.units.substance import mol
+from scimath.units.time import second
+from scimath.units.api import has_units, UnitScalar
+
+CA0 = UnitScalar(1.0, units = mol / liter)
+CA = UnitScalar(0.01, units = mol / liter)
+k = UnitScalar(1.0, units = 1 / second)
+
+@has_units(inputs="t::units=s",
+           outputs="result::units=mol/liter")
+def func(t):
+    z = CA - CA0 * float(np.exp(-k*t))
+    return z
+
+t0 = UnitScalar(2.3, units = second)
+
+t, = fsolve(func, t0)
+print 't = {0:1.2f} seconds'.format(t)
+print type(t)
+#+END_SRC
+
+#+RESULTS:
+: t = 4.61 seconds
+: <type 'numpy.float64'>
+
+This is some heavy syntax that in the end does not preserve the units. In my Matlab package, we had to "wrap" many functions like fsolve so they would preserve units. Clearly this package will need that as well. Overall, in its current implementation this package does not do what I would expect all the time.[fn:units]
+
+[fn:units] Then again no package does yet!
+
+** Handling units with the quantities module
+   :PROPERTIES:
+   :categories: units
+   :date:     2013/03/22 22:00:30
+   :updated:  2013/03/23 09:22:54
+   :END:
+The quantities module (https://pypi.python.org/pypi/quantities) is another option for handling units in python. We are going to try the previous example. It does not work, because scipy.optimize.fsolve is not designed to work with units.
+
+#+BEGIN_SRC python :session
+import quantities as u
+import numpy as np
+
+from scipy.optimize import fsolve
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L
+k = 1.0 / u.s
+
+def func(t):
+    return CA - CA0 * np.exp(-k * t)
+
+tguess = 4 * u.s
+
+print(func(tguess))
+
+print(fsolve(func, tguess))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+-0.008315638888734178 mol/L
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/jkitchin/anaconda3/lib/python3.5/site-packages/scipy/optimize/minpack.py", line 146, in fsolve
+    res = _root_hybr(func, x0, args, jac=fprime, **options)
+  File "/Users/jkitchin/anaconda3/lib/python3.5/site-packages/scipy/optimize/minpack.py", line 212, in _root_hybr
+    shape, dtype = _check_func('fsolve', 'func', func, x0, args, n, (n,))
+  File "/Users/jkitchin/anaconda3/lib/python3.5/site-packages/scipy/optimize/minpack.py", line 26, in _check_func
+    res = atleast_1d(thefunc(*((x0[:numinputs],) + args)))
+  File "<stdin>", line 2, in func
+  File "/Users/jkitchin/anaconda3/lib/python3.5/site-packages/quantities/quantity.py", line 231, in __array_prepare__
+    res._dimensionality = p_dict[uf](*objs)
+  File "/Users/jkitchin/anaconda3/lib/python3.5/site-packages/quantities/dimensionality.py", line 348, in _d_dimensionless
+    raise ValueError("quantity must be dimensionless")
+ValueError: quantity must be dimensionless
+#+end_example
+
+Our function works fine with units, but fsolve does not pass numbers with units back to the function, so this function fails because the exponential function gets an argument with dimensions in it.  We can create a new function that solves this problem. We need to "wrap" the function we want to solve to make sure that it uses units, but returns a float number. Then, we put the units back onto the final solved value. Here is how we do that.
+
+#+BEGIN_SRC python
+import quantities as u
+import numpy as np
+
+from scipy.optimize import fsolve as _fsolve
+
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L
+k = 1.0 / u.s
+
+def func(t):
+    return CA - CA0 * np.exp(-k * t)
+
+def fsolve(func, t0):
+    'wrapped fsolve command to work with units'
+    tU = t0 / float(t0)  # units on initial guess, normalized
+    def wrapped_func(t):
+        't will be unitless, so we add unit to it. t * tU has units.'
+        return float(func(t * tU))
+
+    sol, = _fsolve(wrapped_func, t0)
+    return sol * tU
+
+tguess = 4 * u.s
+
+print(fsolve(func, tguess))
+#+END_SRC
+
+#+RESULTS:
+: 4.605170185988092 s
+
+It is a little tedious to do this, but we might only have to do it once if we store the new fsolve command in a module. You might notice the wrapped function we wrote above only works for one dimensional problems. If there are multiple dimensions, we have to be a little more careful. In the next example, we expand the wrapped function definition to do both one and multidimensional problems. It appears we cannot use numpy.array element-wise multiplication because you cannot mix units in an array. We will use lists instead. When the problem is one-dimensional, the function will take a scalar, but when it is multidimensional it will take a list or array. We will use try/except blocks to handle these two cases. We will assume multidimensional cases, and if that raises an exception because the argument is not a list, we assume it is scalar. Here is the more robust code example.
+
+#+BEGIN_SRC python
+import quantities as u
+import numpy as np
+
+from scipy.optimize import fsolve as _fsolve
+
+def fsolve(func, t0):
+    '''wrapped fsolve command to work with units. We get the units on
+    the function argument, then wrap the function so we can add units
+    to the argument and return floats. Finally we call the original
+    fsolve from scipy. Note: this does not support all of the options
+    to fsolve.'''
+
+    try:
+        tU = [t / float(t) for t in t0]  # units on initial guess, normalized
+    except TypeError:
+        tU = t0 / float(t0)
+
+    def wrapped_func(t):
+        't will be unitless, so we add unit to it. t * tU has units.'
+        try:
+            T = [x1 * x2 for x1,x2 in zip(t, tU)]
+        except TypeError:
+            T = t * tU
+
+        try:
+            return [float(x) for x in func(T)]
+        except TypeError:
+            return float(func(T))
+
+    sol = _fsolve(wrapped_func, t0)
+    try:
+        return [x1 * x2 for x1,x2 in zip(sol, tU)]
+    except TypeError:
+        return sol * tU
+
+### Problem 1
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L
+k = 1.0 / u.s
+
+def func(t):
+    return CA - CA0 * np.exp(-k * t)
+
+
+tguess = 4 * u.s
+sol1, = fsolve(func, tguess)
+print('sol1 = ',sol1)
+
+### Problem 2
+def func2(X):
+    a,b = X
+    return [a**2 - 4*u.kg**2,
+            b**2 - 25*u.J**2]
+
+Xguess = [2.2*u.kg, 5.2*u.J]
+s2a, s2b = fsolve(func2, Xguess)
+print('s2a = {0}\ns2b = {1}'.format(s2a, s2b))
+#+END_SRC
+
+#+RESULTS:
+: sol1 =  4.605170185988092 s
+: s2a = 1.9999999999999867 kg
+: s2b = 5.000000000000002 J
+
+That is pretty good. There is still room for improvement in the wrapped function, as it does not support all of the options that scipy.optimize.fsolve supports. Here is a draft of a function that does that. We have to return different numbers of arguments depending on the value of full_output. This function works, but I have not fully tested all the options. Here are three examples that work, including one with an argument.
+
+#+BEGIN_SRC python
+import quantities as u
+import numpy as np
+
+from scipy.optimize import fsolve as _fsolve
+
+def fsolve(func, t0, args=(),
+           fprime=None, full_output=0, col_deriv=0,
+           xtol=1.49012e-08, maxfev=0, band=None,
+           epsfcn=0.0, factor=100, diag=None):
+    '''wrapped fsolve command to work with units. We get the units on
+    the function argument, then wrap the function so we can add units
+    to the argument and return floats. Finally we call the original
+    fsolve from scipy. '''
+
+    try:
+        tU = [t / float(t) for t in t0]  # units on initial guess, normalized
+    except TypeError:
+        tU = t0 / float(t0)
+
+    def wrapped_func(t, *args):
+        't will be unitless, so we add unit to it. t * tU has units.'
+        try:
+            T = [x1 * x2 for x1,x2 in zip(t, tU)]
+        except TypeError:
+            T = t * tU
+
+        try:
+            return [float(x) for x in func(T, *args)]
+        except TypeError:
+            return float(func(T))
+
+    sol = _fsolve(wrapped_func, t0, args,
+           fprime, full_output, col_deriv,
+           xtol, maxfev, band,
+           epsfcn, factor, diag)
+
+    if full_output:
+        x, infodict, ier, mesg = sol
+        try:
+            x = [x1 * x2 for x1,x2 in zip(x, tU)]
+        except TypeError:
+            x = x * tU
+        return x, infodict, ier, mesg
+    else:
+        try:
+            x = [x1 * x2 for x1,x2 in zip(sol, tU)]
+        except TypeError:
+            x = sol * tU
+        return x
+
+### Problem 1
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L
+k = 1.0 / u.s
+
+def func(t):
+    return CA - CA0 * np.exp(-k * t)
+
+
+tguess = 4 * u.s
+sol1, = fsolve(func, tguess)
+print('sol1 = ',sol1)
+
+### Problem 2
+def func2(X):
+    a,b = X
+    return [a**2 - 4*u.kg**2,
+            b**2 - 25*u.J**2]
+
+Xguess = [2.2*u.kg, 5.2*u.J]
+sol, infodict, ier, mesg = fsolve(func2, Xguess, full_output=1)
+s2a, s2b = sol
+print('s2a = {0}\ns2b = {1}'.format(s2a, s2b))
+
+### Problem 3 - with an arg
+def func3(a, arg):
+    return a**2 - 4*u.kg**2 + arg**2
+
+Xguess = 1.5 * u.kg
+arg = 0.0* u.kg
+
+sol3, = fsolve(func3, Xguess, args=(arg,))
+
+print('sol3 = ', sol3)
+#+END_SRC
+
+#+RESULTS:
+: sol1 =  4.605170185988092 s
+: s2a = 1.9999999999999867 kg
+: s2b = 5.000000000000002 J
+: sol3 =  2.0 kg
+
+The only downside I can see in the quantities module is that it only handle temperature differences, and not absolute temperatures. If you only use absolute temperatures, this would not be a problem I think. But, if you have mixed temperature scales, the quantities module does not convert them on an absolute scale.
+
+#+BEGIN_SRC python
+import quantities as u
+
+T = 20 * u.degC
+
+print(T.rescale(u.K))
+print(T.rescale(u.degF))
+#+END_SRC
+
+#+RESULTS:
+: 20.0 K
+: 36.0 degF
+
+Nevertheless, this module seems pretty promising, and there are a lot more features than shown here. Some documentation can be found at http://pythonhosted.org/quantities/.
+
+** Units in ODEs
+   :PROPERTIES:
+   :categories: ODEs,units
+   :date:     2013/03/25 09:58:55
+   :updated:  2013/03/25 09:58:55
+   :END:
+We reconsider a simple ODE but this time with units. We will use the quantities package again.
+
+Here is the ODE, $\frac{dCa}{dt} = -k Ca$ with $C_A(0) = 1.0$ mol/L and $k = 0.23$ 1/s. Compute the concentration after 5 s.
+
+#+BEGIN_SRC python
+import quantities as u
+
+k = 0.23 / u.s
+Ca0 = 1 * u.mol / u.L
+
+def dCadt(Ca, t):
+    return -k * Ca
+
+import numpy as np
+from scipy.integrate import odeint
+
+tspan = np.linspace(0, 5) * u.s
+
+sol = odeint(dCadt, Ca0, tspan)
+
+print(sol[-1])
+#+END_SRC
+
+#+RESULTS:
+: [ 0.31663678]
+
+No surprise, the units are lost. Now we start wrapping odeint. We wrap everything, and then test two examples including a single ODE, and a coupled set of ODEs with mixed units.
+
+
+#+BEGIN_SRC python
+import quantities as u
+import matplotlib.pyplot as plt
+
+import numpy as np
+from scipy.integrate import odeint as _odeint
+
+def odeint(func, y0, t, args=(),
+           Dfun=None, col_deriv=0, full_output=0,
+           ml=None, mu=None, rtol=None, atol=None,
+           tcrit=None, h0=0.0, hmax=0.0, hmin=0.0,
+           ixpr=0, mxstep=0, mxhnil=0, mxordn=12,
+           mxords=5, printmessg=0):
+
+    def wrapped_func(Y0, T, *args):
+        # put units on T if they are on the original t
+        # check for units so we don't put them on twice
+        if not hasattr(T, 'units') and hasattr(t, 'units'):
+            T = T * t.units
+        # now for the dependent variable units. Y0 may be a scalar or
+        # a list or an array. we want to check each element of y0 for
+        # units, and add them to the corresponding element of Y0 if we
+        # need to.
+        try:
+            uY0 = [x for x in Y0] # a list copy of contents of Y0
+            # this works if y0 is an iterable, eg. a list or array
+            for i, yi in enumerate(y0):
+                if not hasattr(uY0[i],'units') and hasattr(yi, 'units'):
+
+                    uY0[i] = uY0[i] * yi.units
+
+        except TypeError:
+            # we have a scalar
+            if not hasattr(Y0, 'units') and hasattr(y0, 'units'):
+                uY0 = Y0 * y0.units
+
+        val = func(uY0, t, *args)
+
+        try:
+            return np.array([float(x) for x in val])
+        except TypeError:
+            return float(val)
+
+    if full_output:
+        y, infodict = _odeint(wrapped_func, y0, t, args,
+                              Dfun, col_deriv, full_output,
+                              ml, mu, rtol, atol,
+                              tcrit, h0, hmax, hmin,
+                              ixpr, mxstep, mxhnil, mxordn,
+                              mxords, printmessg)
+    else:
+        y = _odeint(wrapped_func, y0, t, args,
+                    Dfun, col_deriv, full_output,
+                    ml, mu, rtol, atol,
+                    tcrit, h0, hmax, hmin,
+                    ixpr, mxstep, mxhnil, mxordn,
+                    mxords, printmessg)
+
+    # now we need to put units onto the solution units should be the
+    # same as y0. We cannot put mixed units in an array, so, we return a list
+    m,n = y.shape # y is an ndarray, so it has a shape
+    if n > 1: # more than one equation, we need a list
+        uY = [0 for yi in range(n)]
+
+        for i, yi in enumerate(y0):
+            if not hasattr(uY[i],'units') and hasattr(yi, 'units'):
+                uY[i] = y[:,i] * yi.units
+            else:
+                uY[i] = y[:,i]
+
+    else:
+        uY = y * y0.units
+
+    y = uY
+
+
+    if full_output:
+        return y, infodict
+    else:
+        return y
+
+##################################################################
+# test a single ODE
+k = 0.23 / u.s
+Ca0 = 1 * u.mol / u.L
+
+def dCadt(Ca, t):
+    return -k * Ca
+
+tspan = np.linspace(0, 5) * u.s
+sol = odeint(dCadt, Ca0, tspan)
+
+print(sol[-1])
+
+plt.plot(tspan, sol)
+plt.xlabel('Time ({0})'.format(tspan.dimensionality.latex))
+plt.ylabel('$C_A$ ({0})'.format(sol.dimensionality.latex))
+plt.savefig('images/ode-units-ca.png')
+
+##################################################################
+# test coupled ODEs
+lbmol = 453.59237*u.mol
+
+kprime = 0.0266 * lbmol / u.hr / u.lb
+Fa0 = 1.08 * lbmol / u.hr
+alpha = 0.0166 / u.lb
+epsilon = -0.15
+
+def dFdW(F, W, alpha0):
+    X, y = F
+    dXdW = kprime / Fa0 * (1.0 - X)/(1.0 + epsilon * X) * y
+    dydW = - alpha0 * (1.0 + epsilon * X) / (2.0 * y)
+    return [dXdW, dydW]
+
+X0 = 0.0 * u.dimensionless
+y0 = 1.0
+
+# initial conditions
+F0 = [X0, y0] # one without units, one with units, both are dimensionless
+
+wspan = np.linspace(0,60) * u.lb
+
+sol = odeint(dFdW, F0, wspan, args=(alpha,))
+X, y = sol
+
+print('Test 2')
+print(X[-1])
+print(y[-1])
+
+plt.figure()
+plt.plot(wspan, X, wspan, y)
+plt.legend(['X','$P/P_0$'])
+plt.xlabel('Catalyst weight ({0})'.format(wspan.dimensionality.latex))
+plt.savefig('images/ode-coupled-units-pdrpo.png')
+#+END_SRC
+
+#+RESULTS:
+: [ 0.31663678] mol/L
+: Test 2
+: 0.6655695781563288 dimensionless
+: 0.263300470681
+
+[[./images/ode-units-ca.png]]
+
+[[./images/ode-coupled-units-pdrpo.png]]
+
+That is not too bad. This is another example of a function you would want to save in a module for reuse. There is one bad feature of the wrapped odeint function, and that is that it changes the solution for coupled ODEs from an ndarray to a list. That is necessary because you apparently cannot have mixed units in an ndarray. It is fine, however, to have a list of mixed units. This is not a huge problem, but it changes the syntax for plotting results for the wrapped odeint function compared to the unwrapped function without units.
+
+** Handling units with dimensionless equations
+   :PROPERTIES:
+   :categories: units
+   :date:     2013/03/26 16:47:39
+   :updated:  2013/03/26 16:47:39
+   :END:
+As we have seen, handling units with third party functions is fragile, and often requires additional code to wrap the function to handle the units. An alternative approach that avoids the wrapping is to rescale the equations so they are dimensionless. Then, we should be able to use all the standard external functions without modification. We obtain the final solutions by rescaling back to the answers we want.
+
+Before doing the examples, let us consider how the quantities package handles dimensionless numbers.
+
+#+BEGIN_SRC python
+import quantities as u
+
+a = 5 * u.m
+L = 10 * u.m # characteristic length
+
+print(a/L)
+print(type(a/L))
+#+END_SRC
+
+#+RESULTS:
+: 0.5 dimensionless
+: <class 'quantities.quantity.Quantity'>
+
+As you can see, the dimensionless number is scaled properly, and is listed as dimensionless. The result is still an instance of a quantities object though. That is not likely to be a problem.
+
+Now, we consider using fsolve with dimensionless equations. Our goal is to solve $C_A = C_{A0} \exp(-k t)$ for the time required to reach a desired $C_A$. We let $X = Ca / Ca0$ and $\tau = t * k$, which leads to $X = \exp{-\tau}$ in dimensionless terms.
+
+#+BEGIN_SRC python
+import quantities as u
+import numpy as np
+from scipy.optimize import fsolve
+
+CA0 = 1 * u.mol / u.L
+CA = 0.01 * u.mol / u.L  # desired exit concentration
+k = 1.0 / u.s
+
+# we need new dimensionless variables
+# let X = Ca / Ca0
+# so, Ca = Ca0 * X
+
+# let tau = t * k
+# so t = tau / k
+
+X = CA / CA0 # desired exit dimensionless concentration
+
+def func(tau):
+    return X - np.exp(-tau)
+
+tauguess = 2
+
+print(func(tauguess)) # confirm we have a dimensionless function
+
+tau_sol, = fsolve(func, tauguess)
+t = tau_sol / k
+print(t)
+#+END_SRC
+
+#+RESULTS:
+: -0.1253352832366127 dimensionless
+: 4.605170185988091 s
+
+Now consider the ODE $\frac{dCa}{dt} = -k Ca$. We let $X = Ca/Ca0$, so $Ca0 dX = dCa$. Let $\tau = t * k$ which in this case is dimensionless. That means $d\tau = k dt$. Substitution of these new variables leads to:
+
+\(Ca0*k \frac{dX}{d\tau} = -k Ca0 X \)
+
+or equivalently:
+\(\frac{dX}{d\tau} = -X \)
+
+#+BEGIN_SRC python
+import quantities as u
+
+k = 0.23 / u.s
+Ca0 = 1 * u.mol / u.L
+
+# Let X = Ca/Ca0  -> Ca = Ca0 * X  dCa = dX/Ca0
+# let tau = t * k -> dt = 1/k dtau
+
+
+def dXdtau(X, tau):
+    return -X
+
+import numpy as np
+from scipy.integrate import odeint
+
+tspan = np.linspace(0, 5) * u.s
+tauspan = tspan * k
+
+X0 = 1
+X_sol = odeint(dXdtau, X0, tauspan)
+
+print('Ca at t = {0} = {1}'.format(tspan[-1], X_sol.flatten()[-1] * Ca0))
+#+END_SRC
+
+#+RESULTS:
+: Ca at t = 5.0 s = 0.31663677735141815 mol/L
+
+That is pretty much it. Using dimensionless quantities simplifies the need to write wrapper code, although it does increase the effort to rederive your equations (with corresponding increased opportunities to make mistakes). Using units to confirm your dimensionless derivation reduces those opportunities.
+
