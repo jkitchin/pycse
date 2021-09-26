@@ -1,10 +1,11 @@
 #+title: Solving a first-order ordinary differential equation with Python
 
+See the video at https://youtu.be/4H0Qr-gxMN4
+
 Today's goal: solve $f'(x) = 3 x^2 + 12 x - 4$ where $f(-8)=-120$. Then, plot the solution, and find where $f(x)=0$.
 
 #+attr_org: :width 600
 [[././screenshots/2021-09-26:08:53:08.png]]
-
 #+BEGIN_SRC jupyter-python
 from scipy.integrate import solve_ivp
 ?solve_ivp
@@ -12,16 +13,14 @@ from scipy.integrate import solve_ivp
 
 #+RESULTS:
 
-
 #+BEGIN_SRC jupyter-python
-def ode(x, y):
+def fprime(x, y):
     return 3 * x**2 + 12 * x - 4
 
-Y0 = (-120,)
-
 tspan = (-8, 4)
+F0 = (-120, )
 
-sol = solve_ivp(ode, tspan, Y0)
+sol = solve_ivp(fprime, tspan, F0)
 sol
 #+END_SRC
 
@@ -43,50 +42,99 @@ sol
 
 #+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
-plt.plot(sol.t, sol.y[0], 'bo');
+
+plt.plot(sol.t, sol.y[0], 'bo-');
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/1e6c321fe0d732338211b353ce5cd73c8f7b5cd9.png]]
+[[file:./.ob-jupyter/2d0285b30f59757be1e448d04e4c95b067052729.png]]
 
 #+BEGIN_SRC jupyter-python
 import numpy as np
 
-x = np.linspace(-8, 4)
+x = np.linspace(*tspan)
+sol = solve_ivp(fprime, tspan, F0, t_eval=x)
 
-sol = solve_ivp(ode, tspan, Y0, t_eval=x)
-plt.plot(sol.t, sol.y[0], 'b.');
+plt.plot(sol.t, sol.y[0], 'b.-');
+plt.axhline(0);
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/5d61c324ef979993f6a30687922f995a66abbd68.png]]
+[[file:./.ob-jupyter/a5df3126be7f4be7b14c464514a186c2c325396f.png]]
 
+#+BEGIN_SRC jupyter-python
+?solve_ivp
+#+END_SRC
+
+#+RESULTS:
 
 #+BEGIN_SRC jupyter-python
 def event(x, y):
-    return y  # whenever y=0, an event is triggered
+    return y
 
 x, h = np.linspace(*tspan, retstep=True)
 
-sol = solve_ivp(ode, tspan, Y0, t_eval=x, events=event, max_step=h)
+sol = solve_ivp(fprime, tspan, F0, events=event, max_step=h)
 sol
-
-plt.plot(sol.t, sol.y[0], 'b.');
-plt.plot(sol.t_events, sol.y_events[0].T, 'ro');
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/d662a9c1be340c30934baf676895918f7e4272ca.png]]
+#+begin_example
+  message: 'The solver successfully reached the end of the integration interval.'
+     nfev: 302
+     njev: 0
+      nlu: 0
+      sol: None
+   status: 0
+  success: True
+        t: array([-8.        , -7.89454203, -7.64964407, -7.40474611, -7.15984815,
+       -6.91495019, -6.67005223, -6.42515427, -6.18025632, -5.93535836,
+       -5.6904604 , -5.44556244, -5.20066448, -4.95576652, -4.71086856,
+       -4.4659706 , -4.22107264, -3.97617468, -3.73127672, -3.48637876,
+       -3.24148081, -2.99658285, -2.75168489, -2.50678693, -2.26188897,
+       -2.01699101, -1.77209305, -1.52719509, -1.28229713, -1.03739917,
+       -0.79250121, -0.54760325, -0.3027053 , -0.05780734,  0.18709062,
+        0.43198858,  0.67688654,  0.9217845 ,  1.16668246,  1.41158042,
+        1.65647838,  1.90137634,  2.1462743 ,  2.39117226,  2.63607021,
+        2.88096817,  3.12586613,  3.37076409,  3.61566205,  3.86056001,
+        4.        ])
+ t_events: [array([-6., -2.,  2.])]
+        y: array([[-120.        , -110.49687882,  -89.93373556,  -71.40361707,
+         -54.81839682,  -40.08994824,  -27.13014479,  -15.85085994,
+          -6.16396712,    2.0186602 ,    8.78514856,   14.22362453,
+          18.42221463,   21.46904542,   23.45224345,   24.45993525,
+          24.58024738,   23.90130638,   22.5112388 ,   20.49817118,
+          17.95023007,   14.95554201,   11.60223355,    7.97843124,
+           4.17226163,    0.27185125,   -3.63467335,   -7.45918561,
+         -11.113559  ,  -14.50966697,  -17.55938297,  -20.17458045,
+         -22.26713288,  -23.7489137 ,  -24.53179637,  -24.52765434,
+         -23.64836107,  -21.80579001,  -18.91181461,  -14.87830834,
+          -9.61714463,   -3.04019696,    4.94066124,   14.4135565 ,
+          25.46661537,   38.1879644 ,   52.66573013,   68.98803911,
+          87.24301788,  107.51879299,  120.        ]])
+ y_events: [array([[ 2.66453526e-15],
+       [-7.77156117e-16],
+       [ 1.33226763e-15]])]
+#+end_example
+
 
 #+BEGIN_SRC jupyter-python
-print(sol.t_events)
+plt.plot(sol.t, sol.y[0])
+plt.plot(sol.t_events[0], sol.y_events[0], 'ro');
 #+END_SRC
 
 #+RESULTS:
-: [array([-6., -2.,  2.])]
+[[file:./.ob-jupyter/27e40e7129ea1302dac402d80e19bddeb51953e4.png]]
+
+#+BEGIN_SRC jupyter-python
+sol.t_events[0]
+#+END_SRC
+
+#+RESULTS:
+: array([-6., -2.,  2.])
 
 
-f(x) = x^3 + 6 x^2 - 4x -24
+f(x) = x^3 + 6 x^2 - 4x - 24
 
 #+BEGIN_SRC jupyter-python
 np.roots([1, 6, -4, -24])
