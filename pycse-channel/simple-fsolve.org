@@ -1,0 +1,113 @@
+#+BEGIN_SRC emacs-lisp
+(setq org-format-latex-options
+      (plist-put org-format-latex-options
+		 :scale 4.0))
+#+END_SRC
+
+#+RESULTS:
+| :foreground | default | :background | default | :scale | 4.0 | :html-foreground | Black | :html-background | Transparent | :html-scale | 1.0 | :matchers | (begin $1 $ $$ \( \[) |
+
+* Using fsolve to find the equilibrium conversion
+
+
+Goal: Solve $1.44 = \frac{X_e^2}{(1 - X_e)^2}$ for $X_e$
+
+[[././screenshots/2021-09-21:11:54:53.png]]
+
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.optimize import fsolve
+
+
+def f(x):
+    return 1.44 - x**2 / (1 - x)**2
+
+X = np.linspace(0, 0.99)
+
+plt.plot(X, f(X))
+plt.ylim([-1, 2])
+plt.axhline(0)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.lines.Line2D at 0x7fa00171dcd0>
+[[file:./.ob-jupyter/f95272aaad09be28b31b06898294ca4b459a3b31.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+ans, = fsolve(f, 0.5)
+ans
+#+END_SRC
+
+#+RESULTS:
+: 0.545454545454545
+
+#+BEGIN_SRC jupyter-python
+f(ans)
+#+END_SRC
+
+#+RESULTS:
+: 5.773159728050814e-15
+
+#+BEGIN_SRC jupyter-python
+plt.plot(X, f(X))
+plt.ylim([-1, 2])
+plt.axhline(0)
+plt.plot(ans, f(ans), 'ro')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x7fa01060cac0> |
+[[file:./.ob-jupyter/d38fcca7347a41a1e1522521c68e998a0b104c80.png]]
+:END:
+
+** analytical solution
+
+sqrt(1.44) = x / (1 - x)
+
+1 /sqrt(1.44) = (1 - x) / x = 1/x - 1
+
+1 / sqrt(1.44) + 1 = 1 /x
+
+#+BEGIN_SRC jupyter-python
+1 / (1 / np.sqrt(1.44) + 1)
+#+END_SRC
+
+#+RESULTS:
+: 0.5454545454545454
+
+* thumbnail image                                                  :noexport:
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+import numpy as np
+
+def f(x):
+    return 1.44 - x**2 / (1 - x)**2
+
+
+X = np.linspace(0, 1)
+
+plt.xkcd()
+plt.plot(X, f(X))
+plt.axhline(0, color='b')
+plt.xlabel('x')
+
+plt.plot(0.55, 0, 'ro')
+plt.text(0.6, 1, 'f(x)=0 here.')
+plt.arrow(0.6, 1, -0.05, -1)
+plt.ylabel('f(x)')
+plt.ylim([-1, 4]);
+plt.savefig('fsolve-thumbnail.png')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <ipython-input-15-2cbdf0ccef43>:6: RuntimeWarning: divide by zero encountered in true_divide
+:   return 1.44 - x**2 / (1 - x)**2
+[[file:./.ob-jupyter/9dd378bb28d19a00054217267fa86a0633060e8e.png]]
+:END:

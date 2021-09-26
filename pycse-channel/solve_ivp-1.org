@@ -1,0 +1,96 @@
+#+title: Solving a first-order ordinary differential equation with Python
+
+Today's goal: solve $f'(x) = 3 x^2 + 12 x - 4$ where $f(-8)=-120$. Then, plot the solution, and find where $f(x)=0$.
+
+#+attr_org: :width 600
+[[././screenshots/2021-09-26:08:53:08.png]]
+
+#+BEGIN_SRC jupyter-python
+from scipy.integrate import solve_ivp
+?solve_ivp
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC jupyter-python
+def ode(x, y):
+    return 3 * x**2 + 12 * x - 4
+
+Y0 = (-120,)
+
+tspan = (-8, 4)
+
+sol = solve_ivp(ode, tspan, Y0)
+sol
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+  message: 'The solver successfully reached the end of the integration interval.'
+     nfev: 26
+     njev: 0
+      nlu: 0
+      sol: None
+   status: 0
+  success: True
+        t: array([-8.        , -7.89454203, -6.83996233,  3.70583468,  4.        ])
+ t_events: None
+        y: array([[-120.        , -110.49687882,  -35.93785936,   94.46893375,
+         120.        ]])
+ y_events: None
+#+end_example
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+plt.plot(sol.t, sol.y[0], 'bo');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/1e6c321fe0d732338211b353ce5cd73c8f7b5cd9.png]]
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+x = np.linspace(-8, 4)
+
+sol = solve_ivp(ode, tspan, Y0, t_eval=x)
+plt.plot(sol.t, sol.y[0], 'b.');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/5d61c324ef979993f6a30687922f995a66abbd68.png]]
+
+
+#+BEGIN_SRC jupyter-python
+def event(x, y):
+    return y  # whenever y=0, an event is triggered
+
+x, h = np.linspace(*tspan, retstep=True)
+
+sol = solve_ivp(ode, tspan, Y0, t_eval=x, events=event, max_step=h)
+sol
+
+plt.plot(sol.t, sol.y[0], 'b.');
+plt.plot(sol.t_events, sol.y_events[0].T, 'ro');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/d662a9c1be340c30934baf676895918f7e4272ca.png]]
+
+#+BEGIN_SRC jupyter-python
+print(sol.t_events)
+#+END_SRC
+
+#+RESULTS:
+: [array([-6., -2.,  2.])]
+
+
+f(x) = x^3 + 6 x^2 - 4x -24
+
+#+BEGIN_SRC jupyter-python
+np.roots([1, 6, -4, -24])
+#+END_SRC
+
+#+RESULTS:
+: array([-6.,  2., -2.])
