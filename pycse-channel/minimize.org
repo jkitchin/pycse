@@ -1,0 +1,72 @@
+#+title: Finding the minimum of a function
+
+Operating a process costs us money, and we often want to minimize the cost. It is common to have two kinds of costs: operating costs and capital costs, and both depend on the size of the process. As a process gets bigger, the capital costs (we need more equipment to make it bigger) usually grow. If it is a good process though, it is more efficient at larger size, so the operating costs can actually decrease with the size. That means there is some optimum size that minimizes the cost.
+
+[[././screenshots/2021-09-27:10:14:44.png]]
+
+Let's suppose we know that the capital cost increases according to $C(x) = x^3$ where \(x\) is a variable indicating the size. Let's also suppose that the operating cost follows this equation $O(x) = e^{-x}$.
+
+Plot the total cost as a function of \(x\) and find the size that minimizes the total cost.
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+import numpy as np
+
+def cost(x):
+    C = x**3
+    O = np.exp(-x)
+    return C + O
+
+X = np.linspace(0, 1)
+plt.plot(X, cost(X))
+plt.xlabel('X (system size)')
+plt.ylabel('Cost');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/72795c5c2443a312491a01ea416df9551de95ddd.png]]
+
+#+BEGIN_SRC jupyter-python
+X[np.argmin(cost(X))]
+#+END_SRC
+
+#+RESULTS:
+: 0.44897959183673464
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import minimize
+?minimize
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+sol = minimize(cost, 0.45)
+sol
+#+END_SRC
+
+#+RESULTS:
+:       fun: 0.7286178214893886
+:  hess_inv: array([[0.29748074]])
+:       jac: array([9.46223736e-07])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 8
+:       nit: 2
+:      njev: 4
+:    status: 0
+:   success: True
+:         x: array([0.45896254])
+
+#+BEGIN_SRC jupyter-python  
+sol.x[0], sol.fun
+#+END_SRC
+
+#+RESULTS:
+| 0.45896254028958455 | 0.7286178214893886 |
+
+#+BEGIN_SRC jupyter-python
+print(f'The minimum cost is ${sol.fun:1.2f} at an x value of {sol.x[0]:1.2f}.')
+#+END_SRC
+
+#+RESULTS:
+: The minimum cost is $0.73 at an x value of 0.46.
