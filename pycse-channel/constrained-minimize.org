@@ -1,0 +1,123 @@
+#+title: Constrained minimization
+
+Examples adapted from https://www3.nd.edu/~jstiver/FIN360/Constrained%20Optimization.pdf
+
+* Equality constraint
+
+#+attr_org: :width 600
+[[././screenshots/2021-09-28:11:08:15.png]]
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import minimize
+import numpy as np
+
+def objective(X):
+    nB, nA = X
+    enjoyment = np.sqrt(nB * nA)
+    return -enjoyment
+
+def eq1(X):
+    nB, nA = X
+    return 120 - nB * 2 - nA * 4
+
+sol = minimize(objective, [1, 1], constraints=dict(type='eq', fun=eq1))
+sol
+#+END_SRC
+
+#+RESULTS:
+:      fun: -21.21320343558186
+:      jac: array([-0.35355377, -0.70710588])
+:  message: 'Optimization terminated successfully'
+:     nfev: 24
+:      nit: 8
+:     njev: 8
+:   status: 0
+:  success: True
+:        x: array([29.99996485, 15.00001758])
+
+
+#+BEGIN_SRC jupyter-python
+eq1(sol.x)
+#+END_SRC
+
+#+RESULTS:
+: 7.105427357601002e-15
+
+#+BEGIN_SRC jupyter-python
+-objective([30, 15])
+#+END_SRC
+
+#+RESULTS:
+: 21.213203435596427
+
+#+BEGIN_SRC jupyter-python :results raw
+dict(type='eq', fun=eq1)
+#+END_SRC
+
+#+RESULTS:
+| type | : | eq | fun | : | <function | __main__.eq1 | (X) | > |
+
+#+BEGIN_SRC jupyter-python
+sol = minimize(objective, [1, 1], constraints={'type': 'eq', 'fun': eq1})
+sol
+#+END_SRC
+
+#+RESULTS:
+:      fun: -21.21320343558186
+:      jac: array([-0.35355377, -0.70710588])
+:  message: 'Optimization terminated successfully'
+:     nfev: 24
+:      nit: 8
+:     njev: 8
+:   status: 0
+:  success: True
+:        x: array([29.99996485, 15.00001758])
+
+
+
+
+
+
+
+
+
+
+
+
+* Inequality constraint
+
+#+attr_org: :width 600
+[[././screenshots/2021-09-28:11:14:47.png]]
+
+#+BEGIN_SRC jupyter-python
+def objective(X):
+    L, C = X
+    return 9 * L + 3 * C
+
+def ineq1(X):
+    L, C = X
+    # np.sqrt(L * C) >= 100
+    return np.sqrt(L * C) - 100
+
+sol = minimize(objective, [1, 1], constraints=dict(type='ineq', fun=ineq1))
+sol
+#+END_SRC
+
+#+RESULTS:
+:      fun: 1039.230484513021
+:      jac: array([9., 3.])
+:  message: 'Optimization terminated successfully'
+:     nfev: 31
+:      nit: 10
+:     njev: 10
+:   status: 0
+:  success: True
+:        x: array([ 57.73502015, 173.20510104])
+
+#+BEGIN_SRC jupyter-python  
+ineq1(sol.x)
+#+END_SRC
+
+#+RESULTS:
+: -2.724348746596661e-09
+
