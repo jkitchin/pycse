@@ -1,0 +1,129 @@
+#+title: Polynomials in Python
+
+#+attr_org: :width 600
+[[././screenshots/2021-09-30:15:31:17.png]]
+Polynomials are super helpful!
+
+#+BEGIN_SRC jupyter-python
+x = [0.        , 0.04081633, 0.08163265, 0.12244898, 0.16326531,
+        0.20408163, 0.24489796, 0.28571429, 0.32653061, 0.36734694,
+        0.40816327, 0.44897959, 0.48979592, 0.53061224, 0.57142857,
+        0.6122449 , 0.65306122, 0.69387755, 0.73469388, 0.7755102 ,
+        0.81632653, 0.85714286, 0.89795918, 0.93877551, 0.97959184,
+        1.02040816, 1.06122449, 1.10204082, 1.14285714, 1.18367347,
+        1.2244898 , 1.26530612, 1.30612245, 1.34693878, 1.3877551 ,
+        1.42857143, 1.46938776, 1.51020408, 1.55102041, 1.59183673,
+        1.63265306, 1.67346939, 1.71428571, 1.75510204, 1.79591837,
+        1.83673469, 1.87755102, 1.91836735, 1.95918367, 2.        ]
+
+y = [ 0.80908105,  0.8308602 ,  0.84085136,  0.92308844,  0.92219372,
+         1.00467776,  0.94128706,  0.99036827,  0.97882506,  0.99847705,
+         1.01115486,  1.01062819,  1.07001694,  1.01125567,  1.03236282,
+         1.04305723,  1.0284266 ,  0.98290698,  0.94602007,  1.01325543,
+         0.90224624,  0.95961954,  0.897884  ,  0.89140568,  0.83282938,
+         0.81411587,  0.70308839,  0.65470091,  0.59747364,  0.60978772,
+         0.57080403,  0.48560757,  0.38203638,  0.2983186 ,  0.2705267 ,
+         0.21991893,  0.09189702,  0.03424839, -0.09103757, -0.16035878,
+        -0.18771468, -0.2812741 , -0.44714135, -0.51047411, -0.59711997,
+        -0.70675544, -0.89144965, -1.00535942, -1.03008971, -1.24501458]
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC jupyter-python  
+import matplotlib.pyplot as plt
+plt.plot(x, y);
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/00a9f2ea9dfd1f6e75fb712aff1f474e94a58f42.png]]
+
+
+#+BEGIN_SRC jupyter-python  
+import numpy as np
+np.trapz(y, x)
+#+END_SRC
+
+#+RESULTS:
+: 0.9252849442988578
+
+#+BEGIN_SRC jupyter-python
+p = np.polyfit(x, y, 2)
+p
+#+END_SRC
+
+#+RESULTS:
+: array([-1.00671191,  1.02212748,  0.78288211])
+
+#+BEGIN_SRC jupyter-python
+P = np.poly1d(p)
+
+X = np.linspace(0, 2)
+plt.plot(x, y, 'b.', label='data')
+plt.plot(X, P(X), label='fit')
+plt.legend();
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/e469d1d478bfd54c74d8d17096fe8db7abb73352.png]]
+
+#+BEGIN_SRC jupyter-python
+from scipy.integrate import quad
+I, e = quad(P, 0, 2)
+I, e
+#+END_SRC
+
+#+RESULTS:
+| 0.92545409643098 | 1.6216744979864182e-14 |
+
+
+#+BEGIN_SRC jupyter-python
+P.r
+#+END_SRC
+
+#+RESULTS:
+: array([ 1.52519142, -0.50987863])
+
+#+BEGIN_SRC jupyter-python
+iP = np.polyint(P)
+iP(2) - iP(0)
+#+END_SRC
+
+#+RESULTS:
+: 0.9254540964309801
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import minimize
+
+sol = minimize(-P, 0.5)
+sol
+#+END_SRC
+
+#+RESULTS:
+:       fun: -1.042326888980499
+:  hess_inv: array([[1]])
+:       jac: array([1.49011612e-08])
+:   message: 'Optimization terminated successfully.'
+:      nfev: 6
+:       nit: 1
+:      njev: 3
+:    status: 0
+:   success: True
+:         x: array([0.5076564])
+
+#+BEGIN_SRC jupyter-python
+dP = np.polyder(P)
+dP(sol.x)
+#+END_SRC
+
+#+RESULTS:
+: array([-3.99232358e-09])
+
+#+BEGIN_SRC jupyter-python
+ddP = np.polyder(P, 2)
+ddP(sol.x)
+#+END_SRC
+
+#+RESULTS:
+: array([-2.01342382])
