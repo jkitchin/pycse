@@ -160,7 +160,8 @@ def ivp(f, tspan, y0, *args, **kwargs):
     callable y'(x, y) = f(x, y)
 
     tspan : array
-    The x points you want the solution at
+    The x points you want the solution at. The first and last points are used in
+    tspan in solve_ivp.
 
     y0 : array
     Initial conditions
@@ -168,19 +169,32 @@ def ivp(f, tspan, y0, *args, **kwargs):
     *args : type
     arbitrary positional arguments to pass to solve_ivp
 
-    **kwargs : type
-    arbitrary kwargs to pass to solve_ivp
+    **kwargs : type arbitrary kwargs to pass to solve_ivp.
+    max_step is set to be the min diff of tspan. dense_output is set to True.
+    t_eval is set to the array specified in tspan.
 
     Returns
     -------
     solution from solve_ivp
+
     """
     t0, tf = tspan[0], tspan[-1]
 
-    # make the max_Step the smallest step in tspan, or what is in kwargs.
-    max_step = kwargs.get('max_step', min(np.diff(tspan)))
-    sol = solve_ivp(f, (t0, tf), y0, t_eval=tspan, max_step=max_step,
-                    *args, **kwargs)
+    # make the max_step the smallest step in tspan, or what is in kwargs.
+    if 'max_step' not in kwargs:
+        kwargs['max_step'] = min(np.diff(tspan))
+
+    if 'dense_output' not in kwargs:
+        kwargs['dense_output'] = True
+
+    if 't_eval' not in kwargs:
+        kwargs['t_eval'] = tspan
+
+    sol = solve_ivp(f, (t0, tf), y0, *args, **kwargs)
+
+    if sol.status != 0:
+        print(sol.message)
+
     return sol
 
 
