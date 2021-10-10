@@ -1,0 +1,39 @@
+
+http://www.math.clemson.edu/~mjs/courses/mthsc.440/integer.pdf
+
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import minimize
+
+def objective(X):
+    return -(np.dot([8, 11, 6, 4], X))
+
+
+def c1(X):
+    return 14 - np.dot([5, 7, 4, 3], X)
+
+
+def c2(X):
+    return 1 - X
+
+# positivity
+def c3(X):
+    return X
+
+minimize(objective, [1.0, 1.0, 0.5, 0], method='SLSQP', constraints=[{'type': 'ineq', 'fun': c1},
+                                                                     {'type': 'ineq', 'fun': c2},
+                                                                     {'type': 'ineq', 'fun': c3}])
+#+END_SRC
+
+#+RESULTS:
+:      fun: -22.0
+:      jac: array([ -8., -11.,  -6.,  -4.])
+:  message: 'Optimization terminated successfully'
+:     nfev: 5
+:      nit: 1
+:     njev: 1
+:   status: 0
+:  success: True
+:        x: array([1. , 1. , 0.5, 0. ])
+
+How do enforce integers...
