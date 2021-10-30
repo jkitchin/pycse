@@ -38,7 +38,16 @@ def gdrive():
 # Utilities
 ##################################################################
 
+def aptupdate():
+    s = subprocess.run(['apt-get', 'update'],
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+    if s.returncode != 0:
+        raise Exception(f'apt-get update failed.\n'
+                        f'{s.stdout.decode()}\n'
+                        f'{s.stderr.decode()}')
 
+    
 def aptinstall(apt_pkg):
     '''Utility to install a package and check for success.'''
     print(f'Installing {apt_pkg}. Please be patient.')
@@ -138,7 +147,9 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
     with open(css, 'w') as f:
         f.write('\n'.join(resources['inlining']['css']))
 
-    if not shutil.which('xvfb-run'):
+    aptupdate()
+    
+    if not shutil.which('xvfb-run'):        
         aptinstall('xvfb')
 
     if not shutil.which('wkhtmltopdf'):
@@ -166,59 +177,6 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
         print('no pdf found.')
         print(ahtml)
         print(apdf)
-
-
-        # This never worked for me in colab2
-# def pdf_from_weasy(pdf=None, verbose=False):
-#     '''Export the current notebook as a PDF.
-#     pdf is the name of the PDF to export.
-#     The pdf is not saved in GDrive. Conversion is done from an HTML export.
-#     '''
-#     if verbose:
-#         print('PDF via Weasy')
-#     fname, fid = current_notebook()
-#     ipynb = notebook_string(fid)
-
-#     exporter = HTMLExporter()
-
-#     nb = nbformat.reads(ipynb, as_version=4)
-#     body, resources = exporter.from_notebook_node(nb)
-
-#     html = fname.replace(".ipynb", ".html")
-#     if pdf is None:
-#         pdf = html.replace(".html", ".pdf")
-
-#     tmpdirname = tempfile.TemporaryDirectory().name
-
-#     if not os.path.isdir(tmpdirname):
-#         os.mkdir(tmpdirname)
-
-#     ahtml = os.path.join(tmpdirname, html)
-#     apdf = os.path.join(tmpdirname, pdf)
-#     css = os.path.join(tmpdirname, 'custom.css')
-
-#     with open(ahtml, 'w') as f:
-#         f.write(body)
-
-#     with open(css, 'w') as f:
-#         f.write('\n'.join(resources['inlining']['css']))
-
-#     subprocess.run(['pip', 'install', 'weasyprint'])
-#     subprocess.run(['weasyprint', ahtml, apdf],
-#                    stdout=subprocess.PIPE,
-#                    stderr=subprocess.PIPE)
-
-#     if verbose:
-#         print(f'Conversion exited with non-zero status: {s.returncode}.\n'
-#               f'{s.stdout.decode()}\n'
-#               f'{s.stderr.decode()}')
-
-#     if os.path.exists(apdf):
-#         files.download(apdf)
-#     else:
-#         print('no pdf found.')
-#         print(ahtml)
-#         print(apdf)
 
 
 def pdf_from_latex(pdf=None, verbose=False):
