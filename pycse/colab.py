@@ -102,9 +102,10 @@ def notebook_string(fid):
     return ipynb
 
 
-def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
+def pdf_from_html(pdf=None, verbose=False, plotly=False, javascript_delay=10000):
     '''Export the current notebook as a PDF.
     pdf is the name of the PDF to export.
+    plotly uses the plotly exporter
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
     javascript_delay is in ms, and is how long to wait in wkhtmltopdf to let
     javascript, especially mathjax finish.
@@ -115,7 +116,12 @@ def pdf_from_html(pdf=None, verbose=False, javascript_delay=10000):
     fname, fid = current_notebook()
     ipynb = notebook_string(fid)
 
-    exporter = HTMLExporter()
+    if plotly:
+        subprocess.run(['pip', 'install', 'plotlyhtmlexporter'])
+        from plotlyhtmlexporter import PlotlyHTMLExporter
+        exporter = PlotlyHTMLExporter()
+    else:
+        exporter = HTMLExporter()
 
     nb = nbformat.reads(ipynb, as_version=4)
     body, resources = exporter.from_notebook_node(nb)
@@ -221,7 +227,9 @@ def pdf_from_latex(pdf=None, verbose=False):
 def pdf(line=''):
     '''Line magic to export a colab to PDF.
     You can have an optional arg -l to use LaTeX, defaults to html->PDF.
+    You can have an optional arg -p to use plotlyhtmlexporter
     You can have an optional arg -d integer for a delay in seconds for the html to pdf.
+    
     You can have an optional last argument for the filename of the pdf
     '''
     args = shlex.split(line)
@@ -238,7 +246,8 @@ def pdf(line=''):
 
     if '-l' in args:
         pdf_from_latex(pdf, verbose)
-
+        
+    
     else:
         if '-d' in args:
             i = args.index('-d')
@@ -246,8 +255,9 @@ def pdf(line=''):
             delay = int(args[i + 1]) * 1000
         else:
             delay = 10000
-
-        pdf_from_html(pdf, verbose, delay)
+        plotly = '-p' in args
+        pdf_from_html(pdf, verbose, plotly, delay)
+                   
 
 
 # this is hackery so that CI works.
