@@ -1,5 +1,12 @@
-#+title: PYCSE Youtube channel
+#+title: PYCSE YouTube channel
 
+#+BEGIN_SRC emacs-lisp
+(get-qr-code "https://github.com/jkitchin/pycse" "./pycse-qr-code.png")
+#+END_SRC
+
+#+RESULTS:
+
+ [[./pycse-qr-code.png]]
 
 
 - loops :: [[./iteration.org]] (https://youtu.be/7rVsD9kT9RM)
@@ -11,9 +18,450 @@
 - constrained minimization :: [[./constrained-minimize.org]]  (https://youtu.be/QKiOm1iqciE)
 
 
+* DONE Getting to the root of it
+CLOSED: [2021-10-13 Wed 15:12]
+
+#+attr_org: :width 400
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/root.png]]
+
+TIL fsolve is a "[[https://docs.scipy.org/doc/scipy/reference/optimize.html#legacy-functions][legacy]]" function in scipy.optimize. The newer, preferred function is =scipy.optimize.root=. I will explore how to use this newer function in this video. 
+
+I will use this equation, and try to solve it for the value of $Fa$ that makes it true.
+
+
+$100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa / \nu}dFa$
+
+#+BEGIN_SRC jupyter-python
+from scipy.integrate import quad
+
+k = 0.23
+nu = 10.0
+Fao = 1.0
+
+def integrand(Fa):
+    return -1 / (k * Fa / nu)
+
+def objective(Fa):
+    I, _ = quad(integrand, Fao, Fa)
+    return 100 - I
+
+objective(0.1*Fao)
+#+END_SRC
+
+#+RESULTS:
+: -0.11239534756749947
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import fsolve
+
+fsolve(objective, 0.1 * Fao)
+#+END_SRC
+
+#+RESULTS:
+: array([0.10025884])
+
+#+BEGIN_SRC jupyter-python
+objective(0.10025884)
+#+END_SRC
+
+#+RESULTS:
+: -1.614431766938651e-06
+
+#+BEGIN_SRC jupyter-python
+?fsolve
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import root
+?root
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+root(objective, 0.1)
+#+END_SRC
+
+#+RESULTS:
+:     fjac: array([[-1.]])
+:      fun: -3.126388037344441e-13
+:  message: 'The solution converged.'
+:     nfev: 5
+:      qtf: array([1.87292045e-07])
+:        r: array([-433.66083096])
+:   status: 1
+:  success: True
+:        x: array([0.10025884])
+
+
+
+* pycse - Comparison operators in #Python
+
+#+attr_org: :width 400
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/comparison-operators.png]]
+
+Comparison operators are used to compare to objects, e.g. to say if one is less than or greater than, less than or equal, greater than or equal, equal, or not equal. These expressions evaluate to a Boolean (True/False). In this video, we explore the operators, and how we use them.
+
+| operator | description           |
+|----------+-----------------------|
+| ==       | equal                 |
+| !=       | not equal             |
+| >        | greater               |
+| <        | less                  |
+| >=       | greater than or equal |
+| <=       | less than or equal    |
+
+
+#+BEGIN_SRC jupyter-python
+ans = 4 == 4
+ans
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC jupyter-python
+4 != 4
+#+END_SRC
+
+#+RESULTS:
+: False
+
+#+BEGIN_SRC jupyter-python
+4 == 16 / 4.0
+#+END_SRC
+
+#+RESULTS:
+: True
+
+ 
+#+BEGIN_SRC jupyter-python
+4 <= 3
+#+END_SRC
+
+#+RESULTS:
+: False
+
+#+BEGIN_SRC jupyter-python
+a = 4
+b = 3
+
+if a > b:
+    # do something
+#+END_SRC
+
+* DONE Logical operators
+CLOSED: [2021-10-14 Thu 16:22]
+
+#+attr_org: :width 400
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/logical-operators.png]]
+Logical operators are used to combine Boolean values (True/False) to compute things like:
+
+1. if two or more things are all True
+2. if one of two or more things are True
+3. to negate something, i.e. if something is not True or not False
+
+There are three logical operators:
+
+- and
+- or
+- not
+
+** The basics with Boolean variables
+
+#+caption: The and truth table.
+|       | True  | False |
+|-------+-------+-------|
+| True  | True  | False |
+| False | False | False |
+
+#+BEGIN_SRC jupyter-python
+[True and True,
+True and False,
+False and True,
+False and False]
+#+END_SRC
+
+#+RESULTS:
+| True | False | False | False |
+
+#+BEGIN_SRC jupyter-python
+((True and True) and True) and True
+#+END_SRC
+
+#+RESULTS:
+: True
+
+
+#+caption: The or truth table.
+|       | True | False |
+|-------+------+-------|
+| True  | True | True  |
+| False | True | False |
+
+#+BEGIN_SRC jupyter-python
+[True or True,
+True or False,
+False or True,
+False or False]
+#+END_SRC
+
+#+RESULTS:
+| True | True | True | False |
+
+#+BEGIN_SRC jupyter-python
+False or False or True or False
+#+END_SRC
+
+#+RESULTS:
+: True
+
+
+#+caption: The not truth table
+|       | not   |
+|-------+-------|
+| True  | False |
+| False | True  |
+
+#+BEGIN_SRC jupyter-python
+[not True,
+ not False]
+#+END_SRC
+
+#+RESULTS:
+| False | True |
+
+#+BEGIN_SRC jupyter-python
+(not (True or False)) or True
+#+END_SRC
+
+#+RESULTS:
+: True
+
+
+** Truthiness
+
+Things that are Falsish:
+- False, 0, [], (), '', "", '''''', """""", None
+
+Everything else is Truthy!
+
+#+BEGIN_SRC jupyter-python
+[not False,
+not 0,
+not [],
+not (),
+not '',
+not "",
+not '''''',
+not """""",
+not None]
+#+END_SRC
+
+#+RESULTS:
+| True | True | True | True | True | True | True | True | True |
+
+#+BEGIN_SRC jupyter-python
+[not True,
+not -1,
+not [1],
+not (2),
+not 'r',
+not "r",
+not '''r''',
+not """r"""]
+#+END_SRC
+
+#+RESULTS:
+| False | False | False | False | False | False | False | False |
+
+
+Note: The logical operators do not always evaluate to True/False : 
+
+The operator =not= yields True if its argument is false, False otherwise.
+
+The expression x and y first evaluates x; if x is false, its value is returned; otherwise, y is evaluated and the resulting value is returned.
+
+#+BEGIN_SRC jupyter-python
+0 and False
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+#+BEGIN_SRC jupyter-python
+True and 'a' and 55
+#+END_SRC
+
+#+RESULTS:
+: 55
+
+
+The expression x or y first evaluates x; if x is true, its value is returned; otherwise, y is evaluated and the resulting value is returned.
+
+#+BEGIN_SRC jupyter-python
+False or 55 or False
+#+END_SRC
+
+#+RESULTS:
+: 55
+
+#+BEGIN_SRC jupyter-python
+balance = 100
+
+balance -= 50
+
+(balance > 0) and (balance > 20)
+#+END_SRC
+
+#+RESULTS:
+: True
+
+* Membership operators
+
+#+attr_org: :width 800
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/membership-operators.png]]
+
+The membership operators test if something is a member of a "collection".
+The membership operators are =in= and =not in=.
+
+#+BEGIN_SRC jupyter-python
+'brown fox' in  'the quick brown fox'
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC jupyter-python
+'tree' not in  [0, 4, 2, 'oak tree']
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC jupyter-python
+4 in (0, 4, 2, 'tree')
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC jupyter-python
+'tree' in {0, 4, 2, 'tree'}
+#+END_SRC
+
+#+RESULTS:
+: True
+
+#+BEGIN_SRC jupyter-python
+'tree' in {0: 'n', 4: 't', 2: 'w', 'tree': 'i'}
+#+END_SRC
+
+#+RESULTS:
+: True
+
+* Conditional / control statements in Python
+
+#+attr_org: :width 300
+[[././screenshots/2021-10-13-15-18-45.png]]
+Conditional statements (if/elif/else) are used to control the flow of your program.
+
+#+BEGIN_SRC jupyter-python
+if False:
+    print('its ok')
+else:
+    print('Nope')
+#+END_SRC
+
+#+RESULTS:
+: Nope
+
+#+BEGIN_SRC jupyter-python
+a = 50
+
+if a > 10:
+    print('a is large')
+else:
+    print('a is less than 10')
+#+END_SRC
+
+#+RESULTS:
+: a is large
+
+#+BEGIN_SRC jupyter-python
+a = 5
+if a > 10:
+    print('a is large')
+elif a > 7:
+    print('a is medium++')
+elif a > 5:
+    print('a is medium')
+else:
+    print('a is small')
+#+END_SRC
+
+#+RESULTS:
+: a is small
+
+#+BEGIN_SRC jupyter-python
+a = 1
+if a > 10:
+    if a > 20:
+        print('a > 20')
+    else:
+        print('a is between 10 and 20')
+elif a > 7:
+    print('medium')
+else:
+    print('fell through')
+#+END_SRC
+
+#+RESULTS:
+: fell through
+
+Given a number, divide it by 2 until the division result is less than 1
+
+#+BEGIN_SRC jupyter-python
+n = 10
+
+while n > 1:
+    n /= 2
+    print(n)
+
+n
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: 5.0
+: 2.5
+: 1.25
+: 0.625
+: 0.625
+:END:
+
+#+BEGIN_SRC jupyter-python
+n = 10
+for i in range(20):
+    n /= 2
+    print(i, n)
+    if n < 1:
+        break
+#+END_SRC
+
+#+RESULTS:
+: 0 5.0
+: 1 2.5
+: 2 1.25
+: 3 0.625
+
 * TODO Future topics
 
-** BVP
+** DONE BVP
+CLOSED: [2021-10-13 Wed 15:12]
+[[./bvp.org]]
 
 ** DONE integrals
    CLOSED: [2021-10-01 Fri 17:17]
@@ -28,3 +476,197 @@
 ** nonlinear regression
 
 ** confidence intervals
+
+** DONE jupyter lab
+CLOSED: [2021-10-13 Wed 15:12]
+
+#+attr_org: :width 300
+[[././screenshots/2021-10-04:14:00:02.png]]
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+A = [[1, 1],
+     [2, -1]]
+
+b = [5, 0]
+
+m1, m2 = np.linalg.solve(A, b)
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC jupyter-python  
+1 * m1 + 1 * m2
+#+END_SRC
+
+#+RESULTS:
+: 5.0
+
+
+#+BEGIN_SRC jupyter-python  
+2 * m1 - m2
+#+END_SRC
+
+#+RESULTS:
+: 0.0
+
+
+#+BEGIN_SRC jupyter-python  
+
+#+END_SRC
+
+
+
+
+* DONE Newton's Method
+CLOSED: [2021-10-21 Thu 16:30]
+
+#+attr_org: :width 800
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/newtons-method.png]]
+#+attr_org: :width 800
+[[././screenshots/2021-10-17-17-41-01.png]]
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+def f(x):
+    return np.exp(-x) - 0.5
+
+def fprime(x):
+    return -np.exp(-x)
+
+import matplotlib.pyplot as plt
+X = np.linspace(0, 1)
+plt.plot(X, f(X))
+plt.axhline(0)
+plt.xlabel('x')
+plt.ylabel('y');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/42d8c0be4d6257905ab47318a9efd90b8b15be53.png]]
+
+#+BEGIN_SRC jupyter-python
+x0 = 0.69048842440
+
+x1 = x0 - f(x0) / fprime(0)
+x1, f(x1)
+#+END_SRC
+
+#+RESULTS:
+| 0.6918195712933193 | 0.000664245464966684 |
+
+#+BEGIN_SRC jupyter-python
+x0 = 0.6
+for i in range(10):
+    x1 = x0 - f(x0) / fprime(x0)
+    print(x1, f(x1))
+    x0 = x1
+#+END_SRC
+
+#+RESULTS:
+: 0.6889405998047456 0.0021077204176078723
+: 0.6931383452922176 4.417653379440445e-06
+: 0.6931471805209145 1.951538930455854e-11
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+: 0.6931471805599453 0.0
+
+Analytical answer
+#+BEGIN_SRC jupyter-python
+-np.log(0.5)
+#+END_SRC
+
+#+RESULTS:
+: 0.6931471805599453
+
+#+BEGIN_SRC jupyter-python
+x0 = 0.6
+tolerance = 1e-6
+
+for i in range(10):
+    x1 = x0 - f(x0) / fprime(x0)
+    print(x1, f(x1))
+    x0 = x1
+    if np.abs(f(x1)) < tolerance:
+        break
+#+END_SRC
+
+#+RESULTS:
+: 0.6889405998047456 0.0021077204176078723
+: 0.6931383452922176 4.417653379440445e-06
+: 0.6931471805209145 1.951538930455854e-11
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import newton
+?newton
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+newton(f, 0.6)
+#+END_SRC
+
+#+RESULTS:
+: 0.6931471805599454
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import fsolve, root
+
+fsolve(f, 0.6)
+#+END_SRC
+
+#+RESULTS:
+: array([0.69314718])
+
+#+BEGIN_SRC jupyter-python
+root(f, 0.6)
+#+END_SRC
+
+#+RESULTS:
+:     fjac: array([[-1.]])
+:      fun: array([-5.55111512e-17])
+:  message: 'The solution converged.'
+:     nfev: 7
+:      qtf: array([-1.95193861e-11])
+:        r: array([0.5000001])
+:   status: 1
+:  success: True
+:        x: array([0.69314718])
+
+
+
+* TODO Creating arrays in numpy
+
+- np.linspace
+
+- np.zeros
+- np.ones
+- np.stack
+
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+x = np.linspace(0, 1, 5)
+x
+#+END_SRC
+
+#+RESULTS:
+: array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+
+#+BEGIN_SRC jupyter-python
+np.stack([x, x**2, x**3])
+#+END_SRC
+
+#+RESULTS:
+: array([[0.      , 0.25    , 0.5     , 0.75    , 1.      ],
+:        [0.      , 0.0625  , 0.25    , 0.5625  , 1.      ],
+:        [0.      , 0.015625, 0.125   , 0.421875, 1.      ]])

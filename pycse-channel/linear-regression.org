@@ -1,0 +1,132 @@
+#+title: Linear regression in #Python
+
+#+attr_org: :width 800
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/linear-regression.png]]
+
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+import numpy as np
+time = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
+Ca = np.array([50.0, 38.0, 30.6, 25.6, 22.2, 19.5, 17.4]) * 1e-3
+
+plt.plot(time, Ca, 'bo');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/6d35d61ebd7cd838d422e653a35d4d1d6a739418.png]]
+#+BEGIN_SRC jupyter-python
+?np.polyfit
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+p = np.polyfit(time, Ca, 3)
+plt.plot(time, Ca, time, np.polyval(p, time), 'r-')
+plt.legend(['data', 'fit']);
+p
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: array([-1.26666667e-09,  9.32857143e-07, -2.74476190e-04,  4.98714286e-02])
+[[file:./.ob-jupyter/0a616273e8db4667a017c2b5a668bf0d4d23f7a6.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+np.polyval(p, 250)
+#+END_SRC
+
+#+RESULTS:
+: 0.01976428571428576
+
+#+BEGIN_SRC jupyter-python
+t = 250
+np.array([250**3, 250**2, 250, 1]) @ p
+#+END_SRC
+
+#+RESULTS:
+: 0.019764285714285762
+
+#+BEGIN_SRC jupyter-python
+np.array([time**3, time**2, time, time**0]).T @ p - Ca
+#+END_SRC
+
+#+RESULTS:
+: array([-1.28571429e-04,  3.21428571e-04, -1.14285714e-04, -1.85714286e-04,
+:        -4.28571429e-05,  2.64285714e-04, -1.14285714e-04])
+
+#+BEGIN_SRC jupyter-python
+?np.linalg.lstsq
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+X = np.array([time**1.2, time, time**0]).T
+
+pars, _, _, _ = np.linalg.lstsq(X, Ca, rcond=None)
+pars
+
+plt.plot(time, Ca, 'bo', time, X @ pars, 'r-');
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/6374701464b6792388f8be961828f6c036365a69.png]]
+
+#+BEGIN_SRC jupyter-python
+p
+#+END_SRC
+
+#+RESULTS:
+: array([-1.26666667e-09,  9.32857143e-07, -2.74476190e-04,  4.98714286e-02])
+
+
+
+
+#+BEGIN_SRC jupyter-python
+pars
+#+END_SRC
+
+#+RESULTS:
+: array([ 0.00013444, -0.00052789,  0.04985481])
+
+p = (X.T @ X)^{-1} @ X.t @ y
+#+BEGIN_SRC jupyter-python
+np.linalg.inv(X.T @ X) @ X.T @ Ca
+#+END_SRC
+
+#+RESULTS:
+: array([ 0.00013444, -0.00052789,  0.04985481])
+
+pycse.regress
+
+#+BEGIN_SRC jupyter-python
+from pycse import regress
+?regress
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+rp, rpci, se = regress(X, Ca, 0.05)
+rp
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: /Users/jkitchin/Dropbox/python/pycse/pycse/PYCSE.py:62: FutureWarning: `rcond` parameter will change to the default of machine precision times ``max(M, N)`` where M and N are the input matrix dimensions.
+: To use the future default and silence this warning we advise to pass `rcond=None`, to keep using the old, explicitly pass `rcond=-1`.
+:   b, res, rank, s = np.linalg.lstsq(A, y)
+: array([ 0.00013444, -0.00052789,  0.04985481])
+:END:
+
+#+BEGIN_SRC jupyter-python
+rpci
+#+END_SRC
+
+#+RESULTS:
+: array([[ 0.0001198 ,  0.00014909],
+:        [-0.00057438, -0.00048139],
+:        [ 0.04898018,  0.05072945]])

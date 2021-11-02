@@ -1,0 +1,73 @@
+
+#+BEGIN_SRC jupyter-python
+def model(x, a, b):
+    return a * (1 - np.exp(-b*x))
+
+from scipy.optimize import curve_fit
+
+pars, pcov = curve_fit(model, x, y, [200, 1])
+plt.plot(x, y, 'bo')
+
+X = np.linspace(0, 20)
+plt.plot(X, model(X, *pars));
+print(pars)
+np.sqrt(np.diag(pcov))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: [213.80988014   0.54723202]
+: array([12.35487034,  0.10455444])
+[[file:./.ob-jupyter/7494618470907ed886fb8a02e995a6fac0b0086a.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+from pycse import nlinfit
+
+p, pci, se = nlinfit(model, x, y, [200, 1])
+print(p)
+print(pci)
+se
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: [213.80988014   0.54723202]
+: [[179.50726086 248.11249943]
+:  [  0.25694236   0.83752168]]
+: array([12.35487034,  0.10455444])
+:END:
+
+#+BEGIN_SRC jupyter-python
+import lmfit
+
+def residuals(p):
+    return model(x, p['a'], p['b']) - y
+
+pars = lmfit.Parameters()
+pars.add_many(('a', 200), ('b', 0.6))
+
+mini = lmfit.Minimizer(residuals, pars)
+result = mini.minimize()
+
+print(lmfit.fit_report(result.params))
+#+END_SRC
+
+#+RESULTS:
+: [[Variables]]
+:     a:  213.808153 +/- 12.3535700 (5.78%) (init = 200)
+:     b:  0.54725205 +/- 0.10457457 (19.11%) (init = 0.6)
+: [[Correlations]] (unreported correlations are < 0.100)
+:     C(a, b) = -0.730
+
+#+BEGIN_SRC jupyter-python
+ci = lmfit.conf_interval(mini, result)
+lmfit.printfuncs.report_ci(ci)
+#+END_SRC
+
+#+RESULTS:
+:       99.73%    95.45%    68.27%    _BEST_    68.27%    95.45%    99.73%
+:  a: -70.75830 -33.84012 -14.32210 213.80815 +16.10734 +46.70099+235.04808
+:  b:  -0.44877  -0.25086  -0.11768   0.54725  +0.15831  +0.55537      +inf
+: /Users/jkitchin/opt/anaconda3/lib/python3.8/site-packages/lmfit/confidence.py:330: UserWarning: rel_change=9.980451849402994e-06 < 1e-05 at iteration 49 and prob(b=5.671405911082835) = 0.9943238938022698 < max(sigmas)
+:   warn(errmsg)
