@@ -19,7 +19,7 @@ from scipy.integrate import solve_ivp
 # * Linear regression
 
 
-def regress(A, y, alpha=None):
+def regress(A, y, alpha=None, **kwargs):
     """Linear least squares regression with confidence intervals.
 
     Solve the matrix equation \(A p = y\) for p.
@@ -41,6 +41,8 @@ def regress(A, y, alpha=None):
 
     alpha : 100*(1 - alpha) confidence level
 
+    kwargs are passed to np.linalg.lstsq
+
     Example
     -------
     >>> import numpy as np
@@ -59,7 +61,7 @@ def regress(A, y, alpha=None):
 
     """
 
-    b, res, rank, s = np.linalg.lstsq(A, y)
+    b, res, rank, s = np.linalg.lstsq(A, y, **kwargs)
 
     bint, se = None, None
 
@@ -95,7 +97,7 @@ def regress(A, y, alpha=None):
 # * Nonlinear regression
 
 
-def nlinfit(model, x, y, p0, alpha=0.05):
+def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     """Nonlinear regression with confidence intervals.
 
     Parameters
@@ -106,6 +108,8 @@ def nlinfit(model, x, y, p0, alpha=0.05):
     p0 : array of the initial guess of the parameters
     alpha : 100*(1 - alpha) is the confidence interval
         i.e. alpha = 0.05 is 95% confidence
+
+    kwargs are passed to curve_fit.
 
     Example
     -------
@@ -129,7 +133,7 @@ def nlinfit(model, x, y, p0, alpha=0.05):
       SE is an array of standard errors for the parameters.
 
     """
-    pars, pcov = curve_fit(model, x, y, p0=p0)
+    pars, pcov = curve_fit(model, x, y, p0=p0, **kwargs)
     n = len(y)    # number of data points
     p = len(pars)  # number of parameters
 
