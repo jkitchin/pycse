@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='pycse',
-      version='2.1.2',
+      version='2.1.4',
       description='python computations in science and engineering',
       url='http://github.com/jkitchin/pycse',
       maintainer='John Kitchin',
@@ -30,5 +30,5 @@ See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
 
 
 # Set TWINE_USERNAME and TWINE_PASSWORD in .bashrc
-# python setup.py sdist bdist_wheel
-# twine upload dist/*
+# (shell-command "python setup.py sdist bdist_wheel")
+# (shell-command "twine upload dist/*")

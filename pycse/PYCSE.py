@@ -127,7 +127,6 @@ def regress(A, y, alpha=None, *args, **kwargs):
 
 # * Nonlinear regression
 
-
 def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     """Nonlinear regression with confidence intervals.
 
@@ -181,6 +180,23 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
         pint.append([p - sigma * tval, p + sigma * tval])
 
     return (pars, np.array(pint), np.array(SE))
+
+
+def Rsquared(y, Y):
+    """Return R^2, or coefficient of determination
+    y is a 1d array of observations.
+    Y is a 1d array of predictions from a model.
+
+    Returns
+    -------
+    The R^2 value for the fit.
+    """
+    errs = y - Y
+    SS_res = np.sum(errs**2)
+    SS_tot = np.sum((y - np.mean(y))**2)
+    return 1 - SS_res / SS_tot
+                    
+
 
 # * ivp
 
