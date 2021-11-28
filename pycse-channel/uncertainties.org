@@ -1,0 +1,202 @@
+#+title: Estimating uncertainties in Python
+
+#+attr_org: :width 400
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/error-propagation.png]]
+
+The conventional way: https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
+
+The Python way: https://pythonhosted.org/uncertainties/
+
+#+BEGIN_SRC jupyter-python
+import uncertainties as u
+#+END_SRC
+
+#+BEGIN_SRC jupyter-python
+rho = u.ufloat(1.1, 0.2) / u.ufloat(0.7, 0.05)
+print(f'{rho:1.3f}')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+1.571+/-0.307
+:END:
+
+** Regular algebra works great
+
+#+BEGIN_SRC jupyter-python
+A = u.ufloat(2, 0.2)
+B = u.ufloat(3, 0.03)
+
+import numpy as np
+
+A + B, np.sqrt(0.2**2 + 0.03**2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 5.0+/-0.20223748416156687 | 0.20223748416156687 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+A**B
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+8.0+/-2.405758527700087
+:END:
+
+
+** Functions that definitely support uncertainties
+
+#+BEGIN_SRC jupyter-python
+from uncertainties.umath import __all__
+__all__
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| acos | acosh | asin | asinh | atan | atan2 | atanh | ceil | copysign | cos | cosh | degrees | erf | erfc | exp | expm1 | fabs | floor | fmod | gamma | hypot | isinf | isnan | lgamma | log | log10 | log1p | pow | radians | sin | sinh | sqrt | tan | tanh | trunc | modf | ldexp | factorial | fsum | frexp |
+:END:
+
+#+BEGIN_SRC jupyter-python
+from uncertainties.umath import *
+exp(u.ufloat(2, 0.5))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+7.38905609893065+/-3.694528049465325
+:END:
+
+#+BEGIN_SRC jupyter-python
+u.wrap(np.exp)(u.ufloat(2, 0.5))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+7.38905609893065+/-3.6945280507206917
+:END:
+
+** Not all functions are supported, but it is extendable
+
+#+BEGIN_SRC jupyter-python
+x = u.ufloat(0, 0.1)
+from scipy.special import erf
+
+erf(x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_4319/998999115.py in <module>
+      2 from scipy.special import erf
+      3 
+----> 4 erf(x)
+
+TypeError: ufunc 'erf' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
+:END:
+
+#+BEGIN_SRC jupyter-python
+uerf = u.wrap(erf)
+x = u.ufloat(0, 1)
+uerf(x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.0+/-1.1283791670955123
+:END:
+
+Is that right?
+
+#+BEGIN_SRC jupyter-python
+x = np.random.normal(0.0, 1, (50000,))
+y = erf(x)
+np.mean(y), np.std(y)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0.0011803518141103165 | 0.6812835727133322 |
+:END:
+
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+plt.hist(y);
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/4056a024f7323715c19a6629366d75ad652597c5.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+plt.plot(x, y, 'b.')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x7faef0b3b7f0> |
+[[file:./.ob-jupyter/80428fb7bd040e27af408520b78b71ee94e10e6a.png]]
+:END:
+
+
+** Using uncertainties with other functions
+
+#+BEGIN_SRC jupyter-python
+def f(x, a):
+    return a * erf(x) - 1
+
+from scipy.optimize import fsolve
+
+a = u.ufloat(2, 0.1)
+x0 = 1.0
+
+def g(x0, a):
+    sol, = fsolve(f, x0, args=(a,))
+    return sol
+
+u.wrap(g)(x0, a)    
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.4769362762044693+/-0.02781462064012885
+:END:
+
+#+BEGIN_SRC jupyter-python
+f(0.4769362762044693, a)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+-1.1102230246251565e-15+/-0.04999999999999995
+:END:
+
+#+BEGIN_SRC jupyter-python
+A = np.random.normal(2, 0.1, (100000,))
+y = [g(0.47, a) for a in A]
+plt.hist(y)
+np.mean(y), np.std(y)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0.4788394986400801 | 0.028349001754942448 |
+[[file:./.ob-jupyter/81c03efe9fbfb3457e1c4cfa2f2756d765ee74f1.png]]
+:END:
+
+
+
+
+
+
+
+
+Uncertainty propagation is a critical skill in science and engineering. It is fairly tedious though, as it relies on partial derivatives, or a complex set of rules for different math operations. Luckily there is a package in Python for that. To quote that package: "The uncertainties package takes the pain and complexity out of uncertainty calculations. Error propagation is not to be feared anymore!". We explore the package here.

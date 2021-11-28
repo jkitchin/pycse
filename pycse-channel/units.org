@@ -1,0 +1,181 @@
+#+title: Units in Python
+
+#+attr_org: :width 800
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/units.png]]
+
+Units package https://pint.readthedocs.io/en/stable/
+
+#+BEGIN_SRC jupyter-python
+! pip install pint
+#+END_SRC
+
+
+
+
+
+
+
+
+#+BEGIN_SRC jupyter-python
+import pint
+u = pint.UnitRegistry()
+#+END_SRC
+
+#+RESULTS:
+
+
+
+#+BEGIN_SRC jupyter-python  
+u.km, u.kilometer, u.m, u.cm
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| <Unit | (kilometer) | > | <Unit | (kilometer) | > | <Unit | (meter) | > | <Unit | (centimeter) | > |
+:END:
+
+#+BEGIN_SRC jupyter-python
+1* u.m / (10*u.hr)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.1 meter/hour
+:END:
+
+#+BEGIN_SRC jupyter-python
+u.liter, u.cc, u.cm**3
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| <Unit | (liter) | > | <Unit | (cubic_centimeter) | > | <Unit | (centimeter ** 3) | > |
+:END:
+
+#+BEGIN_SRC jupyter-python
+u.Pa, u.bar, u.atm
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| <Unit | (pascal) | > | <Unit | (bar) | > | <Unit | (standard_atmosphere) | > |
+:END:
+
+
+#+BEGIN_SRC jupyter-python
+m = 2.3 * u.mmol
+V = 10 * u.cc
+(m / V).to(u.mol/u.L)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.23000000000000004 mole/liter
+:END:
+
+#+BEGIN_SRC jupyter-python
+R = 8.31446261815324 * u.J / u.mol / u.K
+T = 273.15 * u.K
+P = 1 * u.atm
+
+V = R * T / P
+print(f'The molar volume is {V.to(u.L / u.mol):1.3f}')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+The molar volume is 22.414 liter / mole
+:END:
+
+#+BEGIN_SRC jupyter-python
+T1 = u.Quantity(0, u.degC).to(u.K)
+T1 
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+273.15 kelvin
+:END:
+
+#+BEGIN_SRC jupyter-python
+R = 8.31446261815324 * u.J / u.mol / u.K
+T = u.Quantity(0, u.degC).to(u.K)
+P = 1 * u.atm
+
+V = R * T / P
+print(f'The molar volume is {V.to(u.L / u.mol):1.3f}')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+The molar volume is 22.414 liter / mole
+:END:
+
+
+#+BEGIN_SRC jupyter-python
+P = 1 * u.atm
+R = 8.31446261815324 * u.J / u.mol / u.K
+T = 273.15 * u.K
+V = 22.414 * u.L / u.mol
+
+Z = (P * V) / (R * T)
+print(Z)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.009869246076982105 liter * standard_atmosphere / joule
+:END:
+
+#+BEGIN_SRC jupyter-python
+Z.to_reduced_units()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+1.0000013587502121 dimensionless
+:END:
+
+#+BEGIN_SRC jupyter-python
+Z.units.dimensionless
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+True
+:END:
+
+#+BEGIN_SRC jupyter-python
+rho = 1 * u.kg / u.m**3  # density
+v = 2 * u.m / u.s        # velocity
+L = 1 * u.cm             # characteristic length
+mu = 1 * u.Pa * u.s      # dynamic viscosity
+Re = rho * v * L / mu
+Re, Re.units.dimensionless
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 2.0 | <Unit | (centimeter * kilogram / meter ** 2 / pascal / second ** 2) | > | True |
+:END:
+
+#+BEGIN_SRC jupyter-python
+Re.to_reduced_units()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.02 dimensionless
+:END:
+
+#+BEGIN_SRC jupyter-python
+np.exp(Re), np.exp(0.02)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 1.0202013400267558 | <Unit | (dimensionless) | > | 1.0202013400267558 |
+:END:
+
+
+Unit conversions are the source of many common errors in science and engineering calculations. When you work with just numbers, it is difficult to ensure dimensional consistency, and that you do all the conversions correctly. Python can help you with this problem a little, and in this video we explore the pint package for that.

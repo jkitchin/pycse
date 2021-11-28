@@ -1,0 +1,166 @@
+#+title: Numpy array broadcasting example
+
+#+attr_org: :width 800
+[[/Users/jkitchin/Dropbox/python/pycse/pycse-channel/screenshots/array-broadcasting-application.png]]
+In this video we look at an application where array broadcasting dramatically simplifies a calculation. Our aim is that given an array of points, compute the distance matrix, i.e. the symmetric matrix of distances between all points, including themselves.
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+X = np.array([[0, 1],
+              [0, 0.5],
+              [1, 0]])
+
+import matplotlib.pyplot as plt
+plt.plot(*X.T, 'ro');
+             
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/e8f089d7bccb8f559c0037bf987e0ee176976ef6.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+n, m = X.shape
+
+D = np.full((3, 3), np.nan)
+D
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([[nan, nan, nan],
+       [nan, nan, nan],
+       [nan, nan, nan]])
+:END:
+
+#+BEGIN_SRC jupyter-python
+for i in range(n):
+    for j in range(n):
+        D[i, j] = np.linalg.norm(X[i] - X[j])
+D        
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([[0.        , 0.5       , 1.41421356],
+       [0.5       , 0.        , 1.11803399],
+       [1.41421356, 1.11803399, 0.        ]])
+:END:
+
+* Element wise algebra
+
+
+#+BEGIN_SRC jupyter-python
+X1 = np.stack([X, X, X], axis=1)
+X1
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+begin_example
+array([[[0. , 1. ],
+        [0. , 1. ],
+        [0. , 1. ]],
+
+       [[0. , 0.5],
+        [0. , 0.5],
+        [0. , 0.5]],
+
+       [[1. , 0. ],
+        [1. , 0. ],
+        [1. , 0. ]]])
+#+end_example
+:END:
+
+#+BEGIN_SRC jupyter-python
+X2 = np.stack([X, X, X], axis=0)
+X2
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+begin_example
+array([[[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]],
+
+       [[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]],
+
+       [[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]]])
+#+end_example
+:END:
+
+#+BEGIN_SRC jupyter-python
+np.linalg.norm(X1 - X2, axis=2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([[0.        , 0.5       , 1.41421356],
+       [0.5       , 0.        , 1.11803399],
+       [1.41421356, 1.11803399, 0.        ]])
+:END:
+
+* Now with broadcasting
+
+#+BEGIN_SRC jupyter-python
+np.linalg.norm(X[None, :] - X[:, None], axis=2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([[0.        , 0.5       , 1.41421356],
+       [0.5       , 0.        , 1.11803399],
+       [1.41421356, 1.11803399, 0.        ]])
+:END:
+
+#+BEGIN_SRC jupyter-python :results code
+X[:, None].shape
+#+END_SRC
+
+#+RESULTS:
+#+begin_src jupyter-python
+:RESULTS:
+| 3 | 1 | 2 |
+:END:
+#+end_src
+
+#+BEGIN_SRC jupyter-python
+np.broadcast_to(X[None, :], (3, 3, 2))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+begin_example
+array([[[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]],
+
+       [[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]],
+
+       [[0. , 1. ],
+        [0. , 0.5],
+        [1. , 0. ]]])
+#+end_example
+:END:
+
+D = np.sqrt(sum (elements squared))
+
+#+BEGIN_SRC jupyter-python
+np.sqrt(np.sum((X[None, :] - X[:, None])**2, axis=2))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([[0.        , 0.5       , 1.41421356],
+       [0.5       , 0.        , 1.11803399],
+       [1.41421356, 1.11803399, 0.        ]])
+:END:
