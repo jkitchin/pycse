@@ -18,8 +18,35 @@ from scipy.integrate import solve_ivp
 
 # * Linear regression
 
+def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
+    """Least squares polynomial fit with parameter confidence intervals.
 
-def regress(A, y, alpha=None, **kwargs):
+    Parameters
+    ----------
+    x : array_like, shape (M,)
+      x-coordinates of the M sample points ``(x[i], y[i])``.
+    y : array_like, shape (M,) or (M, K)
+      y-coordinates of the sample points. Several data sets of sample
+      points sharing the same x-coordinates can be fitted at once by
+      passing in a 2D-array that contains one dataset per column.
+    deg : int
+      Degree of the fitting polynomial
+    *args and **kwargs are passed to regress.
+
+    Returns
+    -------
+      [b, bint, se]
+      b is a vector of the fitted parameters
+      bint is a 2D array of confidence intervals
+      se is an array of standard error for each parameter.
+    """
+
+    # in vander, the second arg is the number of columns, so we have to add one
+    # to the degree since there are N + 1 columns for a polynomial of order N
+    X = np.vander(x, deg + 1)
+    return regress(X, y, alpha, *args, **kwargs)
+    
+def regress(A, y, alpha=None, *args, **kwargs):
     """Linear least squares regression with confidence intervals.
 
     Solve the matrix equation \(A p = y\) for p.
@@ -41,7 +68,7 @@ def regress(A, y, alpha=None, **kwargs):
 
     alpha : 100*(1 - alpha) confidence level
 
-    kwargs are passed to np.linalg.lstsq
+    ags and kwargs are passed to np.linalg.lstsq
 
     Example
     -------
@@ -61,7 +88,11 @@ def regress(A, y, alpha=None, **kwargs):
 
     """
 
-    b, res, rank, s = np.linalg.lstsq(A, y, **kwargs)
+    # This is to silence an annoying FutureWarning.
+    if 'rcond' not in kwargs:
+        kwargs['rcond'] = None
+        
+    b, res, rank, s = np.linalg.lstsq(A, y, *args, **kwargs)
 
     bint, se = None, None
 
