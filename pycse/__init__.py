@@ -71,10 +71,12 @@ from scipy.integrate import quad, solve_ivp, solve_bvp
 from scipy.interpolate import interp1d
 
 from .PYCSE import polyfit, regress, nlinfit, Rsquared
-from .utils import feq, flt, fgt, fle, fge
+from .utils import feq, flt, fgt, fle, fge, read_gsheet
 
 from .beginner import *
 
+# We try this because it fails if you are not in colab, e.g. in a regular
+# Jupyter notebook.
 try:
     from .colab import *
 except:
