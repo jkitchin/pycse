@@ -70,7 +70,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import quad, solve_ivp, solve_bvp
 from scipy.interpolate import interp1d
 
-from .PYCSE import regress, nlinfit
+from .PYCSE import polyfit, regress, nlinfit
 from .utils import feq, flt, fgt, fle, fge
 
 from .beginner import *
