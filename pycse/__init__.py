@@ -68,6 +68,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 from scipy.integrate import quad, solve_ivp, solve_bvp
+from scipy.optimize import fsolve, root
 from scipy.interpolate import interp1d
 
 from .PYCSE import polyfit, regress, nlinfit, Rsquared
