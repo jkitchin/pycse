@@ -226,11 +226,14 @@ def pdf_from_latex(pdf=None, verbose=False):
 
 def pdf(line=''):
     '''Line magic to export a colab to PDF.
-    You can have an optional arg -l to use LaTeX, defaults to html->PDF.
-    You can have an optional arg -p to use plotlyhtmlexporter
-    You can have an optional arg -d integer for a delay in seconds for the html to pdf.
+    You can have an optional arg -l to use LaTeX, defaults to html->PDF. This takes longer to install, and may not work if you use non-standard LaTeX code. I do not know how to add custom LaTeX packages to use arbitrary commands.
     
-    You can have an optional last argument for the filename of the pdf
+    You can have an optional arg -d integer for a delay in seconds for the html to pdf. This is helpful when some equations are not rendering with html->PDF. The rendering is done by MathJax, and notebooks with a lot of equations take longer to render.
+    
+    You can have an optional last argument for the filename of the pdf to save to.
+
+    Known limitations:
+    1. If your notebook name doesn't end with .ipynb this does not work.
     '''
     args = shlex.split(line)
 
