@@ -1,0 +1,225 @@
+#+title: Conditional operations on arrays
+
+#+attr_org: :width 400
+[[././screenshots/2022-01-15-12-54-04.png]]
+
+* Element-wise comparisons
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+x = np.linspace(0, 1, 10)
+x
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([0.        , 0.11111111, 0.22222222, 0.33333333, 0.44444444,
+       0.55555556, 0.66666667, 0.77777778, 0.88888889, 1.        ])
+:END:
+
+
+** The usual operators work element-wise
+
+>, >=, <, <=, ==, !=
+
+#+BEGIN_SRC jupyter-python
+c1 = x < 0.5
+c2 = x > 0.1
+c2
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([False,  True,  True,  True,  True,  True,  True,  True,  True,
+        True])
+:END:
+
+
+
+** Special logical operators
+
+#+BEGIN_SRC jupyter-python
+c1 & c2
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([False,  True,  True,  True,  True, False, False, False, False,
+       False])
+:END:
+
+&, |, ~
+
+** numpy functions
+
+np.all/any
+
+#+BEGIN_SRC jupyter-python
+np.any(c1 & c2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+True
+:END:
+
+
+* Boolean indexing
+
+#+BEGIN_SRC jupyter-python
+x[c1 & c2]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([0.11111111, 0.22222222, 0.33333333, 0.44444444])
+:END:
+
+
+
+* Boolean assignment
+
+#+BEGIN_SRC jupyter-python
+y = np.linspace(0, 1, 10)
+y[~(c1 & c2)] = -1
+y
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([-1.        ,  0.11111111,  0.22222222,  0.33333333,  0.44444444,
+       -1.        , -1.        , -1.        , -1.        , -1.        ])
+:END:
+
+#+BEGIN_SRC jupyter-python
+y = np.zeros(x.shape)
+y[c1 & c2] = x[c1 & c2]
+y
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([0.        , 0.11111111, 0.22222222, 0.33333333, 0.44444444,
+       0.        , 0.        , 0.        , 0.        , 0.        ])
+:END:
+
+* Boolean algebra
+
+#+BEGIN_SRC jupyter-python
+x * (c1 & c2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([0.        , 0.11111111, 0.22222222, 0.33333333, 0.44444444,
+       0.        , 0.        , 0.        , 0.        , 0.        ])
+:END:
+
+#+BEGIN_SRC jupyter-python
+np.sum(c1 & c2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+4
+:END:
+
+* Conditional selection
+
+#+BEGIN_SRC jupyter-python
+np.where(c1 & c2, 0, x)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+array([0.        , 0.        , 0.        , 0.        , 0.        ,
+       0.55555556, 0.66666667, 0.77777778, 0.88888889, 1.        ])
+:END:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* Description
+
+You can do conditional operations on numpy arrays in #Python. You can, for example, extract parts of an array that meet some condition, operate on parts of an array that meet some condition, construct an array from other arrays based on a condition, etc. This video will show you several ways to approach this. 
+
+Conditional array operations are somewhat different than the conventional conditional statements that you can use to control the execution of Python code that I have discussed in these previous videos.
+
+- Comparison operators in Python :: https://youtu.be/BayqeeF_iKM
+- Logical operators in Python :: https://youtu.be/q-uDWDSF0l8
+- Membership operators in Python :: https://youtu.be/CZstHHjfCHo
+- Conditional statements in Python :: https://youtu.be/XymPeBMILUY
+
+You can learn more about conditional statements in Python at https://pointbreezepubs.gumroad.com/l/pycse-conditional.

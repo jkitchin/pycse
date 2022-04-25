@@ -1,0 +1,48 @@
+Outliers can have a big influence on regression with least squares minimization. Luckily, you can choose a different minimization method to reduce that influence. In this video we show how to do that easily in scipy.
+
+#+title: Robust regression in Python
+
+#+attr_org: :width 800
+[[./screenshots/date-27-01-2022-time-17-01-43.png]]
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.array([10,  8, 13,  9, 11, 14,  6,  4, 12, 7,  5])
+y = np.array([7.46,  6.77, 12.74,  7.11,  7.81,  8.84,  6.08,
+              5.39,  8.15, 6.42,  5.73])
+
+p = np.polyfit(x, y, 1)
+
+plt.plot(x, y, 'bo')
+plt.plot(x, np.polyval(p, x));
+p
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: array([0.49972727, 3.00245455])
+[[file:./.ob-jupyter/9457eeb806b499f5be9a82b9be9d6f43788e323c.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+def model(x, m, b):
+    return m * x + b
+
+from scipy.optimize import curve_fit
+from scipy.optimize import least_squares
+p1, pcov = curve_fit(model, x, y,
+                     [0.5, 3],
+                     method='trf',
+                     loss='cauchy')
+p1
+
+plt.plot(x, y, 'b.')
+plt.plot(x, model(x, *p1));
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/7bd03130256feaa7bb2dcde7a89a60d67b06140e.png]]
+:END:

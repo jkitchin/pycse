@@ -1,0 +1,130 @@
+#+title: The Gaussian distribution in statistics and Python
+
+#+attr_org: :width 400
+[[./screenshots/date-21-01-2022-time-16-01-34.png]]
+
+The normal, or Gaussian, distribution, plays a central role in statistics. As usual, Python and scipy have your normal distribution needs covered!
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+#+END_SRC
+
+#+RESULTS:
+
+
+* The probability density function (pdf)
+
+#+BEGIN_SRC jupyter-python
+x = np.linspace(-4, 4)
+y = norm.pdf(x, loc=0, scale=1)
+
+plt.plot(x, y);
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/9afea457ae8d857c5933006ddba4fc1e8682e0b7.png]]
+:END:
+
+
+* Sampling the distribution (rvs)
+
+#+BEGIN_SRC jupyter-python
+plt.hist(norm.rvs(loc=0, scale=1, size=10000), density=True, bins=20);
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/35e5a1b39d2158e605f9ee9b34b037e144c1c1d3.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+samples = norm.rvs(loc=0, scale=1, size=10000)
+samples.mean(), samples.std()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -0.002616416864290481 | 1.000891618172875 |
+:END:
+
+
+* Convenient fitting (fit)
+
+#+BEGIN_SRC jupyter-python
+norm.fit(samples)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -0.002616416864290481 | 1.000891618172875 |
+:END:
+
+
+* The cumulative density function (cdf)
+
+#+BEGIN_SRC jupyter-python
+norm.cdf(1.96) - norm.cdf(-1.96)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.950004209703559
+:END:
+
+
+* The inverse cumulative density function (ppf)
+
+#+BEGIN_SRC jupyter-python
+norm.ppf(0.025), norm.ppf(0.975)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -1.9599639845400545 | 1.959963984540054 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+norm.interval(0.95)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -1.959963984540054 | 1.959963984540054 |
+:END:
+
+
+
+* For more
+
+See https://docs.scipy.org/doc/scipy/reference/stats.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* Description
+The normal, or Gaussian, distribution, plays a central role in statistics. As usual, Python and scipy have your normal distribution needs covered! This video will introduce the basic idea of the statistical distributions that are covered in =scipy.stats=. Convenient functions for the probability density, cumulative density, generating samples, and fitting the distributions are provided in https://docs.scipy.org/doc/scipy/reference/stats.html.
+
+Get more details on this topic at
+https://pointbreezepubs.gumroad.com/l/pcyse-intermediate
+
+
+
+
+
+

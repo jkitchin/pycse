@@ -1,0 +1,78 @@
+#+title: Are these measurements really different?
+
+#+attr_org: :width 400
+[[./screenshots/date-23-01-2022-time-15-01-08.png]]
+
+
+* Description
+
+When you make a few measurements, you can only estimate the true mean of the distribution you are sampling. So, two sets of measurements are likely to have different means. So, how do you tell when the difference between two means is significant or not? If you know the standard deviation of the measurement, you can tell! This video will show you how to think about this problem.
+
+#+BEGIN_SRC jupyter-python
+from scipy.stats import norm
+import numpy as np
+import matplotlib.pyplot as plt
+
+m1 = norm.rvs(loc=0, scale=1, size=(100000, 3)).mean(axis=1)
+m2 = norm.rvs(loc=0, scale=1, size=(100000, 3)).mean(axis=1)
+
+D = m1 - m2
+plt.hist(D, density=True, bins=100);
+
+x = np.linspace(-4, 4)
+plt.plot(x, norm.pdf(x, *norm.fit(D)));
+print(norm.fit(D))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+(-0.0019863212986200003, 0.8140511152321523)
+[[file:./.ob-jupyter/f3cbf14adc03eb0415bd067d2123575e058d9234.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+norm.fit(D)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -0.0038331146257060355 | 0.8150647905503293 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+np.sqrt(1 / 3 + 1 / 3)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.816496580927726
+:END:
+
+#+BEGIN_SRC jupyter-python
+p = norm.fit(D)
+
+norm.cdf(2, *p) - norm.cdf(-2, *p)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+0.9858630872843316
+:END:
+
+#+BEGIN_SRC jupyter-python
+norm.ppf(0.975, *p)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+1.593664519919622
+:END:
+
+#+BEGIN_SRC jupyter-python
+norm.interval(0.95, *p)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| -1.601330749171034 | 1.593664519919622 |
+:END:

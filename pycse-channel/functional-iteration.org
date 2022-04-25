@@ -1,0 +1,122 @@
+#+title: Functional approaches to iteration
+#+PROPERTY: header-args:jupyter-python  :session jupyter-python-a465524740c142ed127ab132d9b73363
+
+#+attr_org: :width 400
+[[./screenshots/date-16-01-2022-time-16-13-18.png]]
+
+#+BEGIN_SRC jupyter-python
+A = []
+for i in range(6):
+    A += [i**2]
+A    
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0 | 1 | 4 | 9 | 16 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+i
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+5
+:END:
+
+#+BEGIN_SRC jupyter-python
+[x**2 for x in range(6)]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0 | 1 | 4 | 9 | 16 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+def square(x):
+    return x**2
+
+list(map(square, range(6)))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0 | 1 | 4 | 9 | 16 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+A = []
+for i in range(6):
+    if (i % 2) != 0:
+        A += [i**2]
+
+A        
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 1 | 9 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+[x**2 for x in range(6) if (x % 2) != 0]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 1 | 9 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+def oddp(x):
+    return (x % 2) != 0
+
+list(map(square, (filter(oddp, range(6)))))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 1 | 9 | 25 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+from functools import reduce
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+A = 0
+for i in range(6):
+    A += i
+A, sum(range(6))    
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 15 | 15 |
+:END:
+
+#+BEGIN_SRC jupyter-python
+def add(a, b):
+    return a + b
+
+reduce(add, range(6))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+15
+:END:
+
+#+BEGIN_SRC jupyter-python
+import operator
+reduce(operator.add, range(6))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+15
+:END:

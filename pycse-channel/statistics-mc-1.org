@@ -1,0 +1,59 @@
+#+title: Simulating the Monty Hall problem with Python
+
+https://en.wikipedia.org/wiki/Monty_Hall_problem
+
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+N = 10000
+doors = [1, 2, 3]
+wins = 0
+for i in range(N):
+    winning_door = np.random.choice(doors)
+
+    guessed_door = np.random.choice(doors)
+
+    if guessed_door == winning_door:
+        wins += 1
+
+print(f'You win {wins / N:.2%} of the games')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+You win 34.05% of the games
+:END:
+
+Now after you choose, one of the remaining doors is opened that is not a winner, nor the door you chose. You have the choice to switch. Should you?
+
+#+BEGIN_SRC jupyter-python
+wins = 0
+for i in range(N):
+    winning_door = np.random.choice(doors)
+
+    guessed_door = np.random.choice(doors)
+   
+    doors_to_show = [1, 2, 3]
+    if winning_door in doors_to_show:
+        doors_to_show.remove(winning_door)
+
+    if guessed_door in doors_to_show:
+        doors_to_show.remove(guessed_door)
+
+    shown_door = np.random.choice(doors_to_show)
+
+    new_choice = [1, 2, 3]
+    new_choice.remove(shown_door)
+    new_choice.remove(guessed_door)
+    if new_choice == winning_door:
+        wins += 1
+
+print(f'You win {wins / N:.2%} of the games')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+You win 66.65% of the games
+:END:
+

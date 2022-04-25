@@ -1,0 +1,111 @@
+#+title: Simulating #statistics with #Python
+
+
+#+attr_org: :width 400
+[[./screenshots/date-22-01-2022-time-15-28-23.png]]
+
+Goal: Illustrate the central limit theorem, where the distribution of sample means is found to be normally distributed, and the standard deviation of that distribution is inversely proportional to the square root of the number of samples.
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+samples = norm.rvs(loc=0, scale=1, size=100000)
+plt.hist(samples, density=True, bins=100);
+
+x = np.linspace(-4, 4)
+plt.plot(x, norm.pdf(x));
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/4dcd90b8f00124592714a1ee561d8578c5df0d2b.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+samples.mean(), samples.std()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 0.0036217264910392436 | 0.9981599517468257 |
+:END:
+
+
+#+BEGIN_SRC jupyter-python
+N = 300
+s = norm.rvs(loc=0, scale=1, size=(100000, N))
+s_mean = s.mean(axis=1)
+plt.hist(s_mean, density=True, bins=100);
+norm.fit(s_mean), 1 / np.sqrt(N)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| (-4.2861596379748566e-05 0.05773134562191801) | 0.05773502691896257 |
+a[[file:./.ob-jupyter/757f098f0156c85ddf517e7d74c04f370f4d0635.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+allN = [3, 5, 9, 16, 25, 100]
+
+for N in allN:
+    s = norm.rvs(loc=0, scale=1, size=(100000, N))
+    s_mean = s.mean(axis=1)
+    sN += [s_mean.std()]
+    
+n = np.linspace(3, 100)
+plt.plot(allN, sN, 'bo')
+plt.plot(n, 1 / np.sqrt(n), label='analytical')
+plt.legend();
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/296713941fd0b2fe04e7f424c5f0b1dbdd9fde0d.png]]
+:END:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#+BEGIN_SRC jupyter-python  
+
+#+END_SRC
+
+* Description
+Statistical properties of random samples have properties that are random at the sample level, but that are predictable for large collections of them. This is not always intuitive, because in real life we rarely have big enough collections to see it. With Python though, we can simulate these, and analyze them to see what is happening. We explore this by sampling the normal distribution. We illustrate the central limit theorem, which is if you make enough sample measurements, the distribution of the sample means is normally distributed. We further show that the standard deviation of that distribution is inversely proportional to the square root of the number of samples. While no substitute for analytical math, this style of simulation can be useful to build your intuition.
