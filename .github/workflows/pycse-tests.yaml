@@ -1,0 +1,17 @@
+name: Run pycse tests
+
+on: 
+  push:
+
+
+jobs:
+  build:
+    name: nosetest
+    runs-on: ubuntu-latest
+    timeout-minutes: 5    
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          pip install numpy scipy matplotlib IPython ipykernel nbconvert python-coveralls nose nose-cov coverage
+          nosetests -v --with-coverage
+          coverage run --source=pycse setup.py nosetests
