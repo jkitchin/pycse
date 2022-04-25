@@ -41,7 +41,6 @@ def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
       bint is a 2D array of confidence intervals
       se is an array of standard error for each parameter.
     """
-
     # in vander, the second arg is the number of columns, so we have to add one
     # to the degree since there are N + 1 columns for a polynomial of order N
     X = np.vander(x, deg + 1)
@@ -49,7 +48,7 @@ def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
 
 
 def regress(A, y, alpha=None, *args, **kwargs):
-    """Linear least squares regression with confidence intervals.
+    r"""Linear least squares regression with confidence intervals.
 
     Solve the matrix equation \(A p = y\) for p.
 
@@ -89,7 +88,6 @@ def regress(A, y, alpha=None, *args, **kwargs):
       se is an array of standard error for each parameter.
 
     """
-
     # This is to silence an annoying FutureWarning.
     if "rcond" not in kwargs:
         kwargs["rcond"] = None
@@ -134,7 +132,7 @@ def regress(A, y, alpha=None, *args, **kwargs):
 
 
 def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
-    """Nonlinear regression with confidence intervals.
+    r"""Nonlinear regression with confidence intervals.
 
     Parameters
     ----------
@@ -158,8 +156,10 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     >>> X = np.array([0, 1, 2])
     >>> y = np.array([0, 2, 4])
     >>> nlinfit(f, X, y, [0, 1])
-    (array([  2.00000000e+00,  -2.18062024e-12]), array([[  2.00000000e+00,   2.00000000e+00],
-           [ -2.18315458e-12,  -2.17808591e-12]]), array([  1.21903752e-12,   1.99456367e-16]))
+    (array([  2.00000000e+00,  -2.18062024e-12]),
+     array([[  2.00000000e+00,   2.00000000e+00],
+           [ -2.18315458e-12,  -2.17808591e-12]]),
+     array([  1.21903752e-12,   1.99456367e-16]))
 
     Returns
     -------
@@ -189,7 +189,8 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
 
 
 def Rsquared(y, Y):
-    """Return R^2, or coefficient of determination
+    """Return R^2, or coefficient of determination.
+
     y is a 1d array of observations.
     Y is a 1d array of predictions from a model.
 
@@ -204,14 +205,11 @@ def Rsquared(y, Y):
 
 
 # * ivp
-
-
 def ivp(f, tspan, y0, *args, **kwargs):
-    """A friendlier version of solve_ivp.
+    """Solve an ODE initial value problem.
 
     Parameters
     ----------
-
     f : function
     callable y'(x, y) = f(x, y)
 
