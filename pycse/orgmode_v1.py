@@ -38,7 +38,8 @@ def stderr_to_stdout():
 
 
 class print_redirect:
-    """Context manager for pycse.orgmode
+    """Context manager for pycse.orgmode.
+
     Most functions print to stdout. Use this to capture it in a file.
     with print_redirect(some_file):
         org()
@@ -49,14 +50,17 @@ class print_redirect:
     """
 
     def __init__(self, fname, mode="w"):
+        """Initialize the decorator."""
         self.fname = fname
         self.mode = mode
 
     def __enter__(self):
+        """Enter the decorator."""
         sys.stdout = open(self.fname, self.mode)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit the decorator."""
         sys.stdout.close()
         sys.stdout = sys.__stdout__
 
@@ -66,11 +70,10 @@ original_savefig = matplotlib.pyplot.savefig
 
 # patch to capture savefig
 def mysave(fname, *args, **kwargs):
-    """wrap savefig for org-mode.
+    """Wrap savefig for org-mode.
 
     Returns an org-mode link to the file.
     """
-
     original_savefig(fname, *args, **kwargs)
     return "[[file:{}]]".format(fname)
 
@@ -80,7 +83,6 @@ matplotlib.pyplot.savefig = mysave
 
 def git_hash(string):
     """Return a git hash of string."""
-
     s = sha1()
     g = "blob {0:d}\0".format(len(string))
     s.update(g.encode("utf-8"))
@@ -94,7 +96,7 @@ SHOW = True
 
 
 def myshow(*args, **kwargs):
-    """Wrap matplotlib.pyplot.show for orgmode
+    """Wrap matplotlib.pyplot.show for orgmode.
 
     Saves the figure in a directory called pyshow with the filename derived
     from its git-hash.
@@ -204,7 +206,7 @@ def verbatim(s):
 
 
 def comment(s):
-    """Print s as a comment
+    """Print s as a comment.
 
     If s is one line, print it in #, otherwise use a block.
     """
@@ -226,7 +228,10 @@ def fixed_width(s):
 
 
 def result(s):
-    """Convenience for fixed_width. An org src block result."""
+    """Return a fixed_width string.
+
+    An org src block result.
+    """
     return fixed_width(str(s))
 
 
@@ -293,7 +298,6 @@ def link(type=None, path=None, desc=None):
 
     :path: is all that is mandatory.
     """
-
     s = "[["
     if type is not None:
         s += type + ":"

@@ -1,15 +1,20 @@
+"""Provides classes to convert python data into org markup."""
 import IPython
 import tabulate
 
 
 class Heading(object):
+    """An orgmode headline."""
+
     def __init__(self, title, level=1, tags=(), properties=None):
+        """Initialize a Heading."""
         self.title = title
         self.level = level
         self.tags = tags
         self.properties = properties
 
     def _repr_org(self):
+        """Provide an org representation."""
         s = "*" * self.level + " " + self.title
         if self.tags:
             s += f"  :{':'.join(self.tags)}:"
@@ -21,14 +26,14 @@ class Heading(object):
         return s + "\n"
 
     def _repr_html(self):
-        """HTML representation of a Heading"""
+        """HTML representation of a Heading."""
         return f"<h{self.level}>{self.title}</h{self.level}>"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
-        repr_mimebundle should accept include, exclude and **kwargs
-        """
+        """Mimebundle representation of a Heading.
 
+        repr_mimebundle should accept include, exclude and **kwargs.
+        """
         data = {"text/html": self._repr_html(), "text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -38,20 +43,22 @@ class Heading(object):
 
 
 class Keyword:
-    """Keyword(key, value) -> #+key: value"""
+    """Keyword(key, value) -> #+key: value."""
 
     def __init__(self, key, value):
+        """Initialize a Keyword."""
         self.key = key
         self.value = value
 
     def _repr_org(self):
+        """Provide org representation."""
         return f"#+{self.key}: {self.value}" + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
+        """Provide a mimebundle representation.
+
         repr_mimebundle should accept include, exclude and **kwargs
         """
-
         data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -61,19 +68,21 @@ class Keyword:
 
 
 class Comment:
-    """Comment(text) -> # text"""
+    """Comment(text) -> # text."""
 
     def __init__(self, text):
+        """Initialize a comment."""
         self.text = text
 
     def _repr_org(self):
+        """Provide an org representation."""
         return f"# {self.text}" + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
+        """Provide a mimebundle representation.
+
         repr_mimebundle should accept include, exclude and **kwargs
         """
-
         data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -83,19 +92,21 @@ class Comment:
 
 
 class Org:
-    """Org(text) -> text"""
+    """Org(text) -> text."""
 
     def __init__(self, text):
+        """Initialize an Org object."""
         self.text = text
 
     def _repr_org(self):
+        """Provide an org representation."""
         return self.text + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
+        """Provide a mimebundle representation.
+
         repr_mimebundle should accept include, exclude and **kwargs
         """
-
         data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -105,7 +116,13 @@ class Org:
 
 
 class Figure:
+    """A Figure class for org.
+
+    It combines a filename, caption, name and attributes.
+    """
+
     def __init__(self, fname, caption=None, name=None, attributes=()):
+        """Initialize a figure."""
         self.fname = fname
         self.caption = caption
         self.name = name
@@ -127,10 +144,10 @@ class Figure:
         return "\n".join(s) + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
-        repr_mimebundle should accept include, exclude and **kwargs
-        """
+        """Provide a mimebundle representation.
 
+        repr_mimebundle should accept include, exclude and **kwargs.
+        """
         data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -140,9 +157,12 @@ class Figure:
 
 
 class Table:
+    """A Table object for org."""
+
     def __init__(
         self, data, headers=None, caption=None, name=None, attributes=()
     ):
+        """Initialize a table."""
         self.data = data
         self.headers = headers
         self.caption = caption
@@ -150,6 +170,7 @@ class Table:
         self.attributes = attributes
 
     def _repr_org(self):
+        """Provide an org representation."""
         s = []
         for backend, attributes in self.attributes:
             s += [f"#+attr_{backend}: {attributes}"]
@@ -165,10 +186,10 @@ class Table:
         return "\n".join(s)
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
-        """
+        """Provide a mimebundle representation.
+
         repr_mimebundle should accept include, exclude and **kwargs
         """
-
         data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
@@ -181,6 +202,8 @@ class Table:
 
 
 class OrgFormatter(IPython.core.formatters.BaseFormatter):
+    """A special formatter for org objects."""
+
     format_type = IPython.core.formatters.Unicode("text/org")
     print_method = IPython.core.formatters.ObjectName("_repr_org_")
 
