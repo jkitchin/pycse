@@ -1,4 +1,16 @@
-from pycse.lisp import *
+"""Tests for lisp module."""
+from pycse.lisp import (
+    Symbol,
+    Quote,
+    SharpQuote,
+    Cons,
+    Alist,
+    Vector,
+    Comma,
+    Splice,
+    Backquote,
+    Comment,
+)
 
 
 def test_symbol():
