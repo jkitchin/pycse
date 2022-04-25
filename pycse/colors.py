@@ -1,6 +1,4 @@
-"""This module provides a dictionary of rgb values with keys of color names.
-
-"""
+"""This module provides a dictionary of rgb values with keys of color names."""
 
 color_table = """Aero	#7CB9E8	49%	73%	91%	206°	70%	70%	47%	91%
 Aero blue	#C9FFE5	79%	100%	90%	151°	100%	89%	21%	100%
