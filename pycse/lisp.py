@@ -4,7 +4,8 @@ This module adds a lisp property to the basic Python types which returns a
 string of the data type in Lisp.
 
 
-The module also provides some classes to help with more sophisticated data structures like alists, cons cells
+The module also provides some classes to help with more sophisticated data
+structures like alists, cons cells
 
 Here are the transformations:
 
@@ -22,7 +23,8 @@ Quote([1, 2, 3])     -> '(1 2 3)
 SharpQuote("symbol") -> #'symbol
 Vector([1, 2, 3])    -> [1 2 3]
 
-You should be able to nest these to make complex programs. If you use custom data structures/classes, they need to have a lisp property defined.
+You should be able to nest these to make complex programs. If you use custom
+data structures/classes, they need to have a lisp property defined.
 
 http://kitchingroup.cheme.cmu.edu/blog/2015/05/16/Python-data-structures-to-lisp/
 
@@ -33,6 +35,8 @@ import numpy as np
 
 
 class PyObject_HEAD(c.Structure):
+    """I am not sure what this is."""
+
     _fields_ = [
         ("HEAD", c.c_ubyte * (object.__basicsize__ - c.sizeof(c.c_void_p))),
         ("ob_type", c.c_void_p),
@@ -45,6 +49,7 @@ _get_dict.argtypes = [c.py_object]
 
 
 def get_dict(object):
+    """Get the dictionary for object."""
     return _get_dict(object).contents.value
 
 
@@ -91,14 +96,17 @@ class Symbol(object):
     """
 
     def __init__(self, sym):
+        """Initialize a Symbol."""
         assert isinstance(sym, str)
         self.sym = sym
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return self.sym
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -106,10 +114,12 @@ class Quote(object):
     """Used to quote a symbol or form."""
 
     def __init__(self, sym):
+        """Initialize a quote."""
         self.sym = sym
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         if isinstance(self.sym, str):
             s = self.sym
         else:
@@ -118,6 +128,7 @@ class Quote(object):
         return "'{}".format(s)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -125,10 +136,12 @@ class SharpQuote(object):
     """Used to SharpQuote a symbol or form."""
 
     def __init__(self, sym):
+        """Initicale a sharpquote."""
         self.sym = sym
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         if isinstance(self.sym, str):
             s = self.sym
         else:
@@ -136,6 +149,7 @@ class SharpQuote(object):
         return "#'{}".format(s)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -143,14 +157,17 @@ class Cons(object):
     """A cons cell."""
 
     def __init__(self, car, cdr):
+        """Initialize a Cons cell."""
         self.car = car
         self.cdr = cdr
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return "({} . {})".format(self.car.lisp, self.cdr.lisp)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -158,16 +175,19 @@ class Alist(object):
     """A lisp association list."""
 
     def __init__(self, lst):
+        """Initialize an alist."""
         self.list = lst
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         keys = self.list[0::2]
         vals = self.list[1::2]
         alist = [Cons(key, val) for key, val in zip(keys, vals)]
         return alist.lisp
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -175,13 +195,16 @@ class Vector(object):
     """A lisp vector."""
 
     def __init__(self, lst):
+        """Initialize a vector."""
         self.list = lst
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return "[{}]".format(" ".join([x.lisp for x in self.list]))
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -189,13 +212,16 @@ class Comma(object):
     """The comma operator."""
 
     def __init__(self, form):
+        """Initialize a comma operator."""
         self.form = form
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return ",{}".format(self.form.lisp)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -203,13 +229,16 @@ class Splice(object):
     """A Splice object."""
 
     def __init__(self, form):
+        """Initialize a splice."""
         self.form = form
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return ",@{}".format(self.form.lisp)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -217,13 +246,16 @@ class Backquote(object):
     """A Backquoted item."""
 
     def __init__(self, form):
+        """Initialize a backquote."""
         self.form = form
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return "`{}".format(self.form.lisp)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
 
 
@@ -231,11 +263,14 @@ class Comment(object):
     """A commented item in lisp."""
 
     def __init__(self, s):
+        """Initialize a Comment with s."""
         self.s = s
 
     @property
     def lisp(self):
+        """Return lisp representation of self."""
         return "; {}".format(self.s.lisp)
 
     def __str__(self):
+        """Return string respresentation."""
         return self.lisp
