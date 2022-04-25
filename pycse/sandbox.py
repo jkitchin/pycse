@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 """Module that runs as a script to redirect stderr to stdout.
-Output is designed for org-mode."""
 
-from cStringIO import StringIO
+Output is designed for org-mode.
+"""
+
+from io import StringIO
 import sys
 
 content = sys.stdin.read()
