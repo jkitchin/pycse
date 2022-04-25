@@ -181,9 +181,13 @@ class OrgFormatter(IPython.core.formatters.BaseFormatter):
     format_type = IPython.core.formatters.Unicode('text/org')
     print_method = IPython.core.formatters.ObjectName('_repr_org_')
 
-    
-ip = get_ipython()
-ip.display_formatter.formatters['text/org'] = OrgFormatter()
-ytv_f = ip.display_formatter.formatters['text/org']
-ytv_f.for_type_by_name('IPython.lib.display', 'YouTubeVideo',
-                       lambda V: f'{V.src}')    
+
+try:    
+    ip = get_ipython()
+    ip.display_formatter.formatters['text/org'] = OrgFormatter()
+    ytv_f = ip.display_formatter.formatters['text/org']
+    ytv_f.for_type_by_name('IPython.lib.display', 'YouTubeVideo',
+                           lambda V: f'{V.src}')
+# get_ipython is not defined for tests I think.
+except NameError:
+    pass
