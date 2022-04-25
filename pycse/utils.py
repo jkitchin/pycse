@@ -1,3 +1,9 @@
+"""Provides utility functions in pycse.
+
+1. Fuzzy comparisons for float numbers.
+2. An ignore exception decorator
+3. A handy function to read a google sheet.
+"""
 # Copyright 2015, John Kitchin
 # (see accompanying license files for details).
 import numpy as np
@@ -8,33 +14,48 @@ import re
 
 
 def feq(x, y, epsilon=np.spacing(1)):
-    """x == y with tolerance"""
+    """Fuzzy equals.
+
+    x == y with tolerance
+    """
     return not ((x < (y - epsilon)) or (y < (x - epsilon)))
 
 
 def flt(x, y, epsilon=np.spacing(1)):
-    "x < y with tolerance"
+    """Fuzzy less than.
+
+    x < y with tolerance
+    """
     return x < (y - epsilon)
 
 
 def fgt(x, y, epsilon=np.spacing(1)):
-    "x > y with tolerance"
+    """Fuzzy greater than.
+
+    x > y with tolerance
+    """
     return y < (x - epsilon)
 
 
 def fle(x, y, epsilon=np.spacing(1)):
-    "x <= y with tolerance"
+    """Fuzzy less than or equal to.
+
+    x <= y with tolerance
+    """
     return not (y < (x - epsilon))
 
 
 def fge(x, y, epsilon=np.spacing(1)):
-    "x >= y with tolerance"
+    """Fuzzy greater than or equal to .
+
+    x >= y with tolerance
+    """
     return not (x < (y - epsilon))
 
 
 @contextmanager
 def ignore_exception(*exceptions):
-    """Decorator to ignore exceptions.
+    """Ignore exceptions on decorated function.
 
     >>> with ignore_exception(ZeroDivisionError):
     ...     print(1/0)
@@ -51,10 +72,10 @@ def ignore_exception(*exceptions):
 
 def read_gsheet(url, *args, **kwargs):
     """Return a dataframe for the Google Sheet at url.
+
     args and kwargs are passed to pd.read_csv
-
-    The url should be viewable by anyone with the link."""
-
+    The url should be viewable by anyone with the link.
+    """
     u = urlparse(url)
     if not (u.netloc == "docs.google.com") and u.path.startswith(
         "/spreadsheets/d/"
@@ -69,6 +90,9 @@ def read_gsheet(url, *args, **kwargs):
         # default to main sheet
         gid = 0
 
-    purl = f"https://docs.google.com/spreadsheets/d/{fid}/export?format=csv&gid={gid}"
+    purl = (
+        "https://docs.google.com/spreadsheets/d/"
+        f"{fid}/export?format=csv&gid={gid}"
+    )
 
     return pd.read_csv(purl, *args, **kwargs)
