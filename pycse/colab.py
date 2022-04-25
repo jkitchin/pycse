@@ -1,7 +1,10 @@
+"""Module for use in Google Colab."""
+
 from datetime import datetime
 import glob
 import io
-from IPython import get_ipython
+
+from IPython import display
 from IPython.core.magic import register_line_magic
 from IPython.display import HTML, IFrame
 from nbconvert import HTMLExporter, PDFExporter
@@ -14,13 +17,15 @@ import subprocess
 import tempfile
 from urllib.parse import urlparse
 
-from google.colab import drive
-from google.colab import files
-from googleapiclient.http import MediaIoBaseDownload
+try:
+    from google.colab import drive
+    from google.colab import files
+    from googleapiclient.http import MediaIoBaseDownload
 
-from google.colab import auth
-from googleapiclient.discovery import build
-
+    from google.colab import auth
+    from googleapiclient.discovery import build
+except ModuleNotFoundError:
+    pass
 
 DRIVE = None
 
@@ -40,6 +45,7 @@ def gdrive():
 
 
 def aptupdate():
+    """Run apt-get update."""
     s = subprocess.run(
         ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
@@ -52,7 +58,7 @@ def aptupdate():
 
 
 def aptinstall(apt_pkg):
-    """Utility to install a package and check for success."""
+    """Install a package and check for success."""
     print(f"Installing {apt_pkg}. Please be patient.")
     s = subprocess.run(
         ["apt-get", "install", apt_pkg],
@@ -82,7 +88,8 @@ def aptinstall(apt_pkg):
 
 
 def current_notebook():
-    """Returns current notebook name and file id.
+    """Return current notebook name and file id.
+
     from kora.drive.
     """
     d = requests.get("http://172.28.0.2:9000/api/sessions").json()[0]
@@ -113,6 +120,7 @@ def pdf_from_html(
     pdf=None, verbose=False, plotly=False, javascript_delay=10000
 ):
     """Export the current notebook as a PDF.
+
     pdf is the name of the PDF to export.
     plotly uses the plotly exporter
     The pdf is not saved in GDrive. Conversion is done from an HTML export.
@@ -206,6 +214,7 @@ def pdf_from_html(
 
 def pdf_from_latex(pdf=None, verbose=False):
     """Export the notebook to PDF via LaTeX.
+
     This is not fast because you have to install texlive.
     verbose is not used right now.
     """
@@ -245,14 +254,23 @@ def pdf_from_latex(pdf=None, verbose=False):
 
 def pdf(line=""):
     """Line magic to export a colab to PDF.
-    You can have an optional arg -l to use LaTeX, defaults to html->PDF. This takes longer to install, and may not work if you use non-standard LaTeX code. I do not know how to add custom LaTeX packages to use arbitrary commands.
 
-    You can have an optional arg -d integer for a delay in seconds for the html to pdf. This is helpful when some equations are not rendering with html->PDF. The rendering is done by MathJax, and notebooks with a lot of equations take longer to render.
+    You can have an optional arg -l to use LaTeX, defaults to html->PDF. This
+    takes longer to install, and may not work if you use non-standard LaTeX
+    code. I do not know how to add custom LaTeX packages to use arbitrary
+    commands.
 
-    You can have an optional last argument for the filename of the pdf to save to.
+    You can have an optional arg -d integer for a delay in seconds for the html
+    to pdf. This is helpful when some equations are not rendering with
+    html->PDF. The rendering is done by MathJax, and notebooks with a lot of
+    equations take longer to render.
+
+    You can have an optional last argument for the filename of the pdf to save
+    to.
 
     Known limitations:
     1. If your notebook name doesn't end with .ipynb this does not work.
+
     """
     args = shlex.split(line)
 
@@ -284,7 +302,7 @@ def pdf(line=""):
 # it is an error to do this when there is not IPython
 try:
     pdf = register_line_magic(pdf)
-except:
+except:  # noqa: E722
     pass
 
 
@@ -352,13 +370,14 @@ def fid_from_url(url):
 
 def gopen(fid_or_url_or_path, mode="r"):
     """Open a file on Gdrive by its ID, sharing link or path.
+
     Returns a file-like object you can read from.
     Note this reads the whole file into memory, so it may not
     be good for large files. Returns an io.StringIO if mode is "r"
     or io.BytesIO if mode is "rb".
     """
     if mode not in ["r", "rb"]:
-        raise Exception(f'mode must be "r" or "rb"')
+        raise Exception('mode must be "r" or "rb"')
 
     if fid_or_url_or_path.startswith("http"):
         fid = fid_from_url(fid_or_url_or_path)
@@ -397,7 +416,9 @@ def gopen(fid_or_url_or_path, mode="r"):
 
 def get_path(fid_or_url):
     """Return the path to an fid or url.
-    The path i's relative to the mount point."""
+
+    The path i's relative to the mount point.
+    """
     if fid_or_url.startswith("http"):
         fid = fid_from_url(fid_or_url)
     else:
@@ -518,7 +539,7 @@ def get_id(path):
 
 
 def get_link(path):
-    """Returns a clickable link for path."""
+    """Return a clickable link for path."""
     fid = get_id(os.path.abspath(path))
     drive_service = gdrive()
     x = (
@@ -532,6 +553,7 @@ def get_link(path):
 
 def gchdir(path=None):
     """Change working dir to path.
+
     if path is None, default to working directory of current notebook.
     """
     if path is None:
@@ -545,6 +567,7 @@ def gchdir(path=None):
 
 def gdownload(*FILES, **kwargs):
     """Download files. Each arg can be a path, or pattern.
+
     If you have more than one file, a zip is downloaded.
     You can specify a zip file name as a kwarg:
 
@@ -592,18 +615,25 @@ def gdownload(*FILES, **kwargs):
 ##################################################################
 def gconsole():
     """Open a shell in colab.
-    Adapted from https://github.com/airesearch-in-th/kora/blob/master/kora/console.py"""
 
-    url = "https://github.com/gravitational/teleconsole/releases/download/0.4.0/teleconsole-v0.4.0-linux-amd64.tar.gz"
+    Adapted from
+    https://github.com/airesearch-in-th/kora/blob/master/kora/console.py
+    """
+    url = (
+        "https://github.com/gravitational/teleconsole/releases/download"
+        "/0.4.0/teleconsole-v0.4.0-linux-amd64.tar.gz"
+    )
     os.system(f"curl -L {url} | tar xz")  # download & extract
     os.system("mv teleconsole /usr/local/bin/")  # in PATH
 
     # Set PS1, directory
     with open("/root/.bashrc", "a") as f:
-        f.write('PS1="\e[1;36m\w\e[m# "\n')
+        f.write(r'PS1="\e[1;36m\w\e[m# "\n')
         f.write("cd /content \n")
         f.write(
-            "PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools/node/bin:/tools/google-cloud-sdk/bin:/opt/bin \n"
+            "PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:"
+            "/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/tools/node/bin:"
+            "/tools/google-cloud-sdk/bin:/opt/bin \n"
         )
 
     process = subprocess.Popen(
@@ -648,7 +678,8 @@ def gsuite(fid_or_url, width=1200, height=1000):
     xframeoptions = g.headers.get("X-Frame-Options", "").lower()
     if xframeoptions in ["deny", "sameorigin"]:
         print(
-            f"X-Frame-Option = {xframeoptions}\nEmbedding in IFrame is not allowed for {url}."
+            f"X-Frame-Option = {xframeoptions}\n"
+            f"Embedding in IFrame is not allowed for {url}."
         )
     else:
         return IFrame(url, width, height)
