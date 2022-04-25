@@ -66,9 +66,7 @@ def lispify(L):
     ):
         return L.lisp
     elif (
-        isinstance(L, list)
-        or isinstance(L, tuple)
-        or isinstance(L, np.ndarray)
+        isinstance(L, list) or isinstance(L, tuple) or isinstance(L, np.ndarray)
     ):
         s = [element.lisp for element in L]
         return "(" + " ".join(s) + ")"

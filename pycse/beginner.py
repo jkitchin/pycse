@@ -80,7 +80,7 @@ def nth(x, n=0):
 
 
 def cut(x, start=0, stop=None, step=None):
-    """Alias for x[start:stop:step]
+    """Alias for x[start:stop:step].
 
     This is to avoid having to introduce the slicing syntax.
     """
@@ -124,15 +124,19 @@ def butlast(x):
 
 
 def nsolve(objective, x0, *args, **kwargs):
-    """A Wrapped version of scipy.optimize.fsolve.
+    """Solve an objective function.
+
+    A Wrapped version of scipy.optimize.fsolve.
 
     objective: a callable function f(x) = 0
     x0: the initial guess for the solution.
 
-    This version warns you if the call did not finish cleanly and prints the message.
+    This version warns you if the call did not finish cleanly and prints the
+    message.
 
-    Returns:
-       If there is only one result it returns a float, otherwise it returns an array.
+    Returns: If there is only one result it returns a float, otherwise it
+       returns an array.
+
     """
     if "full_output" not in kwargs:
         kwargs["full_output"] = 1
@@ -170,7 +174,7 @@ def integrate(f, a, b, *args, **kwargs):
 
     if second(results) > tolerance:
         raise Exception(
-            "Your integral error {} is too large. ".format(err)
+            "Your integral error {} is too large. ".format(second(results))
             + "{} ".format(fourth(results))
             + "See your instructor for help"
         )
@@ -179,6 +183,7 @@ def integrate(f, a, b, *args, **kwargs):
 
 def heaviside(x):
     """Return the heaviside function of x.
+
     This is equal to zero for x < 0, 0.5 for x==0, and 1 for x > 0.
     """
     return 0.5 * (np.sign(x) + 1)
