@@ -10,18 +10,18 @@ class Heading(object):
         self.properties = properties
 
     def _repr_org(self):
-        s = '*' * self.level + ' ' + self.title
+        s = "*" * self.level + " " + self.title
         if self.tags:
             s += f"  :{':'.join(self.tags)}:"
         if self.properties:
-            s += '\n:PROPERTIES:\n'
+            s += "\n:PROPERTIES:\n"
             for key in self.properties:
-                s += f':{key}: {self.properties[key]}\n'
-            s += ':END:'
-        return s + '\n'
+                s += f":{key}: {self.properties[key]}\n"
+            s += ":END:"
+        return s + "\n"
 
     def _repr_html(self):
-        '''HTML representation of a Heading'''
+        """HTML representation of a Heading"""
         return f"<h{self.level}>{self.title}</h{self.level}>"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
@@ -29,9 +29,7 @@ class Heading(object):
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/html': self._repr_html(),
-                'text/org': self._repr_org()
-                }
+        data = {"text/html": self._repr_html(), "text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
@@ -40,20 +38,21 @@ class Heading(object):
 
 
 class Keyword:
-    '''Keyword(key, value) -> #+key: value'''
+    """Keyword(key, value) -> #+key: value"""
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
 
     def _repr_org(self):
-        return f'#+{self.key}: {self.value}' + '\n'
+        return f"#+{self.key}: {self.value}" + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
         """
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/org': self._repr_org()}
+        data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
@@ -62,19 +61,20 @@ class Keyword:
 
 
 class Comment:
-    '''Comment(text) -> # text'''
+    """Comment(text) -> # text"""
+
     def __init__(self, text):
         self.text = text
 
     def _repr_org(self):
-        return f'# {self.text}' + '\n'
+        return f"# {self.text}" + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
         """
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/org': self._repr_org()}
+        data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
@@ -83,24 +83,25 @@ class Comment:
 
 
 class Org:
-    '''Org(text) -> text'''
+    """Org(text) -> text"""
+
     def __init__(self, text):
         self.text = text
 
     def _repr_org(self):
-        return self.text + '\n'
+        return self.text + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
         """
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/org': self._repr_org()}
+        data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
             data = {k: v for (k, v) in data.items() if k not in exclude}
-        return data    
+        return data
 
 
 class Figure:
@@ -113,24 +114,24 @@ class Figure:
     def _repr_org(self):
         s = []
         for backend, attrs in self.attributes:
-            s += [f'#+attr_{backend}: {attrs}']
+            s += [f"#+attr_{backend}: {attrs}"]
 
         if self.name:
-            s += [f'#+name: {self.name}']
+            s += [f"#+name: {self.name}"]
 
         if self.caption:
-            s += [f'#+caption: {self.caption}']
+            s += [f"#+caption: {self.caption}"]
 
-        s += [f'[[{self.fname}]]']
+        s += [f"[[{self.fname}]]"]
 
-        return '\n'.join(s) + '\n'
+        return "\n".join(s) + "\n"
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
         """
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/org': self._repr_org()}
+        data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
@@ -139,8 +140,9 @@ class Figure:
 
 
 class Table:
-    def __init__(self, data, headers=None, caption=None,
-                 name=None, attributes=()):
+    def __init__(
+        self, data, headers=None, caption=None, name=None, attributes=()
+    ):
         self.data = data
         self.headers = headers
         self.caption = caption
@@ -150,24 +152,24 @@ class Table:
     def _repr_org(self):
         s = []
         for backend, attributes in self.attributes:
-            s += [f'#+attr_{backend}: {attributes}']
+            s += [f"#+attr_{backend}: {attributes}"]
 
         if self.name:
-            s += [f'#+name: {self.name}']
+            s += [f"#+name: {self.name}"]
 
         if self.caption:
-            s += [f'#+caption: {self.caption}']
+            s += [f"#+caption: {self.caption}"]
 
-        s += [tabulate.tabulate(self.data, self.headers, tablefmt='orgtbl')]
+        s += [tabulate.tabulate(self.data, self.headers, tablefmt="orgtbl")]
 
-        return '\n'.join(s)
+        return "\n".join(s)
 
     def _repr_mimebundle_(self, include, exclude, **kwargs):
         """
         repr_mimebundle should accept include, exclude and **kwargs
         """
 
-        data = {'text/org': self._repr_org()}
+        data = {"text/org": self._repr_org()}
         if include:
             data = {k: v for (k, v) in data.items() if k in include}
         if exclude:
@@ -177,17 +179,19 @@ class Table:
 
 # * Rich displays for org-mode
 
+
 class OrgFormatter(IPython.core.formatters.BaseFormatter):
-    format_type = IPython.core.formatters.Unicode('text/org')
-    print_method = IPython.core.formatters.ObjectName('_repr_org_')
+    format_type = IPython.core.formatters.Unicode("text/org")
+    print_method = IPython.core.formatters.ObjectName("_repr_org_")
 
 
-try:    
+try:
     ip = get_ipython()
-    ip.display_formatter.formatters['text/org'] = OrgFormatter()
-    ytv_f = ip.display_formatter.formatters['text/org']
-    ytv_f.for_type_by_name('IPython.lib.display', 'YouTubeVideo',
-                           lambda V: f'{V.src}')
+    ip.display_formatter.formatters["text/org"] = OrgFormatter()
+    ytv_f = ip.display_formatter.formatters["text/org"]
+    ytv_f.for_type_by_name(
+        "IPython.lib.display", "YouTubeVideo", lambda V: f"{V.src}"
+    )
 # get_ipython is not defined for tests I think.
 except NameError:
     pass

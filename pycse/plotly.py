@@ -10,18 +10,17 @@ import plotly.io as pio
 
 def myshow(self, *args, **kwargs):
     html = pio.to_html(self)
-    mhash = md5(html.encode('utf-8')).hexdigest()
-    if not os.path.isdir('.ob-jupyter'):
-        os.mkdir('.ob-jupyter')
-    fhtml = os.path.join('.ob-jupyter', mhash + '.html')
+    mhash = md5(html.encode("utf-8")).hexdigest()
+    if not os.path.isdir(".ob-jupyter"):
+        os.mkdir(".ob-jupyter")
+    fhtml = os.path.join(".ob-jupyter", mhash + ".html")
 
-    with open(fhtml, 'w') as f:
+    with open(fhtml, "w") as f:
         f.write(html)
 
-    display(FileLink(fhtml, result_html_suffix=''))
+    display(FileLink(fhtml, result_html_suffix=""))
 
-    return Image(pio.to_image(self, 'png', engine='kaleido'))
+    return Image(pio.to_image(self, "png", engine="kaleido"))
 
 
 go.Figure.show = myshow
-

@@ -621,7 +621,7 @@ Mustard	#FFDB58	100%	86%	35%	47°	100%	67%	65%	100%
 Myrtle green	#317873	19%	47%	45%	176°	42%	33%	59%	47%"""
 
 
-fields = [line.split('\t') for line in color_table.split('\n')]
+fields = [line.split("\t") for line in color_table.split("\n")]
 
 color_names = [field[0].lower() for field in fields]
 hex_codes = [field[1] for field in fields]

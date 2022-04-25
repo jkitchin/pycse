@@ -18,6 +18,7 @@ from scipy.integrate import solve_ivp
 
 # * Linear regression
 
+
 def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
     """Least squares polynomial fit with parameter confidence intervals.
 
@@ -45,7 +46,8 @@ def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
     # to the degree since there are N + 1 columns for a polynomial of order N
     X = np.vander(x, deg + 1)
     return regress(X, y, alpha, *args, **kwargs)
-    
+
+
 def regress(A, y, alpha=None, *args, **kwargs):
     """Linear least squares regression with confidence intervals.
 
@@ -89,9 +91,9 @@ def regress(A, y, alpha=None, *args, **kwargs):
     """
 
     # This is to silence an annoying FutureWarning.
-    if 'rcond' not in kwargs:
-        kwargs['rcond'] = None
-        
+    if "rcond" not in kwargs:
+        kwargs["rcond"] = None
+
     b, res, rank, s = np.linalg.lstsq(A, y, *args, **kwargs)
 
     bint, se = None, None
@@ -110,22 +112,26 @@ def regress(A, y, alpha=None, *args, **kwargs):
         dC = np.diag(C)
 
         if (dC < 0.0).any():
-            warnings.warn('\n{0}\ndetected a negative number in your'
-                          'covariance matrix. Taking the absolute value'
-                          'of the diagonal. something is probably wrong'
-                          'with your data or model'.format(dC))
+            warnings.warn(
+                "\n{0}\ndetected a negative number in your"
+                "covariance matrix. Taking the absolute value"
+                "of the diagonal. something is probably wrong"
+                "with your data or model".format(dC)
+            )
             dC = np.abs(dC)
 
         se = np.sqrt(dC)  # standard error
 
-        sT = t.ppf(1.0 - alpha/2.0, n - k - 1)  # student T multiplier
+        sT = t.ppf(1.0 - alpha / 2.0, n - k - 1)  # student T multiplier
         CI = sT * se
 
         bint = np.array([(beta - ci, beta + ci) for beta, ci in zip(b, CI)])
 
     return (b, bint, se)
 
+
 # * Nonlinear regression
+
 
 def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     """Nonlinear regression with confidence intervals.
@@ -164,13 +170,13 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
 
     """
     pars, pcov = curve_fit(model, x, y, p0=p0, **kwargs)
-    n = len(y)    # number of data points
+    n = len(y)  # number of data points
     p = len(pars)  # number of parameters
 
     dof = max(0, n - p)  # number of degrees of freedom
 
     # student-t value for the dof and confidence level
-    tval = t.ppf(1.0-alpha/2., dof)
+    tval = t.ppf(1.0 - alpha / 2.0, dof)
 
     SE = []
     pint = []
@@ -193,9 +199,8 @@ def Rsquared(y, Y):
     """
     errs = y - Y
     SS_res = np.sum(errs**2)
-    SS_tot = np.sum((y - np.mean(y))**2)
+    SS_tot = np.sum((y - np.mean(y)) ** 2)
     return 1 - SS_res / SS_tot
-                    
 
 
 # * ivp
@@ -232,14 +237,14 @@ def ivp(f, tspan, y0, *args, **kwargs):
     t0, tf = tspan[0], tspan[-1]
 
     # make the max_step the smallest step in tspan, or what is in kwargs.
-    if 'max_step' not in kwargs:
-        kwargs['max_step'] = min(np.diff(tspan))
+    if "max_step" not in kwargs:
+        kwargs["max_step"] = min(np.diff(tspan))
 
-    if 'dense_output' not in kwargs:
-        kwargs['dense_output'] = True
+    if "dense_output" not in kwargs:
+        kwargs["dense_output"] = True
 
-    if 't_eval' not in kwargs:
-        kwargs['t_eval'] = tspan
+    if "t_eval" not in kwargs:
+        kwargs["t_eval"] = tspan
 
     sol = solve_ivp(f, (t0, tf), y0, *args, **kwargs)
 
@@ -252,6 +257,7 @@ def ivp(f, tspan, y0, *args, **kwargs):
 # * End
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

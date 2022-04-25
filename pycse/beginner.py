@@ -19,7 +19,7 @@ from scipy.integrate import quad
 def first(x):
     """Return the first element of x if it is iterable, else return x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     return x[0]
 
@@ -27,10 +27,10 @@ def first(x):
 def second(x):
     """Return the second element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 2:
-        raise Exception('{} does not have a second element.'.format(x))
+        raise Exception("{} does not have a second element.".format(x))
 
     return x[1]
 
@@ -38,10 +38,10 @@ def second(x):
 def third(x):
     """Return the third element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 3:
-        raise Exception('{} does not have a third element.'.format(x))
+        raise Exception("{} does not have a third element.".format(x))
 
     return x[2]
 
@@ -49,10 +49,10 @@ def third(x):
 def fourth(x):
     """Return the fourth element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 4:
-        raise Exception('{} does not have a fourth element.'.format(x))
+        raise Exception("{} does not have a fourth element.".format(x))
 
     return x[3]
 
@@ -60,10 +60,10 @@ def fourth(x):
 def fifth(x):
     """Return the fifth element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 5:
-        raise Exception('{} does not have a fifth element.'.format(x))
+        raise Exception("{} does not have a fifth element.".format(x))
 
     return x[4]
 
@@ -71,10 +71,10 @@ def fifth(x):
 def nth(x, n=0):
     """Return the nth value of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= n:
-        raise Exception('{} does not have an n={} element.'.format(x, n))
+        raise Exception("{} does not have an n={} element.".format(x, n))
 
     return x[n]
 
@@ -85,7 +85,7 @@ def cut(x, start=0, stop=None, step=None):
     This is to avoid having to introduce the slicing syntax.
     """
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     return x[slice(start, stop, step)]
 
@@ -93,7 +93,7 @@ def cut(x, start=0, stop=None, step=None):
 def last(x):
     """Return the last element of x if it is iterable."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     return x[-1]
 
@@ -101,7 +101,7 @@ def last(x):
 def rest(x):
     """Return everything after the first element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     return x[1:]
 
@@ -109,7 +109,7 @@ def rest(x):
 def butlast(x):
     """Return everything but the last element of x."""
     if not isinstance(x, collections.Iterable):
-        raise Exception('{} is not iterable.'.format(x))
+        raise Exception("{} is not iterable.".format(x))
 
     return x[0:-1]
 
@@ -134,18 +134,19 @@ def nsolve(objective, x0, *args, **kwargs):
     Returns:
        If there is only one result it returns a float, otherwise it returns an array.
     """
-    if 'full_output' not in kwargs:
-        kwargs['full_output'] = 1
+    if "full_output" not in kwargs:
+        kwargs["full_output"] = 1
 
     ans, info, flag, msg = _fsolve(objective, x0, *args, **kwargs)
 
     if flag != 1:
-        raise Exception('nsolve did not finish cleanly: {}'.format(msg))
+        raise Exception("nsolve did not finish cleanly: {}".format(msg))
 
     if len(ans) == 1:
         return float(ans)
     else:
         return ans
+
 
 # The quad function returns the integral and error estimate. We rarely use the
 # error estimate, so here we eliminate it from the output.
@@ -161,16 +162,18 @@ def integrate(f, a, b, *args, **kwargs):
     is raised.
 
     """
-    if 'full_output' not in kwargs:
-        kwargs['full_output'] = 1
+    if "full_output" not in kwargs:
+        kwargs["full_output"] = 1
     results = quad(f, a, b, *args, **kwargs)
 
-    tolerance = kwargs.get('tolerance', 1e-6)
+    tolerance = kwargs.get("tolerance", 1e-6)
 
     if second(results) > tolerance:
-        raise Exception('Your integral error {} is too large. '.format(err)
-                        + '{} '.format(fourth(results))
-                        + 'See your instructor for help')
+        raise Exception(
+            "Your integral error {} is too large. ".format(err)
+            + "{} ".format(fourth(results))
+            + "See your instructor for help"
+        )
     return first(results)
 
 

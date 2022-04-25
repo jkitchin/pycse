@@ -33,11 +33,12 @@ def stderr_to_stdout():
 
     """
     import sys
+
     sys.stderr = sys.stdout
 
 
 class print_redirect:
-    '''Context manager for pycse.orgmode
+    """Context manager for pycse.orgmode
     Most functions print to stdout. Use this to capture it in a file.
     with print_redirect(some_file):
         org()
@@ -45,8 +46,9 @@ class print_redirect:
 
     mode='w' overwrites the file
     mode='a' appends to the file
-    '''
-    def __init__(self, fname, mode='w'):
+    """
+
+    def __init__(self, fname, mode="w"):
         self.fname = fname
         self.mode = mode
 
@@ -70,7 +72,7 @@ def mysave(fname, *args, **kwargs):
     """
 
     original_savefig(fname, *args, **kwargs)
-    return '[[file:{}]]'.format(fname)
+    return "[[file:{}]]".format(fname)
 
 
 matplotlib.pyplot.savefig = mysave
@@ -81,7 +83,7 @@ def git_hash(string):
 
     s = sha1()
     g = "blob {0:d}\0".format(len(string))
-    s.update(g.encode('utf-8'))
+    s.update(g.encode("utf-8"))
     s.update(string)
     return s.hexdigest()
 
@@ -105,15 +107,15 @@ def myshow(*args, **kwargs):
 
     hash = git_hash(fig_contents)
 
-    if not os.path.isdir('pyshow'):
-        os.mkdir('pyshow')
+    if not os.path.isdir("pyshow"):
+        os.mkdir("pyshow")
 
-    png = os.path.join('pyshow', hash + '.png')
+    png = os.path.join("pyshow", hash + ".png")
 
-    with open(png, 'wb') as f:
+    with open(png, "wb") as f:
         f.write(fig_contents)
 
-    print('[[file:{}]]'.format(png))
+    print("[[file:{}]]".format(png))
 
     if SHOW:
         original_show(*args, **kwargs)
@@ -123,9 +125,7 @@ matplotlib.pyplot.show = myshow
 
 
 # Tables and figures
-def table(data, name=None,
-          caption=None, attributes=None,
-          none=''):
+def table(data, name=None, caption=None, attributes=None, none=""):
     """Return a formatted table.
 
     :data: A list-like data structure. A None value is converted to hline.
@@ -138,23 +138,26 @@ def table(data, name=None,
     s = []
 
     if caption is not None:
-        s += ['#+caption: {}'.format(caption)]
+        s += ["#+caption: {}".format(caption)]
 
     if attributes is not None:
         for backend, attrs in attributes:
-            s += ['#+attr_{}: {}'.format(backend.lower(), attrs)]
+            s += ["#+attr_{}: {}".format(backend.lower(), attrs)]
 
     if name is not None:
-        s += ['#+name: {}'.format(name)]
+        s += ["#+name: {}".format(name)]
 
     for row in data:
         if row is None:
-            s += ['|-']
+            s += ["|-"]
         else:
-            s += ['| ' + ' | '.join([str(x) if x is not None else none
-                                     for x in row]) + '|']
+            s += [
+                "| "
+                + " | ".join([str(x) if x is not None else none for x in row])
+                + "|"
+            ]
 
-    print('\n'.join(s))
+    print("\n".join(s))
 
 
 def figure(fname, caption=None, name=None, attributes=None):
@@ -170,15 +173,15 @@ def figure(fname, caption=None, name=None, attributes=None):
 
     if attributes is not None:
         for backend, attrs in attributes:
-            s += ['#+attr_{}: {}'.format(backend.lower(), attrs)]
+            s += ["#+attr_{}: {}".format(backend.lower(), attrs)]
 
     if name is not None:
-        s += ['#+name: {}'.format(name)]
+        s += ["#+name: {}".format(name)]
 
     if caption is not None:
-        s += ['#+caption: {}'.format(caption)]
+        s += ["#+caption: {}".format(caption)]
 
-    if fname.startswith('[[file:'):
+    if fname.startswith("[[file:"):
         s += [fname]
     else:
         if not os.path.exists(fname):
@@ -186,7 +189,7 @@ def figure(fname, caption=None, name=None, attributes=None):
                 os.makedirs(os.path.dirname(fname), exist_ok=True)
         s += [mysave(fname)]
 
-    print('\n'.join(s))
+    print("\n".join(s))
 
 
 def verbatim(s):
@@ -194,10 +197,10 @@ def verbatim(s):
 
     If s is one line, print it in ==, otherwise use a block.
     """
-    if '\n' in str(s):
-        print('\n#+begin_example\n{}\n#+end_example\n'.format(s))
+    if "\n" in str(s):
+        print("\n#+begin_example\n{}\n#+end_example\n".format(s))
     else:
-        print('={}='.format(s))
+        print("={}=".format(s))
 
 
 def comment(s):
@@ -205,18 +208,21 @@ def comment(s):
 
     If s is one line, print it in #, otherwise use a block.
     """
-    if '\n' in str(s):
-        print('\n#+begin_comment\n{}\n#+end_comment\n'.format(s))
+    if "\n" in str(s):
+        print("\n#+begin_comment\n{}\n#+end_comment\n".format(s))
     else:
         import textwrap
-        print(textwrap.fill(s, initial_indent='# ',
-                            subsequent_indent='# ',
-                            width=79))
+
+        print(
+            textwrap.fill(
+                s, initial_indent="# ", subsequent_indent="# ", width=79
+            )
+        )
 
 
 def fixed_width(s):
     """Print s as a fixed-width element."""
-    print('\n'.join([': ' + x for x in str(s).split('\n')]))
+    print("\n".join([": " + x for x in str(s).split("\n")]))
 
 
 def result(s):
@@ -226,7 +232,7 @@ def result(s):
 
 def latex(s):
     """Print s as a latex block."""
-    print('\n#+begin_latex\n{}\n#+end_latex\n'.format(s))
+    print("\n#+begin_latex\n{}\n#+end_latex\n".format(s))
 
 
 def org(s):
@@ -234,12 +240,16 @@ def org(s):
     print(s)
 
 
-def headline(headline, level=1,
-             todo=None, tags=(),
-             deadline=None,
-             scheduled=None,
-             properties=None,
-             body=None):
+def headline(
+    headline,
+    level=1,
+    todo=None,
+    tags=(),
+    deadline=None,
+    scheduled=None,
+    properties=None,
+    body=None,
+):
     """Print an org headline.
 
     :headline: A string for the headline
@@ -251,50 +261,47 @@ def headline(headline, level=1,
     :body: a string representing the body.
 
     """
-    s = '*' * level + ' '
+    s = "*" * level + " "
     if todo is not None:
-        s += '{} '.format(todo)
+        s += "{} ".format(todo)
 
     s += headline
     if tags:
-        s += ' :' + ":".join(tags) + ':'
-    s += '\n'
+        s += " :" + ":".join(tags) + ":"
+    s += "\n"
 
     if scheduled and deadline:
-        s += '  SCHEDULED: {} DEADLINE: {}\n'.format(scheduled,
-                                                     deadline)
+        s += "  SCHEDULED: {} DEADLINE: {}\n".format(scheduled, deadline)
     elif scheduled:
-        s += '  SCHEDULED: {}\n'.format(scheduled)
+        s += "  SCHEDULED: {}\n".format(scheduled)
     elif deadline:
-        s += '  DEADLINE: {}\n'.format(deadline)
+        s += "  DEADLINE: {}\n".format(deadline)
     if properties:
-        s += '  :PROPERTIES:\n'
+        s += "  :PROPERTIES:\n"
         for key, val in properties.items():
-            s += '  :{}: {}\n'.format(key, val)
-        s += '  :END:\n\n'
+            s += "  :{}: {}\n".format(key, val)
+        s += "  :END:\n\n"
 
     if body:
-        s += body + '\n'
+        s += body + "\n"
 
     print(s)
 
 
-def link(type=None,
-         path=None,
-         desc=None):
+def link(type=None, path=None, desc=None):
     """Print an org link [[type:path][desc]].
 
     :path: is all that is mandatory.
     """
 
-    s = '[['
+    s = "[["
     if type is not None:
-        s += type + ':'
-    s += path + ']'
+        s += type + ":"
+    s += path + "]"
 
     if desc is not None:
-        s += '[{}]'.format(desc)
+        s += "[{}]".format(desc)
 
-    s += ']'
+    s += "]"
 
     print(s)

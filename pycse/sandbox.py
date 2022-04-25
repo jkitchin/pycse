@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-'''Module that runs as a script to redirect stderr to stdout.
-Output is designed for org-mode.'''
+"""Module that runs as a script to redirect stderr to stdout.
+Output is designed for org-mode."""
 
 from cStringIO import StringIO
 import sys
@@ -24,19 +24,23 @@ sys.stdout = old_stdout
 sys.stderr = old_stderr
 
 
-s = '''{0}'''.format(out)
+s = """{0}""".format(out)
 
 if err:
-    s += '''
+    s += """
 #+STDERR:
 {0}
-'''.format(err)
+""".format(
+        err
+    )
 
 if exc:
-    s += '''
+    s += """
 #+EXCEPTIONS:
 {0}
-'''.format(exc)
+""".format(
+        exc
+    )
 
 # print final result to stdout
 print(s)
