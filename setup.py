@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="pycse",
-    version="2.1.6",
+    version="2.1.7",
     description="python computations in science and engineering",
     url="http://github.com/jkitchin/pycse",
     maintainer="John Kitchin",
