@@ -9,6 +9,7 @@ See http://kitchingroup.cheme.cmu.edu/pycse
 Copyright 2020, John Kitchin
 (see accompanying license files for details).
 """
+# pylint: disable=invalid-name
 
 import warnings
 import numpy as np
@@ -92,7 +93,7 @@ def regress(A, y, alpha=None, *args, **kwargs):
     if "rcond" not in kwargs:
         kwargs["rcond"] = None
 
-    b, res, rank, s = np.linalg.lstsq(A, y, *args, **kwargs)
+    b, _, _, _ = np.linalg.lstsq(A, y, *args, **kwargs)
 
     bint, se = None, None
 
@@ -180,7 +181,7 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
 
     SE = []
     pint = []
-    for i, p, var in zip(range(n), pars, np.diag(pcov)):
+    for p, var in zip(pars, np.diag(pcov)):
         sigma = var**0.5
         SE.append(sigma)
         pint.append([p - sigma * tval, p + sigma * tval])
