@@ -48,9 +48,9 @@ _get_dict.restype = c.POINTER(c.py_object)
 _get_dict.argtypes = [c.py_object]
 
 
-def get_dict(object):
+def get_dict(obj):
     """Get the dictionary for object."""
-    return _get_dict(object).contents.value
+    return _get_dict(obj).contents.value
 
 
 # This is how we convert simple types to lisp. Strings go in quotes, and numbers
@@ -78,6 +78,8 @@ def lispify(L):
     elif isinstance(L, dict):
         s = [":{0} {1}".format(key, val.lisp) for key, val in L.items()]
         return "(" + " ".join(s) + ")"
+    else:
+        raise Exception(f"Cannot lispify {L}")
 
 
 get_dict(list)["lisp"] = property(lispify)
@@ -89,7 +91,7 @@ get_dict(np.ndarray)["lisp"] = property(lispify)
 # Some tools for generating lisp code
 
 
-class Symbol(object):
+class Symbol:
     """A lisp symbol.
 
     This is used to print strings that do not have double quotes.
@@ -110,7 +112,7 @@ class Symbol(object):
         return self.lisp
 
 
-class Quote(object):
+class Quote:
     """Used to quote a symbol or form."""
 
     def __init__(self, sym):
@@ -132,7 +134,7 @@ class Quote(object):
         return self.lisp
 
 
-class SharpQuote(object):
+class SharpQuote:
     """Used to SharpQuote a symbol or form."""
 
     def __init__(self, sym):
@@ -153,7 +155,7 @@ class SharpQuote(object):
         return self.lisp
 
 
-class Cons(object):
+class Cons:
     """A cons cell."""
 
     def __init__(self, car, cdr):
@@ -171,7 +173,7 @@ class Cons(object):
         return self.lisp
 
 
-class Alist(object):
+class Alist:
     """A lisp association list."""
 
     def __init__(self, lst):
@@ -191,7 +193,7 @@ class Alist(object):
         return self.lisp
 
 
-class Vector(object):
+class Vector:
     """A lisp vector."""
 
     def __init__(self, lst):
@@ -208,7 +210,7 @@ class Vector(object):
         return self.lisp
 
 
-class Comma(object):
+class Comma:
     """The comma operator."""
 
     def __init__(self, form):
@@ -225,7 +227,7 @@ class Comma(object):
         return self.lisp
 
 
-class Splice(object):
+class Splice:
     """A Splice object."""
 
     def __init__(self, form):
@@ -242,7 +244,7 @@ class Splice(object):
         return self.lisp
 
 
-class Backquote(object):
+class Backquote:
     """A Backquoted item."""
 
     def __init__(self, form):
@@ -259,7 +261,7 @@ class Backquote(object):
         return self.lisp
 
 
-class Comment(object):
+class Comment:
     """A commented item in lisp."""
 
     def __init__(self, s):

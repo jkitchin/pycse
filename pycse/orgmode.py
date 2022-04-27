@@ -3,7 +3,7 @@ import IPython
 import tabulate
 
 
-class Heading(object):
+class Heading:
     """An orgmode headline."""
 
     def __init__(self, title, level=1, tags=(), properties=None):

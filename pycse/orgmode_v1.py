@@ -12,28 +12,24 @@
 4. Provide functions that generate org markup, e.g. results, comments,
 headlines and links.
 
-# Copyright 2015, John Kitchin
+# Copyright 2015-2022, John Kitchin
 # (see accompanying license files for details).
 
 """
 
-
-# Matplotlib modifications
+from hashlib import sha1
 import io
 import os
-import matplotlib.pyplot
-from hashlib import sha1
 import sys
+import textwrap
+import matplotlib.pyplot
 
 
 def stderr_to_stdout():
     """Redirect stderr to stdout so it can be captured.
 
     Note: if your python returns an error, you may see nothing from this.
-
     """
-    import sys
-
     sys.stderr = sys.stdout
 
 
@@ -102,17 +98,16 @@ def myshow(*args, **kwargs):
     from its git-hash.
 
     """
-    format = "png"
     sio = io.BytesIO()
-    original_savefig(sio, format=format)
+    original_savefig(sio, format="png")
     fig_contents = sio.getvalue()
 
-    hash = git_hash(fig_contents)
+    _hash = git_hash(fig_contents)
 
     if not os.path.isdir("pyshow"):
         os.mkdir("pyshow")
 
-    png = os.path.join("pyshow", hash + ".png")
+    png = os.path.join("pyshow", _hash + ".png")
 
     with open(png, "wb") as f:
         f.write(fig_contents)
@@ -213,8 +208,6 @@ def comment(s):
     if "\n" in str(s):
         print("\n#+begin_comment\n{}\n#+end_comment\n".format(s))
     else:
-        import textwrap
-
         print(
             textwrap.fill(
                 s, initial_indent="# ", subsequent_indent="# ", width=79
@@ -246,7 +239,7 @@ def org(s):
 
 
 def headline(
-    headline,
+    title,
     level=1,
     todo=None,
     tags=(),
@@ -257,7 +250,7 @@ def headline(
 ):
     """Print an org headline.
 
-    :headline: A string for the headline
+    :title: A string for the headline
 
     :level: an integer for number of stars in the headline
 
@@ -270,7 +263,7 @@ def headline(
     if todo is not None:
         s += "{} ".format(todo)
 
-    s += headline
+    s += title
     if tags:
         s += " :" + ":".join(tags) + ":"
     s += "\n"
@@ -293,14 +286,14 @@ def headline(
     print(s)
 
 
-def link(type=None, path=None, desc=None):
+def link(linktype=None, path=None, desc=None):
     """Print an org link [[type:path][desc]].
 
     :path: is all that is mandatory.
     """
     s = "[["
-    if type is not None:
-        s += type + ":"
+    if linktype is not None:
+        s += linktype + ":"
     s += path + "]"
 
     if desc is not None:

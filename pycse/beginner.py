@@ -10,8 +10,8 @@ elements. There is also a cut function to avoid list slicing syntax. The point
 of these is to delay introducing indexing syntax.
 
 """
-import numpy as np
 import collections
+import numpy as np
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import quad
 
@@ -141,7 +141,7 @@ def nsolve(objective, x0, *args, **kwargs):
     if "full_output" not in kwargs:
         kwargs["full_output"] = 1
 
-    ans, info, flag, msg = _fsolve(objective, x0, *args, **kwargs)
+    ans, _, flag, msg = _fsolve(objective, x0, *args, **kwargs)
 
     if flag != 1:
         raise Exception("nsolve did not finish cleanly: {}".format(msg))

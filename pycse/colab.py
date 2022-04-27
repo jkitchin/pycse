@@ -3,19 +3,20 @@
 from datetime import datetime
 import glob
 import io
+import os
+import shlex
+import shutil
+import subprocess
+import tempfile
+from urllib.parse import urlparse
 
 from IPython import display
 from IPython.core.magic import register_line_magic
 from IPython.display import HTML, IFrame
 from nbconvert import HTMLExporter, PDFExporter
 import nbformat
-import os
+
 import requests
-import shlex
-import shutil
-import subprocess
-import tempfile
-from urllib.parse import urlparse
 
 try:
     from google.colab import drive
@@ -643,7 +644,7 @@ def gconsole():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    for i in range(6):
+    for _ in range(6):
         line = process.stdout.readline()
 
     url = line.decode().strip().split()[-1]
@@ -681,5 +682,6 @@ def gsuite(fid_or_url, width=1200, height=1000):
             f"X-Frame-Option = {xframeoptions}\n"
             f"Embedding in IFrame is not allowed for {url}."
         )
+        return None
     else:
         return IFrame(url, width, height)

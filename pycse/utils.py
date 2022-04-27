@@ -6,11 +6,11 @@
 """
 # Copyright 2015, John Kitchin
 # (see accompanying license files for details).
-import numpy as np
-from contextlib import contextmanager
-from urllib.parse import urlparse
-import pandas as pd
 import re
+from urllib.parse import urlparse
+from contextlib import contextmanager
+import numpy as np
+import pandas as pd
 
 
 def feq(x, y, epsilon=np.spacing(1)):
