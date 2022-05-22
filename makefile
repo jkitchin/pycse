@@ -7,3 +7,7 @@ black:
 pylint:
 	#pre-commit run pylint
 	pylint --rcfile=setup.cfg pycse
+
+upload:
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
