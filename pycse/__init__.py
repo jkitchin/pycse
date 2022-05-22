@@ -9,6 +9,11 @@ __version__ = "2.0.0"
 # * Setup inline images for IPython
 # Make inline figures the default
 
+from .PYCSE import regress, predict, nlinfit, nlpredict, Rsquared
+from .utils import feq, flt, fgt, fle, fge, read_gsheet
+from .beginner import *
+
+
 from IPython import get_ipython
 from IPython.core.magic import (
     register_line_magic,
@@ -23,6 +28,12 @@ from IPython.core.magic import (
 # every function you want is in the global namespace. This is a transition
 # behavior to allow students to focus on problem solving and not on Python
 # library imports.
+
+import pycse
+import numpy
+import matplotlib
+import IPython
+import scipy
 
 import numpy as np
 from numpy import (
@@ -47,11 +58,6 @@ from scipy.integrate import quad, solve_ivp, solve_bvp
 from scipy.optimize import fsolve, root
 from scipy.interpolate import interp1d
 
-from .PYCSE import regress, nlinfit, Rsquared
-from .utils import feq, flt, fgt, fle, fge, read_gsheet
-
-from .beginner import *
-
 from IPython.core.pylabtools import backends
 import matplotlib as mpl
 
@@ -69,24 +75,15 @@ try:
     @register_line_magic
     def pycse_test(line):
         """Print the versions of libraries installed."""
-        import pycse
 
         s = []
         s += ["pycse version: {0}".format(pycse.__version__)]
 
-        import numpy
-
         s += ["numpy version: {0}".format(numpy.__version__)]
-
-        import scipy
 
         s += ["scipy version: {0}".format(scipy.__version__)]
 
-        import matplotlib
-
         s += ["matplotlib version: {0}".format(matplotlib.__version__)]
-
-        import IPython
 
         s += ["IPython version: {0}".format(IPython.__version__)]
 

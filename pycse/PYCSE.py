@@ -17,6 +17,8 @@ from scipy.stats.distributions import t
 from scipy.optimize import curve_fit
 from scipy.integrate import solve_ivp
 
+import numdifftools as nd
+
 # * Linear regression
 
 
@@ -129,6 +131,49 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
     return (b, bint, se)
 
 
+def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
+    """Prediction interval for linear regression.
+
+    Based on the delta method.
+
+    Parameters
+    ----------
+    X : known x-value array, one row for each y-point
+    y : known y-value array
+    pars : fitted parameters
+    XX : x-value array to make predictions for
+    alpha : confidence level, 95% = 0.05
+    ub : upper bound for smallest eigenvalue
+    ef : eigenvalue factor for scaling Hessian
+
+    Returns
+    y, yint, pred_se
+    y : the predicted values
+    yint : an array of predicted confidence intervals
+    """
+
+    n = len(X)
+    npars = len(pars)
+    dof = n - npars
+
+    errs = y - X @ pars
+    sse = errs @ errs
+    rmse = sse / n
+
+    gprime = XX
+    hat = 2 * X.T @ X  # hessian
+    eps = max(ub, ef * np.linalg.eigvals(hat).min())
+
+    # Scaled Fisher information
+    I_fisher = rmse * np.linalg.pinv(hat + np.eye(npars) * eps)
+
+    pred_se = np.diag(gprime @ I_fisher @ gprime.T) ** 0.5
+    tval = t.ppf(1.0 - alpha / 2.0, dof)
+
+    yy = XX @ pars
+    return (yy, np.array([yy + tval * pred_se, yy - tval * pred_se]).T, pred_se)
+
+
 # * Nonlinear regression
 
 
@@ -187,6 +232,45 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
         pint.append([p - sigma * tval, p + sigma * tval])
 
     return (pars, np.array(pint), np.array(SE))
+
+
+def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05):
+    """Prediction error for a nonlinear fit.
+
+    Parameters
+    ----------
+    model : model function with signature model(x, *p)
+    loss : loss function the model was fitted with loss(*p)
+    popt : the optimized paramters
+    xnew : x-values to predict at
+    alpha : confidence level, 95% = 0.05
+
+    This function uses numdifftools for the Hessian and Jacobian.
+
+    Returns
+    -------
+
+    y, yint, se
+
+    y : predicted values
+    yint : prediction interval at alpha confidence interval
+    se : standard error of prediction
+    """
+
+    ypred = model(xnew, *popt)
+
+    hessp = nd.Hessian(lambda p: loss(*p))(popt)
+    I_fisher = loss(*popt) / len(y) * np.linalg.pinv(hessp)
+    gprime = nd.Jacobian(lambda p: model(xnew, *p))(popt)
+
+    uncerts = np.sqrt(np.diag(gprime @ I_fisher @ gprime.T))
+    tval = t.ppf(1 - alpha / 2, len(y) - len(popt))
+
+    return [
+        ypred,
+        np.array([ypred + tval * uncerts, ypred - tval * uncerts]).T,
+        uncerts,
+    ]
 
 
 def Rsquared(y, Y):
