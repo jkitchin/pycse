@@ -48,7 +48,7 @@ def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
     return regress(X, y, alpha, *args, **kwargs)
 
 
-def regress(A, y, alpha=None, *args, **kwargs):
+def regress(A, y, alpha=0.05, *args, **kwargs):
     r"""Linear least squares regression with confidence intervals.
 
     Solve the matrix equation \(A p = y\) for p.

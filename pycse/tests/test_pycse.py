@@ -18,20 +18,6 @@ def test_polyfit():
     assert np.isclose(b[1], 0.0)
 
 
-def test_regress_defaults():
-    x = np.array([0, 1])
-    y = np.array([0, 1])
-
-    X = np.column_stack([x, x**0])
-
-    b, bint, se = regress(X, y)
-
-    assert np.isclose(b[0], 1.0)
-    assert np.isclose(b[1], 0.0)
-    assert bint is None
-    assert se is None
-
-
 def test_regress():
     x = np.array([0, 1])
     y = np.array([0, 1])
