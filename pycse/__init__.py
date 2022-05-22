@@ -9,9 +9,10 @@ __version__ = "2.0.0"
 # * Setup inline images for IPython
 # Make inline figures the default
 
-from .PYCSE import regress, predict, nlinfit, nlpredict, Rsquared
+from .PYCSE import polyfit, regress, predict, nlinfit, nlpredict, Rsquared
 from .utils import feq, flt, fgt, fle, fge, read_gsheet
-from .beginner import *
+
+# from .beginner import *
 
 
 from IPython import get_ipython
@@ -35,34 +36,34 @@ import matplotlib
 import IPython
 import scipy
 
-import numpy as np
-from numpy import (
-    array,
-    diag,
-    dot,
-    mean,
-    polyfit,
-    polyval,
-    polyder,
-    polyint,
-    std,
-    transpose,
-)
-import numpy.linalg as la
-from numpy.linalg import det, eig, eigvals, inv, solve, svd
+# import numpy as np
+# from numpy import (
+#     array,
+#     diag,
+#     dot,
+#     mean,
+#     polyfit,
+#     polyval,
+#     polyder,
+#     polyint,
+#     std,
+#     transpose,
+# )
+# import numpy.linalg as la
+# from numpy.linalg import det, eig, eigvals, inv, solve, svd
 
-import scipy as sp
-import matplotlib.pyplot as plt
+# import scipy as sp
+# import matplotlib.pyplot as plt
 
-from scipy.integrate import quad, solve_ivp, solve_bvp
-from scipy.optimize import fsolve, root
-from scipy.interpolate import interp1d
+# from scipy.integrate import quad, solve_ivp, solve_bvp
+# from scipy.optimize import fsolve, root
+# from scipy.interpolate import interp1d
 
-from IPython.core.pylabtools import backends
-import matplotlib as mpl
+# from IPython.core.pylabtools import backends
+# import matplotlib as mpl
 
-mpl.interactive(True)
-mpl.use(backends["inline"])
+# mpl.interactive(True)
+# mpl.use(backends["inline"])
 
 
 # * IPython magic for pycse
