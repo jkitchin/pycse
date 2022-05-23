@@ -143,7 +143,7 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     pars : fitted parameters
     XX : x-value array to make predictions for
     alpha : confidence level, 95% = 0.05
-    ub : upper bound for smallest eigenvalue
+    ub : upper bound for smallest allowed Hessian eigenvalue
     ef : eigenvalue factor for scaling Hessian
 
     Returns
@@ -234,7 +234,7 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     return (pars, np.array(pint), np.array(SE))
 
 
-def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05):
+def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
     """Prediction error for a nonlinear fit.
 
     Parameters
@@ -244,6 +244,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05):
     popt : the optimized paramters
     xnew : x-values to predict at
     alpha : confidence level, 95% = 0.05
+    ub : upper bound for smallest allowed Hessian eigenvalue
+    ef : eigenvalue factor for scaling Hessian
 
     This function uses numdifftools for the Hessian and Jacobian.
 
@@ -260,7 +262,13 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05):
     ypred = model(xnew, *popt)
 
     hessp = nd.Hessian(lambda p: loss(*p))(popt)
-    I_fisher = loss(*popt) / len(y) * np.linalg.pinv(hessp)
+    # for making the Hessian better conditioned.
+    eps = max(ub, ef * np.linalg.eigvals(hessp).min())
+
+    sse = loss(*popt)
+    rmse = sse / len(y)
+    I_fisher = rmse * np.linalg.pinv(hessp + np.eye(len(popt)) * eps)
+
     gprime = nd.Jacobian(lambda p: model(xnew, *p))(popt)
 
     uncerts = np.sqrt(np.diag(gprime @ I_fisher @ gprime.T))
