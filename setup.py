@@ -14,7 +14,7 @@ setup(
     packages=["pycse"],
     setup_requires=["nose>=1.0"],
     data_files=["requirements.txt", "LICENSE"],
-    install_requires=["numpy", "scipy"],
+    install_requires=["numpy", "scipy", "numdifftools"],
     long_description="""\
 python computations in science and engineering
 ===============================================
