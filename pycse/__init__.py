@@ -9,7 +9,16 @@ __version__ = "2.1.8"
 # * Setup inline images for IPython
 # Make inline figures the default
 
-from .PYCSE import polyfit, regress, predict, nlinfit, nlpredict, Rsquared
+from .PYCSE import (
+    polyfit,
+    regress,
+    predict,
+    nlinfit,
+    nlpredict,
+    Rsquared,
+    bic,
+    lbic,
+)
 from .utils import feq, flt, fgt, fle, fge, read_gsheet
 
 # from .beginner import *

@@ -297,6 +297,50 @@ def Rsquared(y, Y):
     return 1 - SS_res / SS_tot
 
 
+def bic(x, y, model, popt):
+    """Compute the Bayesian information criterion (BIC).
+
+    Parameters
+    ----------
+    model : function(x, *p) returns prediction for y
+    popt : optimal parameters
+    y : array, known y-values
+
+    Returns
+    -------
+    BIC : float
+
+    https://en.wikipedia.org/wiki/Bayesian_information_criterion#Gaussian_special_case
+    """
+
+    n = len(y)
+    k = len(popt)
+    rss = np.sum((model(x, *popt) - y) ** 2)
+    bic = n * np.log(rss / n) + k * np.log(n)
+    return bic
+
+
+def lbic(X, y, popt):
+    """Compute the Bayesian information criterion for a linear model.
+
+    Paramters
+    ---------
+    X : array of input variables in column form
+    y : known y values
+    popt : fitted parameters
+
+    Returns
+    -------
+    BIC : float
+    """
+
+    n = len(y)
+    k = len(popt)
+    rss = np.sum((X @ popt - y) ** 2)
+    bic = n * np.log(rss / n) + k * np.log(n)
+    return bic
+
+
 # * ivp
 def ivp(f, tspan, y0, *args, **kwargs):
     """Solve an ODE initial value problem.
