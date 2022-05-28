@@ -4,7 +4,7 @@ Pycse is compatible with Python 3.6+.
 
 """
 
-__version__ = "2.1.8"
+__version__ = "2.1.9"
 
 # * Setup inline images for IPython
 # Make inline figures the default
