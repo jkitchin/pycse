@@ -6,7 +6,7 @@ setup(
     name="pycse",
     version="2.1.9",
     description="python computations in science and engineering",
-    url="http://github.com/jkitchin/pycse",
+    url="https://github.com/jkitchin/pycse",
     maintainer="John Kitchin",
     maintainer_email="jkitchin@andrew.cmu.edu",
     license="GPL",
@@ -22,7 +22,7 @@ python computations in science and engineering
 This package provides functions that are useful in science and engineering
 computations.
 
-See http://kitchingroup.cheme.cmu.edu/pycse for documentation.
+See https://kitchingroup.cheme.cmu.edu/pycse for documentation.
 
       """,
 )
