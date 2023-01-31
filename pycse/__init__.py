@@ -21,6 +21,8 @@ from .PYCSE import (
 )
 from .utils import feq, flt, fgt, fle, fge, read_gsheet
 
+from .hashcache import hashcache
+
 # from .beginner import *
 
 
