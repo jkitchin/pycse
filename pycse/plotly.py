@@ -10,7 +10,6 @@ import os
 from hashlib import md5
 
 from IPython import display
-from IPython.display import Image, FileLink
 
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -24,12 +23,12 @@ def myshow(self, *args, **kwargs):
         os.mkdir(".ob-jupyter")
     fhtml = os.path.join(".ob-jupyter", mhash + ".html")
 
-    with open(fhtml, "w") as f:
+    with open(fhtml, "w", encoding="utf-8") as f:
         f.write(html)
 
-    display(FileLink(fhtml, result_html_suffix=""))
+    display.FileLink(fhtml, result_html_suffix="")
 
-    return Image(pio.to_image(self, "png", engine="kaleido"))
+    return display.Image(pio.to_image(self, "png", engine="kaleido"))
 
 
 go.Figure.show = myshow
