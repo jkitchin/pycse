@@ -1,0 +1,39 @@
+Traceback (most recent call last):
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/client.py", line 1204, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/Users/jkitchin/anaconda3/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/client.py", line 663, in async_execute
+    await self.async_execute_cell(
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/jkitchin/anaconda3/lib/python3.10/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+b = np.array([[0, 1, 2]])
+print(b.shape)
+print(b)
+print(b.T)
+
+print(np.dot(b, b))    # this is not ok, the dimensions are wrong.
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+Cell [0;32mIn[3], line 6[0m
+[1;32m      3[0m [38;5;28mprint[39m(b)
+[1;32m      4[0m [38;5;28mprint[39m(b[38;5;241m.[39mT)
+[0;32m----> 6[0m [38;5;28mprint[39m([43mnp[49m[38;5;241;43m.[39;49m[43mdot[49m[43m([49m[43mb[49m[43m,[49m[43m [49m[43mb[49m[43m)[49m)
+
+File [0;32m<__array_function__ internals>:180[0m, in [0;36mdot[0;34m(*args, **kwargs)[0m
+
+[0;31mValueError[0m: shapes (1,3) and (1,3) not aligned: 3 (dim 1) != 1 (dim 0)
+ValueError: shapes (1,3) and (1,3) not aligned: 3 (dim 1) != 1 (dim 0)
+
