@@ -1,0 +1,155 @@
+* Miscellaneous
+** Mail merge with python
+   :PROPERTIES:
+   :categories: programming, email
+   :date:     2013/04/16 16:10:50
+   :updated:  2013/04/16 16:10:50
+   :END:
+Suppose you are organizing some event, and you have a mailing list of email addresses and people you need to send a mail to telling them what room they will be in. You would like to send a personalized email to each person, and you do not want to type each one by hand. Python can automate this for you. All you need is the mailing list in some kind of structured format, and then you can go through it line by line to create and send emails.
+
+We will use an org-table to store the data in.
+
+#+tblname: mail-list
+| First name | Last name | email address        | Room number |
+|------------+-----------+----------------------+-------------|
+| Jane       | Doe       | jane-doe@gmail.com   |           1 |
+| John       | Doe       | john-doe@gmail.com   |           2 |
+| Jimmy      | John      | jimmy-john@gmail.com |           3 |
+
+We pass that table into an org-mode source block as a variable called data, which will be a list of lists, one for each row of the table. You could alternatively read these from an excel spreadsheet, a csv file, or some kind of python data structure.
+
+We do not actually send the emails in this example. To do that you need to have access to a mail server, which could be on your own machine, or it could be a relay server you have access to.
+
+We create a string that is a template with some fields to be substituted, e.g. the firstname and room number in this case. Then we loop through each row of the table, and format the template with those values, and create an email message to the person. First we print each message to check that they are correct.
+
+#+BEGIN_SRC jupyter-python :var data=mail-list :exports code
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import  formatdate
+
+template = '''
+Dear {firstname:s},
+
+I am pleased to inform you that your talk will be in room {roomnumber:d}.
+
+Sincerely,
+John
+'''
+
+for firstname, lastname, emailaddress, roomnumber in data:
+    msg = MIMEMultipart()
+    msg['From'] = "youremail@gmail.com"
+    msg['To'] = emailaddress
+    msg['Date'] = formatdate(localtime=True)
+
+    msgtext = template.format(**locals())
+    print(msgtext)
+
+    msg.attach(MIMEText(msgtext))
+
+    ## Uncomment these lines and fix
+    #server = smtplib.SMTP('your.relay.server.edu')
+    #server.sendmail('your_email@gmail.com', # from
+    #                emailaddress,
+    #                msg.as_string())
+    #server.quit()
+
+    print(msg.as_string())
+    print('------------------------------------------------------------------')
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+Dear Jane,
+
+I am pleased to inform you that your talk will be in room 1.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============3218742315867562125=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: jane-doe@gmail.com
+Date: Wed, 24 Feb 2016 21:40:32 -0500
+
+--===============3218742315867562125==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear Jane,
+
+I am pleased to inform you that your talk will be in room 1.
+
+Sincerely,
+John
+
+--===============3218742315867562125==--
+
+------------------------------------------------------------------
+
+Dear John,
+
+I am pleased to inform you that your talk will be in room 2.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============3598328915871980649=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: john-doe@gmail.com
+Date: Wed, 24 Feb 2016 21:40:32 -0500
+
+--===============3598328915871980649==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear John,
+
+I am pleased to inform you that your talk will be in room 2.
+
+Sincerely,
+John
+
+--===============3598328915871980649==--
+
+------------------------------------------------------------------
+
+Dear Jimmy,
+
+I am pleased to inform you that your talk will be in room 3.
+
+Sincerely,
+John
+
+Content-Type: multipart/mixed; boundary="===============5156492490144794373=="
+MIME-Version: 1.0
+From: youremail@gmail.com
+To: jimmy-john@gmail.com
+Date: Wed, 24 Feb 2016 21:40:32 -0500
+
+--===============5156492490144794373==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+
+Dear Jimmy,
+
+I am pleased to inform you that your talk will be in room 3.
+
+Sincerely,
+John
+
+--===============5156492490144794373==--
+
+------------------------------------------------------------------
+#+end_example
+

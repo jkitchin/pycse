@@ -9,6 +9,7 @@ The key to successfully solving many differential equations is correctly classif
 - A partial differential equation
 
 The following sections will illustrate the methods for solving these kinds of equations.
+
 **  Ordinary differential equations
 *** Numerical solution to a simple ode
     :PROPERTIES:
@@ -26,7 +27,7 @@ over the time span of 0 to 2. The initial condition is y(0) = 1.
 
 to solve this equation, you need to create a function of the form: dydt = f(y, t) and then use one of the odesolvers, e.g. odeint.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -42,21 +43,19 @@ plt.plot(tspan, ysol, label='numerical solution')
 plt.plot(tspan, np.exp(tspan), 'r--', label='analytical solution')
 plt.xlabel('time')
 plt.ylabel('y(t)')
-plt.legend(loc='best')
-plt.savefig('images/simple-ode.png')
-plt.show()
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/62fcfd664fc41727ae225987e995b8051443a207.png]]
+:END:
 
-[[./images/simple-ode.png]]
-.-p
 The numerical and analytical solutions agree.
 
 Now, suppose you want to know at what time is the solution equal to 3? There are several approaches to this, including setting up a solver, or using an event like approach to stop integration at y=3. A simple approach is to use reverse interpolation. We simply reverse the x and y vectors so that y is the independent variable, and we interpolate the corresponding x-value.
-index:interpolation!reverse
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -75,7 +74,9 @@ print('y = 3 at x = {0}'.format(ip(3)))
 #+END_SRC
 
 #+RESULTS:
-: y = 3 at x = 1.098547805640928
+:RESULTS:
+y = 3 at x = 1.098547805640928
+:END:
 
 
 *** Plotting ODE solutions in cylindrical coordinates
@@ -89,7 +90,7 @@ print('y = 3 at x = {0}'.format(ip(3)))
 
 It is straightforward to plot functions in Cartesian coordinates. It is less convenient to plot them in cylindrical coordinates. Here we solve an ODE in cylindrical coordinates, and then convert the solution to Cartesian coordinates for simple plotting.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 
@@ -116,17 +117,18 @@ z = sol[:,2]
 X = rho * np.cos(theta)
 Y = rho * np.sin(theta)
 
-from mpl_toolkits.mplot3d import Axes3D
+
 import matplotlib.pyplot as plt
 fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot(X, Y, z)
-plt.savefig('images/ode-cylindrical.png')
+ax = fig.add_subplot(projection='3d')
+ax.plot(X, Y, z);
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/cfe0644feb0f2d8fab92ae6f4108fe4be58bd086.png]]
+:END:
 
-[[./images/ode-cylindrical.png]]
 *** ODEs with discontinuous forcing functions
    :PROPERTIES:
    :categories: ODE
@@ -144,7 +146,7 @@ A mass balance on the salt in the tank leads to this differential equation: $\fr
 
 $$C_{S,in}(t) = \begin{array}{ll} 0 & t \le 0, \\ 4 & 0 < t \le 10, \\ 2 & t > 10. \end{array}$$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -174,22 +176,23 @@ Ms = odeint(mass_balance, M0, tspan)
 
 plt.plot(tspan, Ms/V, 'b.-')
 plt.xlabel('Time (min)')
-plt.ylabel('Salt concentration (g/L)')
-plt.savefig('images/ode-discont.png')
+plt.ylabel('Salt concentration (g/L)');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/ode-discont.png]]
+:RESULTS:
+[[file:./.ob-jupyter/d54388b26f1a0cc496bbfde2f27fad618b6069a9.png]]
+:END:
 
 You can see the discontinuity in the salt concentration at 10 minutes due to the discontinous change in the entering salt concentration.
 
 *** Simulating the events feature of Matlab's ode solvers
+
 The ode solvers in Matlab allow you create functions that define events that can stop the integration, detect roots, etc... We will explore how to get a similar effect in python. Here is an example that somewhat does this, but it is only an approximation. We will manually integrate the ODE, adjusting the time step in each iteration to zero in on the solution. When the desired accuracy is reached, we stop the integration.
 
-It does not appear that events are supported in scipy. A solution is at http://mail.scipy.org/pipermail/scipy-dev/2005-July/003078.html, but it does not appear integrated into scipy yet (8 years later ;).
+[2023-06-08 Thu] events are now supported in scipy.integrate.solve_ivp.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 
@@ -228,15 +231,15 @@ while i < 100:   # take max of 100 steps
 print('At t={0:1.2f}  Ca = {1:1.3f}'.format(tspan[-1], sol[-1]))
 
 import matplotlib.pyplot as plt
-plt.plot(tspan, sol, 'bo')
-plt.savefig('images/event-i.png')
+plt.plot(tspan, sol, 'bo');
 #+END_SRC
 
 #+RESULTS:
-: Solution reached at i = 15
-: At t=2.46  Ca = 1.000
-
-[[./images/event-i.png]]
+:RESULTS:
+Solution reached at i = 15
+At t=2.46  Ca = 1.000
+[[file:./.ob-jupyter/7e6cd20c5cb31d73a8912ba1a9af5523fc0f1b5f.png]]
+:END:
 
 This particular solution works for this example, probably because it is well behaved. It is "downhill" to the desired solution. It is not obvious this would work for every example, and it is certainly possible the algorithm could go "backward" in time. A better approach might be to integrate forward until you detect a sign change in your event function, and then refine it in a separate loop.
 
@@ -250,9 +253,10 @@ ODE solving in Matlab is considerably more advanced in functionality than in sci
   :updated:  2013/03/06 18:34:22
   :categories: ODE
   :END:
+
 The ODE functions in scipy.integrate do not directly support events like the functions in Matlab do. We can achieve something like it though, by digging into the guts of the solver, and writing a little code. In  previous [[http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/][example]] I used an event to count the number of roots in a function by integrating the derivative of the function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 
@@ -340,60 +344,17 @@ plt.plot(X, sol)
 # add event points to the graph
 for x,e in events:
     plt.plot(x,e,'bo ')
-plt.savefig('images/event-ode-1.png')
 #+END_SRC
 
 #+RESULTS:
-: x = -6.000000064427802, event = -1.7486012637846216e-15, f = -1.7486012637846216e-15
-: x = -1.9999999623352318, event = -1.4918621893399531e-15, f = -1.4918621893399531e-15
-: x = 1.9999998869505784, event = -1.4432899320127035e-15, f = -1.4432899320127035e-15
+:RESULTS:
+x = -6.000000064427802, event = -1.7486012637846216e-15, f = -1.7486012637846216e-15
+x = -1.9999999623352318, event = -1.4918621893399531e-15, f = -1.4918621893399531e-15
+x = 1.9999998869505784, event = -1.4432899320127035e-15, f = -1.4432899320127035e-15
+[[file:./.ob-jupyter/0d9b32b0974d22118a897dd2af75ecd0267a0b9a.png]]
+:END:
 
-[[./images/event-ode-1.png]]
-
-That was a lot of programming to do something like find the roots of the function! Below is an example of using a function coded into pycse to solve the same problem. It is a bit more sophisticated because you can define whether an event is terminal, and the direction of the approach to zero for each event.
-
-#+BEGIN_SRC python
-from pycse import *
-import numpy as np
-
-def myode(f, x):
-    return 3*x**2 + 12*x -4
-
-def event1(f, x):
-    'an event is when f = 0 and event is decreasing'
-    isterminal = True
-    direction = -1
-    return f, isterminal, direction
-
-def event2(f, x):
-    'an event is when f = 0 and increasing'
-    isterminal = False
-    direction = 1
-    return f, isterminal, direction
-
-f0 = -120
-
-xspan = np.linspace(-8, 4)
-X, F, TE, YE, IE = odelay(myode, f0, xspan, events=[event1, event2])
-
-import matplotlib.pyplot as plt
-plt.plot(X, F, '.-')
-
-# plot the event locations.use a different color for each event
-colors = 'rg'
-
-for x,y,i in zip(TE, YE, IE):
-    plt.plot([x], [y], 'o', color=colors[i])
-
-plt.savefig('images/event-ode-2.png')
-print(TE, YE, IE)
-#+END_SRC
-
-#+RESULTS:
-: [-6.0000001  -1.99999997] [[  6.72906175e-13]
-:  [  2.22044605e-16]] [1 0]
-
-[[./images/event-ode-2.png]]
+That was a lot of programming to do something like find the roots of the function! Today I would use solve_ivp for this.
 
 *** Solving an ode for a specific solution value
     :PROPERTIES:
@@ -408,7 +369,7 @@ Given that the concentration of a species A in a constant volume, batch reactor 
 
 We will get a solution, then create an interpolating function and use fsolve to get the answer. index:interpolation!ODE
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from scipy.integrate import odeint
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve
@@ -428,20 +389,17 @@ Ca = sol[:,0]
 
 plt.plot(tspan, Ca)
 plt.xlabel('Time (s)')
-plt.ylabel('$C_A$ (mol/L)')
-plt.savefig('images/ode-specific-1.png')
+plt.ylabel('$C_A$ (mol/L)');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x111d65a20>]
-: <matplotlib.text.Text object at 0x111b35cc0>
-: <matplotlib.text.Text object at 0x111b433c8>
-
-[[./images/ode-specific-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/b92421338592f5757a5a31ce1846f043173094ea.png]]
+:END:
 
 You can see the solution is near two seconds. Now we create an interpolating function to evaluate the solution. We will plot the interpolating function on a finer grid to make sure it seems reasonable.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 ca_func = interp1d(tspan, Ca, 'cubic')
 
 itime = np.linspace(0, 10, 200)
@@ -452,23 +410,17 @@ plt.plot(itime, ca_func(itime), 'b-')
 
 plt.xlabel('Time (s)')
 plt.ylabel('$C_A$ (mol/L)')
-plt.legend(['solution','interpolated'])
-plt.savefig('images/ode-specific-2.png')
+plt.legend(['solution','interpolated']);
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x111d65a90>
-: [<matplotlib.lines.Line2D object at 0x111fac128>]
-: [<matplotlib.lines.Line2D object at 0x111fac3c8>]
-: <matplotlib.text.Text object at 0x111f67e48>
-: <matplotlib.text.Text object at 0x111f71550>
-: <matplotlib.legend.Legend object at 0x111f53588>
+:RESULTS:
+[[file:./.ob-jupyter/a2b8d71cb4b7c89088555f0cd0997277396a4206.png]]
+:END:
 
-[[./images/ode-specific-2.png]]
+that looks pretty reasonable. Now we solve the problem.
 
-that loos pretty reasonable. Now we solve the problem.
-
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 tguess = 2.0
 tsol, = fsolve(lambda t: 1.0 - ca_func(t), tguess)
 print(tsol)
@@ -482,25 +434,29 @@ print(tsol2)
 #+END_SRC
 
 #+RESULTS:
-: 2.4574668235
-: 2.4574668235
+:RESULTS:
+2.4574668234994665
+2.4574668234994665
+:END:
 
 That is it. Interpolation can provide a simple way to evaluate the numerical solution of an ODE at other values.
 
 For completeness we examine a final way to construct the function. We can actually integrate the ODE in the function to evaluate the solution at the point of interest. If it is not computationally expensive to evaluate the ODE solution this works fine. Note, however, that the ODE will get integrated from 0 to the value t for each iteration of fsolve.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 def func(t):
     tspan = [0, t]
     sol = odeint(dCadt, Ca0, tspan)
-    return 1.0 - sol[-1]
+    return (1.0 - sol[-1])[0]
 
 tsol3, = fsolve(func, tguess)
 print(tsol3)
 #+END_SRC
 
 #+RESULTS:
-: 2.45746688202
+:RESULTS:
+2.45746688202211
+:END:
 
 *** A simple first order ode evaluated at specific points
     :PROPERTIES:
@@ -516,7 +472,7 @@ $$\frac{dy}{dt} = y(t)$$
 
 The initial condition is y(0) = 1.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import odeint
 
 y0 = 1
@@ -530,100 +486,10 @@ print(Y[:,0])
 #+END_SRC
 
 #+RESULTS:
-: [ 1.          1.22140275  1.49182469  2.22554103]
+:RESULTS:
+[1.         1.22140275 1.49182469 2.22554103]
+:END:
 
-*** Stopping the integration of an ODE at some condition
-    :PROPERTIES:
-    :categories: ODE
-    :date:     2013/02/27 14:30:30
-    :updated:  2013/02/27 14:30:49
-    :END:
-[[http://matlab.cheme.cmu.edu/2011/09/02/stopping-the-integration-of-an-ode-at-some-condition/][Matlab post]]
-index:ODE!event
-In Post 968 we learned how to get the numerical solution to an ODE, and then to use the deval function to solve the solution for a particular value. The deval function uses interpolation to evaluate the solution at other valuse. An alternative approach would be to stop the ODE integration when the solution has the value you want. That can be done in Matlab by using an "event" function. You setup an event function and tell the ode solver to use it by setting an option.
-
-Given that the concentration of a species A in a constant volume, batch reactor obeys this differential equation $\frac{dC_A}{dt}=- k C_A^2$ with the initial condition $C_A(t=0) = 2.3$ mol/L and $k = 0.23$ L/mol/s, compute the time it takes for $C_A$ to be reduced to 1 mol/L.
-
-#+BEGIN_SRC python
-from pycse import *
-import numpy as np
-
-k = 0.23
-Ca0 = 2.3
-
-def dCadt(Ca, t):
-    return -k * Ca**2
-
-def stop(Ca, t):
-    isterminal = True
-    direction = 0
-    value = 1.0 - Ca
-    return value, isterminal, direction
-
-tspan = np.linspace(0.0, 10.0)
-
-t, CA, TE, YE, IE = odelay(dCadt, Ca0, tspan, events=[stop])
-
-print('At t = {0:1.2f} seconds the concentration of A is {1:1.2f} mol/L.'.format(t[-1], float(CA[-1])))
-#+END_SRC
-
-#+RESULTS:
-: At t = 2.46 seconds the concentration of A is 1.00 mol/L.
-
-*** Finding minima and maxima in ODE solutions with events
-    :PROPERTIES:
-    :categories: ODE
-    :date:     2013/02/27 14:31:01
-    :updated:  2013/02/27 14:31:10
-    :END:
-[[http://matlab.cheme.cmu.edu/2011/09/17/finding-minima-and-maxima-in-ode-solutions-with-events][Matlab post]]
-index:ODE!event
-Today we look at another way to use events in an ode solver. We use an events function to find minima and maxima, by evaluating the ODE in the event function to find conditions where the first derivative is zero, and approached from the right direction. A maximum is when the fisrt derivative is zero and increasing, and a minimum is when the first derivative is zero and decreasing.
-
-We use a simple ODE, $y' = sin(x)*e^{-0.05x}$, which has minima and maxima.
-
-#+BEGIN_SRC python
-from pycse import *
-import numpy as np
-
-def ode(y, x):
-    return np.sin(x) * np.exp(-0.05 * x)
-
-def minima(y, x):
-    '''Approaching a minimum, dydx is negatime and going to zero. our event function is increasing'''
-    value = ode(y, x)
-    direction = 1
-    isterminal = False
-    return value,  isterminal, direction
-
-def maxima(y, x):
-    '''Approaching a maximum, dydx is positive and going to zero. our event function is decreasing'''
-    value = ode(y, x)
-    direction = -1
-    isterminal = False
-    return value,  isterminal, direction
-
-xspan = np.linspace(0, 20, 100)
-
-y0 = 0
-
-X, Y, XE, YE, IE = odelay(ode, y0, xspan, events=[minima, maxima])
-print(IE)
-import matplotlib.pyplot as plt
-plt.plot(X, Y)
-
-# blue is maximum, red is minimum
-colors = 'rb'
-for xe, ye, ie in zip(XE, YE, IE):
-    plt.plot([xe], [ye], 'o', color=colors[ie])
-
-plt.savefig('./images/ode-events-min-max.png')
-#+END_SRC
-
-#+RESULTS:
-: [0 1 0 1 0 1 0]
-
-[[./images/ode-events-min-max.png]]
 
 *** Error tolerance in numerical solutions to ODEs
     :PROPERTIES:
@@ -637,7 +503,7 @@ Usually, the numerical ODE solvers in python work well with the standard setting
 
 we plot the analytical solution to the van der waal equation in reduced form here.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -653,21 +519,17 @@ plt.clf()
 plt.plot(Vr,Pr)
 plt.ylim([0, 2])
 plt.xlabel('$V_R$')
-plt.ylabel('$P_R$')
-plt.savefig('images/ode-vw-1.png')
+plt.ylabel('$P_R$');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10e4b4550>]
-: (0, 2)
-: <matplotlib.text.Text object at 0x10e447a90>
-: <matplotlib.text.Text object at 0x10e44eac8>
-
-[[./images/ode-vw-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/522078a33784bb918f8b4634ff9f8b02e948659d.png]]
+:END:
 
 we want an equation for dPdV, which we will integrate we use symbolic math to do the derivative for us.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from sympy import diff, Symbol
 Vrs = Symbol('Vrs')
 
@@ -676,10 +538,13 @@ print(diff(Prs,Vrs))
 #+END_SRC
 
 #+RESULTS:
-: -2.4/(Vrs - 0.333333333333333)**2 + 6.0/Vrs**3
+:RESULTS:
+-2.4/(Vrs - 0.333333333333333)**2 + 6.0/Vrs**3
+:END:
 
 Now, we solve the ODE. We will specify a large relative tolerance criteria (Note the default is much smaller than what we show here).
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 from scipy.integrate import odeint
 
 def myode(Pr, Vr):
@@ -695,31 +560,28 @@ plt.plot(Vr,Pr) # analytical solution
 plt.plot(Vspan, P[:,0], 'r.')
 plt.ylim([0, 2])
 plt.xlabel('$V_R$')
-plt.ylabel('$P_R$')
-plt.savefig('images/ode-vw-2.png')
+plt.ylabel('$P_R$');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x11069b0f0>]
-: [<matplotlib.lines.Line2D object at 0x11069bc88>]
-: (0, 2)
-: <matplotlib.text.Text object at 0x10e447a90>
-: <matplotlib.text.Text object at 0x10e44eac8>
-
-[[./images/ode-vw-2.png]]
+:RESULTS:
+[[file:./.ob-jupyter/039af5c4ddd1c9652f5a3fc650855a119e42f815.png]]
+:END:
 
 You can see there is disagreement between the analytical solution and numerical solution. The origin of this problem is accuracy at the initial condition, where the derivative is extremely large.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 print(myode(Po, 0.34))
 #+END_SRC
 
 #+RESULTS:
-: -53847.34378179728
+:RESULTS:
+-53847.34378179728
+:END:
 
 We can increase the tolerance criteria to get a better answer. The defaults in odeint are actually set to 1.49012e-8.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 Vspan = np.linspace(0.334, 4)
 Po = Prfh(Vspan[0])
 P = odeint(myode, Po, Vspan)
@@ -730,18 +592,13 @@ plt.plot(Vr,Pr) # analytical solution
 plt.plot(Vspan, P[:,0], 'r.')
 plt.ylim([0, 2])
 plt.xlabel('$V_R$')
-plt.ylabel('$P_R$')
-plt.savefig('images/ode-vw-3.png')
+plt.ylabel('$P_R$');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10e48cef0>]
-: [<matplotlib.lines.Line2D object at 0x10e48feb8>]
-: (0, 2)
-: <matplotlib.text.Text object at 0x108fc76a0>
-: <matplotlib.text.Text object at 0x10b2d2fd0>
-
-[[./images/ode-vw-3.png]]
+:RESULTS:
+[[file:./.ob-jupyter/f8822ce2d6e5b33f335bc7176715dd1542824713.png]]
+:END:
 
 The problem here was the derivative value varied by four orders of magnitude over the integration range, so the default tolerances were insufficient to accurately estimate the numerical derivatives over that range. Tightening the tolerances helped resolve that problem. Another approach might be to split the integration up into different regions. For instance, if instead of starting at Vr = 0.34, which is very close to a sigularity in the van der waal equation at Vr = 1/3, if you start at Vr = 0.5, the solution integrates just fine with the standard tolerances.
 
@@ -760,7 +617,7 @@ $$\frac{dCa}{dt} = -k Ca(t)$$
 
 where $k$ is a parameter, and we want to solve the equation for a couple of values of $k$ to test the sensitivity of the solution on the parameter. Our question is, given $Ca(t=0)=2$, how long does it take to get $Ca = 1$, and how sensitive is the answer to small variations in $k$?
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -783,17 +640,18 @@ for k in [0.95 * k0, k0, 1.05 * k0]:
 
 plt.legend(loc='best')
 plt.xlabel('Time')
-plt.ylabel('$C_A$ (mol/L)')
-plt.savefig('images/parameterized-ode1.png')
+plt.ylabel('$C_A$ (mol/L)');
 #+END_SRC
 #+RESULTS:
-: At t=0.5 Ca = 0.77 mol/L
-: At t=0.5 Ca = 0.74 mol/L
-: At t=0.5 Ca = 0.70 mol/L
-
-[[./images/parameterized-ode1.png]]
+:RESULTS:
+At t=0.5 Ca = 0.77 mol/L
+At t=0.5 Ca = 0.74 mol/L
+At t=0.5 Ca = 0.70 mol/L
+[[file:./.ob-jupyter/463faaf3d6a8c3fe44f540e25c944990718ddecf.png]]
+:END:
 
 You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of $k$! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.
+
 *** Yet another way to parameterize an ODE
     :PROPERTIES:
     :categories: ODE
@@ -806,7 +664,7 @@ We previously examined a way to parameterize an ODE. In those methods, we either
 
 We want a convenient way to solve $dCa/dt = -k Ca$ for multiple values of $k$. Here we use a trick to pass a parameter to an ODE through the initial conditions. We expand the ode function definition to include this parameter, and set its derivative to zero, effectively making it a constant.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -827,13 +685,13 @@ for k in K:
     plt.plot(tspan, Ca, label='k={0}'.format(k))
 plt.xlabel('time')
 plt.ylabel('$C_A$')
-plt.legend(loc='best')
-plt.savefig('images/ode-parameterized-1.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/ode-parameterized-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/b20cf6267bc2828bd5b0fabed0e078bf2ff0666b.png]]
+:END:
 
 I do not think this is a very elegant way to pass parameters around compared to the previous methods, but it nicely illustrates that there is more than one way to do it. And who knows, maybe it will be useful in some other context one day!
 
@@ -849,7 +707,7 @@ We saw one method to parameterize an ODE, by creating an ode function that takes
 
 Here we define the ODE function in a loop. Since the nested function is in the namespace of the main function, it can "see" the values of the variables in the main function. We will use this method to look at the solution to the van der Pol equation for several different values of mu.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -872,14 +730,13 @@ for mu in MU:
     plt.plot(x, y, label='mu={0:1.2f}'.format(mu))
 
 plt.axis('equal')
-plt.legend(loc='best')
-plt.savefig('images/ode-nested-parameterization.png')
-plt.savefig('images/ode-nested-parameterization.svg')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/ode-nested-parameterization.png]]
+:RESULTS:
+[[file:./.ob-jupyter/dcaf13d03742df46db65683d751540a1a085eded.png]]
+:END:
 
 You can see the solution changes dramatically for different values of mu. The point here is not to understand why, but to show an easy way to study a parameterize ode with a nested function. Nested functions can be a great way to "share" variables between functions especially for ODE solving, and nonlinear algebra solving, or any other application where you need a lot of parameters defined in one function in another function.
 
@@ -904,7 +761,7 @@ $$\frac{dy}{dt} = \mu/x$$
 
 here is how we solve this set of equations. Let $\mu=1$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import odeint
 import numpy as np
 
@@ -936,17 +793,17 @@ plt.figure()
 plt.plot(x,y)
 plt.plot(x[0], y[0], 'ro')
 plt.xlabel('x')
-plt.ylabel('y')
-plt.savefig('images/vanderpol-2.png')
+plt.ylabel('y');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/vanderpol-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/fe26d073d5bd2b33090e7355ee067d5e79e8a12a.png]]
+[[file:./.ob-jupyter/fb9f58c265daf2d75742bce81bc5a55bf024375f.png]]
+:END:
 
 Here is the phase portrait. You can see that a limit cycle is approached, indicating periodicity in the solution.
 
-[[./images/vanderpol-2.png]]
 *** Solving Bessel's Equation numerically
    :PROPERTIES:
    :categories: ODE, math
@@ -967,7 +824,7 @@ if we take the case where $\nu = 0$, the solution is known to be the Bessel func
 
 There is a problem with our system of ODEs at x=0. Because of the $1/x^2$ term, the ODEs are not defined at x=0. If we start very close to zero instead, we avoid the problem.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 from scipy.special import jn # bessel function
@@ -992,13 +849,13 @@ sol = odeint(fbessel, Y0, xspan)
 
 plt.plot(xspan, sol[:,0], label='numerical soln')
 plt.plot(xspan, jn(0, xspan), 'r--', label='Bessel')
-plt.legend()
-plt.savefig('images/bessel.png')
+plt.legend();
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/bessel.png]]
+:RESULTS:
+[[file:./.ob-jupyter/eb18bb29243599731d851a5188bb7131202e52f8.png]]
+:END:
 
 You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.
 
@@ -1023,7 +880,7 @@ The phase portrait is a plot of a vector field which qualitatively shows how the
 
 To generate the phase portrait, we need to compute the derivatives $y_1'$ and $y_2'$ at $t=0$ on a grid over the range of values for $y_1$ and $y_2$ we are interested in. We will plot the derivatives as a vector at each (y1, y2) which will show us the initial direction from each point. We will examine the solutions over the range -2 < y1 < 8, and -2 < y2 < 2 for y2, and create a grid of 20 x 20 points.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -1056,21 +913,17 @@ Q = plt.quiver(Y1, Y2, u, v, color='r')
 plt.xlabel('$y_1$')
 plt.ylabel('$y_2$')
 plt.xlim([-2, 8])
-plt.ylim([-4, 4])
-plt.savefig('images/phase-portrait.png')
+plt.ylim([-4, 4]);
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.text.Text object at 0x108fc76a0>
-: <matplotlib.text.Text object at 0x10b2d2fd0>
-: (-2, 8)
-: (-4, 4)
-
-[[./images/phase-portrait.png]]
+:RESULTS:
+[[file:./.ob-jupyter/b9e416966e549ea4228e9dfb69b3cb7a6a922e75.png]]
+:END:
 
 Let us plot a few solutions on the vector field. We will consider the solutions where y1(0)=0, and values of y2(0) = [0 0.5 1 1.5 2 2.5], in otherwords we start the pendulum at an angle of zero, with some angular velocity.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import odeint
 
 plt.clf()
@@ -1083,36 +936,14 @@ for y20 in [0, 0.5, 1, 1.5, 2, 2.5]:
     plt.plot([ys[-1,0]], [ys[-1,1]], 's') # end
 
 
-plt.xlim([-2, 8])
-plt.savefig('images/phase-portrait-2.png')
-plt.savefig('images/phase-portrait-2.svg')
+plt.xlim([-2, 8]);
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
+[[file:./.ob-jupyter/9f94c7a6454195c125c900e9c921134597c20295.png]]
+:END:
 
-[<matplotlib.lines.Line2D object at 0x1115db518>]
-[<matplotlib.lines.Line2D object at 0x1115dbf60>]
-[<matplotlib.lines.Line2D object at 0x1115e07b8>]
-[<matplotlib.lines.Line2D object at 0x10b2cd438>]
-[<matplotlib.lines.Line2D object at 0x1115e4ac8>]
-[<matplotlib.lines.Line2D object at 0x112048588>]
-[<matplotlib.lines.Line2D object at 0x1115f64e0>]
-[<matplotlib.lines.Line2D object at 0x10b2a53c8>]
-[<matplotlib.lines.Line2D object at 0x1115f4dd8>]
-[<matplotlib.lines.Line2D object at 0x10b39d1d0>]
-[<matplotlib.lines.Line2D object at 0x10b2ed3c8>]
-[<matplotlib.lines.Line2D object at 0x11205def0>]
-[<matplotlib.lines.Line2D object at 0x110fb8160>]
-[<matplotlib.lines.Line2D object at 0x10b312c18>]
-[<matplotlib.lines.Line2D object at 0x10e4c2c50>]
-[<matplotlib.lines.Line2D object at 0x1115ed588>]
-[<matplotlib.lines.Line2D object at 0x1115f0ac8>]
-[<matplotlib.lines.Line2D object at 0x1115f0e10>]
-(-2, 8)
-#+end_example
-
-[[./images/phase-portrait-2.png]]
 
 What do these figures mean? For starting points near the origin, and small velocities, the pendulum goes into a stable limit cycle. For others, the trajectory appears to fly off into y1 space. Recall that y1 is an angle that has values from $-\pi$ to $\pi$. The y1 data in this case is not wrapped around to be in this range.
 
@@ -1140,7 +971,7 @@ where $\left[\begin{array}{cc} \lambda_1 & 0 \\ 0 & \lambda_2\end{array}\right]$
 
 In this example, we evaluate the solution using linear algebra. The initial conditions we will consider are $y_1(0)=0$ and $y_2(0)=150$.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 A = np.array([[-0.02,  0.02],
@@ -1153,9 +984,11 @@ print(evecs)
 #+END_SRC
 
 #+RESULTS:
-: [-0.04  0.  ]
-: [[ 0.70710678  0.70710678]
-:  [-0.70710678  0.70710678]]
+:RESULTS:
+[-0.04  0.  ]
+[[ 0.70710678  0.70710678]
+ [-0.70710678  0.70710678]]
+:END:
 
 The eigenvectors are the /columns/ of evecs.
 
@@ -1163,7 +996,7 @@ Compute the $c$ matrix
 
 V*c = Y0
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 Y0 = [0, 150]
 
 c = np.diag(np.linalg.solve(evecs, Y0))
@@ -1171,14 +1004,16 @@ print(c)
 #+END_SRC
 
 #+RESULTS:
-: [[-106.06601718    0.        ]
-:  [   0.          106.06601718]]
+:RESULTS:
+[[-106.06601718    0.        ]
+ [   0.          106.06601718]]
+:END:
 
 Constructing the solution
 
 We will create a vector of time values, and stack them for each solution, $y_1(t)$ and $Y_2(t)$.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
 
 t = np.linspace(0, 100)
@@ -1193,25 +1028,25 @@ y = np.dot(np.dot(evecs, c), np.exp(np.dot(D, T)))
 plt.plot(t, y.T)
 plt.xlabel('t')
 plt.ylabel('y')
-plt.legend(['$y_1$', '$y_2$'])
-plt.savefig('images/ode-la.png')
+plt.legend(['$y_1$', '$y_2$']);
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10e68da20>, <matplotlib.lines.Line2D object at 0x10e68dba8>]
-: <matplotlib.text.Text object at 0x10de72b70>
-: <matplotlib.text.Text object at 0x10de7d860>
-: <matplotlib.legend.Legend object at 0x10e692c50>
+:RESULTS:
+[[file:./.ob-jupyter/6d139fb364a176d1b42ff654ad02e6b920366e86.png]]
+:END:
 
-[[./images/ode-la.png]]
 
 **  Delay Differential Equations
 In Matlab you can solve Delay Differential equations (DDE) ([[http://matlab.cheme.cmu.edu/2011/09/28/delay-differential-equations/][Matlab post]]). I do not know of a solver in scipy at this time that can do this.
+
 **  Differential algebraic systems of equations
 There is not a builtin solver for DAE systems in scipy. It looks like [[http://pysundials.sourceforge.net/][pysundials]] may do it, but it must be compiled and installed.
 
 **  Boundary value equations
-I am unaware of dedicated BVP solvers in scipy. In the following examples we implement some approaches to solving certain types of linear BVPs.
+In the following examples we implement some approaches to solving certain types of linear BVPs.
+
+scipy.integrate.solve_bvp now exists.
 
 *** Plane Poiseuille flow - BVP solve by shooting method
    :PROPERTIES:
@@ -1244,7 +1079,7 @@ for this problem we let the plate separation be d=0.1, the viscosity $\mu = 1$, 
 
 We need u_1(0) and u_2(0), but we only have u_1(0). We need to guess a value for u_2(0) and see if the solution goes through the u_2(d)=0 boundary value.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -1269,32 +1104,19 @@ U = odeint(odefun, [u1_0, u2_0], dspan)
 plt.plot(dspan, U[:,0])
 plt.plot([d],[0], 'ro')
 plt.xlabel('d')
-plt.ylabel('$u_1$')
-plt.savefig('images/bvp-shooting-1.png')
+plt.ylabel('$u_1$');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/4cad1cd6291c87c2227dc806d9115d209fd43d52.png]]
+:END:
 
-[[./images/bvp-shooting-1.png]]
 
 Here we have undershot the boundary condition. Let us try a larger guess.
 
 **** Second guess
-#+BEGIN_SRC python
-import numpy as np
-from scipy.integrate import odeint
-import matplotlib.pyplot as plt
-
-d = 0.1 # plate thickness
-
-def odefun(U, y):
-    u1, u2 = U
-    mu = 1
-    Pdrop = -100
-    du1dy = u2
-    du2dy = 1.0 / mu * Pdrop
-    return [du1dy, du2dy]
-
+#+BEGIN_SRC jupyter-python
 u1_0 = 0 # known
 u2_0 = 10 # guessed
 
@@ -1305,36 +1127,23 @@ U = odeint(odefun, [u1_0, u2_0], dspan)
 plt.plot(dspan, U[:,0])
 plt.plot([d],[0], 'ro')
 plt.xlabel('d')
-plt.ylabel('$u_1$')
-plt.savefig('images/bvp-shooting-2.png')
+plt.ylabel('$u_1$');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/bvp-shooting-2.png]]
+:RESULTS:
+[[file:./.ob-jupyter/265aa60588d9cd0d3c6361df75f6618d3f2aea0e.png]]
+:END:
 
 Now we have clearly overshot. Let us now make a function that will iterate for us to find the right value.
 
 **** Let fsolve do the work
 
-#+BEGIN_SRC python
-import numpy as np
-from scipy.integrate import odeint
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
-d = 0.1 # plate thickness
 Pdrop = -100
-mu = 1
-
-def odefun(U, y):
-    u1, u2 = U
-    du1dy = u2
-    du2dy = 1.0 / mu * Pdrop
-    return [du1dy, du2dy]
-
-u1_0 = 0 # known
-dspan = np.linspace(0, d)
 
 def objective(u2_0):
     dspan = np.linspace(0, d)
@@ -1357,49 +1166,17 @@ plt.plot(dspan, u, 'r--', label='Analytical solution')
 
 plt.xlabel('d')
 plt.ylabel('$u_1$')
-plt.legend(loc='best')
-plt.savefig('images/bvp-shooting-3.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/d9ee9c3ccfad53ff9a9d4c3e53e0694d688c4cd3.png]]
+:END:
 
-[[./images/bvp-shooting-3.png]]
 
 You can see the agreement is excellent!
 
-This also seems like a useful bit of code to not have to reinvent regularly, so it has been added to pycse as BVP_sh. Here is an example usage.
-
-#+BEGIN_SRC python
-from pycse import BVP_sh
-import matplotlib.pyplot as plt
-
-d = 0.1 # plate thickness
-Pdrop = -100
-mu = 1
-
-def odefun(U, y):
-    u1, u2 = U
-    du1dy = u2
-    du2dy = 1.0 / mu * Pdrop
-    return [du1dy, du2dy]
-
-x1 = 0.0; alpha = 0.0
-x2 = 0.1; beta = 0.0
-init = 2.0 # initial guess of slope at x=0
-
-X,Y = BVP_sh(odefun, x1, x2, alpha, beta, init)
-plt.plot(X, Y[:,0])
-plt.ylim([0, 0.14])
-
-# plot an analytical solution
-u = -(Pdrop) * d**2 / 2 / mu * (X / d - (X / d)**2)
-plt.plot(X, u, 'r--', label='Analytical solution')
-plt.savefig('images/bvp-shooting-4.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/bvp-shooting-4.png]]
 
 *** Plane poiseuelle flow solved by finite difference
    :PROPERTIES:
@@ -1435,7 +1212,7 @@ The idea behind the finite difference method is to approximate the derivatives b
 -h^2 r_{N-1} \\
 -h^2 r_N + (1 - \frac{h}{2} p_N) \beta \end{array} \right] \]
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 # we use the notation for y'' = p(x)y' + q(x)y + r(x)
@@ -1510,13 +1287,14 @@ plt.plot(x,u,'r--')
 
 plt.xlabel('distance between plates')
 plt.ylabel('fluid velocity')
-plt.legend(('finite difference', 'analytical soln'))
-plt.savefig('images/pp-bvp-fd.png')
+plt.legend(('finite difference', 'analytical soln'));
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/d407608c50bc2968f3274dd88a0f49cdb3511b88.png]]
+:END:
 
-[[./images/pp-bvp-fd.png]]
 
 You can see excellent agreement here between the numerical and analytical solution.
 
@@ -1562,7 +1340,7 @@ Since the second derivative in this case is equal to zero, we have at each discr
 
 These are linear equations in the unknowns $x$ that we can easily solve. Here, we evaluate the solution.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 #we use the notation T(x1) = alpha and T(x2) = beta
@@ -1602,76 +1380,14 @@ plt.plot(x, alpha + (beta - alpha)/(x2 - x1) * x, 'r--')
 
 plt.xlabel('X')
 plt.ylabel('T(X)')
-plt.legend(('finite difference', 'analytical soln'), loc='best')
-plt.savefig('images/bvp-heat-conduction-1d.png')
+plt.legend(('finite difference', 'analytical soln'), loc='best');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/7eb7594748aa6ac192a178fb50c0c33bd8f58609.png]]
+:END:
 
-[[./images/bvp-heat-conduction-1d.png]]
-
-*** BVP in pycse
-I thought it was worthwhile coding a BVP solver into pycse. This function (bvp_L0) solves $y''(x) + p(x) y'(x) + q(x) y(x) = r(x)$ with constant value boundary conditions $y(x_0) = \alpha$ and $y(x_L) = \beta$.
-
-Fluids example for Plane poiseuelle flow ($y''(x) = constant$, $y(0) = 0$ and $y(L) = 0$:
-#+BEGIN_SRC python
-from pycse import bvp_L0
-
-# we use the notation for y'' = p(x)y' + q(x)y + r(x)
-def p(x): return 0
-def q(x): return 0
-def r(x): return -100
-
-#we use the notation y(x1) = alpha and y(x2) = beta
-
-x1 = 0; alpha = 0.0
-x2 = 0.1; beta = 0.0
-
-npoints = 100
-
-x, y = bvp_L0(p, q, r, x1, x2, alpha, beta, npoints=100)
-print(len(x))
-
-import matplotlib.pyplot as plt
-plt.plot(x, y)
-plt.savefig('images/bvp-pycse.png')
-#+END_SRC
-
-#+RESULTS:
-: 100
-
-[[./images/bvp-pycse.png]]
-
-Heat transfer example $y''(x) = 0$, $y(0) = 100$ and $y(L) = 200$.
-#+BEGIN_SRC python
-from pycse import bvp_L0
-
-# we use the notation for y'' = p(x)y' + q(x)y + r(x)
-def p(x): return 0
-def q(x): return 0
-def r(x): return 0
-
-#we use the notation y(x1) = alpha and y(x2) = beta
-
-x1 = 0; alpha = 100
-x2 = 1; beta = 200
-
-npoints = 100
-
-x, y = bvp_L0(p, q, r, x1, x2, alpha, beta, npoints=100)
-print(len(x))
-
-import matplotlib.pyplot as plt
-plt.plot(x, y)
-plt.xlabel('X')
-plt.ylabel('T')
-plt.savefig('images/ht-example.png')
-#+END_SRC
-
-#+RESULTS:
-: 100
-
-[[./images/ht-example.png]]
 
 *** A nonlinear BVP
     :PROPERTIES:
@@ -1698,7 +1414,7 @@ y_L - \beta &=&0
 
 Since we use a nonlinear solver, we will have to provide an initial guess to the solution. We will in this case assume a line. In other cases, a bad initial guess may lead to no solution.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
@@ -1738,205 +1454,13 @@ init = alpha + (beta - alpha) / (x2 - x1) * X
 
 Y = fsolve(residuals, init)
 
-plt.plot(X, Y)
-plt.savefig('images/bvp-nonlinear-1.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/bvp-nonlinear-1.png]]
-
-That code looks useful, so I put it in the pycse module in the function BVP_nl. Here is an example usage. We have to create two functions, one for the differential equation, and one for the initial guess.
-
-#+BEGIN_SRC python
-import numpy as np
-from pycse import  BVP_nl
-import matplotlib.pyplot as plt
-
-x1 = 0.0
-x2 = 2.0
-
-alpha = 0.0
-beta = 1.0
-
-def Ypp(x, y, yprime):
-    '''define y'' = 3*y*y' '''
-    return -3.0 * y * yprime
-
-def BC(X, Y):
-    return [alpha - Y[0], beta - Y[-1]]
-
-X = np.linspace(x1, x2)
-init = alpha + (beta - alpha) / (x2 - x1) * X
-
-y = BVP_nl(Ypp, X, BC, init)
-
-plt.plot(X, y)
-plt.savefig('images/bvp-nonlinear-2.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/bvp-nonlinear-2.png]]
-
-The results are the same.
-
-*** BROKEN Another look at nonlinear BVPs
-    :PROPERTIES:
-    :categories: BVP
-    :date:     2013/03/11 10:44:40
-    :updated:  2013/03/11 16:31:34
-    :END:
-Adapted from http://www.mathworks.com/help/matlab/ref/bvp4c.html
-index:BVP
-
-Boundary value problems may have more than one solution. Let us consider the BVP:
-
-\begin{eqnarray}
-y'' + |y| &=& 0 \\
-y(0) &=& 0 \\
-y(4) &=& -2
-\end{eqnarray}
-
-We will see this equation has two answers, depending on your initial guess. We convert this to the following set of coupled equations:
-
-\begin{eqnarray}
-y_1' &=& y_2 \\
-y_2' &=& -|y_1| \\
-y_1(0)&=& 0\\
-y_1(4) &=& -2
-\end{eqnarray}
-
-This BVP is nonlinear because of the absolute value. We will have to guess solutions to get started. We will guess two different solutions, both of which will be constant values.  We will use pycse.bvp to solve the equation.
-
-#+BEGIN_SRC python
-import numpy as np
-from pycse import bvp
-import matplotlib.pyplot as plt
-
-def odefun(Y, x):
-    y1, y2 = Y
-    dy1dx = y2
-    dy2dx = -np.abs(y1)
-    return [dy1dx, dy2dx]
-
-def bcfun(Y):
-    y1a, y2a = Y[0][0], Y[1][0]
-    y1b, y2b = Y[0][-1], Y[1][-1]
-
-    return [y1a, -2 - y1b]
-
-x = np.linspace(0, 4, 100)
-
-y1 = 1.0 * np.ones(x.shape)
-y2 = 0.0 * np.ones(x.shape)
-
-Yinit = np.vstack([y1, y2])
-
-sol = bvp(odefun, bcfun, x, Yinit)
-
-plt.plot(x, sol[0])
-
-# another initial guess
-y1 = -1.0 * np.ones(x.shape)
-y2 = 0.0 * np.ones(x.shape)
-
-Yinit = np.vstack([y1, y2])
-
-sol = bvp(odefun, bcfun, x, Yinit)
-
-plt.plot(x, sol[0])
-plt.legend(['guess 1', 'guess 2'])
-plt.savefig('images/bvp-another-nonlin-1.png')
-#+END_SRC
-
-
-#+RESULTS:
-
-
-[[./images/bvp-another-nonlin-1.png]]
-
-This example shows that a nonlinear BVP may have different solutions, and which one you get depends on the guess you make for the solution. This is analogous to solving nonlinear algebraic equations (which is what is done in solving this problem!).
-
-*** DONE Solving the Blasius equation
-    CLOSED: [2017-05-17 Wed 11:05]
-    :PROPERTIES:
-    :categories: BVP
-    :tags:     fluids
-    :date:     2013/03/11 10:44:56
-    :updated:  2017/05/17 11:11:43
-    :END:
-In fluid mechanics the Blasius equation comes up (http://en.wikipedia.org/wiki/Blasius_boundary_layer) to describe the boundary layer that forms near a flat plate with fluid moving by it. The nonlinear differential equation is:
-
-\begin{eqnarray}
-f''' + \frac{1}{2} f f'' &=& 0 \\
-f(0) &=& 0 \\
-f'(0) &=& 0 \\
-f'(\infty) &=& 1
-\end{eqnarray}
-
-This is a nonlinear, boundary value problem. The point of solving this equation is to get the value of $f''(0)$ to evaluate the shear stress at the plate.
-
-We have to convert this to a system of first-order differential equations. Let $f_1 = f$, $f_2 = f_1'$ and $f_3 = f_2'$. This leads to:
-
-\begin{eqnarray}
-f_1' = f_2 \\
-f_2' = f_3 \\
-f_3' = -\frac{1}{2} f_1 f_3 \\
-f_1(0) = 0 \\
-f_2(0) = 0 \\
-f_2(\infty) = 1
-\end{eqnarray}
-
-It is not possible to specify a boundary condition at $\infty$ numerically, so we will have to use a large number, and verify it is "large enough". From the solution, we evaluate the derivatives at $\eta=0$, and we have $f''(0) = f_3(0)$.
-
-We have to provide initial guesses for f_1, f_2 and f_3. This is the hardest part about this problem. We know that f_1 starts at zero, and is flat there (f'(0)=0), but at large eta, it has a constant slope of one. We will guess a simple line of slope = 1 for f_1. That is correct at large eta, and is zero at \eta=0. If the slope of the function is constant at large $\eta$, then the values of higher derivatives must tend to zero. We choose an exponential decay as a guess.
-
-Finally, we let a solver iteratively find a solution for us, and find the answer we want. The solver is in the pycse module.
-
-#+BEGIN_SRC ipython :session :results output drawer
-import numpy as np
-from pycse import bvp
-
-def odefun(F, x):
-    f1, f2, f3 = F.T
-    return np.column_stack([f2,
-                            f3,
-                            -0.5 * f1 * f3])
-
-def bcfun(Y):
-    fa, fb = Y[0, :], Y[-1, :]
-    return [fa[0],        # f1(0) =  0
-            fa[1],        # f2(0) = 0
-            1.0 - fb[1]]  # f2(inf) = 1
-
-eta = np.linspace(0, 6, 100)
-f1init = eta
-f2init = np.exp(-eta)
-f3init = np.exp(-eta)
-
-Finit = np.column_stack([f1init, f2init, f3init])
-
-sol = bvp(odefun, bcfun, eta, Finit)
-f1, f2, f3 = sol.T
-
-print("f''(0) = f_3(0) = {0}".format(f3[0]))
-
-%matplotlib inline
-import matplotlib.pyplot as plt
-plt.plot(eta, f1)
-plt.xlabel('$\eta$')
-plt.ylabel('$f(\eta)$')
+plt.plot(X, Y);
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
-f''(0) = f_3(0) = 0.3324911095517483
-[[file:ipython-inline-images/ob-ipython-6d4955236f943adc107843ee3ac863aa.png]]
+[[file:./.ob-jupyter/62a7f21c5b61f49bf51d96182c929811c034cfda.png]]
 :END:
-
-<2017-05-17 Wed> You need pycse 1.6.4 for this example.
-
 
 **  Partial differential equations
 *** Modeling a transient plug flow reactor
@@ -1947,9 +1471,6 @@ f''(0) = f_3(0) = 0.3324911095517483
    :updated:  2013/03/25 09:50:54
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/17/modeling-a-transient-plug-flow-reactor][Matlab post]]
-[[index:PDE!method of lines]]
-index:plotting!animation
-index:animation
 
 The PDE that describes the transient behavior of a plug flow reactor with constant volumetric flow rate is:
 
@@ -1970,7 +1491,8 @@ This leads to the following set of equations:
 \end{eqnarray}
 
 Last, we need initial conditions for all the nodes in the discretization. Let us assume the reactor was full of empty solvent, so that $C_i = 0$ at $t=0$. In the next block of code, we get the transient solutions, and the steady state solution.
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 from scipy.integrate import odeint
 
@@ -2006,48 +1528,41 @@ ssol = odeint(pfr, Ca0, V)
 
 The transient solution contains the time dependent behavior of each node in the discretized reactor. Each row contains the concentration as a function of volume at a specific time point. For example, we can plot the concentration of A at the exit vs. time (that is, the last entry of each row) as:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import matplotlib.pyplot as plt
 plt.plot(tspan, sol[:, -1])
 plt.xlabel('time')
-plt.ylabel('$C_A$ at exit')
-plt.savefig('images/transient-pfr-1.png')
+plt.ylabel('$C_A$ at exit');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10f3e7a20>]
-: <matplotlib.text.Text object at 0x10f3bf6a0>
-: <matplotlib.text.Text object at 0x10f3d1d68>
+:RESULTS:
+[[file:./.ob-jupyter/33a62659b61ff726a46d4c6d6b5095c6d296a755.png]]
+:END:
 
-
-[[./images/transient-pfr-1.png]]
 
 After approximately one space time, the steady state solution is reached at the exit. For completeness, we also examine the steady state solution.
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python
 plt.figure()
 plt.plot(V, ssol, label='Steady state')
 plt.plot(V, sol[-1], label='t = {}'.format(tspan[-1]))
 plt.xlabel('Volume')
 plt.ylabel('$C_A$')
-plt.legend(loc='best')
-plt.savefig('images/transient-pfr-2.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x10f410d68>
-: [<matplotlib.lines.Line2D object at 0x1111056a0>]
-: [<matplotlib.lines.Line2D object at 0x111105f98>]
-: <matplotlib.text.Text object at 0x10fd794a8>
-: <matplotlib.text.Text object at 0x10fd81b70>
-: <matplotlib.legend.Legend object at 0x11110e1d0>
+:RESULTS:
+[[file:./.ob-jupyter/c4ea91225497fe0e584dad2496893564edb28ea5.png]]
+:END:
 
-[[./images/transient-pfr-2.png]]
 
 There is some minor disagreement between the final transient solution and the steady state solution. That is due to the approximation in discretizing the reactor volume. In this example we used 100 nodes. You get better agreement with a larger number of nodes, say 200 or more. Of course, it takes slightly longer to compute then, since the number of coupled odes is equal to the number of nodes.
 
 We can also create an animated gif to show how the concentration of A throughout the reactor varies with time. Note, I had to install ffmpeg (http://ffmpeg.org/) to save the animation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from matplotlib import animation
 
 # make empty figure
@@ -2069,8 +1584,10 @@ anim.save('images/transient_pfr.mp4', fps=10)
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/8a21ae7df556724b85f1f6cf1b4c3294577c4eca.png]]
+:END:
 
-http://kitchingroup.cheme.cmu.edu/media/transient_pfr.mp4
 
 You can see from the animation that after about 10 time units, the solution is not changing further, suggesting steady state has been reached.
 
@@ -2095,7 +1612,7 @@ In Matlab there is the pdepe command. There is not yet a PDE solver in scipy. In
 
 Let us say the rod has a length of 1, $k=0.02$, and solve for the time-dependent temperature profiles.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -2137,11 +1654,16 @@ plt.ylabel('Temperature')
 
 # adjust figure edges so the legend is in the figure
 plt.subplots_adjust(top=0.89, right=0.77)
-plt.savefig('images/pde-transient-heat-1.png')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/7bdd2f808d5bc84247a4f310874ecfac92536842.png]]
+:END:
 
 
+#+BEGIN_SRC jupyter-python  
 # Make a 3d figure
-from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
@@ -2150,39 +1672,18 @@ ax.plot_surface(SX, ST, sol, cmap='jet')
 ax.set_xlabel('X')
 ax.set_ylabel('time')
 ax.set_zlabel('T')
-ax.view_init(elev=15, azim=-124) # adjust view so it is easy to see
-plt.savefig('images/pde-transient-heat-3d.png')
-
-# animated solution. We will use imagemagick for this
-
-# we save each frame as an image, and use the imagemagick convert command to
-# make an animated gif
-for i in range(len(tspan)):
-    plt.clf()
-    plt.plot(X, sol[i])
-    plt.xlabel('X')
-    plt.ylabel('T(X)')
-    plt.title('t = {0}'.format(tspan[i]))
-    plt.savefig('___t{0:03d}.png'.format(i))
-
-import subprocess
-print(subprocess.call(['convert', '-quality', '100', '___t*.png' 'images/transient_heat.gif']))
-print(subprocess.call(['rm', '___t*.png']))  #remove temp files
+ax.view_init(elev=15, azim=-124) # adjust view so it is easy to see;
 #+END_SRC
 
 #+RESULTS:
-: 1
-: 1
+:RESULTS:
+[[file:./.ob-jupyter/90455c130411063a56b5af3db1a175e179b39d62.png]]
+:END:
 
 This version of the graphical solution is not that easy to read, although with some study you can see the solution evolves from the initial condition which is flat, to the steady state solution which is a linear temperature ramp.
-[[./images/pde-transient-heat-1.png]]
 
 The 3d version may be easier to interpret. The temperature profile starts out flat, and gradually changes to the linear ramp.
-[[./images/pde-transient-heat-3d.png]]
 
-Finally, the animated solution.
-
-[[./images/transient_heat.gif]]
 
 *** Transient diffusion - partial differential equations
     :PROPERTIES:
@@ -2218,7 +1719,7 @@ We know $C_{i,j=0}$ from the initial conditions, so we simply need to iterate to
 
 See also: http://www3.nd.edu/~jjwteach/441/PdfNotes/lecture16.pdf
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -2262,7 +1763,6 @@ plt.xlabel('Position in rod')
 plt.ylabel('Concentration')
 plt.title('Concentration at different times')
 plt.legend(loc='best')
-plt.savefig('images/transient-diffusion-temporal-dependence.png')
 
 C_xt = np.array(C_xt)
 plt.figure()
@@ -2272,16 +1772,17 @@ plt.plot(t, C_xt[:,15], label='x={0:1.2f}'.format(X[15]))
 plt.plot(t, C_xt[:,19], label='x={0:1.2f}'.format(X[19]))
 plt.legend(loc='best')
 plt.xlabel('Time')
-plt.ylabel('Concentration')
-plt.savefig('images/transient-diffusion-position-dependence.png')
+plt.ylabel('Concentration');
 #+END_SRC
 
 #+RESULTS:
-: 0.36136136136136143
+:RESULTS:
+0.36136136136136143
+[[file:./.ob-jupyter/3e4c9a26a0ee6ba5d9565be6dead781e2121077d.png]]
+[[file:./.ob-jupyter/4a49d79d5be7b3148a41c9c7ce4baed09aeedfaf.png]]
+:END:
 
-[[./images/transient-diffusion-temporal-dependence.png]]
 
-[[./images/transient-diffusion-position-dependence.png]]
 
 The solution is somewhat sensitive to the choices of time step and spatial discretization. If you make the time step too big, the method is not stable, and large oscillations may occur.
 

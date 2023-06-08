@@ -5,73 +5,74 @@
    :date:     2013/02/27 07:35:24
    :updated:  2013/02/27 14:49:05
    :END:
-Python is a basic calculator out of the box. Here we consider the most basic mathematical operations: addition, subtraction, multiplication, division and exponenetiation. we use the func:print to get the output. For now we consider integers and float numbers. An integer is a plain number like 0, 10 or -2345. A float number has a decimal in it. The following are all floats: 1.0, -9., and 3.56. Note the trailing zero is not required, although it is good style.
 
-#+BEGIN_SRC python
+Python is a basic calculator out of the box. Here we consider the most basic mathematical operations: addition, subtraction, multiplication, division and exponenetiation. we use the func:print to get the output. For now we consider integers and float numbers. An integer is a plain number like 0, 10 or -2345. A float number has a decimal in it. The following are all floats: 1.0, -9., and 3.56. Note the trailing zero is not required, although it is good style. Note that here you see some features of float math; the second answer is 3.1, but that cannot be represented exactly as a float number here, so you see something that is close.
+
+#+BEGIN_SRC jupyter-python
 print(2 + 4)
 print(8.1 - 5)
 #+END_SRC
 
 #+RESULTS:
-: 6
-: 3.0999999999999996
+:RESULTS:
+6
+3.0999999999999996
+:END:
 
 
 Multiplication is equally straightforward.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 print(5 * 4)
 print(3.1 * 2)
 #+END_SRC
 
 #+RESULTS:
-: 20
-: 6.2
+:RESULTS:
+20
+6.2
+:END:
 
 Division is almost as straightforward, but we have to remember that integer division is not the same as float division. Let us consider float division first.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print(4.0 / 2.0)
 print(1.0 / 3.1)
 #+END_SRC
 
 #+RESULTS:
-: 2.0
-: 0.3225806451612903
+:RESULTS:
+2.0
+0.3225806451612903
+:END:
 
-Now, consider the integer versions:
+Now, consider the integer versions. In Python3 division now is automatically float division. You can do integer division with the // operator like this.
 
-#+BEGIN_SRC python
-print(4 / 2)
-print(1 / 3)
-#+END_SRC
-
-#+RESULTS:
-: 2.0
-: 0.3333333333333333
-
-In Python3 division now is automatically float division. You can do integer division with the // operator like this.
-
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print(4 // 2)
 print(1 // 3)
 #+END_SRC
 
 #+RESULTS:
-: 2
-: 0
+:RESULTS:
+2
+0
+:END:
 
 Exponentiation is also a basic math operation that python supports directly.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print(3.**2)
 print(3**2)
 print(2**0.5)
 #+END_SRC
 
 #+RESULTS:
-: 9.0
-: 9
-: 1.4142135623730951
+:RESULTS:
+9.0
+9
+1.4142135623730951
+:END:
 
 Other types of mathematical operations require us to import functionality from python libraries. We consider those in the next section.
 
@@ -81,60 +82,71 @@ Other types of mathematical operations require us to import functionality from p
    :updated:  2013/03/06 18:29:46
    :categories: python
    :END:
+
 The primary library we will consider is mod:numpy, which provides many mathematical functions, statistics as well as support for linear algebra. For a complete listing of the functions available, see http://docs.scipy.org/doc/numpy/reference/routines.math.html. We begin with the simplest functions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 print(np.sqrt(2))
 #+END_SRC
 
 #+RESULTS:
-: 1.41421356237
+:RESULTS:
+1.4142135623730951
+:END:
 
 *** Exponential and logarithmic functions
+
 Here is the exponential function.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import numpy as np
 print(np.exp(1))
 #+END_SRC
 
 #+RESULTS:
-: 2.71828182846
+:RESULTS:
+2.718281828459045
+:END:
 
 There are two logarithmic functions commonly used, the natural log function func:numpy.log and the base10 logarithm func:numpy.log10.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 print(np.log(10))
 print(np.log10(10))  # base10
 #+END_SRC
 
 #+RESULTS:
-: 2.30258509299
-: 1.0
+:RESULTS:
+2.302585092994046
+1.0
+:END:
 
 There are many other intrinsic functions available in mod:numpy which we will eventually cover. First, we need to consider how to create our own functions.
+
 ** Creating your own functions
    :PROPERTIES:
    :date:     2013/02/27 14:49:18
    :updated:  2013/03/06 18:29:24
    :categories: python
    :END:
+
 We can combine operations to evaluate complex equations. Consider the value of the equation $x^3 - \log(x)$ for the value $x=4.1$.
 
-#+BEGIN_SRC python
-import numpy as np
+#+BEGIN_SRC jupyter-python
 x = 3
 print(x**3 - np.log(x))
 #+END_SRC
 
 #+RESULTS:
-: 25.9013877113
+:RESULTS:
+25.90138771133189
+:END:
 
 It would be tedious to type this out each time. Next, we learn how to express this equation as a new function, which we can call with different values.
 
-#+BEGIN_SRC python
-import numpy as np
+#+BEGIN_SRC jupyter-python
 def f(x):
     return x**3 - np.log(x)
 
@@ -143,10 +155,13 @@ print(f(5.1))
 #+END_SRC
 
 #+RESULTS:
-: 25.9013877113
-: 131.02175946
+:RESULTS:
+25.90138771133189
+131.0217594602697
+:END:
 
 It may not seem like we did much there, but this is the foundation for solving equations in the future. Before we get to solving equations, we have a few more details to consider. Next, we consider evaluating functions on arrays of values.
+
 ** Defining functions in python
    :PROPERTIES:
    :date:     2013/02/27 14:49:41
@@ -156,9 +171,9 @@ It may not seem like we did much there, but this is the foundation for solving e
 
 Compare what's here to the [[http://matlab.cheme.cmu.edu/2011/08/09/where-its-i-got-two-turntables-and-a-microphone/][Matlab implementation. ]]
 
-We often need to make functions in our codes to do things.
+We often need to make functions in our codes to do things. This function works for scalar values, but it does not work for a list.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 def f(x):
     "return the inverse square of x"
     return 1.0 / x**2
@@ -168,15 +183,30 @@ print(f([4,5]))
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+0.1111111111111111
+# [goto error]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+Cell In[14], line 6
+      3     return 1.0 / x**2
+      5 print(f(3))
+----> 6 print(f([4,5]))
+
+Cell In[14], line 3, in f(x)
+      1 def f(x):
+      2     "return the inverse square of x"
+----> 3     return 1.0 / x**2
+
+TypeError: unsupported operand type(s) for ** or pow(): 'list' and 'int'
+:END:
 
 Note that functions are not automatically vectorized. That is why we see the error above. There are a few ways to achieve that. One is to "cast" the input variables to objects that support vectorized operations, such as numpy.array objects.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 def f(x):
     "return the inverse square of x"
-    x = np.array(x)
+    x = np.array(x)  # Make sure the input is an array
     return 1.0 / x**2
 
 print(f(3))
@@ -184,14 +214,14 @@ print(f([4,5]))
 #+END_SRC
 
 #+RESULTS:
-: 0.111111111111
-: [ 0.0625  0.04  ]
+:RESULTS:
+0.1111111111111111
+[0.0625 0.04  ]
+:END:
 
 It is possible to have more than one variable.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 def func(x, y):
     "return product of x and y"
     return x * y
@@ -201,21 +231,26 @@ print(func(np.array([2, 3]), np.array([3, 4])))
 #+END_SRC
 
 #+RESULTS:
-: 6
-: [ 6 12]
+:RESULTS:
+6
+[ 6 12]
+:END:
 
 You can define "lambda" functions, which are also known as inline or anonymous functions. The syntax is =lambda var:f(var)=. I think these are hard to read and discourage their use. Here is a typical usage where you have to define a simple function that is passed to another function, e.g. scipy.integrate.quad to perform an integral.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import quad
 print(quad(lambda x:x**3, 0 ,2))
 #+END_SRC
 
 #+RESULTS:
-: (4.0, 4.440892098500626e-14)
+:RESULTS:
+(4.0, 4.440892098500626e-14)
+:END:
 
 It is possible to nest functions inside of functions like this.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 def wrapper(x):
     a = 4
     def func(x, a):
@@ -227,10 +262,13 @@ print(wrapper(4))
 #+END_SRC
 
 #+RESULTS:
-: 16
+:RESULTS:
+16
+:END:
 
 An alternative approach is to "wrap" a function, say to fix a parameter. You might do this so you can integrate the wrapped function, which depends on only a single variable, whereas the original function depends on two variables.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 def func(x, a):
 	return a * x
 
@@ -242,11 +280,13 @@ print(wrapper(4))
 #+END_SRC
 
 #+RESULTS:
-: 16
+:RESULTS:
+16
+:END:
 
-Last example, defining a function for an ode
+Last example, defining a function for an ode:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import odeint
 import numpy as np
 import matplotlib.pyplot as plt
@@ -262,25 +302,27 @@ y =  odeint(myode, y0, tspan)
 
 plt.plot(tspan, y)
 plt.xlabel('Time')
-plt.ylabel('y')
-plt.savefig('images/funcs-ode.png')
+plt.ylabel('y');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/612b841921024d486236d74fdd57707971318297.png]]
+:END:
 
-[[./images/funcs-ode.png]]
+
 ** Advanced function creation
    :PROPERTIES:
    :date:     2013/02/27 14:49:54
    :updated:  2013/03/06 18:28:13
    :categories: python
    :END:
-Python has some nice features in creating functions. You can create default values for variables, have optional variables and optional keyword variables.
-In this function f(a,b), =a= and =b= are called positional arguments, and they are required, and must be provided in the same order as the function defines.
+
+Python has some nice features in creating functions. You can create default values for variables, have optional variables and optional keyword variables. In this function f(a,b), =a= and =b= are called positional arguments, and they are required, and must be provided in the same order as the function defines.
 
 If we provide a default value for an argument, then the argument is called a keyword argument, and it becomes optional. You can combine positional arguments and keyword arguments, but positional arguments must come first. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 def func(a, n=2):
     "compute the nth power of a"
     return a**n
@@ -292,15 +334,17 @@ print(func(2, n=4))
 #+END_SRC
 
 #+RESULTS:
-: 4
-: 8
-: 16
+:RESULTS:
+4
+8
+16
+:END:
 
 In the first call to the function, we only define the argument =a=, which is a mandatory, positional argument. In the second call, we define =a= and =n=, in the order they are defined in the function. Finally, in the third call, we define =a= as a positional argument, and =n= as a keyword argument.
 
 If all of the arguments are optional, we can even call the function with no arguments. If you give arguments as positional arguments, they are used in the order defined in the function. If you use keyword arguments, the order is arbitrary.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 def func(a=1, n=2):
     "compute the nth power of a"
     return a**n
@@ -312,13 +356,15 @@ print(func(n=4, a=2))
 #+END_SRC
 
 #+RESULTS:
-: 1
-: 16
-: 16
+:RESULTS:
+1
+16
+16
+:END:
 
 It is occasionally useful to allow an arbitrary number of arguments in a function. Suppose we want a function that can take an arbitrary number of positional arguments and return the sum of all the arguments. We use the syntax =*args= to indicate arbitrary positional arguments. Inside the function the variable =args= is a tuple containing all of the arguments passed to the function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 def func(*args):
     sum = 0
     for arg in args:
@@ -329,11 +375,13 @@ print(func(1, 2, 3, 4))
 #+END_SRC
 
 #+RESULTS:
-: 10
+:RESULTS:
+10
+:END:
 
 A more "functional programming" version of the last function is given here. This is an advanced approach that is less readable to new users, but more compact and likely more efficient for large numbers of arguments.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import functools, operator
 def func(*args):
     return functools.reduce(operator.add, args)
@@ -341,11 +389,13 @@ print(func(1, 2, 3, 4))
 #+END_SRC
 
 #+RESULTS:
-: 10
+:RESULTS:
+10
+:END:
 
 It is possible to have arbitrary keyword arguments. This is a common pattern when you call another function within your function that takes keyword arguments. We use =**kwargs= to indicate that arbitrary keyword arguments can be given to the function. Inside the function, kwargs is variable containing a dictionary of the keywords and values passed in.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 def func(**kwargs):
     for kw in kwargs:
         print('{0} = {1}'.format(kw, kwargs[kw]))
@@ -354,11 +404,14 @@ func(t1=6, color='blue')
 #+END_SRC
 
 #+RESULTS:
-: t1 = 6
-: color = blue
+:RESULTS:
+t1 = 6
+color = blue
+:END:
 
 A typical example might be:
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
 
 def myplot(x, y, fname=None, **kwargs):
@@ -369,14 +422,19 @@ def myplot(x, y, fname=None, **kwargs):
     plt.title('My plot')
     if fname:
         plt.savefig(fname)
-    else:
-        plt.show()
 
 x = [1, 3, 4, 5]
 y = [3, 6, 9, 12]
 
 myplot(x, y, 'images/myfig.png', color='orange', marker='s')
+#+END_SRC
 
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/33023f6101292e6c4f168bbe001e66ba7b0bc04b.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
 # you can use a dictionary as kwargs
 d = {'color':'magenta',
      'marker':'d'}
@@ -385,14 +443,17 @@ myplot(x, y, 'images/myfig2.png', **d)
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/4e46c7ae0019a6242fdd43dec1e4e051062bfa25.png]]
+:END:
 
-[[./images/myfig.png]]
-[[./images/myfig2.png]]
+
 
 In that example we wrap the matplotlib plotting commands in a function, which we can call the way we want to, with arbitrary optional arguments. In this example, you cannot pass keyword arguments that are illegal to the plot command or you will get an error.
 
 It is possible to combine all the options at once. I admit it is hard to imagine where this would be really useful, but it can be done!
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 def func(a, b=2, *args, **kwargs):
@@ -406,8 +467,10 @@ print(func(2, 3, 4, 5, mysillykw='hahah'))
 #+END_SRC
 
 #+RESULTS:
-: kw: mysillykw = hahah
-: 17
+:RESULTS:
+kw: mysillykw = hahah
+17
+:END:
 
 ** Lambda Lambda Lambda
    :PROPERTIES:
@@ -415,32 +478,38 @@ print(func(2, 3, 4, 5, mysillykw='hahah'))
    :updated:  2013/06/26 18:56:48
    :categories: programming
    :END:
+
 Is that some kind of fraternity? of anonymous functions? What is that!? There are many times where you need a callable, small function in python, and it is inconvenient to have to use =def= to create a named function. Lambda functions solve this problem. Let us look at some examples. First, we create a lambda function, and assign it to a variable. Then we show that variable is a function, and that we can call it with an argument.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 f = lambda x: 2*x
 print(f)
 print(f(2))
 #+END_SRC
 
 #+RESULTS:
-: <function <lambda> at 0x10067f378>
-: 4
+:RESULTS:
+<function <lambda> at 0x11e69f640>
+4
+:END:
 
 We can have more than one argument:
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 f = lambda x,y: x + y
 print(f)
 print(f(2, 3))
 #+END_SRC
 
 #+RESULTS:
-: <function <lambda> at 0x10207f378>
-: 5
+:RESULTS:
+<function <lambda> at 0x11e69d1b0>
+5
+:END:
 
 And default arguments:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 f = lambda x, y=3: x + y
 print(f)
 print(f(2))
@@ -448,13 +517,15 @@ print(f(4, 1))
 #+END_SRC
 
 #+RESULTS:
-: <function <lambda> at 0x10077f378>
-: 5
-: 5
+:RESULTS:
+<function <lambda> at 0x11e69d7e0>
+5
+5
+:END:
 
 It is also possible to have arbitrary numbers of positional arguments. Here is an example that provides the sum of an arbitrary number of arguments.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import functools, operator
 f = lambda *x: functools.reduce(operator.add, x)
 print(f)
@@ -465,86 +536,119 @@ print(f(1, 2, 3))
 #+END_SRC
 
 #+RESULTS:
-: <function <lambda> at 0x10077f378>
-: 1
-: 3
-: 6
+:RESULTS:
+<function <lambda> at 0x11e69f640>
+1
+3
+6
+:END:
 
 You can also make arbitrary keyword arguments. Here we make a function that simply returns the kwargs as a dictionary. This feature may be helpful in passing kwargs to other functions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 f = lambda **kwargs: kwargs
 
 print(f(a=1, b=3))
 #+END_SRC
 
 #+RESULTS:
-: {'b': 3, 'a': 1}
+:RESULTS:
+{'a': 1, 'b': 3}
+:END:
 
 Of course, you can combine these options. Here is a function with all the options.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 f = lambda a, b=4, *args, **kwargs: (a, b, args, kwargs)
 
 print(f('required', 3, 'optional-positional', g=4))
 #+END_SRC
 
 #+RESULTS:
-: ('required', 3, ('optional-positional',), {'g': 4})
+:RESULTS:
+('required', 3, ('optional-positional',), {'g': 4})
+:END:
 
 One of the primary limitations of lambda functions is they are limited to single expressions. They also do not have documentation strings, so it can be difficult to understand what they were written for later.
 
 *** Applications of lambda functions
 
 Lambda functions are used in places where you need a function, but may not want to define one using =def=. For example, say you want to solve the nonlinear equation $\sqrt{x} = 2.5$.
-#+BEGIN_SRC python
-from scipy.optimize import fsolve
+
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import root
 import numpy as np
 
-sol, = fsolve(lambda x: 2.5 - np.sqrt(x), 8)
+sol = root(lambda x: 2.5 - np.sqrt(x), 8)
 print(sol)
 #+END_SRC
 
 #+RESULTS:
-: 6.25
+:RESULTS:
+ message: The solution converged.
+ success: True
+  status: 1
+     fun: [-1.776e-15]
+       x: [ 6.250e+00]
+    nfev: 7
+    fjac: [[-1.000e+00]]
+       r: [ 2.000e-01]
+     qtf: [-1.754e-09]
+:END:
 
 Another time to use lambda functions is if you want to set a particular value of a parameter in a function. Say we have a function with an independent variable, $x$ and a parameter $a$, i.e. $f(x; a)$. If we want to find a solution $f(x; a) = 0$ for some value of $a$, we can use a lambda function to make a function of the single variable $x$. Here is a example.
 
-#+BEGIN_SRC python
-from scipy.optimize import fsolve
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 def func(x, a):
     return a * np.sqrt(x) - 4.0
 
-sol, = fsolve(lambda x: func(x, 3.2), 3)
+sol = root(lambda x: func(x, 3.2), 3)
 print(sol)
 #+END_SRC
 
 #+RESULTS:
-: 1.5625
+:RESULTS:
+ message: The solution converged.
+ success: True
+  status: 1
+     fun: [ 9.770e-15]
+       x: [ 1.563e+00]
+    nfev: 8
+    fjac: [[-1.000e+00]]
+       r: [-1.280e+00]
+     qtf: [-4.851e-09]
+:END:
 
 
 Any function that takes a function as an argument can use lambda functions. Here we use a lambda function that adds two numbers in the =reduce= function to sum a list of numbers.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import functools as ft
 print(ft.reduce(lambda x, y: x + y, [0, 1, 2, 3, 4]))
 #+END_SRC
 
 #+RESULTS:
-: 10
+:RESULTS:
+10
+:END:
 
 We can evaluate the integral $\int_0^2 x^2 dx$ with a lambda function.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import quad
 
 print(quad(lambda x: x**2, 0, 2))
 #+END_SRC
 
 #+RESULTS:
-: (2.666666666666667, 2.960594732333751e-14)
+:RESULTS:
+(2.666666666666667, 2.960594732333751e-14)
+:END:
 
 *** Summary
+
 Lambda functions can be helpful. They are never necessary. You can always define a function using =def=, but for some small, single-use functions, a lambda function could make sense. Lambda functions have some limitations, including that they are limited to a single expression, and they lack documentation strings.
 
 ** Creating arrays in python
@@ -553,10 +657,10 @@ Lambda functions can be helpful. They are never necessary. You can always define
    :updated:  2013/03/06 19:39:27
    :categories: python
    :END:
-Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
-#+BEGIN_SRC python
-import numpy as np
 
+Often, we will have a set of 1-D arrays, and we would like to construct a 2D array with those vectors as either the rows or columns of the array. This may happen because we have data from different sources we want to combine, or because we organize the code with variables that are easy to read, and then want to combine the variables. Here are examples of doing that to get the vectors as the columns.
+
+#+BEGIN_SRC jupyter-python
 a = np.array([1, 2, 3])
 b = np.array([4, 5, 6])
 
@@ -567,18 +671,18 @@ print(np.vstack([a, b]).T)
 #+END_SRC
 
 #+RESULTS:
-: [[1 4]
-:  [2 5]
-:  [3 6]]
-: [[1 4]
-:  [2 5]
-:  [3 6]]
+:RESULTS:
+[[1 4]
+ [2 5]
+ [3 6]]
+[[1 4]
+ [2 5]
+ [3 6]]
+:END:
 
 Or rows:
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 a = np.array([1, 2, 3])
 b = np.array([4, 5, 6])
 
@@ -589,16 +693,16 @@ print(np.vstack([a, b]))
 #+END_SRC
 
 #+RESULTS:
-: [[1 2 3]
-:  [4 5 6]]
-: [[1 2 3]
-:  [4 5 6]]
+:RESULTS:
+[[1 2 3]
+ [4 5 6]]
+[[1 2 3]
+ [4 5 6]]
+:END:
 
 The opposite operation is to extract the rows or columns of a 2D array into smaller arrays. We might want to do that to extract a row or column from a calculation for further analysis, or plotting for example. There are splitting functions in numpy. They are somewhat confusing, so we examine some examples. The numpy.hsplit command splits an array "horizontally". The best way to think about it is that the "splits" move horizontally across the array. In other words, you draw a vertical split, move over horizontally, draw another vertical split, etc... You must specify the number of splits that you want, and the array must be evenly divisible by the number of splits.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 A = np.array([[1, 2, 3, 5],
 	      [4, 5, 6, 9]])
 
@@ -616,7 +720,7 @@ print(p4)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
 [[1 2]
  [4 5]]
 [[3 5]
@@ -629,13 +733,11 @@ print(p4)
  [6]]
 [[5]
  [9]]
-#+end_example
+:END:
 
 In the numpy.vsplit command the "splits" go "vertically" down the array. Note that the split commands return 2D arrays.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 A = np.array([[1, 2, 3, 5],
 	      [4, 5, 6, 9]])
 
@@ -647,15 +749,15 @@ print(p2.shape)
 #+END_SRC
 
 #+RESULTS:
-: [[1 2 3 5]]
-: [[4 5 6 9]]
-: (1, 4)
+:RESULTS:
+[[1 2 3 5]]
+[[4 5 6 9]]
+(1, 4)
+:END:
 
 An alternative approach is array unpacking. In this example, we unpack the array into two variables. The array unpacks by row.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 A = np.array([[1, 2, 3, 5],
 	      [4, 5, 6, 9]])
 
@@ -666,14 +768,14 @@ print(p2)
 #+END_SRC
 
 #+RESULTS:
-: [1 2 3 5]
-: [4 5 6 9]
+:RESULTS:
+[1 2 3 5]
+[4 5 6 9]
+:END:
 
 To get the columns, just transpose the array.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 A = np.array([[1, 2, 3, 5],
 	      [4, 5, 6, 9]])
 
@@ -687,19 +789,19 @@ print(p4.shape)
 #+END_SRC
 
 #+RESULTS:
-: [1 4]
-: [2 5]
-: [3 6]
-: [5 9]
-: (2,)
+:RESULTS:
+[1 4]
+[2 5]
+[3 6]
+[5 9]
+(2,)
+:END:
 
 Note that now, we have 1D arrays.
 
 You can also access rows and columns by indexing. We index an array by [row, column]. To get a row, we specify the row number, and all the columns in that row like this [row, :]. Similarly, to get a column, we specify that we want all rows in that column like this: [:, column]. This approach is useful when you only want a few columns or rows.
 
-#+BEGIN_SRC python
-import numpy as np
-
+#+BEGIN_SRC jupyter-python
 A = np.array([[1, 2, 3, 5],
 	      [4, 5, 6, 9]])
 
@@ -712,12 +814,15 @@ print(A[:, 2].shape)
 #+END_SRC
 
 #+RESULTS:
-: [4 5 6 9]
-: [4 5 6 9]
-: [3 6]
-: (2,)
+:RESULTS:
+[4 5 6 9]
+[4 5 6 9]
+[3 6]
+(2,)
+:END:
 
 Note that even when we specify a column, it is returned as a 1D array.
+
 ** Functions on arrays of values
    :PROPERTIES:
    :date:     2013/02/27 14:49:49
@@ -726,63 +831,78 @@ Note that even when we specify a column, it is returned as a 1D array.
    :END:
 It is common to evaluate a function for a range of values. Let us consider the value of the function $f(x) = \cos(x)$ over the range of $0 < x < \pi$. We cannot consider every value in that range, but we can consider say 10 points in the range. The func:numpy.linspace conveniently creates an array of values.
 
-#+BEGIN_SRC python
-import numpy as np
+#+BEGIN_SRC jupyter-python
 print(np.linspace(0, np.pi, 10))
 #+END_SRC
 
 #+RESULTS:
-: [ 0.          0.34906585  0.6981317   1.04719755  1.3962634   1.74532925
-:   2.0943951   2.44346095  2.7925268   3.14159265]
+:RESULTS:
+[0.         0.34906585 0.6981317  1.04719755 1.3962634  1.74532925
+ 2.0943951  2.44346095 2.7925268  3.14159265]
+:END:
 
 The main point of using the mod:numpy functions is that they work element-wise on elements of an array. In this example, we compute the $\cos(x)$ for each element of $x$.
 
-#+BEGIN_SRC python
-import numpy as np
+#+BEGIN_SRC jupyter-python
 x = np.linspace(0, np.pi, 10)
 print(np.cos(x))
 #+END_SRC
 
 #+RESULTS:
-: [ 1.          0.93969262  0.76604444  0.5         0.17364818 -0.17364818
-:  -0.5        -0.76604444 -0.93969262 -1.        ]
+:RESULTS:
+[ 1.          0.93969262  0.76604444  0.5         0.17364818 -0.17364818
+ -0.5        -0.76604444 -0.93969262 -1.        ]
+:END:
 
 You can already see from this output that there is a root to the equation $\cos(x) = 0$, because there is a change in sign in the output. This is not a very convenient way to view the results; a graph would be better.  We use mod:matplotlib to make figures. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
 import numpy as np
 
 x = np.linspace(0, np.pi, 10)
 plt.plot(x, np.cos(x))
 plt.xlabel('x')
-plt.ylabel('cos(x)')
-plt.savefig('images/plot-cos.png')
+plt.ylabel('cos(x)');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/902ac861267091fa076ecc26a40b7c7989970b9e.png]]
+:END:
 
-[[./images/plot-cos.png]]
+
 
 This figure illustrates graphically what the numbers above show. The function crosses zero at approximately $x = 1.5$. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation $f(x) = \cos(x) = 0$. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.
 
-#+BEGIN_SRC python
-from scipy.optimize import fsolve
+#+BEGIN_SRC jupyter-python
+from scipy.optimize import root
 import numpy as np
 
 def f(x):
     return np.cos(x)
 
-sol, = fsolve(f, x0=1.5) # the comma after sol makes it return a float
+sol = root(f, x0=1.5) # the comma after sol makes it return a float
 print(sol)
 print(np.pi / 2)
 #+END_SRC
 
 #+RESULTS:
-: 1.57079632679
-: 1.5707963267948966
+:RESULTS:
+ message: The solution converged.
+ success: True
+  status: 1
+     fun: [ 6.123e-17]
+       x: [ 1.571e+00]
+    nfev: 11
+    fjac: [[-1.000e+00]]
+       r: [ 0.000e+00]
+     qtf: [-6.123e-17]
+1.5707963267948966
+:END:
 
 We know the solution is \pi/2.
+
 ** Some basic data structures in python
    :PROPERTIES:
    :categories: python
@@ -792,9 +912,12 @@ We know the solution is \pi/2.
 [[http://matlab.cheme.cmu.edu/2011/09/26/some-basic-data-structures-in-matlab/][Matlab post]]
 
 We often have a need to organize data into structures when solving problems.
+
 *** the list
+
 A list in python is data separated by commas in square brackets. Here, we might store the following data in a variable to describe the Antoine coefficients for benzene and the range they are relevant for [Tmin Tmax]. Lists are flexible, you can put anything in them, including other lists. We access the elements of the list by indexing:
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 c = ['benzene', 6.9056, 1211.0, 220.79, [-16, 104]]
 print(c[0])
 print(c[-1])
@@ -807,14 +930,16 @@ print(Trange)
 #+END_SRC
 
 #+RESULTS:
-: benzene
-: [-16, 104]
-: benzene 6.9056
-: [-16, 104]
+:RESULTS:
+benzene
+[-16, 104]
+benzene 6.9056
+[-16, 104]
+:END:
 
 Lists are "mutable", which means you can change their values.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 a = [3, 4, 5, [7, 8], 'cat']
 print(a[0], a[-1])
 a[-1] = 'dog'
@@ -822,24 +947,40 @@ print(a)
 #+END_SRC
 
 #+RESULTS:
-: 3 cat
-: [3, 4, 5, [7, 8], 'dog']
+:RESULTS:
+3 cat
+[3, 4, 5, [7, 8], 'dog']
+:END:
 
 *** tuples
+
 Tuples are /immutable/; you cannot change their values. This is handy in cases where it is an error to change the value. A tuple is like a list but it is enclosed in parentheses.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 a = (3, 4, 5, [7, 8], 'cat')
 print(a[0], a[-1])
 a[-1] = 'dog'  # this is an error
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+3 cat
+# [goto error]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+Cell In[58], line 3
+      1 a = (3, 4, 5, [7, 8], 'cat')
+      2 print(a[0], a[-1])
+----> 3 a[-1] = 'dog'
+
+TypeError: 'tuple' object does not support item assignment
+:END:
 
 *** struct
+
 Python does not exactly have the same thing as a struct in Matlab. You can achieve something like it by defining an empty class and then defining attributes of the class. You can check if an object has a particular attribute using hasattr.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 class Antoine:
     pass
 
@@ -853,14 +994,17 @@ print(hasattr(a, 'A'))
 #+END_SRC
 
 #+RESULTS:
-: benzene
-: True
-: False
+:RESULTS:
+benzene
+True
+False
+:END:
 
 *** dictionaries
+
 The analog of the containers.Map in Matlab is the dictionary in python. Dictionaries are enclosed in curly brackets, and are composed of key:value pairs.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 s = {'name':'benzene',
      'A':6.9056,
      'B':1211.0}
@@ -873,10 +1017,12 @@ print(s['Trange'])
 #+END_SRC
 
 #+RESULTS:
-: {'A': 6.9056, 'B': 1211.0, 'C': 220.79, 'name': 'benzene', 'Trange': [-16, 104]}
-: [-16, 104]
+:RESULTS:
+{'name': 'benzene', 'A': 6.9056, 'B': 1211.0, 'C': 220.79, 'Trange': [-16, 104]}
+[-16, 104]
+:END:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 s = {'name':'benzene',
      'A':6.9056,
      'B':1211.0}
@@ -890,14 +1036,18 @@ print(s.values())
 #+END_SRC
 
 #+RESULTS:
-: False
-: None
-: dict_keys(['B', 'name', 'A'])
-: dict_values([1211.0, 'benzene', 6.9056])
+:RESULTS:
+False
+None
+dict_keys(['name', 'A', 'B'])
+dict_values(['benzene', 6.9056, 1211.0])
+:END:
 
 
 *** Summary
+
 We have examined four data structures in python. Note that none of these types are arrays/vectors with defined mathematical operations. For those, you need to consider numpy.array.
+
 ** Indexing vectors and arrays in Python
    :PROPERTIES:
    :categories: basic
@@ -905,11 +1055,12 @@ We have examined four data structures in python. Note that none of these types a
    :updated:  2013/03/06 18:27:44
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/24/indexing-vectors-and-arrays-in-matlab/][Matlab post]]
+
 There are times where you have a lot of data in a vector or array and you want to extract a portion of the data for some analysis. For example, maybe you want to plot column 1 vs column 2, or you want the integral of data between x = 4 and x = 6, but your vector covers 0 < x < 10. Indexing is the way to do these things.
 
 A key point to remember is that in python array/vector indices start at 0. Unlike Matlab, which uses parentheses to index a array, we use brackets in python.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 x = np.linspace(-np.pi, np.pi, 10)
@@ -922,16 +1073,18 @@ print(x[-2]) # second to last element
 #+END_SRC
 
 #+RESULTS:
-: [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
-:   1.04719755  1.74532925  2.44346095  3.14159265]
-: -3.14159265359
-: -1.74532925199
-: 3.14159265359
-: 2.44346095279
+:RESULTS:
+[-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+  1.04719755  1.74532925  2.44346095  3.14159265]
+-3.141592653589793
+-1.7453292519943295
+3.141592653589793
+2.443460952792061
+:END:
 
 We can select a range of elements too. The syntax a:b extracts the a^{th} to (b-1)^{th} elements. The syntax a:b:n starts at a, skips nelements up to the index b.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 print(x[1: 4])  # second to fourth element. Element 5 is not included
 print(x[0: -1:2])  # every other element
 print(x[:])  # print the whole vector
@@ -939,37 +1092,44 @@ print(x[-1:0:-1])  # reverse the vector!
 #+END_SRC
 
 #+RESULTS:
-: [-2.44346095 -1.74532925 -1.04719755]
-: [-3.14159265 -1.74532925 -0.34906585  1.04719755  2.44346095]
-: [-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
-:   1.04719755  1.74532925  2.44346095  3.14159265]
-: [ 3.14159265  2.44346095  1.74532925  1.04719755  0.34906585 -0.34906585
-:  -1.04719755 -1.74532925 -2.44346095]
+:RESULTS:
+[-2.44346095 -1.74532925 -1.04719755]
+[-3.14159265 -1.74532925 -0.34906585  1.04719755  2.44346095]
+[-3.14159265 -2.44346095 -1.74532925 -1.04719755 -0.34906585  0.34906585
+  1.04719755  1.74532925  2.44346095  3.14159265]
+[ 3.14159265  2.44346095  1.74532925  1.04719755  0.34906585 -0.34906585
+ -1.04719755 -1.74532925 -2.44346095]
+:END:
 
 Suppose we want the part of the vector where x > 2. We could do that by inspection, but there is a better way. We can create a mask of boolean (0 or 1) values that specify whether x > 2 or not, and then use the mask as an index.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 print(x[x > 2])
 #+END_SRC
 
 #+RESULTS:
-: [ 2.44346095  3.14159265]
+:RESULTS:
+[2.44346095 3.14159265]
+:END:
 
 You can use this to analyze subsections of data, for example to integrate the function y = sin(x) where x > 2.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 y = np.sin(x)
 
 print(np.trapz( x[x > 2], y[x > 2]))
 #+END_SRC
 
 #+RESULTS:
-: -1.79500162881
+:RESULTS:
+-1.7950016288086892
+:END:
 
 *** 2d arrays
+
 In 2d arrays, we use  row, column notation. We use a : to indicate all rows or all columns.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 a = np.array([[1, 2, 3],
 	      [4, 5, 6],
 	      [7, 8, 9]])
@@ -983,10 +1143,7 @@ print(a[:])
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-0__dummy_completion__  1__dummy_completion__
-0__dummy_completion__  1__dummy_completion__
+:RESULTS:
 1
 9
 [1 2 3]
@@ -994,11 +1151,11 @@ print(a[:])
 [[1 2 3]
  [4 5 6]
  [7 8 9]]
-#+end_example
+:END:
 
 *** Using indexing to assign values to rows and columns
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 b = np.zeros((3, 3))
 print(b)
 
@@ -1011,22 +1168,21 @@ print(b)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-[[ 0.  0.  0.]
- [ 0.  0.  0.]
- [ 0.  0.  0.]]
-[[  1.   0.   0.]
- [  2.   0.   0.]
- [  3.   0.  12.]]
+:RESULTS:
+[[0. 0. 0.]
+ [0. 0. 0.]
+ [0. 0. 0.]]
 [[ 1.  0.  0.]
  [ 2.  0.  0.]
- [ 6.  6.  6.]]
-#+end_example
+ [ 3.  0. 12.]]
+[[1. 0. 0.]
+ [2. 0. 0.]
+ [6. 6. 6.]]
+:END:
 
 Python does not have the linear assignment method like Matlab does. You can achieve something like that as follows. We flatten the array to 1D, do the linear assignment, and reshape the result back to the 2D array.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 c = b.flatten()
 c[2] = 34
 b[:] = c.reshape(b.shape)
@@ -1034,35 +1190,37 @@ print(b)
 #+END_SRC
 
 #+RESULTS:
-: [[  1.   0.  34.]
-:  [  2.   0.   0.]
-:  [  6.   6.   6.]]
+:RESULTS:
+[[ 1.  0. 34.]
+ [ 2.  0.  0.]
+ [ 6.  6.  6.]]
+:END:
 
 *** 3D arrays
+
 The 3d array is like book of 2D matrices. Each page has a 2D matrix on it. think about the indexing like this: (row, column, page)
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 M = np.random.uniform(size=(3,3,3))  # a 3x3x3 array
 print(M)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
+[[[0.88056726 0.2834648  0.27492697]
+  [0.10859925 0.23463751 0.82415457]
+  [0.01945213 0.79753416 0.54908248]]
 
-[[[ 0.17900461  0.24477532  0.75963967]
-  [ 0.5595659   0.43535773  0.88449451]
-  [ 0.8169282   0.67361582  0.31123476]]
+ [[0.24024708 0.84126632 0.05607016]
+  [0.73141689 0.70538835 0.90262494]
+  [0.59747725 0.81036694 0.05548954]]
 
- [[ 0.07541639  0.62738291  0.35397152]
-  [ 0.10017991  0.51427539  0.99643481]
-  [ 0.26285853  0.60086939  0.60945997]]
+ [[0.00694944 0.12430746 0.01875365]
+  [0.24458268 0.42126212 0.22801529]
+  [0.94171751 0.08419578 0.70100519]]]
+:END:
 
- [[ 0.15581452  0.94685716  0.20213257]
-  [ 0.30398062  0.8173967   0.48472948]
-  [ 0.7998031   0.46701875  0.14776334]]]
-#+end_example
-
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 print(M[:, :, 0])  # 2d array on page 0
 print(M[:, 0, 0])  # column 0 on page 0
 print(M[1, :, 2])  # row 1 on page 2
@@ -1077,92 +1235,107 @@ print(M[1, :, 2])  # row 1 on page 2
 
 
 *** Summary
+
 The most common place to use indexing is probably when a function returns an array with the independent variable in column 1 and solution in column 2, and you want to plot the solution. Second is when you want to analyze one part of the solution. There are also applications in numerical methods, for example in assigning values to the elements of a matrix or vector.
+
 ** Controlling the format of printed variables
    :PROPERTIES:
    :categories: python
    :date:     2013/01/21 09:00:00
    :updated:  2013/02/27 14:50:18
    :END:
+
 This was first worked out in this [[http://matlab.cheme.cmu.edu/2011/10/06/sprintfing-to-the-finish/][original Matlab post]].
 
 Often you will want to control the way a variable is printed. You may want to only show a few decimal places, or print in scientific notation, or embed the result in a string. Here are some examples of printing with no control over the format.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 a = 2./3
 print(a)
 print(1/3)
 print(1./3.)
 print(10.1)
-print("Avogadro's number is ", 6.022e23,'.')
+print("Avogadro's number is 6.022e23.")
 #+END_SRC
 
 #+RESULTS:
-: 0.6666666666666666
-: 0.3333333333333333
-: 0.3333333333333333
-: 10.1
-: Avogadro's number is  6.022e+23 .
+:RESULTS:
+0.6666666666666666
+0.3333333333333333
+0.3333333333333333
+10.1
+Avogadro's number is 6.022e23.
+:END:
 
 There is no control over the number of decimals, or spaces around a printed number.
 
 In python, we use the format function to control how variables are printed. With the format function you use codes like {/n/:format specifier} to indicate that a formatted string should be used. /n/ is the /n^{th}/ argument passed to format, and there are a variety of format specifiers. Here we examine how to format float numbers. The specifier has the general form "w.df" where w is the width of the field, and d is the number of decimals, and f indicates a float number. "1.3f" means to print a float number with 3 decimal places. Here is an example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print('The value of 1/3 to 3 decimal places is {0:1.3f}'.format(1./3.))
 #+END_SRC
 
 #+RESULTS:
-: The value of 1/3 to 3 decimal places is 0.333
+:RESULTS:
+The value of 1/3 to 3 decimal places is 0.333
+:END:
 
 In that example, the 0 in {0:1.3f} refers to the first (and only) argument to the format function. If there is more than one argument, we can refer to them like this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print('Value 0 = {0:1.3f}, value 1 = {1:1.3f}, value 0 = {0:1.3f}'.format(1./3., 1./6.))
 #+END_SRC
 
 #+RESULTS:
-: Value 0 = 0.333, value 1 = 0.167, value 0 = 0.333
+:RESULTS:
+Value 0 = 0.333, value 1 = 0.167, value 0 = 0.333
+:END:
 
 Note you can refer to the same argument more than once, and in arbitrary order within the string.
 
 Suppose you have a list of numbers you want to print out, like this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 for x in [1./3., 1./6., 1./9.]:
     print('The answer is {0:1.2f}'.format(x))
 #+END_SRC
 
 #+RESULTS:
-: The answer is 0.33
-: The answer is 0.17
-: The answer is 0.11
+:RESULTS:
+The answer is 0.33
+The answer is 0.17
+The answer is 0.11
+:END:
 
 The "g" format specifier is a general format that can be used to indicate a precision, or to indicate significant digits. To print a number with a specific number of significant digits we do this:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print('{0:1.3g}'.format(1./3.))
 print('{0:1.3g}'.format(4./3.))
 #+END_SRC
 
 #+RESULTS:
-: 0.333
-: 1.33
+:RESULTS:
+0.333
+1.33
+:END:
 
 We can also specify plus or minus signs. Compare the next two outputs.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 for x in [-1., 1.]:
     print('{0:1.2f}'.format(x))
 #+END_SRC
 
 #+RESULTS:
-: -1.00
-: 1.00
+:RESULTS:
+-1.00
+1.00
+:END:
 
 You can see the decimals do not align. That is because there is a minus sign in front of one number. We can specify to show the sign for positive and negative numbers, or to pad positive numbers to leave space for positive numbers.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 for x in [-1., 1.]:
     print('{0:+1.2f}'.format(x)) # explicit sign
 
@@ -1171,13 +1344,15 @@ for x in [-1., 1.]:
 #+END_SRC
 
 #+RESULTS:
-: -1.00
-: +1.00
-: -1.00
-:  1.00
+:RESULTS:
+-1.00
++1.00
+-1.00
+ 1.00
+:END:
 
 We use the "e" or "E" format modifier to specify scientific notation.
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 eps = np.finfo(np.double).eps
 print(eps)
@@ -1188,21 +1363,25 @@ print('{0:1.2E}'.format(eps))  #exponential notation with capital E
 #+END_SRC
 
 #+RESULTS:
-: 2.22044604925e-16
-: 2.220446049250313e-16
-: 0.00
-: 2.22e-16
-: 2.22E-16
+:RESULTS:
+2.220446049250313e-16
+2.220446049250313e-16
+0.00
+2.22e-16
+2.22E-16
+:END:
 
 As a float with 2 decimal places, that very small number is practically equal to 0.
 
 We can even format percentages. Note you do not need to put the % in your string.
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print('the fraction {0} corresponds to {0:1.0%}'.format(0.78))
 #+END_SRC
 
 #+RESULTS:
-: the fraction 0.78 corresponds to 78%
+:RESULTS:
+the fraction 0.78 corresponds to 78%
+:END:
 
 There are many other options for formatting strings. See http://docs.python.org/2/library/string.html#formatstrings for a full specification of the options.
 
@@ -1212,19 +1391,22 @@ There are many other options for formatting strings. See http://docs.python.org/
    :date:     2013/02/20 09:00:00
    :updated:  2013/02/27 14:50:32
    :END:
+
 There are several more advanced ways to include formatted values in a string. In the previous case we examined replacing format specifiers by /positional/ arguments in the format command. We can instead use /keyword/ arguments.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 s = 'The {speed} {color} fox'.format(color='brown', speed='quick')
 print(s)
 #+END_SRC
 
 #+RESULTS:
-: The quick brown fox
+:RESULTS:
+The quick brown fox
+:END:
 
 If you have a lot of variables already defined in a script, it is convenient to use them in string formatting with the locals command:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 speed = 'slow'
 color= 'blue'
 
@@ -1232,10 +1414,12 @@ print('The {speed} {color} fox'.format(**locals()))
 #+END_SRC
 
 #+RESULTS:
-: The slow blue fox
+:RESULTS:
+The slow blue fox
+:END:
 
 If you want to access attributes on an object, you can specify them directly in the format identifier.
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 class A:
     def __init__(self, a, b, c):
         self.a = a
@@ -1248,32 +1432,38 @@ print('a = {obj.a}, b = {obj.b}, c = {obj.c:1.2f}'.format(obj=mya))
 #+END_SRC
 
 #+RESULTS:
-: a = 3, b = 4, c = 5.00
+:RESULTS:
+a = 3, b = 4, c = 5.00
+:END:
 
 You can access values of a dictionary:
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 d = {'a': 56, "test":'woohoo!'}
 
 print("the value of a in the dictionary is {obj[a]}. It works {obj[test]}".format(obj=d))
 #+END_SRC
 
 #+RESULTS:
-: the value of a in the dictionary is 56. It works woohoo!
+:RESULTS:
+the value of a in the dictionary is 56. It works woohoo!
+:END:
 
 And, you can access elements of a list. Note, however you cannot use -1 as an index in this case.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 L = [4, 5, 'cat']
 
 print('element 0 = {obj[0]}, and the last element is {obj[2]}'.format(obj=L))
 #+END_SRC
 
 #+RESULTS:
-: element 0 = 4, and the last element is cat
+:RESULTS:
+element 0 = 4, and the last element is cat
+:END:
 
 There are three different ways to "print" an object. If an object has a __format__ function, that is the default used in the format command. It may be helpful to use the =str= or =repr= of an object instead. We get this with !s for =str= and !r for =repr=.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 class A:
     def __init__(self, a, b):
         self.a = a; self.b = b
@@ -1296,8 +1486,12 @@ print('{0!r}'.format(mya))  # uses __repr__
 #+END_SRC
 
 #+RESULTS:
-: a=3 b=4
-: str: class A, a=3 b=4
-: representing: class A, a=3, b=4
+:RESULTS:
+a=3 b=4
+str: class A, a=3 b=4
+representing: class A, a=3, b=4
+:END:
 
 This covers the majority of string formatting requirements I have come across. If there are more sophisticated needs, they can be met with various string templating python modules. the one I have used most is [[http://www.cheetahtemplate.org/][Cheetah]].
+
+[Addendum [2023-06-08 Thu]] Since I wrote this, f-strings have become the preferred method for string-formatting.

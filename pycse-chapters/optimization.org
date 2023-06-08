@@ -13,7 +13,7 @@ adapted from http://en.wikipedia.org/wiki/Lagrange_multipliers.
 
 Suppose we seek to minimize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We could setup a Lagrange multiplier approach to solving this problem, but we will use a constrained optimization approach instead.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fmin_slsqp
 
 def objective(X):
@@ -31,12 +31,14 @@ print(X)
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -1.41421356237
-:             Iterations: 5
-:             Function evaluations: 20
-:             Gradient evaluations: 5
-: [-0.70710678 -0.70710678]
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -1.414213562374664
+            Iterations: 5
+            Function evaluations: 15
+            Gradient evaluations: 5
+[-0.70710678 -0.70710678]
+:END:
 
 ** DONE Finding the maximum power of a photovoltaic device.
    CLOSED: [2016-04-04 Mon 11:48]
@@ -53,7 +55,7 @@ A photovoltaic device is characterized by a current-voltage relationship. Let us
 The voltage is highest when the current is equal to zero, but of course then you get no power. The current is highest when the voltage is zero, i.e. short-circuited, but there is again no power. We seek the highest power condition, which is to find the maximum of \(i V\). This is a constrained optimization. We solve it by creating an objective function that returns the negative of (\i V\), and then find the minimum.
 
 First, let us examine the i-V relationship.
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -63,19 +65,18 @@ def i(V):
     return 0.5 - 0.5 * V**2
 
 plt.figure()
-plt.plot(V, i(V))
-plt.savefig('images/iV.png')
+plt.plot(V, i(V));
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x11193ec18>
-: [<matplotlib.lines.Line2D object at 0x111d43668>]
-
-[[./images/iV.png]]
+:RESULTS:
+[[file:./.ob-jupyter/23d3446ab49070bb20bae0c94eeeb2eaa43db112.png]]
+:END:
 
 
 Now, let us be sure there is a maximum in power.
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -84,18 +85,17 @@ V = np.linspace(0, 1)
 def i(V):
     return 0.5 - 0.5 * V**2
 
-plt.plot(V, i(V) * V)
-plt.savefig('images/P1.png')
+plt.plot(V, i(V) * V);
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x111d437f0>]
-
-[[./images/P1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/e2cd0111d13a67bfae6c4ac1106bb9bb50552c2a.png]]
+:END:
 
 You can see in fact there is a maximum, near V=0.6. We could solve this problem analytically by taking the appropriate derivative and solving it for zero. That still might require solving a nonlinear problem though. We will directly setup and solve the constrained optimization.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from scipy.optimize import fmin_slsqp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -120,19 +120,18 @@ V = np.linspace(0, 1)
 def i(V):
     return 0.5 - 0.5 * V**2
 
-plt.plot(V, i(V), Vmax, imax, 'ro')
-plt.savefig('images/P2.png')
+plt.plot(V, i(V), Vmax, imax, 'ro');
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -0.192450127337
-:             Iterations: 5
-:             Function evaluations: 20
-:             Gradient evaluations: 5
-: [<matplotlib.lines.Line2D object at 0x111946470>, <matplotlib.lines.Line2D object at 0x11192c518>]
-
-[[./images/P2.png]]
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -0.19245012733664213
+            Iterations: 5
+            Function evaluations: 15
+            Gradient evaluations: 5
+[[file:./.ob-jupyter/bd459d4a4577832dc09824fcecc463440fb5d41b.png]]
+:END:
 
 You can see the maximum power is approximately 0.2 (unspecified units), at the conditions indicated by the red dot in the figure above.
 
@@ -148,7 +147,7 @@ index:fsolve
 
 Suppose we seek to maximize the function $f(x,y)=x+y$ subject to the constraint that $x^2 + y^2 = 1$. The function we seek to maximize is an unbounded plane, while the constraint is a unit circle. We want the maximum value of the circle, on the plane. We plot these two functions here.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 x = np.linspace(-1.5, 1.5)
@@ -156,11 +155,10 @@ x = np.linspace(-1.5, 1.5)
 [X, Y] = np.meshgrid(x, x)
 
 import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
-ax = fig.gca(projection='3d')
+ax = fig.add_subplot(projection='3d')
 
 ax.plot_surface(X, Y, X + Y)
 
@@ -169,19 +167,19 @@ R = 1.0
 x1 = R * np.cos(theta)
 y1 = R * np.sin(theta)
 
-ax.plot(x1, y1, x1 + y1, 'r-')
-plt.savefig('images/lagrange-1.png')
+ax.plot(x1, y1, x1 + y1, 'r-');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/lagrange-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/ed9a5b2d3d7fd41fcc0f3e6b77b7465cd1233136.png]]
+:END:
 
 *** Construct the Lagrange multiplier augmented function
 
 To find the maximum, we construct the following function: $\Lambda(x,y; \lambda) = f(x,y)+\lambda g(x,y)$ where $g(x,y) = x^2 + y^2 - 1 = 0$, which is the constraint function. Since $g(x,y)=0$, we are not really changing the original function, provided that the constraint is met!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 
 def func(X):
@@ -199,7 +197,7 @@ The minima/maxima of the augmented function are located where all of the partial
 
 Rather than perform the analytical differentiation, here we develop a way to numerically approximate the partial derivatives.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 def dfunc(X):
     dLambda = np.zeros(len(X))
     h = 1e-3 # this is the step size used in the finite difference.
@@ -216,7 +214,7 @@ def dfunc(X):
 
 The function we defined above (dfunc) will equal zero at a maximum or minimum. It turns out there are two solutions to this problem, but only one of them is the maximum value. Which solution you get depends on the initial guess provided to the solver. Here we have to use some judgement to identify the maximum.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fsolve
 
 # this is the max
@@ -229,8 +227,10 @@ print(X2, func(X2))
 #+END_SRC
 
 #+RESULTS:
-: [ 0.70710678  0.70710678 -0.70710678] 1.41421356237
-: [-0.70710678 -0.70710678  0.70710678] -1.41421356237
+:RESULTS:
+[ 0.70710678  0.70710678 -0.70710678] 1.4142135623730951
+[-0.70710678 -0.70710678  0.70710678] -1.414213562373095
+:END:
 
 *** Summary
 Three dimensional plots in matplotlib are a little more difficult than in Matlab (where the code is almost the same as 2D plots, just different commands, e.g. plot vs plot3). In Matplotlib you have to import additional modules in the right order, and use the object oriented approach to plotting as shown here.
@@ -264,7 +264,7 @@ To solve this problem, we cast it as a linear programming problem, which minimiz
 
 f = -(143*x + 60*y)
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fmin_cobyla
 
 def objective(X):
@@ -304,14 +304,11 @@ print('The maximum profit we can earn is ${0:1.2f}.'.format(-objective(X)))
 #+END_SRC
 
 #+RESULTS:
-: We should plant 21.88 roods of wheat.
-: We should plant 53.12 roods of corn
-: The maximum profit we can earn is $6315.62.
-:
-:    Normal return from subroutine COBYLA
-:
-:    NFVALS =   40   F =-6.315625E+03    MAXCV = 4.547474E-13
-:    X = 2.187500E+01   5.312500E+01
+:RESULTS:
+We should plant 21.88 roods of wheat.
+We should plant 53.12 roods of corn
+The maximum profit we can earn is $6315.62.
+:END:
 
 This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/2011/10/21/linear-programming-example-with-inequality-constraints/][post]], but we get to the same answer. The linear programming capability in scipy is currently somewhat limited in 0.10. It is a little better in 0.11, but probably not as advanced as Matlab. There are some external libraries available:
 
@@ -327,7 +324,7 @@ This code is not exactly the same as the original [[http://matlab.cheme.cmu.edu/
 [[index:optimization!constrained]]
 A problem that can be cast as a constrained minimization problem is to find the minimum distance from a point to a curve. Suppose we have $f(x) = x^2$, and the point (0.5, 2). what is the minimum distance from that point to $f(x)$?
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fmin_cobyla
@@ -365,19 +362,15 @@ plt.plot([X[0], X[0] + 1], [X[1], X[1] + 2.0 * X[0]], 'g-', label='tangent')
 plt.axis('equal')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.legend(loc='best')
-plt.savefig('images/min-dist-p-func.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-: The minimum distance is 0.86
-: dot(v1, v2) =  0.000336477214214
-:
-:    Normal return from subroutine COBYLA
-:
-:    NFVALS =   44   F = 8.579598E-01    MAXCV = 0.000000E+00
-:    X = 1.300793E+00   1.692061E+00
+:RESULTS:
+The minimum distance is 0.86
+dot(v1, v2) =  0.00033647721421425913
+[[file:./.ob-jupyter/5eb404c2516dd2d1c74d53fc5196570551c8a150.png]]
+:END:
 
-[[./images/min-dist-p-func.png]]
 
 In the code above, we demonstrate that the point we find on the curve that minimizes the distance satisfies the property that a vector from that point to our other point is normal to the tangent of the curve at that point. This is shown by the fact that the dot product of the two vectors is very close to zero. It is not zero because of the accuracy criteria that is used to stop the minimization is not high enough.

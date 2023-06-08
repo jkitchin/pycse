@@ -9,7 +9,7 @@
 
 We want to fit a line to this data:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 x = [0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10]
 y = [0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147]
 #+END_SRC
@@ -18,7 +18,7 @@ y = [0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147]
 
 We use the polyfit(x, y, n) command where n is the polynomial order, n=1 for a line.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 p = np.polyfit(x, y, 1)
@@ -28,12 +28,14 @@ print(slope, intercept)
 #+END_SRC
 
 #+RESULTS:
-: [-0.31452218  0.00062457]
-: (-0.31452218430034123, 0.00062457337883984698)
+:RESULTS:
+[-0.31452218  0.00062457]
+-0.3145221843003411 0.0006245733788398162
+:END:
 
 To show the fit, we can use numpy.polyval to evaluate the fit at many points.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
 
 xfit = np.linspace(0, 10)
@@ -43,18 +45,14 @@ plt.plot(x, y, 'bo', label='raw data')
 plt.plot(xfit, yfit, 'r-', label='fit')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.legend()
-plt.savefig('images/linefit-1.png')
+plt.legend();
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x1107d1650>]
-: [<matplotlib.lines.Line2D object at 0x1107d88d0>]
-: <matplotlib.text.Text object at 0x10043d1d0>
-: <matplotlib.text.Text object at 0x10d7e8b90>
-: <matplotlib.legend.Legend object at 0x1107dc890>
+:RESULTS:
+[[file:./.ob-jupyter/c37aa2a175458f2c6557d352f0dcad6c039d478e.png]]
+:END:
 
-[[./images/linefit-1.png]]
 
 ** Linear least squares fitting with linear algebra
    :PROPERTIES:
@@ -75,7 +73,7 @@ etc...
 
 Which we write in matrix form as $A p = y$ where $A$ is a matrix of column vectors, e.g. [1, x_i]. $A$ is not a square matrix, so we cannot solve it as written. Instead, we form $A^T A p = A^T y$ and solve that set of equations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 x = np.array([0, 0.5, 1, 1.5, 2.0, 3.0, 4.0, 6.0, 10])
 y = np.array([0, -0.157, -0.315, -0.472, -0.629, -0.942, -1.255, -1.884, -3.147])
@@ -97,15 +95,16 @@ import matplotlib.pyplot as plt
 plt.plot(x, y, 'bo')
 plt.plot(x, np.dot(A, [i1, slope1]), 'r--')
 plt.xlabel('x')
-plt.ylabel('y')
-plt.savefig('images/la-line-fit.png')
+plt.ylabel('y');
 #+END_SRC
 
 #+RESULTS:
-: 0.00062457337884 -0.3145221843
-: 0.000624573378839 -0.3145221843
+:RESULTS:
+0.000624573378839699 -0.31452218430034123
+0.000624573378839699 -0.3145221843003413
+[[file:./.ob-jupyter/f4f4bd5be53c1221f544e6e4e4ce4a52d6782cdc.png]]
+:END:
 
-[[./images/la-line-fit.png]]
 
 This method can be readily extended to fitting any polynomial model, or other linear model that is fit in a least squares sense. This method does not provide confidence intervals.
 
@@ -116,13 +115,14 @@ This method can be readily extended to fitting any polynomial model, or other li
    :updated:  2013/02/27 14:39:17
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/][Matlab post]]
+
 Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. Data from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.
 
 We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the data in the least squares sense. We can write this in a linear algebra form as: T*p = Ca where T is a matrix of columns [1 t t^2 t^3 t^4], and p is a column vector of the fitting parameters. We want to solve for the p vector and estimate the confidence intervals.
 
 =pycse= now has a regress function similar to Matlab. That function just uses the code in the next example (also seen [[http://jkitchin.github.io/blog/2013/02/18/Linear-regression-with-confidence-intervals/][here]]).
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from pycse import regress
 import numpy as np
 time = np.array([0.0, 50.0, 100.0, 150.0, 200.0, 250.0, 300.0])
@@ -136,11 +136,13 @@ print(pint)
 #+END_SRC
 
 #+RESULTS:
-: [[  4.90747574e-02   5.09057619e-02]
-:  [ -3.49867288e-04  -2.45825348e-04]
-:  [  5.40268291e-07   2.14670133e-06]
-:  [ -7.67338615e-09   7.03689639e-10]
-:  [ -3.23368790e-12   1.06276264e-11]]
+:RESULTS:
+[[ 4.90747573e-02  5.09057619e-02]
+ [-3.49867290e-04 -2.45825350e-04]
+ [ 5.40268319e-07  2.14670135e-06]
+ [-7.67338629e-09  7.03689494e-10]
+ [-3.23368759e-12  1.06276267e-11]]
+:END:
 
 ** Linear regression with confidence intervals.
    :PROPERTIES:
@@ -149,11 +151,12 @@ print(pint)
    :updated:  2013/02/27 14:39:17
    :END:
 [[http://matlab.cheme.cmu.edu/2011/08/28/linear-regression-with-confidence-intervals/][Matlab post]]
+
 Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. Data from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.
 
 We want the equation $Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4$ fit to the data in the least squares sense. We can write this in a linear algebra form as: T*p = Ca where T is a matrix of columns [1 t t^2 t^3 t^4], and p is a column vector of the fitting parameters. We want to solve for the p vector and estimate the confidence intervals.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.stats.distributions import  t
 
@@ -162,7 +165,7 @@ Ca = np.array([50.0, 38.0, 30.6, 25.6, 22.2, 19.5, 17.4])*1e-3
 
 T = np.column_stack([time**0, time, time**2, time**3, time**4])
 
-p, res, rank, s = np.linalg.lstsq(T, Ca)
+p, res, rank, s = np.linalg.lstsq(T, Ca, rcond=None)
 # the parameters are now in p
 
 # compute the confidence intervals
@@ -195,19 +198,19 @@ plt.plot(time, Ca, 'bo', label='raw data')
 plt.plot(time, np.dot(T, p), 'r-', label='fit')
 plt.xlabel('Time')
 plt.ylabel('Ca (mol/L)')
-plt.legend(loc='best')
-plt.savefig('images/linregress-conf.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-:  5.00e-02 [ 4.9680e-02  5.0300e-02]
-: -2.98e-04 [-3.1546e-04 -2.8023e-04]
-:  1.34e-06 [ 1.0715e-06  1.6155e-06]
-: -3.48e-09 [-4.9032e-09 -2.0665e-09]
-:  3.70e-12 [ 1.3501e-12  6.0439e-12]
-: R^2 = 0.9999869672459532
-
-[[./images/linregress-conf.png]]
+:RESULTS:
+ 5.00e-02 [ 4.9680e-02  5.0300e-02]
+-2.98e-04 [-3.1546e-04 -2.8023e-04]
+ 1.34e-06 [ 1.0715e-06  1.6155e-06]
+-3.48e-09 [-4.9032e-09 -2.0665e-09]
+ 3.70e-12 [ 1.3501e-12  6.0439e-12]
+R^2 = 0.9999869672459537
+[[file:./.ob-jupyter/2d609e27e20a25661d05708ed2d3929060af8aa0.png]]
+:END:
 
 A fourth order polynomial fits the data well, with a good R^2 value. All of the parameters appear to be significant, i.e. zero is not included in any of the parameter confidence intervals. This does not mean this is the best model for the data, just that the model fits well.
 
@@ -217,9 +220,10 @@ A fourth order polynomial fits the data well, with a good R^2 value. All of the 
    :date:     2013/02/18 09:00:00
    :updated:  2013/02/27 14:40:05
    :END:
+
 Here is a typical nonlinear function fit to data. you need to provide an initial guess. In this example we fit the Birch-Murnaghan equation of state to energy vs. volume data from density functional theory calculations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import leastsq
 import numpy as np
 
@@ -254,15 +258,15 @@ x = np.linspace(min(vols), max(vols), 50)
 y = Murnaghan(plsq[0], x)
 plt.plot(x, y, 'k-')
 plt.xlabel('Volume')
-plt.ylabel('Energy')
-plt.savefig('images/nonlinear-curve-fitting.png')
+plt.ylabel('Energy');
 #+END_SRC
 
 #+RESULTS:
-: Fitted parameters = [-56.46839641   0.57233217   2.7407944   16.55905648]
+:RESULTS:
+Fitted parameters = [-56.46839641   0.57233217   2.7407944   16.55905648]
+[[file:./.ob-jupyter/f4c0683e0f3c425883ecf65d1154e8d63bcce0b0.png]]
+:END:
 
-#+caption: Example of least-squares non-linear curve fitting.
-[[./images/nonlinear-curve-fitting.png]]
 
 See additional examples at \url{http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html}.
 
@@ -272,8 +276,10 @@ See additional examples at \url{http://docs.scipy.org/doc/scipy/reference/tutori
    :date:     2013/02/18 09:00:00
    :updated:  2013/02/27 14:40:50
    :END:
+
 Here is an example of fitting a nonlinear function to data by direct minimization of the summed squared error.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fmin
 import numpy as np
 
@@ -311,19 +317,22 @@ x = np.linspace(min(volumes),max(volumes),50)
 y = Murnaghan(plsq,x)
 plt.plot(x,y,'k-')
 plt.xlabel('Volume ($\AA^3$)')
-plt.ylabel('Total energy (eV)')
-plt.savefig('images/nonlinear-fitting-lsq.png')
+plt.ylabel('Total energy (eV)');
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.
-:          Current function value: 0.000020
-:          Iterations: 137
-:          Function evaluations: 240
-: parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
+:RESULTS:
+Optimization terminated successfully.
+         Current function value: 0.000020
+         Iterations: 137
+         Function evaluations: 240
+parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
+[[file:./.ob-jupyter/6d594f0a362d68ed274c7ae50db41ca707a082e9.png]]
+:END:
 
 #+caption: Fitting a nonlinear function.
 [[./images/nonlinear-fitting-lsq.png]]
+
 ** Parameter estimation by directly minimizing summed squared errors
    :PROPERTIES:
    :categories: data analysis
@@ -332,7 +341,7 @@ plt.savefig('images/nonlinear-fitting-lsq.png')
    :END:
 [[http://matlab.cheme.cmu.edu/2011/10/10/nonlinearfit_minsse-m/][Matlab post]]
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -341,20 +350,17 @@ y = np.array([0.0039,    1.2270,    5.7035,   10.6472,   18.6032,   42.3024])
 
 plt.plot(x, y)
 plt.xlabel('x')
-plt.ylabel('y')
-plt.savefig('images/nonlin-minsse-1.png')
+plt.ylabel('y');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10d7a38d0>]
-: <matplotlib.text.Text object at 0x10b1bb7f0>
-: <matplotlib.text.Text object at 0x10b1cdeb8>
-
-[[./images/nonlin-minsse-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/5cd2fc960667fc31f407ba145ac67f31ce31d583.png]]
+:END:
 
 We are going to fit the function $y = x^a$ to the data. The best $a$ will minimize the summed squared error between the model and the fit.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 def errfunc_(a):
     return np.sum((y - x**a)**2)
 
@@ -366,21 +372,17 @@ sse = errfunc(arange)
 plt.figure()
 plt.plot(arange, sse)
 plt.xlabel('a')
-plt.ylabel('$\Sigma (y - y_{pred})^2$')
-plt.savefig('images/nonlin-minsse-2.png')
+plt.ylabel('$\Sigma (y - y_{pred})^2$');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x10d851eb8>
-: [<matplotlib.lines.Line2D object at 0x10bc065c0>]
-: <matplotlib.text.Text object at 0x10b1c5d68>
-: <matplotlib.text.Text object at 0x10e57eb00>
-
-[[./images/nonlin-minsse-2.png]]
+:RESULTS:
+[[file:./.ob-jupyter/b81da6db2a37d3074b712cd7641c4accd959f26a.png]]
+:END:
 
 Based on the graph above, you can see a minimum in the summed squared error near $a = 2.1$. We use that as our initial guess. Since we know the answer is bounded, we use scipy.optimize.fminbound
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fminbound
 
 amin = fminbound(errfunc, 1.0, 3.0)
@@ -392,20 +394,14 @@ plt.plot(x, y, 'bo', label='data')
 plt.plot(x, x**amin, 'r-', label='fit')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.legend(loc='best')
-plt.savefig('images/nonlin-minsse-3.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-: 2.09004838933
-: <matplotlib.figure.Figure object at 0x110c47c50>
-: [<matplotlib.lines.Line2D object at 0x110f28080>]
-: [<matplotlib.lines.Line2D object at 0x110ecb198>]
-: <matplotlib.text.Text object at 0x110edbc88>
-: <matplotlib.text.Text object at 0x110ee3da0>
-: <matplotlib.legend.Legend object at 0x110f28320>
-
-[[./images/nonlin-minsse-3.png]]
+:RESULTS:
+2.0900483893314967
+[[file:./.ob-jupyter/e8baa2ae0312c908e42134a61b7683f414eed0b6.png]]
+:END:
 
 We can do nonlinear fitting by directly minimizing the summed squared error between a model and data. This method lacks some of the features of other methods, notably the simple ability to get the confidence interval. However, this method is flexible and may offer more insight into how the solution depends on the parameters.
 
@@ -423,7 +419,7 @@ In this example we use a nonlinear curve-fitting function: scipy.optimize.curve_
 
 We will fit the function $y = a x / (b + x)$ to some data, and compute the 95% confidence intervals on the parameters.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 # Nonlinear curve fit with confidence interval
 import numpy as np
 from scipy.optimize import curve_fit
@@ -462,15 +458,15 @@ xfit = np.linspace(0,1)
 yfit = func(xfit, pars[0], pars[1])
 plt.plot(xfit,yfit,'b-')
 
-plt.legend(['data','fit'],loc='best')
-plt.savefig('images/nonlin-curve-fit-ci.png')
+plt.legend(['data','fit'],loc='best');
 #+END_SRC
 
 #+RESULTS:
-: p0: 1.3275314145379786 [1.3005365921998688  1.3545262368760884]
-: p1: 0.026461556970080666 [0.023607653829234403  0.02931546011092693]
-
-[[./images/nonlin-curve-fit-ci.png]]
+:RESULTS:
+p0: 1.3275314145379786 [1.3005365921998688  1.3545262368760884]
+p1: 0.026461556970080666 [0.023607653829234403  0.02931546011092693]
+[[file:./.ob-jupyter/1ed6344f6641978895069b562bf7785c8f9189e5.png]]
+:END:
 
 You can see by inspection that the fit looks pretty reasonable. The parameter confidence intervals are not too big, so we can be pretty confident of their values.
 
@@ -486,7 +482,7 @@ Our goal is to fit this equation to data $y = c1 exp(-x) + c2*x$ and compute the
 This is actually could be a linear regression problem, but it is convenient to illustrate the  use the nonlinear fitting routine because it makes it easy to get
 confidence intervals for comparison. The basic idea is to use the covariance matrix returned from the nonlinear fitting routine to estimate the student-t corrected confidence interval.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 # Nonlinear curve fit with confidence interval
 import numpy as np
 from scipy.optimize import curve_fit
@@ -522,17 +518,16 @@ plt.plot(x,y,'bo ')
 xfit = np.linspace(0,1)
 yfit = func(xfit, pars[0], pars[1])
 plt.plot(xfit,yfit,'b-')
-plt.legend(['data','fit'],loc='best')
-plt.savefig('images/nonlin-fit-ci.png')
+plt.legend(['data','fit'],loc='best');
 #+END_SRC
 
 #+RESULTS:
-: c0: 4.967139664393268 [4.626744765672402  5.3075345631141335]
-: c1: 2.1099511262769086 [1.7671162242697824  2.452786028284035]
+:RESULTS:
+c0: 4.967139664393268 [4.626744765672402  5.3075345631141335]
+c1: 2.1099511262769086 [1.7671162242697824  2.452786028284035]
+[[file:./.ob-jupyter/a17d76c3c95bb0b8936a2795a19505660831f752.png]]
+:END:
 
-#+caption: Nonlinear fit to data.
-#+attr_latex: placement=[H]
-[[./images/nonlin-fit-ci.png]]
 ** Graphical methods to help get initial guesses for multivariate nonlinear regression
    :PROPERTIES:
    :categories: data analysis, plotting
@@ -545,9 +540,9 @@ Fit the model f(x1,x2; a,b) = a*x1 + x2^b to the data given below. This model ha
 
 We want to do a nonlinear fit to find a and b that minimize the summed squared errors between the model predictions and the data. With only two variables, we can graph how the summed squared error varies with the parameters, which may help us get initial guesses. Let us assume the parameters lie in a range, here we choose 0 to 5. In other problems you would adjust this as needed.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
+
 import matplotlib.pyplot as plt
 
 x1 = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -557,15 +552,20 @@ X = np.column_stack([x1, x2]) # independent variables
 f = [ 3.3079,    6.6358,   10.3143,   13.6492,   17.2755,   23.6271]
 
 fig = plt.figure()
-ax = fig.gca(projection = '3d')
+ax = fig.add_subplot(projection = '3d')
 
 ax.plot(x1, x2, f)
 ax.set_xlabel('x1')
 ax.set_ylabel('x2')
-ax.set_zlabel('f(x1,x2)')
+ax.set_zlabel('f(x1,x2)');
+#+END_SRC
 
-plt.savefig('images/graphical-mulvar-1.png')
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/97b0e578e0b926112442e1844e5aaf145f72791f.png]]
+:END:
 
+#+BEGIN_SRC jupyter-python
 arange = np.linspace(0,5);
 brange = np.linspace(0,5);
 
@@ -588,12 +588,8 @@ def errfunc(a, b):
 
 SSE = errfunc(A, B)
 
-plt.clf()
 plt.contourf(A, B, SSE, 50)
 plt.plot([3.2], [2.1], 'ro')
-plt.figtext( 3.4, 2.2, 'Minimum near here', color='r')
-
-plt.savefig('images/graphical-mulvar-2.png')
 
 guesses = [3.18, 2.02]
 
@@ -603,35 +599,34 @@ popt, pcov = curve_fit(model, X, f, guesses)
 print(popt)
 
 plt.plot([popt[0]], [popt[1]], 'r*')
-plt.savefig('images/graphical-mulvar-3.png')
+
 
 print(model(X, *popt))
+#+END_SRC
 
+#+RESULTS:
+:RESULTS:
+[3.21694798 1.9728254 ]
+[ 3.25873623  6.59792994 10.29473657 13.68011436 17.29161001 23.62366445]
+[[file:./.ob-jupyter/e0a602429f22d5b0389694f10245f30e04da91c3.png]]
+:END:
+
+
+#+BEGIN_SRC jupyter-python
 fig = plt.figure()
-ax = fig.gca(projection = '3d')
+ax = fig.add_subplot(projection = '3d')
 
 ax.plot(x1, x2, f, 'ko', label='data')
 ax.plot(x1, x2, model(X, *popt), 'r-', label='fit')
 ax.set_xlabel('x1')
 ax.set_ylabel('x2')
-ax.set_zlabel('f(x1,x2)')
-
-plt.savefig('images/graphical-mulvar-4.png')
+ax.set_zlabel('f(x1,x2)');
 #+END_SRC
 
 #+RESULTS:
-: [ 3.21694798  1.9728254 ]
-: [  3.25873623   6.59792994  10.29473657  13.68011436  17.29161001
-:   23.62366445]
-
-[[./images/graphical-mulvar-1.png]]
-
-[[./images/graphical-mulvar-2.png]]
-
-[[./images/graphical-mulvar-3.png]]
-
-[[./images/graphical-mulvar-4.png]]
-
+:RESULTS:
+[[file:./.ob-jupyter/ab49a30d038dbdcc218f09abcb124af0f70c2888.png]]
+:END:
 It can be difficult to figure out initial guesses for nonlinear fitting problems. For one and two dimensional systems, graphical techniques may be useful to visualize how the summed squared error between the model and data depends on the parameters.
 
 ** Fitting a numerical ODE solution to data
@@ -644,7 +639,7 @@ It can be difficult to figure out initial guesses for nonlinear fitting problems
 
 Suppose we know the concentration of A follows this differential equation: $\frac{dC_A}{dt} = -k C_A$, and we have data we want to fit to it. Here is an example of doing that.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.integrate import odeint
@@ -671,14 +666,15 @@ fit = fitfunc(tfit, k_fit)
 import matplotlib.pyplot as plt
 plt.plot(tspan, Ca_data, 'ro', label='data')
 plt.plot(tfit, fit, 'b-', label='fit')
-plt.legend(loc='best')
-plt.savefig('images/ode-fit.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-: [ 2.58893455]
+:RESULTS:
+[2.58893455]
+[[file:./.ob-jupyter/eb85de11fb5536db13229476aded7a02997bbcde.png]]
+:END:
 
-[[./images/ode-fit.png]]
 ** Reading in delimited text files
    :PROPERTIES:
    :categories: IO
@@ -697,14 +693,16 @@ sometimes you will get data in a delimited text file format, .e.g. separated by 
 #+END_EXAMPLE
 
 It is easy to read this directly into variables like this:
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
-x,y = np.loadtxt('data/testdata.txt', unpack=True)
+x,y = np.loadtxt('../data/testdata.txt', unpack=True)
 
 print(x, y)
 #+END_SRC
 
 #+RESULTS:
-: [ 1.  3.  5.  4.] [ 3.  4.  6.  8.]
+:RESULTS:
+[1. 3. 5. 4.] [3. 4. 6. 8.]
+:END:
 

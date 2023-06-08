@@ -21,7 +21,9 @@ plt.ylabel('f(t)');
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/3e6517632283c8f7ecad3123501540ec40337b75.png]]
+:RESULTS:
+[[file:./.ob-jupyter/5017fa8208beae24e5e0357502d1bfe78a25c0d0.png]]
+:END:
 
 *** Estimate the value of f at t=2.
 
@@ -37,8 +39,10 @@ print(g([2, 3, 4]))
 #+END_SRC
 
 #+RESULTS:
-: 0.20885
-: [0.20885    0.0498     0.03403333]
+:RESULTS:
+0.20885
+[0.20885    0.0498     0.03403333]
+:END:
 
 The function we sample above is actually f(t) = exp(-t). The linearly interpolated example is not too accurate.
 
@@ -48,7 +52,9 @@ print(np.exp(-2))
 #+END_SRC
 
 #+RESULTS:
-: 0.1353352832366127
+:RESULTS:
+0.1353352832366127
+:END:
 
 *** improved interpolation?
 [[index:interpolation!cubic]]
@@ -62,8 +68,10 @@ print(g2([2, 3, 4]))
 #+END_SRC
 
 #+RESULTS:
-: 0.1084818181818181
-: [0.10848182 0.0498     0.08428727]
+:RESULTS:
+0.10848181818181811
+[0.10848182 0.0498     0.08428727]
+:END:
 
 Interestingly, this is a different value than Matlab's cubic interpolation. Let us show the cubic spline fit.
 
@@ -79,7 +87,9 @@ plt.plot(x, fit, label='fit');
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/01b7a855580b41b124aae324cbd5070be4cb1285.png]]
+:RESULTS:
+[[file:./.ob-jupyter/58d688fab5e19ab559e34e6370164b393bfd1396.png]]
+:END:
 
 Wow. That is a weird looking fit. Very different from what Matlab [[http://matlab.cheme.cmu.edu/wp-content/uploads/2012/02/interp_methods_02.png][produces]]. This is a good teaching moment not to rely blindly on interpolation! We will rely on the linear interpolation from here out which behaves predictably.
 
@@ -103,7 +113,9 @@ print(ans)
 #+END_SRC
 
 #+RESULTS:
-: 2.055642879597611
+:RESULTS:
+2.055642879597611
+:END:
 
 
 
@@ -118,7 +130,9 @@ print(g3(0.2))
 #+END_SRC
 
 #+RESULTS:
-: 2.055642879597611
+:RESULTS:
+2.055642879597611
+:END:
 
 *** A harder problem
 
@@ -140,8 +154,10 @@ print('The %error is {0:%}'.format((a1 - 4.6052)/4.6052))
 #+END_SRC
 
 #+RESULTS:
-: 5.524312896405919
-: The %error is 19.958154%
+:RESULTS:
+5.524312896405919
+The %error is 19.958154%
+:END:
 
 **** invert f(t) then interpolate on 1/f
 
@@ -162,8 +178,10 @@ print('The %error is {0:%}'.format((a2 - 4.6052)/4.6052))
 #+END_SRC
 
 #+RESULTS:
-: 3.63107822410148
-: The %error is -21.152649%
+:RESULTS:
+3.63107822410148
+The %error is -21.152649%
+:END:
 
 *** Discussion
 
@@ -194,7 +212,9 @@ plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/dae1004a5f1072888e924d24a256c3f2ee3aaa8e.png]]
+:RESULTS:
+[[file:./.ob-jupyter/840658dd5ccc6b01f26d816d6847fc5f80dbc4b6.png]]
+:END:
 
 
 
@@ -212,7 +232,7 @@ So which is the best to interpolate? I think you should interpolate the quantity
 
 When we have data at two points but we need data in between them we use interpolation. Suppose we have the points (4,3) and (6,2) and we want to know the value of y at x=4.65, assuming y varies linearly between these points. we use the interp1d command to achieve this. The syntax in python is slightly different than in matlab.
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC jupyter-python 
 from scipy.interpolate import interp1d
 
 x = [4, 6]
@@ -228,12 +248,14 @@ print(ifunc([4.65, 5.01, 4.2, 9]))
 #+END_SRC
 
 #+RESULTS:
-: 2.675
-: [2.675 2.495 2.9     nan]
+:RESULTS:
+2.675
+[2.675 2.495 2.9     nan]
+:END:
 
 The default interpolation method is simple linear interpolation between points. Other methods exist too, such as fitting a cubic spline to the data and using the spline representation to interpolate from.
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC jupyter-python 
 from scipy.interpolate import interp1d
 
 x = [1, 2, 3, 4];
@@ -252,9 +274,11 @@ print(np.array(xi)**2)
 #+END_SRC
 
 #+RESULTS:
-: [ 2.5  6.5 12.5]
-: [ 2.25  6.25 12.25]
-: [ 2.25  6.25 12.25]
+:RESULTS:
+[ 2.5  6.5 12.5]
+[ 2.25  6.25 12.25]
+[ 2.25  6.25 12.25]
+:END:
 
 In this case the cubic spline interpolation is  more accurate than the linear interpolation. That is because the underlying data was polynomial in nature, and a spline is like a polynomial. That may not always be the case, and you need some engineering judgement to know which method is best.
 
@@ -267,7 +291,7 @@ In this case the cubic spline interpolation is  more accurate than the linear in
 
 When you do not know the functional form of data to fit an equation, you can still fit/interpolate with splines.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 # use splines to fit and interpolate data
 from scipy.interpolate import interp1d
 from scipy.optimize import fmin
@@ -294,15 +318,16 @@ plt.legend(['data','fit','max'], loc='best', numpoints=1)
 plt.xlabel('x data')
 plt.ylabel('y data')
 plt.title('Max point = ({0:1.2f}, {1:1.2f})'.format(float(xmax),
-						    float(f(xmax))))
-plt.savefig('images/splinefit.png')
+						    float(f(xmax))));
 #+END_SRC
 
 #+RESULTS:
-: None
-
-#+caption: Illustration of a spline fit to data and finding the maximum point.
-#+attr_latex: placement=[H]
-[[./images/splinefit.png]]
+:RESULTS:
+Optimization terminated successfully.
+         Current function value: -0.575221
+         Iterations: 12
+         Function evaluations: 24
+[[file:./.ob-jupyter/d61820c62e21844e11931df02172b62d536714db.png]]
+:END:
 
 There are other good examples at http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html

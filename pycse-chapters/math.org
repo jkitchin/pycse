@@ -9,13 +9,14 @@ index:derivative!numerical
 [[index:derivative!forward difference]]
 [[index:derivative!backward difference]]
 [[index:derivative!centered difference]]
+
 numpy has a function called numpy.diff() that is similar to the one found in matlab. It calculates the differences between the elements in your list, and returns a list that is one element shorter, which makes it unsuitable for plotting the derivative of a function.
 
 Loops in python are pretty slow (relatively speaking) but they are usually trivial to understand. In this script we show some simple ways to construct derivative vectors using loops. It is implied in these formulas that the data points are equally spaced. If they are not evenly spaced, you need a different approach.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
 import numpy as np
-from pylab import *
 import time
 
 '''
@@ -27,6 +28,7 @@ work well for very smooth data. they are surprisingly fast even up to
 x = np.linspace(0.78,0.79,100)
 y = np.sin(x)
 dy_analytical = np.cos(x)
+
 '''
 lets use a forward difference method:
 that works up until the last point, where there is not
@@ -71,16 +73,17 @@ plt.plot(x,dyf,'--',label='forward')
 plt.plot(x,dyb,'--',label='backward')
 plt.plot(x,dyc,'--',label='centered')
 
-plt.legend(loc='lower left')
-plt.savefig('images/simple-diffs.png')
+plt.legend(loc='lower left');
 #+END_SRC
 
 #+RESULTS:
-:  Forward difference took 0.000094 seconds
-:  Backward difference took 0.000084 seconds
-:  Centered difference took 0.000088 seconds
+:RESULTS:
+ Forward difference took 0.000194 seconds
+ Backward difference took 0.000192 seconds
+ Centered difference took 0.000210 seconds
+[[file:./.ob-jupyter/0261556181b9bee751d7a74ac0584818b9819c88.png]]
+:END:
 
-[[./images/simple-diffs.png]]
 
 ** Vectorized numeric derivatives
    :PROPERTIES:
@@ -88,10 +91,11 @@ plt.savefig('images/simple-diffs.png')
    :updated:  2013/03/06 18:26:55
    :categories: math
    :END:
+
 [[index:derivative!vectorized]]
 Loops are usually not great for performance. Numpy offers some vectorized methods that allow us to compute derivatives without loops, although this comes at the mental cost of harder to understand syntax
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -102,7 +106,7 @@ dy_analytical = np.cos(x)
 
 # we need to specify the size of dy ahead because diff returns
 #an array of n-1 elements
-dy = np.zeros(y.shape, np.float) #we know it will be this size
+dy = np.zeros(y.shape, float) #we know it will be this size
 dy[0:-1] = np.diff(y) / np.diff(x)
 dy[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
 
@@ -111,7 +115,7 @@ dy[-1] = (y[-1] - y[-2]) / (x[-1] - x[-2])
 calculate dy by center differencing using array slices
 '''
 
-dy2 = np.zeros(y.shape,np.float) #we know it will be this size
+dy2 = np.zeros(y.shape, float) #we know it will be this size
 dy2[1:-1] = (y[2:] - y[0:-2]) / (x[2:] - x[0:-2])
 
 # now the end points
@@ -122,20 +126,23 @@ plt.plot(x,y)
 plt.plot(x,dy_analytical,label='analytical derivative')
 plt.plot(x,dy,label='forward diff')
 plt.plot(x,dy2,'k--',lw=2,label='centered diff')
-plt.legend(loc='lower left')
-plt.savefig('images/vectorized-diffs.png')
+plt.legend(loc='lower left');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/465412e3f0567f835f8e799a43e32c98486af6ba.png]]
+:END:
 
-[[./images/vectorized-diffs.png]]
 
 ** 2-point vs. 4-point numerical derivatives
 [[index:derivative!4 point formula]]
+
 If your data is very noisy, you will have a hard time getting good derivatives; derivatives tend to magnify noise. In these cases, you have to employ smoothing techniques, either implicitly by using a multipoint derivative formula, or explicitly by smoothing the data yourself, or taking the derivative of a function that has been fit to the data in the neighborhood you are interested in.
 
 Here is an example of a 4-point centered difference of some noisy data:
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -159,7 +166,7 @@ y[0] and y[1] must be defined by lower order methods
 and y[-1] and y[-2] must be defined by lower order methods
 '''
 
-dy = np.zeros(y.shape, np.float) #we know it will be this size
+dy = np.zeros(y.shape, float) #we know it will be this size
 h = x[1] - x[0] #this assumes the points are evenely spaced!
 dy[2:-2] = (y[0:-4] - 8 * y[1:-3] + 8 * y[3:-1] - y[4:]) / (12.0 * h)
 
@@ -174,25 +181,26 @@ plt.plot(x, y)
 plt.plot(x, dy_analytical, label='analytical derivative')
 plt.plot(x, dyf, 'r-', label='2pt-forward diff')
 plt.plot(x, dy, 'k--', lw=2, label='4pt-centered diff')
-plt.legend(loc='lower left')
-plt.savefig('images/multipt-diff.png')
+plt.legend(loc='lower left');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/4edb3e379b16ebbce3650052cbd28460af8fb0d0.png]]
+:END:
 
-[[./images/multipt-diff.png]]
 
 ** Derivatives by polynomial fitting
    :PROPERTIES:
    :categories: math
    :END:
 index:derivative!polynomial
+
 One way to reduce the noise inherent in derivatives of noisy data is to fit a smooth function through the data, and analytically take the derivative of the curve. Polynomials are especially convenient for this. The challenge is to figure out what an appropriate polynomial order is. This requires judgment and experience.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
-from pycse import deriv
 
 tspan = [0, 0.1, 0.2, 0.4, 0.8, 1]
 Ca_data = [2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495]
@@ -201,14 +209,13 @@ p = np.polyfit(tspan, Ca_data, 3)
 plt.figure()
 plt.plot(tspan, Ca_data)
 plt.plot(tspan, np.polyval(p, tspan), 'g-')
-plt.savefig('images/deriv-fit-1.png')
 
 # compute derivatives
 dp = np.polyder(p)
 
 dCdt_fit = np.polyval(dp, tspan)
 
-dCdt_numeric = deriv(tspan, Ca_data) # 2-point deriv
+dCdt_numeric = np.gradient(Ca_data, tspan) # 2-point deriv
 
 plt.figure()
 plt.plot(tspan, dCdt_numeric, label='numeric derivative')
@@ -216,17 +223,17 @@ plt.plot(tspan, dCdt_fit, label='fitted derivative')
 
 t = np.linspace(min(tspan), max(tspan))
 plt.plot(t, np.polyval(dp, t), label='resampled derivative')
-plt.legend(loc='best')
-plt.savefig('images/deriv-fit-2.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/b669d274587db3c95a323850cd587d7a9a75f8cf.png]]
+[[file:./.ob-jupyter/6257ab3078727a897a586009a50040b91137a50d.png]]
+:END:
 
-[[./images/deriv-fit-1.png]]
 
 You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have "resampled" the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error.
-
-[[./images/deriv-fit-2.png]]
 
 ** Derivatives by fitting a function and taking the analytical derivative
    :PROPERTIES:
@@ -235,11 +242,10 @@ You can see a third order polynomial is a reasonable fit here. There are only 6 
 index:derivative!fitting
 A variation of a polynomial fit is to fit a model with reasonable physics. Here we fit a nonlinear function to the noisy data. The model is for the concentration vs. time in a batch reactor for a first order irreversible reaction. Once we fit the data, we take the analytical derivative of the fitted function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from pycse import deriv
 
 tspan = np.array([0, 0.1, 0.2, 0.4, 0.8, 1])
 Ca_data = np.array([2.0081,  1.5512,  1.1903,  0.7160,  0.2562,  0.1495])
@@ -252,7 +258,6 @@ pars, pcov = curve_fit(func, tspan, Ca_data, p0=[2, 2.3])
 
 plt.plot(tspan, Ca_data)
 plt.plot(tspan, func(tspan, *pars), 'g-')
-plt.savefig('images/deriv-funcfit-1.png')
 
 # analytical derivative
 k, Ca0 = pars
@@ -261,20 +266,20 @@ t = np.linspace(0, 2)
 dCdt_res =  -k * Ca0 * np.exp(-k * t)
 
 plt.figure()
-plt.plot(tspan, deriv(tspan, Ca_data), label='numerical derivative')
+plt.plot(tspan, np.gradient(Ca_data, tspan), label='numerical derivative')
 plt.plot(tspan, dCdt, label='analytical derivative of fit')
 plt.plot(t, dCdt_res, label='extrapolated')
-plt.legend(loc='best')
-plt.savefig('images/deriv-funcfit-2.png')
+plt.legend(loc='best');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/deriv-funcfit-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/c32dc19469a3a95b676cf628f2a36a71ba54d4fe.png]]
+[[file:./.ob-jupyter/1bcf789681d13d3aa9fa6baf7217b9a3529fc05c.png]]
+:END:
 
 Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.
 
-[[./images/deriv-funcfit-2.png]]
 
 ** Derivatives by FFT
    :PROPERTIES:
@@ -284,7 +289,7 @@ Visually this fit is about the same as a third order polynomial. Note the differ
    :END:
 index:derivative!FFT
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -315,15 +320,14 @@ fd = np.real(np.fft.ifft(1.0j * k * np.fft.fft(y)))
 plt.plot(x, y, label='function')
 plt.plot(x,dy_analytical,label='analytical der')
 plt.plot(x,fd,label='fft der')
-plt.legend(loc='lower left')
-
-plt.savefig('images/fft-der.png')
-plt.show()
+plt.legend(loc='lower left');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/e821e10483aa95e1abf9e7fda4df9b6f80a3b1b5.png]]
+:END:
 
-[[./images/fft-der.png]]
 
 ** A novel way to numerically estimate the derivative of a function - complex-step derivative approximation
    :PROPERTIES:
@@ -355,7 +359,7 @@ This example comes from the first link. The derivative must be evaluated
 using the chain rule.  We compare a forward difference, central
 difference and complex-step derivative approximations.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -374,7 +378,7 @@ dfdx_fd = (f(x + h) - f(x))/h
 dfdx_cd = (f(x+h)-f(x-h))/(2*h)
 
 # complex method
-dfdx_I = np.imag(f(x + np.complex(0, h))/h)
+dfdx_I = np.imag(f(x + complex(0, h))/h)
 
 print(dfdx_a)
 print(dfdx_fd)
@@ -383,46 +387,16 @@ print(dfdx_I)
 #+END_SRC
 
 #+RESULTS:
-: 1.77335410624
-: 1.77335393925
-: 1.77335410495
-: 1.7733541062373848
+:RESULTS:
+1.7733541062373446
+1.773353939249489
+1.7733541052278312
+1.7733541062373843
+:END:
 
 These are all the same to 4 decimal places. The simple finite difference is the least accurate, and the central differences is practically the same as the complex number approach.
 
-Let us use this method to verify the fundamental Theorem of Calculus, i.e.
-to evaluate the derivative of an integral function. Let $f(x) =
-\int\limits_1^{x^2} tan(t^3)dt$, and we now want to compute df/dx.
-Of course, this can be done
-[[http://mathmistakes.info/facts/CalculusFacts/learn/doi/doif.html][analytically]], but it is not trivial!
 
-#+BEGIN_SRC python
-import numpy as np
-from scipy.integrate import quad
-
-def f_(z):
-    def integrand(t):
-        return np.tan(t**3)
-    return quad(integrand, 0, z**2)
-
-f = np.vectorize(f_)
-
-x = np.linspace(0, 1)
-
-h = 1e-7
-
-dfdx = np.imag(f(x + complex(0, h)))/h
-dfdx_analytical = 2 * x * np.tan(x**6)
-
-import matplotlib.pyplot as plt
-
-plt.plot(x, dfdx, x, dfdx_analytical, 'r--')
-plt.show()
-#+END_SRC
-
-#+RESULTS:
-
-Interesting this fails.
 ** Vectorized piecewise functions
    :PROPERTIES:
    :categories: math
@@ -440,7 +414,8 @@ f(x) &=&  0, x < 0 \\
 \end{eqnarray}
 
 Today we examine a few ways to define a function like this. A simple way is to use conditional statements.
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python
 def f1(x):
     if x < 0:
         return 0
@@ -456,29 +431,31 @@ print(f1(-1))
 #+END_SRC
 
 #+RESULTS:
-: 0
+:RESULTS:
+0
+:END:
 
 This works, but the function is not vectorized, i.e. f([-1 0 2 3]) does not evaluate properly (it should give a list or array). You can get vectorized behavior by using list comprehension, or by writing your own loop. This does not fix all limitations, for example you cannot use the f1 function in the quad function to integrate it.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.linspace(-1, 3)
 y = [f1(xx) for xx in x]
 
-plt.plot(x, y)
-plt.savefig('images/vector-piecewise.png')
+plt.plot(x, y);
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x108f55b38>]
+:RESULTS:
+[[file:./.ob-jupyter/23c73c489d18c7fbb2e0f3c3d525b8e68eef4342.png]]
+:END:
 
-[[./images/vector-piecewise.png]]
 
 Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 def f2(x):
     'fully vectorized version'
     x = np.asarray(x)
@@ -489,19 +466,19 @@ def f2(x):
 
 print(f2([-1, 0, 1, 2, 3, 4]))
 x = np.linspace(-1,3);
-plt.plot(x,f2(x))
-plt.savefig('images/vector-piecewise-2.png')
+plt.plot(x,f2(x));
 #+END_SRC
 
 #+RESULTS:
-: [ 0.  0.  1.  0.  0.  0.]
-: [<matplotlib.lines.Line2D object at 0x10b3a6358>]
+:RESULTS:
+[0. 0. 1. 0. 0. 0.]
+[[file:./.ob-jupyter/23c73c489d18c7fbb2e0f3c3d525b8e68eef4342.png]]
+:END:
 
-[[./images/vector-piecewise-2.png]]
 
 A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x >= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 def heaviside(x):
     x = np.array(x)
     if x.shape != ():
@@ -525,18 +502,20 @@ print(quad(f3, -1, 3))
 #+END_SRC
 
 #+RESULTS:
-: (1.0, 1.1102230246251565e-14)
+:RESULTS:
+(1.0, 1.1102230246251565e-14)
+:END:
 
 
-#+BEGIN_SRC python :session
-plt.plot(x, f3(x))
-plt.savefig('images/vector-piecewise-3.png')
+#+BEGIN_SRC jupyter-python 
+plt.plot(x, f3(x));
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10fc29a20>]
+:RESULTS:
+[[file:./.ob-jupyter/23c73c489d18c7fbb2e0f3c3d525b8e68eef4342.png]]
+:END:
 
-[[./images/vector-piecewise-3.png]]
 
 There are many ways to define piecewise functions, and vectorization is not always necessary. The advantages of vectorization are usually notational simplicity and speed; loops in python are usually very slow compared to vectorized functions.
 
@@ -553,7 +532,7 @@ In [[http://matlab.cheme.cmu.edu/2011/10/27/compute-pipe-diameter/][Post 1280]] 
 
 Today we examine a strategy for smoothly joining these two functions. First we define the two functions.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
@@ -580,7 +559,7 @@ fF_turbulent = np.vectorize(fF_turbulent_unvectorized)
 
 Now we plot the correlations.
 
-#+BEGIN_SRC python :session :results silent
+#+BEGIN_SRC jupyter-python
 Re1 = np.linspace(500, 3000)
 f1 = fF_laminar(Re1)
 
@@ -592,34 +571,37 @@ plt.plot(Re1, f1, label='laminar')
 plt.plot(Re2, f2, label='turbulent')
 plt.xlabel('Re')
 plt.ylabel('$f_F$')
-plt.legend()
-plt.savefig('images/smooth-transitions-1.png')
+plt.legend();
 #+END_SRC
 
-[[./images/smooth-transitions-1.png]]
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/e997abdc9583d99a3ad29ff651f45c68ffccf4b4.png]]
+:END:
+
 
 You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
 Sigmoid functions
 
 A sigmoid function smoothly varies from 0 to 1 according to the equation: $\sigma(x) = \frac{1}{1 + e^{-(x-x0)/\alpha}}$. The transition is centered on $x0$, and $\alpha$ determines the width of the transition.
 
-#+BEGIN_SRC python :session :results silent
+#+BEGIN_SRC jupyter-python
 x = np.linspace(-4, 4);
 y = 1.0 / (1 + np.exp(-x / 0.1))
 plt.figure(2)
 plt.clf()
 plt.plot(x, y)
-plt.xlabel('x'); plt.ylabel('y'); plt.title('$\sigma(x)$')
-plt.savefig('images/smooth-transitions-sigma.png')
+plt.xlabel('x'); plt.ylabel('y'); plt.title('$\sigma(x)$');
 #+END_SRC
 
-
-
-[[./images/smooth-transitions-sigma.png]]
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/e9069c146549161e5b0310a34bbee55dea9f7c29.png]]
+:END:
 
 If we have two functions, $f_1(x)$ and $f_2(x)$ we want to smoothly join, we do it like this: $f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)$. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.
 
-#+BEGIN_SRC python :session :results silent
+#+BEGIN_SRC jupyter-python 
 def fanning_friction_factor(Re):
     '''combined, continuous correlation for the fanning friction factor.
     the alpha parameter is chosen to provide the desired smoothness.
@@ -633,39 +615,22 @@ def fanning_friction_factor(Re):
 Re = np.linspace(500, 10000);
 f = fanning_friction_factor(Re);
 
-# add data to figure 1
-plt.figure(1)
 plt.plot(Re,f, label='smooth transition')
 plt.xlabel('Re')
 plt.ylabel('$f_F$')
-plt.legend()
-plt.savefig('images/smooth-transitions-3.png')
+plt.legend();
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/65789987b09eaf6bd5c238fdf3cf3f1d6adce16a.png]]
+:END:
 
-[[./images/smooth-transitions-3.png]]
 
 You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.
 
 [[http://www.chem.mtu.edu/~fmorriso/DataCorrelationForSmoothPipes2010.pdf][Morrison]] derived a single function for the friction factor correlation over all Re: $f = \frac{0.0076\left(\frac{3170}{Re}\right)^{0.165}}{1 + \left(\frac{3171}{Re}\right)^{7.0}} + \frac{16}{Re}$. Here we show the comparison with the approach used above. The friction factor differs slightly at high Re, because Morrison's is based on the Prandlt correlation, while the work here is based on the Nikuradse correlation. They are similar, but not the same.
 
-#+BEGIN_SRC python :session :results silent
-# add this correlation to figure 1
-h, = plt.plot(Re, 16.0/Re + (0.0076 * (3170 / Re)**0.165) / (1 + (3170.0 / Re)**7))
-
-ax = plt.gca()
-handles, labels = ax.get_legend_handles_labels()
-
-handles.append(h)
-labels.append('Morrison')
-ax.legend(handles, labels)
-plt.savefig('images/smooth-transitions-morrison.png')
-#+END_SRC
-
-#+RESULTS:
-
-[[./images/smooth-transitions-morrison.png]]
 
 *** Summary
 
@@ -677,11 +642,12 @@ The approach demonstrated here allows one to smoothly join two discontinuous fun
    :updated:  2013/03/06 18:26:02
    :categories: math
    :END:
+
 Suppose we have a parameter that has two different values depending on the value of a dimensionless number. For example when the dimensionless number is much less than 1, x = 2/3, and when x is much greater than 1, x = 1. We desire a smooth transition from 2/3 to 1  as a function of x to avoid discontinuities in functions of x. We will adapt the smooth transitions between functions to be a smooth transition between constants.
 
 We define our function as $x(D) = x0 + (x1 - x0)*(1 - sigma(D,w)$. We control the rate of the transition by the variable $w$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -697,14 +663,13 @@ sigmaD = 1.0 / (1.0 + np.exp(-(1 - D) / w))
 x =  x0 + (x1 - x0)*(1 - sigmaD)
 
 plt.plot(D, x)
-plt.xlabel('D'); plt.ylabel('x')
-plt.savefig('images/smooth-transitions-constants.png')
+plt.xlabel('D'); plt.ylabel('x');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/smooth-transitions-constants.png]]
-
+:RESULTS:
+[[file:./.ob-jupyter/b270c65fa461836417041545f3db8df71e1f1391.png]]
+:END:
 This is a nice trick to get an analytical function with continuous derivatives for a transition between two constants. You could have the transition occur at a value other than D = 1, as well by changing the argument to the exponential function.
 
 ** On the quad or trapz'd in ChemE heaven
@@ -723,7 +688,7 @@ Let us look at some examples. We consider the example of computing $\int_0^2 x^3
 
 We use the scipy.integrate.quad command  to evaluate this $\int_0^2 x^3 dx$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import quad
 
 ans, err = quad(lambda x: x**3, 0, 2)
@@ -731,11 +696,13 @@ print(ans)
 #+END_SRC
 
 #+RESULTS:
-: 4.0
+:RESULTS:
+4.0
+:END:
 
 you can also define a function for the integrand.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import quad
 
 def integrand(x):
@@ -746,13 +713,15 @@ print(ans)
 #+END_SRC
 
 #+RESULTS:
-: 4.0
+:RESULTS:
+4.0
+:END:
 
 *** Numerical data integration
 
 if we had numerical data like this, we use trapz to integrate it
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 x = np.array([0, 0.5, 1, 1.5, 2])
@@ -766,11 +735,13 @@ print(i2, error)
 #+END_SRC
 
 #+RESULTS:
-: 4.25 0.0625
+:RESULTS:
+4.25 0.0625
+:END:
 
 Note the integral of these vectors is greater than 4! You can see why here.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 x = np.array([0, 0.5, 1, 1.5, 2])
@@ -781,17 +752,17 @@ y2 = x2**3
 
 plt.plot(x, y, label='5 points')
 plt.plot(x2, y2, label='50 points')
-plt.legend()
-plt.savefig('images/quad-1.png')
+plt.legend();
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/quad-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/2d3bdbb1b495318ad36ce522c827944cb4d84608.png]]
+:END:
 
 The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 x2 = np.linspace(0, 2, 100)
@@ -801,7 +772,9 @@ print(np.trapz(y2, x2))
 #+END_SRC
 
 #+RESULTS:
-: 4.00040812162
+:RESULTS:
+4.000408121620243
+:END:
 
 *** Combining numerical data with quad
 
@@ -812,7 +785,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];
 
 and you want to integrate this from x = 0.25 to 1.75. We do not have data in those regions, so some interpolation is going to be needed. Here is one approach.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
 import numpy as np
@@ -833,8 +806,10 @@ print(ans)
 #+END_SRC
 
 #+RESULTS:
-: 2.53199187838
-: 2.5312499999999987
+:RESULTS:
+2.531991878384006
+2.5312499999999987
+:END:
 
 These approaches are very similar, and both rely on linear interpolation. The second approach is simpler, and uses fewer lines of code.
 
@@ -843,6 +818,7 @@ These approaches are very similar, and both rely on linear interpolation. The se
 trapz and quad are functions for getting integrals. Both can be used with numerical data if interpolation is used. The syntax for the quad and trapz function is different in scipy than in Matlab.
 
 Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equations/][post]] for an example of solving an integral equation using quad and fsolve.
+
 ** Polynomials in python
    :PROPERTIES:
    :categories: math, polynomials
@@ -853,7 +829,7 @@ Finally, see this [[http://matlab.cheme.cmu.edu/2011/08/30/solving-integral-equa
 
 Polynomials can be represented as a list of coefficients. For example, the polynomial $4*x^3 + 3*x^2 -2*x + 10 = 0$ can be represented as [4, 3, -2, 10]. Here are some ways to create a polynomial object, and evaluate it.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 ppar = [4, 3, -2, 10]
@@ -867,15 +843,17 @@ print(4*x**3 + 3*x**2 -2*x + 10)
 #+END_SRC
 
 #+RESULTS:
-: 139
-: 139
-: 139
+:RESULTS:
+139
+139
+139
+:END:
 
 numpy makes it easy to get the derivative and integral of a polynomial.
 
 Consider: $y = 2x^2 - 1$. We know the derivative is $4x$. Here we compute the derivative and evaluate it at x=4.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 p = np.poly1d([2, 0, -1])
@@ -885,13 +863,15 @@ print(p2(4))
 #+END_SRC
 
 #+RESULTS:
-:
-: 4 x
-: 16
+:RESULTS:
+ 
+4 x
+16
+:END:
 
 The integral of the previous polynomial is $\frac{2}{3} x^3 - x + c$. We assume $C=0$. Let us compute the integral $\int_2^4 2x^2 - 1 dx$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 p = np.poly1d([2, 0, -1])
@@ -901,13 +881,15 @@ print(p2(4) - p2(2))
 #+END_SRC
 
 #+RESULTS:
-:         3
-: 0.6667 x - 1 x
-: 35.3333333333
+:RESULTS:
+        3
+0.6667 x - 1 x
+35.33333333333333
+:END:
 
 One reason to use polynomials is the ease of finding all of the roots using numpy.roots.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 print(np.roots([2, 0, -1])) # roots are +- sqrt(2)
 
@@ -917,12 +899,14 @@ print(np.roots(p))
 #+END_SRC
 
 #+RESULTS:
-: [ 0.70710678 -0.70710678]
-: [-0.+1.j  0.-1.j]
+:RESULTS:
+[-0.70710678  0.70710678]
+[-0.+1.j  0.-1.j]
+:END:
 
 There are applications of polynomials in thermodynamics. The van der waal equation is a cubic polynomial $f(V) = V^3 - \frac{p n b + n R T}{p} V^2 + \frac{n^2 a}{p}V - \frac{n^3 a b}{p} = 0$, where $a$ and $b$ are constants, $p$ is the pressure, $R$ is the gas constant, $T$ is an absolute temperature and $n$ is the number of moles. The roots of this equation tell you the volume of the gas at those conditions.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 # numerical values of the constants
 a = 3.49e4
@@ -937,12 +921,15 @@ print(np.roots(ppar))
 #+END_SRC
 
 #+RESULTS:
-: [ 5.09432376+0.j          4.40066810+1.43502848j  4.40066810-1.43502848j]
+:RESULTS:
+[5.09432376+0.j         4.4006681 +1.43502848j 4.4006681 -1.43502848j]
+:END:
 
 Note that only one root is real (and even then, we have to interpret 0.j as not being imaginary. Also, in a cubic polynomial, there can only be two imaginary roots). In this case that means there is only one phase present.
 
 *** Summary
 Polynomials in numpy are even better than in Matlab, because you get a polynomial object that acts just like a function. Otherwise, they are functionally equivalent.
+
 ** DONE Wilkinson's polynomial
    CLOSED: [2014-02-21 Fri 09:55]
    :PROPERTIES:
@@ -956,7 +943,7 @@ Polynomials in numpy are even better than in Matlab, because you get a polynomia
 
 This innocent looking function has 20 roots, which are 1,2,3,...,19,20. Here is a plot of the function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -967,17 +954,17 @@ def wilkinson(x):
 
 x = np.linspace(0, 21, 1000)
 plt.plot(x, wilkinson(x))
-plt.ylim([-5e13, 5e13])
-plt.savefig('./images/wilkinson-1.png')
+plt.ylim([-5e13, 5e13]);
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/wilkinson-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/8a8960da09d2d01154e0ed8bba41752a1fc620a9.png]]
+:END:
 
 Let us consider the expanded version of the polynomial. We will use sympy to expand the polynomial.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from sympy import Symbol, Poly
 from sympy.polys.polytools import   poly_from_expr
 
@@ -992,14 +979,16 @@ P,d = poly_from_expr(W.expand())
 print(P)
 #+END_SRC
 #+RESULTS:
-: x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000
-: Poly(x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000, x, domain='ZZ')
+:RESULTS:
+x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000
+Poly(x**20 - 210*x**19 + 20615*x**18 - 1256850*x**17 + 53327946*x**16 - 1672280820*x**15 + 40171771630*x**14 - 756111184500*x**13 + 11310276995381*x**12 - 135585182899530*x**11 + 1307535010540395*x**10 - 10142299865511450*x**9 + 63030812099294896*x**8 - 311333643161390640*x**7 + 1206647803780373360*x**6 - 3599979517947607200*x**5 + 8037811822645051776*x**4 - 12870931245150988800*x**3 + 13803759753640704000*x**2 - 8752948036761600000*x + 2432902008176640000, x, domain='ZZ')
+:END:
 
 The coefficients are orders of magnitude apart in size. This should make you nervous, because the roots of this equation are between 1-20, but there are numbers here that are O(19). This is likely to make any rounding errors in the number representations very significant, and may lead to issues with accuracy of the solution. Let us explore that.
 
 We will get the roots using numpy.roots.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from sympy import Symbol
 from sympy.polys.polytools import   poly_from_expr
@@ -1026,7 +1015,7 @@ print('\nHere is the polynomial evaluated at the calculated roots:\n', np.polyva
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
 
 These are the known roots
  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20]
@@ -1034,24 +1023,24 @@ These are the known roots
 The polynomial evaluates to [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] at the known roots
 
 Here are the roots from numpy:
- [ 20.00060348  18.99388894  18.02685247  16.91622268  16.14133991
-  14.77906016  14.22072943  12.85642119  12.08967018  10.96640641
-  10.01081017   8.99768263   8.00033976   6.99997228   6.0000001
-   5.00000024   3.99999998   3.           2.           1.        ]
+ [19.99980929 19.00190982 17.99092135 17.02542715 15.94628672 15.0754938
+ 13.91475559 13.07431403 11.95328325 11.02502293  9.99041304  9.00291529
+  7.99935583  7.000102    5.99998925  5.00000067  3.99999998  3.
+  2.          1.        ]
 
 Here is the polynomial evaluated at the calculated roots:
- [70862552367104.0 40966734728192.0 21045323877376.0 9730381314560.00
- 5297656354816.00 1637083049984.00 1072991384064.00 335341826560.000
- 143322307584.000 44270514688.0000 15650462720.0000 4228162560.00000
- 914166272.000000 150146048.000000 -1730048.00000000 -5285376.00000000
- -2747904.00000000 -538112.000000000 -54272.0000000000 -17408.0000000000]
-#+end_example
+ [-27462952745472.0 -10278376162816.0 -7199554861056.00 -3777623778304.00
+ -1555027751936.00 -613987753472.000 -365383250944.000 -215723629056.000
+ -72167715840.0000 -35759895552.0000 -12707126784.0000 -4465326592.00000
+ -1682691072.00000 -480398336.000000 -120152064.000000 -24114688.0000000
+ -3106816.00000000 209408.000000000 181760.000000000 36352.0000000000]
+:END:
 
 The roots are not exact. Even more to the point, the polynomial does not evaluate to zero at the calculated roots! Something is clearly wrong here. The polynomial function is fine, and it does evaluate to zero at the known roots which are integers. It is subtle, but up to that point, we are using only integers, which can be represented exactly. The roots function is evidently using some float math, and the floats are not the same as the integers.
 
 If we simply change the roots to floats, and reevaluate our polynomial, we get dramatically different results.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from sympy import Symbol
 from sympy.polys.polytools import   poly_from_expr
@@ -1071,22 +1060,25 @@ print('\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
 
 These are the known roots
- [  1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.
-  16.  17.  18.  19.  20.]
+ [ 1.  2.  3.  4.  5.  6.  7.  8.  9. 10. 11. 12. 13. 14. 15. 16. 17. 18.
+ 19. 20.]
 
-The polynomial evaluates to [0 0 55296.0000000000 425984.000000000 1024000.00000000 9068544.00000000
- 35825664.0000000 75235328.0000000 198567936.000000 566272000.000000
- 757796864.000000 1418231808.00000 2411708416.00000 3807354880.00000
- 6303744000.00000 11150557184.0000 17920108544.0000 16046678016.0000
- 38236565504.0000 54726656000.0000] at the known roots
-#+end_example
+The polynomial evaluates to [0 -8192.00000000000 -18432.0000000000 -622592.000000000 -2048000.00000000
+ -10838016.0000000 -23181312.0000000 -58982400.0000000 -131383296.000000
+ -99328000.0000000 -561532928.000000 -875003904.000000 -1385832448.00000
+ -1975328768.00000 -3808512000.00000 -6029312000.00000 -9619103744.00000
+ -23619133440.0000 -16210505728.0000 -27193344000.0000] at the known roots
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_99321/4019362117.py:12: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  x = np.arange(1, 21, dtype=np.float)
+:END:
 
 This also happens if we make the polynomial coefficients floats. That happens because in Python whenever one element is a float the results of math operations with that element are floats.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from sympy import Symbol
 from sympy.polys.polytools import   poly_from_expr
@@ -1106,19 +1098,21 @@ print('\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p
 #+END_SRC
 
 #+RESULTS:
-:
-: These are the known roots
-:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20]
-:
-: The polynomial evaluates to [  0.00000000e+00   0.00000000e+00   5.52960000e+04   4.25984000e+05
-:    1.02400000e+06   9.06854400e+06   3.58256640e+07   7.52353280e+07
-:    1.98567936e+08   5.66272000e+08   7.57796864e+08   1.41823181e+09
-:    2.41170842e+09   3.80735488e+09   6.30374400e+09   1.11505572e+10
-:    1.79201085e+10   1.60466780e+10   3.82365655e+10   5.47266560e+10] at the known roots
+:RESULTS:
+
+These are the known roots
+ [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20]
+
+The polynomial evaluates to [ 0.00000000e+00 -8.19200000e+03 -1.84320000e+04 -6.22592000e+05
+ -2.04800000e+06 -1.08380160e+07 -2.31813120e+07 -5.89824000e+07
+ -1.31383296e+08 -9.93280000e+07 -5.61532928e+08 -8.75003904e+08
+ -1.38583245e+09 -1.97532877e+09 -3.80851200e+09 -6.02931200e+09
+ -9.61910374e+09 -2.36191334e+10 -1.62105057e+10 -2.71933440e+10] at the known roots
+:END:
 
 Let us try to understand what is happening here. It turns out that the integer and float representations of the numbers are different! It is known that you cannot exactly represent numbers as floats.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from sympy import Symbol
 from sympy.polys.polytools import   poly_from_expr
@@ -1137,7 +1131,7 @@ for pj in p:
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
 [1, -210, 20615, -1256850, 53327946, -1672280820, 40171771630, -756111184500, 11310276995381, -135585182899530, 1307535010540395, -10142299865511450, 63030812099294896, -311333643161390640, 1206647803780373360, -3599979517947607200, 8037811822645051776, -12870931245150988800, 13803759753640704000, -8752948036761600000, 2432902008176640000]
 Integer                       Float                         \delta
 1                             1.000000                      0.000000e+00
@@ -1153,7 +1147,7 @@ Integer                       Float                         \delta
 1307535010540395              1307535010540395.000000       0.000000e+00
 -10142299865511450            -10142299865511450.000000     0.000000e+00
 63030812099294896             63030812099294896.000000      0.000000e+00
--311333643161390640           -311333643161390592.000000    -6.400000e+01
+-311333643161390640           -311333643161390656.000000    0.000000e+00
 1206647803780373360           1206647803780373248.000000    0.000000e+00
 -3599979517947607200          -3599979517947607040.000000   0.000000e+00
 8037811822645051776           8037811822645051392.000000    0.000000e+00
@@ -1161,7 +1155,7 @@ Integer                       Float                         \delta
 13803759753640704000          13803759753640704000.000000   0.000000e+00
 -8752948036761600000          -8752948036761600000.000000   0.000000e+00
 2432902008176640000           2432902008176640000.000000    0.000000e+00
-#+end_example
+:END:
 
 Now you can see the issue. Many of these numbers are identical in integer and float form, but some of them are not. The integer /cannot/ be exactly represented as a float, and there is a difference in the representations. It is a small difference compared to the magnitude, but these kinds of differences get raised to high powers, and become larger. You may wonder why I used "0:<30s>" to print the integer? That is because =pj= in that loop is an object from sympy, which prints as a string.
 
@@ -1171,6 +1165,7 @@ There are a few interesting webpages on this topic, which inspired me to work th
 1. http://blogs.mathworks.com/cleve/2013/03/04/wilkinsons-polynomials/
 2. http://www.numericalexpert.com/blog/wilkinson_polynomial/
 3. http://en.wikipedia.org/wiki/Wilkinson%27s_polynomial
+
 ** The trapezoidal method of integration
    :PROPERTIES:
    :categories: math, integration
@@ -1187,7 +1182,7 @@ Let us compute the integral of sin(x) from x=0 to $\pi$. To approximate the inte
 
 We will use this example to illustrate the difference in performance between loops and vectorized operations in python.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import time
 
@@ -1210,10 +1205,12 @@ print(f)
 #+END_SRC
 
 #+RESULTS:
-: time elapsed = 0.03262186050415039 sec
-: 1.99999835177
+:RESULTS:
+time elapsed = 0.0008971691131591797 sec
+1.9999983517708528
+:END:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python
 t0 = time.time()
 Xk = x[1:-1] - x[0:-2] # vectorized version of (x[k+1] - x[k])
 Yk = y[1:-1] + y[0:-2] # vectorized version of (y[k+1] + y[k])
@@ -1226,12 +1223,14 @@ print(f)
 #+END_SRC
 
 #+RESULTS:
-: time elapsed = 0.03238797187805176 sec
-: 1.99999340709
+:RESULTS:
+time elapsed = 0.00020194053649902344 sec
+1.999993407092373
+:END:
 
 In the last example, there may be loop buried in the sum command. Let us do one final method, using linear algebra, in a single line. The key to understanding this is to recognize the sum is just the result of a dot product of the x differences and y sums.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 t0 = time.time()
 f = 0.5 * np.dot(Xk, Yk)
 tf = time.time() - t0
@@ -1241,8 +1240,10 @@ print(f)
 #+END_SRC
 
 #+RESULTS:
-: time elapsed = 0.012599945068359375 sec
-: 1.99999340709
+:RESULTS:
+time elapsed = 0.02427506446838379 sec
+1.999993407092373
+:END:
 
 The loop method is straightforward to code, and looks alot like the formula that defines the trapezoid method. the vectorized methods are not as easy to read, and take fewer lines of code to write. However, the vectorized methods are much faster than the loop, so the loss of readability could be worth it for very large problems.
 
@@ -1257,7 +1258,7 @@ The times here are considerably slower than in Matlab. I am not sure if that is 
 [[index:integration!Simpson's rule]]
 A more accurate numerical integration than the trapezoid method is [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simps.html][Simpson's rule]]. The syntax is similar to trapz, but the method is in scipy.integrate.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import simps, romb
 
@@ -1277,9 +1278,11 @@ print('analy = {0}'.format(a))
 #+END_SRC
 
 #+RESULTS:
-: trapz = 0.7066579803798914 (-0.063470% error)
-: simps = 0.707058914216065 (-0.006769% error)
-: analy = 0.7071067811865475
+:RESULTS:
+trapz = 0.7066579803798914 (-0.063470% error)
+simps = 0.707058914216065 (-0.006769% error)
+analy = 0.7071067811865475
+:END:
 
 You can see the Simpson's method is more accurate than the trapezoid method.
 
@@ -1305,7 +1308,7 @@ $$y=x^2$$
 
 from x=0 to x=1. You should be able to work out that the answer is 1/3.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import quad
 
 def integrand(x):
@@ -1316,7 +1319,9 @@ print(ans)
 #+END_SRC
 
 #+RESULTS:
-: 0.33333333333333337
+:RESULTS:
+0.33333333333333337
+:END:
 
 *** double integrals
 
@@ -1334,7 +1339,7 @@ $\int_{x=\pi}^{2\pi}\int_{y=0}^{\pi}y sin(x)+x cos(y)dydx$
 
 The syntax in dblquad is a bit more complicated than in Matlab. We have to provide callable functions for the range of the y-variable. Here they are constants, so we create lambda functions that return the constants. Also, note that the order of arguments in the integrand is different than in Matlab.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import dblquad
 import numpy as np
 
@@ -1349,7 +1354,9 @@ print (ans)
 #+END_SRC
 
 #+RESULTS:
-: -9.869604401089358
+:RESULTS:
+-9.869604401089358
+:END:
 
 we use the tplquad command  to integrate $f(x,y,z)=y sin(x)+z cos(x)$ over the region
 
@@ -1359,7 +1366,7 @@ $0 <= y <= 1$
 
 $-1 <= z <= 1$
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.integrate import tplquad
 import numpy as np
 
@@ -1377,11 +1384,14 @@ print (ans)
 #+END_SRC
 
 #+RESULTS:
-: 1.9999999999999998
+:RESULTS:
+1.9999999999999998
+:END:
 
 *** Summary
 scipy.integrate offers the same basic functionality as Matlab does. The syntax differs significantly for these simple examples, but the use of functions for the limits enables freedom to integrate over non-constant limits.
-** Integrating equations in python
+
+** Integrating equations in Python
   :PROPERTIES:
   :date:     2013/01/20 09:00:00
   :categories: python, integration
@@ -1390,7 +1400,7 @@ scipy.integrate offers the same basic functionality as Matlab does. The syntax d
 
 A common need in engineering calculations is to integrate an equation over some range to determine the total change. For example, say we know the volumetric flow changes with time according to $d\nu/dt = \alpha t$, where $\alpha = 1$ L/min and we want to know how much liquid flows into a tank over 10 minutes if the volumetric flowrate is $\nu_0 = 5$ L/min at $t=0$. The answer to that question is the value of this integral: $V = \int_0^{10} \nu_0 + \alpha t dt$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import scipy
 from scipy.integrate import quad
 
@@ -1406,13 +1416,17 @@ print('{0:1.2f} L flowed into the tank over 10 minutes'.format(V))
 #+END_SRC
 
 #+RESULTS:
-: 100.00 L flowed into the tank over 10 minutes
+:RESULTS:
+100.00 L flowed into the tank over 10 minutes
+:END:
 
 That is all there is too it!
+
 ** Function integration by the Romberg method
 
 An alternative to the scipy.integrate.quad function is the [[http://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romberg.html][Romberg method]]. This method is not likely to be more accurate than quad, and it does not give you an error estimate.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 from scipy.integrate import quad, romberg
@@ -1437,7 +1451,8 @@ print(romberg(np.sin, a, b))
  [[http://matlab.cheme.cmu.edu/2011/08/10/symbolic-math-in-matlab/][Matlab post]]
 Python has capability to do symbolic math through the sympy package.
 *** Solve the quadratic equation
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 from sympy import solve, symbols, pprint
 
 a, b, c, x = symbols('a,b,c,x')
@@ -1450,12 +1465,14 @@ pprint(solution)
 #+END_SRC
 
 #+RESULTS:
-: [(-b + sqrt(-4*a*c + b**2))/(2*a), -(b + sqrt(-4*a*c + b**2))/(2*a)]
-: ⎡        _____________   ⎛       _____________⎞ ⎤
-: ⎢       ╱           2    ⎜      ╱           2 ⎟ ⎥
-: ⎢-b + ╲╱  -4⋅a⋅c + b    -⎝b + ╲╱  -4⋅a⋅c + b  ⎠ ⎥
-: ⎢─────────────────────, ────────────────────────⎥
-: ⎣         2⋅a                     2⋅a           ⎦
+:RESULTS:
+[(-b - sqrt(-4*a*c + b**2))/(2*a), (-b + sqrt(-4*a*c + b**2))/(2*a)]
+⎡        _____________          _____________⎤
+⎢       ╱           2          ╱           2 ⎥
+⎢-b - ╲╱  -4⋅a⋅c + b    -b + ╲╱  -4⋅a⋅c + b  ⎥
+⎢─────────────────────, ─────────────────────⎥
+⎣         2⋅a                    2⋅a         ⎦
+:END:
 
 The solution you should recognize in the form of $\frac{b \pm \sqrt{b^2 - 4 a c}}{2 a}$ although python does not print it this nicely!
 
@@ -1463,7 +1480,7 @@ The solution you should recognize in the form of $\frac{b \pm \sqrt{b^2 - 4 a c}
 
 you might find this helpful!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from sympy import diff
 
 print(diff(f, x))
@@ -1473,12 +1490,15 @@ print(diff(f, a))
 #+END_SRC
 
 #+RESULTS:
-: 2*a*x + b
-: 2*a
-: x**2
+:RESULTS:
+2*a*x + b
+2*a
+x**2
+:END:
 
 *** integration
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 from sympy import integrate
 
 print(integrate(f, x))          # indefinite integral
@@ -1486,11 +1506,14 @@ print(integrate(f, (x, 0, 1)))  # definite integral from x=0..1
 #+END_SRC
 
 #+RESULTS:
-: a*x**3/3 + b*x**2/2 + c*x
-: a/3 + b/2 + c
+:RESULTS:
+a*x**3/3 + b*x**2/2 + c*x
+a/3 + b/2 + c
+:END:
 
 *** Analytically solve a simple ODE
-#+BEGIN_SRC python :session
+
+#+BEGIN_SRC jupyter-python 
 from sympy import Function, Symbol, dsolve
 f = Function('f')
 x = Symbol('x')
@@ -1504,9 +1527,11 @@ print([y.subs(x, X) for X in [0, 0.5, 1]]) # multiple values
 #+END_SRC
 
 #+RESULTS:
-: f(x) == C1*exp(x)
-: f(4) == C1*exp(4)
-: [f(0) == C1, f(0.5) == 1.64872127070013*C1, f(1) == E*C1]
+:RESULTS:
+Eq(f(x), C1*exp(x))
+Eq(f(4), C1*exp(4))
+[Eq(f(0), C1), Eq(f(0.5), 1.64872127070013*C1), Eq(f(1), E*C1)]
+:END:
 
 It is not clear you can solve the initial value problem to get C1.
 
@@ -1521,39 +1546,45 @@ The symbolic math in sympy is pretty good. It is not up to the capability of Map
 
 Float numbers (i.e. the ones with decimals) cannot be perfectly represented in a computer. This can lead to some artifacts when you have to compare float numbers that on paper should be the same, but in silico are not. Let us look at some examples. In this example, we do some simple math that should result in an answer of 1, and then see if the answer is "equal" to one.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print(3.0 * (1.0/3.0))
 print(1.0 == 3.0 * (1.0/3.0))
 #+END_SRC
 
 #+RESULTS:
-: 1.0
-: True
+:RESULTS:
+1.0
+True
+:END:
 
 Everything looks fine. Now, consider this example.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print(49.0 * (1.0/49.0))
 print(1.0 == 49.0 * (1.0/49.0))
 #+END_SRC
 
 #+RESULTS:
-: 0.9999999999999999
-: False
+:RESULTS:
+0.9999999999999999
+False
+:END:
 
 The first line shows the result is not 1.0, and the equality fails!
 You can see here why the equality statement fails. We will print the two numbers to sixteen decimal places.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 print('{0:1.16f}'.format(49.0 * (1.0 / 49.0) ))
 print('{0:1.16f}'.format(1.0))
 print(1 - 49.0 * (1.0 / 49.0))
 #+END_SRC
 
 #+RESULTS:
-: 0.9999999999999999
-: 1.0000000000000000
-: 1.1102230246251565e-16
+:RESULTS:
+0.9999999999999999
+1.0000000000000000
+1.1102230246251565e-16
+:END:
 
 The two numbers actually are not equal to each other because of float math. They are /very, very/ close to each other, but not the same.
 
@@ -1561,7 +1592,7 @@ This leads to the idea of asking if two numbers are equal to each other within s
 
 Below, we implement a comparison function from [[http://dx.doi.org/10.1107/S010876730302186X][doi:10.1107/S010876730302186X]] that allows comparisons with tolerance.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 # Implemented from Acta Crystallographica A60, 1-6 (2003). doi:10.1107/S010876730302186X
 
 import numpy as np
@@ -1576,11 +1607,14 @@ print(feq(1.0, 49.0 * (1.0/49.0), np.spacing(1)))
 #+END_SRC
 
 #+RESULTS:
-: 2.22044604925e-16
-: True
+:RESULTS:
+2.220446049250313e-16
+True
+:END:
 
 For completeness, here are the other float comparison operators from that paper. We also show a few examples.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 import numpy as np
 
 def flt(x, y, epsilon):
@@ -1607,10 +1641,12 @@ print(flt(1.0 - 2 * np.spacing(1), 49.0 * (1.0/49.0), np.spacing(1)))
 #+END_SRC
 
 #+RESULTS:
-: True
-: True
-: True
-: True
+:RESULTS:
+True
+True
+True
+True
+:END:
 
 As you can see, float comparisons can be tricky. You have to give a lot of thought to how to make the comparisons, and the functions shown above are not the only way to do it. You need to build in testing to make sure your comparisons are doing what you want.
 

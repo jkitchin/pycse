@@ -1,11 +1,12 @@
 * Nonlinear algebra
+
 Nonlinear algebra problems are typically solved using an iterative process that terminates when the solution is found within a specified tolerance. This process is hidden from the user. The canonical standard form to solve is $f(X) = 0$.
 
 ** Know your tolerance
 [[http://matlab.cheme.cmu.edu/2011/09/02/know-your-tolerance/][Matlab post]]
 $$V = \frac{\nu (C_{Ao} - C_A)}{k C_A^2}$$
 
-with the information given below, solve for the exit concentration. This should be simple.
+With the information given below, solve for the exit concentration. This should be simple.
 
 #+BEGIN_EXAMPLE
 Cao = 2*u.mol/u.L;
@@ -14,7 +15,7 @@ nu = 0.5*u.L/u.s;
 k = 0.23 * u.L/u.mol/u.s;
 #+END_EXAMPLE
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -39,26 +40,25 @@ def func(Ca):
 
 Let us plot the function to estimate the solution.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 c = np.linspace(0.001, 2) * mol / L
 
 plt.clf()
 plt.plot(c, func(c))
 plt.xlabel('C (mol/m^3)')
-plt.ylim([-0.1, 0.1])
-plt.savefig('images/nonlin-tolerance.png')
+plt.ylim([-0.1, 0.1]);
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x112c9acf8>]
-: <matplotlib.text.Text object at 0x112c50908>
-: (-0.1, 0.1)
+:RESULTS:
+[[file:./.ob-jupyter/92c213db27b46ff93f05bf781583a4fae051de80.png]]
+:END:
 
 [[./images/nonlin-tolerance.png]]
 
 Now let us solve the equation. It looks like an answer is near C=500.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 from scipy.optimize import fsolve
 
 cguess = 500
@@ -69,11 +69,14 @@ print(func(c) / (mol / L))
 #+END_SRC
 
 #+RESULTS:
-: 559.583745606
-: -1.73472347598e-18
-: -1.73472347598e-21
+:RESULTS:
+559.5837456060607
+-1.734723475976807e-18
+-1.734723475976807e-21
+:END:
 
 Interesting. In Matlab, the default tolerance was not sufficient to get a good solution. Here it is.
+
 ** Solving integral equations with fsolve
    :PROPERTIES:
    :categories: Nonlinear algebra
@@ -89,7 +92,7 @@ $$100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa$$
 
 We start by creating a function handle that describes the integrand. We can use this function in the quad command to evaluate the integral.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 from scipy.integrate import quad
 from scipy.optimize import fsolve
@@ -113,34 +116,37 @@ vfunc = np.vectorize(func)
 
 We will need an initial guess, so we make a plot of our function to get an idea.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import matplotlib.pyplot as plt
 
 f = np.linspace(0.01, 1)
 plt.plot(f, vfunc(f))
-plt.xlabel('Molar flow rate')
-plt.savefig('images/integral-eqn-guess.png')
+plt.xlabel('Molar flow rate');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10c583ac8>]
-: <matplotlib.text.Text object at 0x10a0aad30>
+:RESULTS:
+[[file:./.ob-jupyter/9a8dc1cf4cc977a163ba6e5815722bc7974331f7.png]]
+:END:
 
-[[./images/integral-eqn-guess.png]]
 
 Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 Fa_guess = 0.1
 Fa_exit, = fsolve(vfunc, Fa_guess)
 print('The exit concentration is {0:1.2f} mol/L'.format(Fa_exit / nu))
 #+END_SRC
 
 #+RESULTS:
-: The exit concentration is 0.01 mol/L
+:RESULTS:
+The exit concentration is 0.01 mol/L
+:END:
 
 *** Summary notes
+
 This example seemed a little easier in Matlab, where the quad function seemed to get automatically vectorized. Here we had to do it by hand.
+
 ** Method of continuity for nonlinear equation solving
    :PROPERTIES:
    :categories: Nonlinear algebra
@@ -149,6 +155,7 @@ This example seemed a little easier in Matlab, where the quad function seemed to
    :END:
 [[http://matlab.cheme.cmu.edu/2011/11/01/method-of-continuity-for-nonlinear-equation-solving/][Matlab post]]
 index:Continuation
+
 Adapted from Perry's Chemical Engineers Handbook, 6th edition 2-63.
 
 We seek the solution to the following nonlinear equations:
@@ -159,7 +166,7 @@ $1 + 2x - 3y + x^2 + xy - y e^x = 0$
 
 In principle this is easy, we simply need some initial guesses and a nonlinear solver. The challenge here is what would you guess? There could be many solutions. The equations are implicit, so it is not easy to graph them, but let us give it a shot, starting on the x range -5 to 5. The idea is set a value for x, and then solve for y in each equation.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 import numpy as np
 from scipy.optimize import fsolve
 
@@ -193,30 +200,18 @@ def gy(x):
 plt.plot(x, fy(x), x, gy(x))
 plt.xlabel('x')
 plt.ylabel('y')
-plt.legend(['fy', 'gy'])
-plt.savefig('images/continuation-1.png')
+plt.legend(['fy', 'gy']);
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
+[[file:./.ob-jupyter/4374fcbb39adf2b8b90a501404a2dcc44b0f0721.png]]
+:END:
 
-/Users/jkitchin/anaconda3/lib/python3.5/site-packages/scipy/optimize/minpack.py:161: RuntimeWarning: The iteration is not making good progress, as measured by the
-  improvement from the last ten iterations.
-  warnings.warn(msg, RuntimeWarning)
-/Users/jkitchin/anaconda3/lib/python3.5/site-packages/scipy/optimize/minpack.py:161: RuntimeWarning: The iteration is not making good progress, as measured by the
-  improvement from the last five Jacobian evaluations.
-  warnings.warn(msg, RuntimeWarning)
-[<matplotlib.lines.Line2D object at 0x10c59a400>, <matplotlib.lines.Line2D object at 0x10c57c358>]
-<matplotlib.text.Text object at 0x10a0aad30>
-<matplotlib.text.Text object at 0x10a3af898>
-<matplotlib.legend.Legend object at 0x10a3afb70>
-#+end_example
-
-[[./images/continuation-1.png]]
 
 You can see there is a solution near x = -1, y = 0, because both functions equal zero there. We can even use that guess with fsolve. It is disappointly easy! But, keep in mind that in 3 or more dimensions, you cannot perform this visualization, and another method could be required.
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 def func(X):
     x,y = X
     return [f(x, y), g(x, y)]
@@ -225,7 +220,9 @@ print(fsolve(func, [-2, -2]))
 #+END_SRC
 
 #+RESULTS:
-: [ -1.00000000e+00   1.28730858e-15]
+:RESULTS:
+[-1.00000000e+00  1.28730858e-15]
+:END:
 
 
 We explore a method that bypasses this problem today. The principle is to introduce a new variable, $\lambda$, which will vary from 0 to 1. at $\lambda=0$ we will have a simpler equation, preferably a linear one, which can be easily solved, or which can be analytically solved. At $\lambda=1$, we have the original equations. Then, we create a system of differential equations that start at the easy solution, and integrate from $\lambda=0$ to $\lambda=1$, to recover the final solution.
@@ -244,13 +241,15 @@ $2x - 3y = -1$
 
 These equations are trivial to solve:
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 x0 = np.linalg.solve([[1., 1.], [2., -3.]],[ -2, -1])
 print(x0)
 #+END_SRC
 
 #+RESULTS:
-: [-1.4 -0.6]
+:RESULTS:
+[-1.4 -0.6]
+:END:
 
 We form the system of ODEs by differentiating the new equations with respect to $\lambda$. Why do we do that? The solution, (x,y) will be a function of $\lambda$. From calculus, you can show that:
 
@@ -275,7 +274,7 @@ For this set of equations:
 
 Now, we simply set up those two differential equations on $\frac{\partial x}{\partial \lambda}$ and $\frac{\partial y}{\partial \lambda}$, with the initial conditions at $\lambda = 0$ which is the solution of the simpler linear equations, and integrate to $\lambda = 1$, which is the final solution of the original equations!
 
-#+BEGIN_SRC python :session
+#+BEGIN_SRC jupyter-python 
 def ode(X, LAMBDA):
     x,y = X
     pfpx = 1.0 - 2.0 * LAMBDA * x + 8 * LAMBDA * y
@@ -302,8 +301,10 @@ print(f(xsol, ysol), g(xsol, ysol))
 #+END_SRC
 
 #+RESULTS:
-: The solution is at x=-1.000, y=0.000
-: -1.27746598729e-06 -1.15873818131e-06
+:RESULTS:
+The solution is at x=-1.000, y=0.000
+-1.277465987293671e-06 -1.1587381813125102e-06
+:END:
 
 You can see the solution is somewhat approximate; the true solution is x = -1, y = 0. The approximation could be improved by lowering the tolerance on the ODE solver. The functions evaluate to a small number, close to zero. You have to apply some judgment to determine if that is sufficiently accurate. For instance if the units on that answer are kilometers, but you need an answer accurate to a millimeter, this may not be accurate enough.
 
@@ -328,7 +329,7 @@ $$ \frac{\partial x}{\partial \lambda} = -\frac{\partial f}{\partial \lambda}/\f
 
 That defines an ordinary differential equation that we can solve by integrating from $\lambda=0$ where we know the solution to $\lambda=1$ which is the solution to the real problem. For this problem: $\frac{\partial f}{\partial \lambda}=x^2$ and $\frac{\partial f}{\partial x}=-5 + 2\lambda x$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -342,17 +343,17 @@ x = odeint(dxdL, x0, Lspan)
 
 plt.plot(Lspan, x)
 plt.xlabel('$\lambda$')
-plt.ylabel('x')
-plt.savefig('images/nonlin-contin-II-1.png')
+plt.ylabel('x');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/nonlin-contin-II-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/2f208438ce60b741c147ba9ad579e0b3b4f43f18.png]]
+:END:
 
 We found one solution at x=2. What about the other solution? To get that we have to introduce $\lambda$ into the equations in another way. We could try: $f(x;\lambda) = x^2 + \lambda(-5x + 6)$, but this leads to an ODE that is singular at the initial starting point. Another approach is $f(x;\lambda) = x^2 + 6 + \lambda(-5x)$, but now the solution at $\lambda=0$ is imaginary, and we do not have a way to integrate that! What we can do instead is add and subtract a number like this: $f(x;\lambda) = x^2 - 4 + \lambda(-5x + 6 + 4)$. Now at $\lambda=0$, we have a simple equation with roots at $\pm 2$, and we already know that $x=2$ is a solution. So, we create our ODE on $dx/d\lambda$ with initial condition $x(0) = -2$.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
@@ -366,13 +367,13 @@ x = odeint(dxdL, x0, Lspan)
 
 plt.plot(Lspan, x)
 plt.xlabel('$\lambda$')
-plt.ylabel('x')
-plt.savefig('images/nonlin-contin-II-2.png')
+plt.ylabel('x');
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/nonlin-contin-II-2.png]]
+:RESULTS:
+[[file:./.ob-jupyter/bf74646e454d71fafb8178e00346b629451dde8e.png]]
+:END:
 
 Now we have the other solution. Note if you choose the other root, $x=2$, you find that 2 is a root, and learn nothing new. You could choose other values to add, e.g., if you chose to add and subtract 16, then you would find that one starting point leads to one root, and the other starting point leads to the other root. This method does not solve all problems associated with nonlinear root solving, namely, how many roots are there, and which one is "best" or physically reasonable? But it does give a way to solve an equation where you have no idea what an initial guess should be. You can see, however, that just like you can get different answers from different initial guesses, here you can get different answers by setting up the equations differently.
 
@@ -383,6 +384,7 @@ Now we have the other solution. Note if you choose the other root, $x=2$, you fi
    :updated:  2013/02/27 14:27:48
    :END:
 [[http://matlab.cheme.cmu.edu/2011/09/10/counting-roots/][Matlab post]]
+
 The goal here is to determine how many roots there are in a nonlinear function we are interested in solving. For this example, we use a cubic polynomial because we know there are three roots.
 
 $$f(x) = x^3 + 6x^2 - 4x -24$$
@@ -391,29 +393,32 @@ $$f(x) = x^3 + 6x^2 - 4x -24$$
 
 This ony works for a polynomial, it does not work for any other nonlinear function.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 print(np.roots([1, 6, -4, -24]))
 #+END_SRC
 
 #+RESULTS:
-: [-6.  2. -2.]
+:RESULTS:
+[-6.  2. -2.]
+:END:
 
 Let us plot the function to see where the roots are.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.linspace(-8, 4)
 y = x**3 + 6 * x**2 - 4*x - 24
-plt.plot(x, y)
-plt.savefig('images/count-roots-1.png')
+plt.plot(x, y);
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/16741fa2db0948df510bec8aa36094c1ea9839c5.png]]
+:END:
 
-[[./images/count-roots-1.png]]
 
 Now we consider several approaches to counting the number of roots in this interval. Visually it is pretty easy, you just look for where the function crosses zero. Computationally, it is tricker.
 
@@ -421,7 +426,7 @@ Now we consider several approaches to counting the number of roots in this inter
 
 Count the number of times the sign changes in the interval. What we have to do is multiply neighboring elements together, and look for negative values. That indicates a sign change. For example the product of two positive or negative numbers is a positive number. You only get a negative number from the product of a positive and negative number, which means the sign changed.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -432,7 +437,9 @@ print(np.sum(y[0:-2] * y[1:-1] < 0))
 #+END_SRC
 
 #+RESULTS:
-: 3
+:RESULTS:
+3
+:END:
 
 This method gives us the number of roots, but not where the roots are.
 
@@ -444,32 +451,29 @@ $$f'(x) = 3x^2 + 12x - 4$$
 
 with f(-8) = -120
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 import numpy as np
-from pycse import odelay
+from scipy.integrate import solve_ivp
 
-def fprime(f, x):
+def fprime(x, f):
     return 3.0 * x**2 + 12.0*x - 4.0
 
-def event(f, x):
+def event(x, f):
     value = f # we want f = 0
-    isterminal = False
-    direction = 0
-    return value, isterminal, direction
+    return value
 
-xspan = np.linspace(-8, 4)
-f0 = -120
+xspan = (-8, 4)
+f0 = (-120,)
 
-X, F, TE, YE, IE = odelay(fprime, f0, xspan, events=[event])
-for te, ye in zip(TE, YE):
-    print('root found at x = {0: 1.3f}, f={1: 1.3f}'.format(te, float(ye)))
+sol = solve_ivp(fprime, xspan, f0, events=event, max_step=0.1)
+
+sol.t_events[0] # these are the found roots
 #+END_SRC
 
 #+RESULTS:
-: root found at x = -6.000, f= 0.000
-: root found at x = -2.000, f= 0.000
-: root found at x =  2.000, f= 0.000
-
+:RESULTS:
+array([-6., -2.,  2.])
+:END:
 
 ** Finding the nth root of a periodic function
    :PROPERTIES:
@@ -482,7 +486,8 @@ for te, ye in zip(TE, YE):
 There is a heat transfer problem where one needs to find the n^th root of the following equation: $x J_1(x) - Bi J_0(x)=0$ where $J_0$ and $J_1$ are the Bessel functions of zero and first order, and $Bi$ is the Biot number. We examine an approach to finding these roots.
 
 First,  we plot the function.
-#+BEGIN_SRC python
+
+#+BEGIN_SRC jupyter-python
 from scipy.special import jn, jn_zeros
 import matplotlib.pyplot as plt
 import numpy as np
@@ -493,17 +498,17 @@ def f(x):
     return x * jn(1, x) - Bi * jn(0, x)
 
 X = np.linspace(0, 30, 200)
-plt.plot(X, f(X))
-plt.savefig('images/heat-transfer-roots-1.png')
+plt.plot(X, f(X));
 #+END_SRC
 
 #+RESULTS:
-
-[[./images/heat-transfer-roots-1.png]]
+:RESULTS:
+[[file:./.ob-jupyter/b88dc3685d93164135b2e9a1ae99e86161be6b28.png]]
+:END:
 
 You can see there are many roots to this equation, and we want to be sure we get the n^{th} root. This function is pretty well behaved, so if you make a good guess about the solution you will get an answer, but if you make a bad guess, you may get the wrong root. We examine next a way to do it without guessing the solution. What we want is the solution to $f(x) = 0$, but we want all the solutions in a given interval. We derive a new equation, $f'(x) = 0$, with initial condition $f(0) = f0$, and integrate the ODE with an event function that identifies all zeros of $f$ for us. The derivative of our function is $df/dx = d/dx(x J_1(x)) - Bi J'_0(x)$. It is known (http://www.markrobrien.com/besselfunct.pdf) that $d/dx(x J_1(x)) = x J_0(x)$, and $J'_0(x) = -J_1(x)$. All we have to do now is set up the problem and run it.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from pycse import *  # contains the ode integrator with events
 
 from scipy.special import jn, jn_zeros
@@ -516,47 +521,36 @@ def f(x):
     "function we want roots for"
     return x * jn(1, x) - Bi * jn(0, x)
 
-def fprime(f, x):
+def fprime(x, f):
     "df/dx"
     return x * jn(0, x) - Bi * (-jn(1, x))
 
-def e1(f, x):
+def e1(x, f):
     "event function to find zeros of f"
-    isterminal = False
     value = f
-    direction = 0
-    return value, isterminal, direction
+    return value
 
-f0 = f(0)
-xspan = np.linspace(0, 30, 200)
+f0 = (f(0),)
+xspan = (0, 30)
 
-x, fsol, XE, FE, IE = odelay(fprime, f0, xspan, events=[e1])
+sol = solve_ivp(fprime, xspan, f0, events=e1, max_step=0.1)
 
-plt.plot(x, fsol, '.-', label='Numerical solution')
-plt.plot(xspan, f(xspan), '--', label='Analytical function')
-plt.plot(XE, FE, 'ro', label='roots')
-plt.legend(loc='best')
-plt.savefig('images/heat-transfer-roots-2.png')
-
-for i, root in enumerate(XE):
-    print('root {0} is at {1}'.format(i, root))
+plt.plot(sol.t, sol.y.T, '.-', label='Numerical solution')
+plt.plot(sol.t, f(sol.t), '--', label='Analytical function')
+plt.plot(sol.t_events[0], sol.y_events[0], 'ro', label='roots')
+plt.legend(loc='best');
 #+END_SRC
 
-#+RESULTS:
-#+begin_example
-root 0 is at 1.2557837640729235
-root 1 is at 4.079477427934495
-root 2 is at 7.15579903773092
-root 3 is at 10.270985121143715
-root 4 is at 13.398397381859922
-root 5 is at 16.53115870938385
-root 6 is at 19.66672767595721
-root 7 is at 22.80395034851908
-root 8 is at 25.94222881771057
-root 9 is at 29.081221488671474
-#+end_example
 
-[[./images/heat-transfer-roots-2.png]]
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/8c8e6d73f5de2f5716c37d0168c56ee36f9299e6.png]]
+:END:
+
+
+
+
 
 You can work this out once, and then you have all the roots in the interval and you can select the one you want.
 
@@ -575,7 +569,7 @@ y &=& 8 - x^2
 
 To solve this we need to setup a function that is equal to zero at the solution. We have two equations, so our function must return two values. There are two variables, so the argument to our function will be an array of values.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC jupyter-python
 from scipy.optimize import fsolve
 
 def objective(X):
@@ -597,5 +591,7 @@ print(sol)
 #+END_SRC
 
 #+RESULTS:
-: [ 2.  4.]
-: [-2.  4.]
+:RESULTS:
+[2. 4.]
+[-2.  4.]
+:END:
