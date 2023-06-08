@@ -18,7 +18,7 @@ Let us take a look at the raw data.
 import numpy as np
 import matplotlib.pyplot as plt
 
-w, i = np.loadtxt('data/raman.txt', usecols=(0, 1), unpack=True)
+w, i = np.loadtxt('../data/raman.txt', usecols=(0, 1), unpack=True)
 
 plt.plot(w, i)
 plt.xlabel('Raman shift (cm$^{-1}$)')
@@ -27,52 +27,8 @@ plt.ylabel('Intensity (counts)');
 
 #+RESULTS:
 :RESULTS:
-# [goto error]
----------------------------------------------------------------------------
-FileNotFoundError                         Traceback (most recent call last)
-Cell In[185], line 4
-      1 import numpy as np
-      2 import matplotlib.pyplot as plt
-----> 4 w, i = np.loadtxt('data/raman.txt', usecols=(0, 1), unpack=True)
-      6 plt.plot(w, i)
-      7 plt.xlabel('Raman shift (cm$^{-1}$)')
-
-File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/npyio.py:1338, in loadtxt(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)
-   1335 if isinstance(delimiter, bytes):
-   1336     delimiter = delimiter.decode('latin1')
--> 1338 arr = _read(fname, dtype=dtype, comment=comment, delimiter=delimiter,
-   1339             converters=converters, skiplines=skiprows, usecols=usecols,
-   1340             unpack=unpack, ndmin=ndmin, encoding=encoding,
-   1341             max_rows=max_rows, quote=quotechar)
-   1343 return arr
-
-File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/npyio.py:975, in _read(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)
-    973     fname = os.fspath(fname)
-    974 if isinstance(fname, str):
---> 975     fh = np.lib._datasource.open(fname, 'rt', encoding=encoding)
-    976     if encoding is None:
-    977         encoding = getattr(fh, 'encoding', 'latin1')
-
-File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/_datasource.py:193, in open(path, mode, destpath, encoding, newline)
-    156 """
-    157 Open `path` with `mode` and return the file object.
-    158 
-   (...)
-    189 
-    190 """
-    192 ds = DataSource(destpath)
---> 193 return ds.open(path, mode, encoding=encoding, newline=newline)
-
-File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/_datasource.py:533, in DataSource.open(self, path, mode, encoding, newline)
-    530     return _file_openers[ext](found, mode=mode,
-    531                               encoding=encoding, newline=newline)
-    532 else:
---> 533     raise FileNotFoundError(f"{path} not found.")
-
-FileNotFoundError: data/raman.txt not found.
+[[file:./.ob-jupyter/6197d397b6866698cdf86938af151eebeaa75982.png]]
 :END:
-
-[[./images/raman-1.png]]
 
 The next thing to do is narrow our focus to the region we are interested in between 1340 cm^{-1} and 1360 cm^{-1}.
 
@@ -84,17 +40,14 @@ i1 = i[ind]
 plt.figure()
 plt.plot(w1, i1, 'b. ')
 plt.xlabel('Raman shift (cm$^{-1}$)')
-plt.ylabel('Intensity (counts)')
-plt.savefig('images/raman-2.png')
+plt.ylabel('Intensity (counts)');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x10b1031d0>
-: [<matplotlib.lines.Line2D object at 0x10b0cf978>]
-: <matplotlib.text.Text object at 0x10f8f0ef0>
-: <matplotlib.text.Text object at 0x10f8d5dd8>
+:RESULTS:
+[[file:./.ob-jupyter/1962a6d5fa89e0a0565becc8276ffc2142849ace.png]]
+:END:
 
-[[./images/raman-2.png]]
 
 Next we consider a scipy:UnivariateSpline. This function "smooths" the data.
 
@@ -107,17 +60,14 @@ sp = UnivariateSpline(w1, i1, k=4, s=2000)
 plt.plot(w1, i1, 'b. ')
 plt.plot(w1, sp(w1), 'r-')
 plt.xlabel('Raman shift (cm$^{-1}$)')
-plt.ylabel('Intensity (counts)')
-plt.savefig('images/raman-3.png')
+plt.ylabel('Intensity (counts)');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10b15a1d0>]
-: [<matplotlib.lines.Line2D object at 0x10b0efa90>]
-: <matplotlib.text.Text object at 0x10f8f0ef0>
-: <matplotlib.text.Text object at 0x10f8d5dd8>
+:RESULTS:
+[[file:./.ob-jupyter/c34833ec102d89b5d40057a864b9c0714f78ebdb.png]]
+:END:
 
-[[./images/raman-3.png]]
 
 Note that the UnivariateSpline function returns a "callable" function! Our next goal is to find the places where there are peaks. This is defined by the first derivative of the data being equal to zero. It is easy to get the first derivative of a UnivariateSpline with a second argument as shown below.
 
@@ -146,29 +96,15 @@ plt.plot(w1, i1, 'b. ')
 plt.plot(w1, sp(w1), 'r-')
 plt.xlabel('Raman shift (cm$^{-1}$)')
 plt.ylabel('Intensity (counts)')
-plt.plot(minmax, sp(minmax), 'ro ')
-
-plt.savefig('images/raman-4.png')
+plt.plot(minmax, sp(minmax), 'ro ');
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-Roots = [ 1346.4623087   1347.42700893  1348.16689639]
-[<matplotlib.lines.Line2D object at 0x111e705f8>]
-<matplotlib.text.Text object at 0x10f8f65f8>
-<matplotlib.text.Text object at 0x110bac320>
-<matplotlib.figure.Figure object at 0x111e70780>
-[<matplotlib.lines.Line2D object at 0x111ec0be0>]
-<matplotlib.legend.Legend object at 0x111e75b00>
-[<matplotlib.lines.Line2D object at 0x111e75b38>]
-[<matplotlib.lines.Line2D object at 0x111e8cc50>]
-<matplotlib.text.Text object at 0x111e79ef0>
-<matplotlib.text.Text object at 0x111e895f8>
-[<matplotlib.lines.Line2D object at 0x111ec0e80>]
-#+end_example
-
-[[./images/raman-4.png]]
+:RESULTS:
+Roots = [1346.4623087  1347.42700893 1348.16689639]
+[[file:./.ob-jupyter/8ef8a04214446d1c3074dae369e676b924fceb9b.png]]
+[[file:./.ob-jupyter/ba05c22fa3cdebf8a14b5c12b2ce3f0b4099b00c.png]]
+:END:
 
 
 
@@ -193,7 +129,7 @@ A line like "# of Points	9969" tells us the number of points we have to read. Th
 import numpy as np
 import matplotlib.pyplot as plt
 
-datafile = 'data/gc-data-21.txt'
+datafile = '../data/gc-data-21.txt'
 
 i = 0
 with open(datafile) as f:
@@ -214,23 +150,20 @@ for j in range(i, i + npoints):
     intensity += [int(fields[1])]
 
 t = np.array(t)
-intensity = np.array(intensity, np.float)
+intensity = np.array(intensity, float)
 
 # now plot the data in the relevant time frame
 plt.plot(t, intensity)
 plt.xlim([4, 6])
 plt.xlabel('Time (s)')
-plt.ylabel('Intensity (arb. units)')
-plt.savefig('images/deconvolute-1.png')
+plt.ylabel('Intensity (arb. units)');
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10ee308d0>]
-: (4, 6)
-: <matplotlib.text.Text object at 0x10910dc88>
-: <matplotlib.text.Text object at 0x1090bd198>
+:RESULTS:
+[[file:./.ob-jupyter/b8b4b72ad5a722abc9b2bd7d201783d8334273b1.png]]
+:END:
 
-[[./images/deconvolute-1.png]]
 
 You can see there is a non-zero baseline. We will normalize that by the average between 4 and 4.4 seconds.
 
@@ -240,18 +173,14 @@ plt.figure()
 plt.plot(t, intensity)
 plt.xlim([4, 6])
 plt.xlabel('Time (s)')
-plt.ylabel('Intensity (arb. units)')
-plt.savefig('./images/deconvolute-2.png')
+plt.ylabel('Intensity (arb. units)');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x1090bdfd0>
-: [<matplotlib.lines.Line2D object at 0x10b0d01d0>]
-: (4, 6)
-: <matplotlib.text.Text object at 0x109122da0>
-: <matplotlib.text.Text object at 0x10912beb8>
+:RESULTS:
+[[file:./.ob-jupyter/3a9a6a4757fe5448e6b37cec7d07cef06f9efa44.png]]
+:END:
 
-[[./images/deconvolute-2.png]]
 
 The peaks are asymmetric, decaying gaussian functions. We define a function for this
 
@@ -301,20 +230,14 @@ plt.plot(t, intensity)
 plt.plot(t,two_peaks(t, *parguess),'g-')
 plt.xlim([4, 6])
 plt.xlabel('Time (s)')
-plt.ylabel('Intensity (arb. units)')
-plt.savefig('images/deconvolution-3.png')
+plt.ylabel('Intensity (arb. units)');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x11049d4a8>
-: [<matplotlib.lines.Line2D object at 0x11068d4e0>]
-: [<matplotlib.lines.Line2D object at 0x11068d668>]
-: (4, 6)
-: <matplotlib.text.Text object at 0x11055f748>
-: <matplotlib.text.Text object at 0x110562b00>
+:RESULTS:
+[[file:./.ob-jupyter/1073a869d2ec8ec545ef425a9f042a5ce1b0f68b.png]]
+:END:
 
-
-[[./images/deconvolution-3.png]]
 
 Next, we use nonlinear curve fitting from scipy.optimize.curve_fit
 
@@ -323,20 +246,20 @@ from scipy.optimize import curve_fit
 
 popt, pcov = curve_fit(two_peaks, t, intensity, parguess)
 print(popt)
-
+plt.plot(t, intensity)
+plt.plot(t,two_peaks(t, *parguess),'g-')
+plt.xlim([4, 6])
 plt.plot(t, two_peaks(t, *popt), 'r-')
-plt.legend(['data', 'initial guess','final fit'])
-
-plt.savefig('images/deconvolution-4.png')
+plt.legend(['data', 'initial guess','final fit']);
 #+END_SRC
 
 #+RESULTS:
-: [  1.31048111e+03   4.87473757e+00   5.55418109e-02   2.50682818e-02
-:    5.32571369e+03   5.14121371e+00   4.68230128e-02   1.04110303e-01]
-: [<matplotlib.lines.Line2D object at 0x11115d0b8>]
-: <matplotlib.legend.Legend object at 0x1106acc18>
+:RESULTS:
+[1.31047745e+03 4.87474058e+00 5.55428411e-02 2.50644959e-02
+ 5.32571621e+03 5.14121367e+00 4.68231264e-02 1.04110231e-01]
+[[file:./.ob-jupyter/91d3bdbb4899fa9dead690c6d8db0f5e92ae8c00.png]]
+:END:
 
-[[./images/deconvolution-4.png]]
 
 The fits are not perfect. The small peak is pretty good, but there is an unphysical tail on the larger peak, and a small mismatch at the peak. There is not much to do about that, it means the model peak we are using is not a good model for the peak. We will still integrate the areas though.
 
@@ -363,28 +286,18 @@ plt.plot(t, peak2, 'g-')
 plt.xlim([4, 6])
 plt.xlabel('Time (s)')
 plt.ylabel('Intensity (arb. units)')
-plt.legend(['data', 'peak 1', 'peak 2'])
-plt.savefig('images/deconvolution-5.png')
+plt.legend(['data', 'peak 1', 'peak 2']);
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
+:RESULTS:
 Area 1 = 1310.48
-Area 2 = 5325.71
+Area 2 = 5325.72
 Area 1 is 19.75% of the whole area
 Area 2 is 80.25% of the whole area
-<matplotlib.figure.Figure object at 0x11116fd30>
-[<matplotlib.lines.Line2D object at 0x111410ac8>]
-[<matplotlib.lines.Line2D object at 0x111410c50>]
-[<matplotlib.lines.Line2D object at 0x1114184e0>]
-(4, 6)
-<matplotlib.text.Text object at 0x1113d95f8>
-<matplotlib.text.Text object at 0x1113d9588>
-<matplotlib.legend.Legend object at 0x11141d550>
-#+end_example
+[[file:./.ob-jupyter/3a9a361f86d5576cd20cc5db9b8d22cd25f47e5a.png]]
+:END:
 
-[[./images/deconvolution-5.png]]
 
 This sample was air, and the first peak is oxygen, and the second peak is nitrogen. we come pretty close to the actual composition of air, although it is low on the oxygen content. To do better, one would have to use a calibration curve.
 
@@ -394,6 +307,7 @@ In the end, the overlap of the peaks is pretty small, but it is still difficult 
 1. The order of arguments to np.trapz is reversed.
 2. The order of arguments to the fitting function scipy.optimize.curve_fit is different than in Matlab.
 3. The scipy.optimize.curve_fit function expects a fitting function that has all parameters as arguments, where Matlab expects a vector of parameters.
+4. 
 ** Estimating the boiling point of water
    :PROPERTIES:
    :tags: thermodynamics
@@ -411,6 +325,7 @@ import matplotlib.pyplot as plt
 #+RESULTS:
 
 Liquid water (\url{http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&Units=SI&Mask=2#Thermo-Condensed})
+
 #+BEGIN_SRC jupyter-python 
 # valid over 298-500
 
@@ -486,7 +401,9 @@ print('The boiling point is {0} K'.format(bp))
 #+END_SRC
 
 #+RESULTS:
-: The boiling point is 373.20608131187146 K
+:RESULTS:
+The boiling point is 373.20608131187146 K
+:END:
 
 #+BEGIN_SRC jupyter-python 
 plt.figure(); plt.clf()
@@ -495,19 +412,14 @@ plt.legend(['liquid water', 'steam'])
 
 plt.xlabel('Temperature $^\circ$C')
 plt.ylabel('$\Delta G$ (kJ/mol)')
-plt.title('The boiling point is approximately {0:1.2f} $^\circ$C'.format(bp-273.15))
-plt.savefig('images/boiling-water.png')
+plt.title('The boiling point is approximately {0:1.2f} $^\circ$C'.format(bp-273.15));
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x10b4baf28>
-: [<matplotlib.lines.Line2D object at 0x110cf5da0>, <matplotlib.lines.Line2D object at 0x110cf5f60>]
-: <matplotlib.legend.Legend object at 0x110cfbef0>
-: <matplotlib.text.Text object at 0x110ca9978>
-: <matplotlib.text.Text object at 0x110cbe080>
-: <matplotlib.text.Text object at 0x110cc28d0>
+:RESULTS:
+[[file:./.ob-jupyter/62688e4dd4e0cf535e1fae60e169c8c93dd3e2a9.png]]
+:END:
 
-[[./images/boiling-water.png]]
 
 *** Summary
 
@@ -618,22 +530,18 @@ from scipy.optimize import fmin_slsqp
 
 n0 = [0.5, 0.5, 0.5, 0.5]  # initial guesses
 N = fmin_slsqp(func, n0, f_eqcons=ec1)
-print N
+print(N)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-Optimization terminated successfully.    (Exit mode 0)
-            Current function value: -91.204832308
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -91.20483230796889
             Iterations: 2
-            Function evaluations: 13
+            Function evaluations: 11
             Gradient evaluations: 2
-File "<stdin>", line 1
-    print N
-          ^
-SyntaxError: Missing parentheses in call to 'print'
-#+end_example
+[0.45502309 0.45502309 0.54497691 0.54497691]
+:END:
 
 *** Compute mole fractions and partial pressures
 
@@ -648,10 +556,12 @@ for s, y, p in zip(species, yj, Pj):
 #+END_SRC
 
 #+RESULTS:
-: CO        : 0.23 2.28
-: H2O       : 0.23 2.28
-: CO2       : 0.27 2.72
-: H2        : 0.27 2.72
+:RESULTS:
+CO        : 0.23 2.28
+H2O       : 0.23 2.28
+CO2       : 0.27 2.72
+H2        : 0.27 2.72
+:END:
 
 *** Computing equilibrium constants
 
@@ -664,7 +574,9 @@ print(K)
 #+END_SRC
 
 #+RESULTS:
-: 1.43446295961
+:RESULTS:
+1.4344629441456016
+:END:
 
 ** DONE Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers
    CLOSED: [2014-09-10 Wed 13:15]
@@ -711,7 +623,7 @@ def func(nj):
 
 #+RESULTS:
 
-*** BROKEN Linear equality constraints for atomic mass conservation
+*** Linear equality constraints for atomic mass conservation
 
 The total number of each type of atom must be the same as what entered the reactor. These form equality constraints on the equilibrium composition. We express these constraints as: $A_{eq} n = b$ where $n$ is a vector of the moles of each species present in the mixture. CH4 C2H4 C2H2 CO2 CO O2 H2 H2O C2H6
 
@@ -760,26 +672,27 @@ print(np.all( np.abs( np.dot(Aeq, X) - beq) < 1e-12))
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
--104.429439817
-Iteration limit exceeded    (Exit mode 9)
-            Current function value: nan
-            Iterations: 101
-            Function evaluations: 2101
-            Gradient evaluations: 101
-CH4        nan
-C2H4       nan
-C2H2       nan
-CO2        nan
-CO         nan
-O2         nan
-H2         nan
-H2O        nan
-C2H6       nan
-[ nan  nan  nan]
-False
-#+end_example
+:RESULTS:
+-103.62526515484863
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -104.40395152367506
+            Iterations: 14
+            Function evaluations: 172
+            Gradient evaluations: 14
+CH4        0.06644
+C2H4       8.773e-08
+C2H2       4.017e-14
+CO2        0.545
+CO         1.389
+O2         1.081e-13
+H2         5.346
+H2O        1.521
+C2H6       1.632e-07
+[ 0.00000000e+00 -1.77635684e-15  4.44089210e-16]
+True
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/1892264215.py:6: RuntimeWarning: invalid value encountered in log
+  G = np.sum(nj * (Gjo / R / T + np.log(nj / Enj)))
+:END:
 
 I found it necessary to tighten the accuracy parameter to get pretty good matches to the solutions found in Matlab. It was also necessary to increase the number of iterations. Even still, not all of the numbers match well, especially the very small numbers. You can, however, see that the constraints were satisfied pretty well.
 
@@ -797,19 +710,24 @@ print(K)
 #+END_SRC
 
 #+RESULTS:
-: -0.638
-: 1.37887528109
+:RESULTS:
+-0.6379999999999981
+1.3788752810890879
+:END:
 
 *** Equilibrium constant based on mole numbers
 
 One normally uses activities to define the equilibrium constant. Since there are the same number of moles on each side of the reaction all factors that convert mole numbers to activity, concentration or pressure cancel, so we simply consider the ratio of mole numbers here.
 
+
 #+BEGIN_SRC jupyter-python 
-print (X[3] * X[6]) / (X[4] * X[7])
+print((X[3] * X[6]) / (X[4] * X[7]))
 #+END_SRC
 
 #+RESULTS:
-: 1.37887525547
+:RESULTS:
+1.3788826772653788
+:END:
 
 This is very close to the equilibrium constant computed above.
 
@@ -818,6 +736,7 @@ Clearly, there is an equilibrium between these species that prevents the complet
 *** Summary
 
 This is an appealing way to minimize the Gibbs energy of a mixture. No assumptions about reactions are necessary, and the constraints are easy to identify. The Gibbs energy function is especially easy to code.
+
 ** DONE The Gibbs free energy of a reacting mixture and the equilibrium composition
    CLOSED: [2014-09-10 Wed 12:21]
    :PROPERTIES:
@@ -896,18 +815,18 @@ import matplotlib.pyplot as plt
 
 plt.plot(epsilonp,Gwigglewiggle(epsilonp))
 plt.xlabel('$\epsilon$')
-plt.ylabel('Gwigglewiggle')
-plt.savefig('images/gibbs-minim-1.png')
+plt.ylabel('Gwigglewiggle');
 #+END_SRC
 
 #+RESULTS:
-: __main__:7: RuntimeWarning: divide by zero encountered in log
-: __main__:7: RuntimeWarning: invalid value encountered in multiply
-: [<matplotlib.lines.Line2D object at 0x10b458f60>]
-: <matplotlib.text.Text object at 0x108e8c940>
-: <matplotlib.text.Text object at 0x10b419fd0>
+:RESULTS:
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+[[file:./.ob-jupyter/6101cd2212987620fa88dc3429f62033e816a49b.png]]
+:END:
 
-[[./images/gibbs-minim-1.png]]
 
 Now we simply minimize our Gwigglewiggle function. Based on the figure above, the miminum is near 0.45.
 
@@ -917,13 +836,21 @@ from scipy.optimize import fminbound
 epsilonp_eq = fminbound(Gwigglewiggle, 0.4, 0.5)
 print(epsilonp_eq)
 
-plt.plot([epsilonp_eq], [Gwigglewiggle(epsilonp_eq)], 'ro')
-plt.savefig('images/gibbs-minim-2.png')
+plt.plot(epsilonp,Gwigglewiggle(epsilonp))
+plt.xlabel('$\epsilon$')
+plt.ylabel('Gwigglewiggle');
+plt.plot([epsilonp_eq], [Gwigglewiggle(epsilonp_eq)], 'ro');
 #+END_SRC
 
 #+RESULTS:
-: 0.46959618249
-: [<matplotlib.lines.Line2D object at 0x10b46ed68>]
+:RESULTS:
+0.46959618248998036
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+[[file:./.ob-jupyter/4a8159e8ce396361b4a724cc6ae552f7fca61e67.png]]
+:END:
 
 [[./images/gibbs-minim-2.png]]
 
@@ -1109,8 +1036,10 @@ print('deltaG = {0:1.2f}'.format(Grxn_29815))
 #+END_SRC
 
 #+RESULTS:
-: deltaH = -41.15
-: deltaG = -28.62
+:RESULTS:
+deltaH = -41.15
+deltaG = -28.62
+:END:
 
 *** Non-standard state $\Delta H$ and $\Delta G$
 
@@ -1142,14 +1071,11 @@ plt.savefig('images/wgs-nist-1.png')
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x110783a58>
-: [<matplotlib.lines.Line2D object at 0x1091a3f60>]
-: [<matplotlib.lines.Line2D object at 0x1091a8940>]
-: <matplotlib.text.Text object at 0x1107a5d68>
-: <matplotlib.text.Text object at 0x1107b1470>
-: <matplotlib.legend.Legend object at 0x1091ae160>
+:RESULTS:
+[[file:./.ob-jupyter/23489bc0f36440b3bf571298c0e6b0517c401765.png]]
+:END:
 
-[[./images/wgs-nist-1.png]]
+
 
 Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.
 
@@ -1165,18 +1091,14 @@ plt.figure()
 plt.plot(T,K)
 plt.xlim([500, 1000])
 plt.xlabel('Temperature (K)')
-plt.ylabel('Equilibrium constant')
-plt.savefig('images/wgs-nist-2.png')
+plt.ylabel('Equilibrium constant');
 #+END_SRC
 
 #+RESULTS:
-: <matplotlib.figure.Figure object at 0x1091aeac8>
-: [<matplotlib.lines.Line2D object at 0x110994390>]
-: (500, 1000)
-: <matplotlib.text.Text object at 0x1107a77f0>
-: <matplotlib.text.Text object at 0x110b22e48>
+:RESULTS:
+[[file:./.ob-jupyter/dcd8a7ec845ef20aa7d1cfbfab43849ba10ce7c7.png]]
+:END:
 
-[[./images/wgs-nist-2.png]]
 
 *** Equilibrium yield of WGS
 
@@ -1218,7 +1140,9 @@ print('The equilibrium conversion for these feed conditions is: {0:1.2f}'.format
 #+END_SRC
 
 #+RESULTS:
-: The equilibrium conversion for these feed conditions is: 0.55
+:RESULTS:
+The equilibrium conversion for these feed conditions is: 0.55
+:END:
 
 *** Compute gas phase pressures of each species
 
@@ -1234,7 +1158,9 @@ print(P_CO,P_H2O, P_H2, P_CO2)
 #+END_SRC
 
 #+RESULTS:
-: 2.2747854428 2.2747854428 2.7252145572 2.7252145572
+:RESULTS:
+2.2747854427996614 2.2747854427996614 2.7252145572003386 2.7252145572003386
+:END:
 
 *** Compare the equilibrium constants
 
@@ -1246,8 +1172,10 @@ print((P_CO2*P_H2)/(P_CO*P_H2O))
 #+END_SRC
 
 #+RESULTS:
-: 1.4352267476228722
-: 1.43522674762
+:RESULTS:
+1.4352267476228722
+1.4352267476228684
+:END:
 
 They are the same.
 
@@ -1356,13 +1284,19 @@ print(gibbs(X))
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -2.55942394906
-:             Iterations: 7
-:             Function evaluations: 31
-:             Gradient evaluations: 7
-: [ 0.13336503  0.35066486]
-: -2.55942394906
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -2.5594238377522345
+            Iterations: 7
+            Function evaluations: 24
+            Gradient evaluations: 7
+[0.13343719 0.35056497]
+-2.5594238377522345
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/1928982228.py:17: RuntimeWarning: invalid value encountered in log
+  d * np.log(P) + yI * d * np.log(yI) +
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/1928982228.py:18: RuntimeWarning: invalid value encountered in log
+  yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+:END:
 
 
 
@@ -1409,16 +1343,14 @@ plt.xlabel('$\epsilon_1$')
 plt.ylabel('$\epsilon_2$')
 plt.colorbar()
 
-plt.plot([0.13336503],  [0.35066486], 'ro')
-
-plt.savefig('images/gibbs-minimization-1.png')
-plt.savefig('images/gibbs-minimization-1.svg')
-plt.show()
+plt.plot([0.13336503],  [0.35066486], 'ro');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/42f1381c04eff5279bb6a73bfce7585185682b26.png]]
+:END:
 
-[[./images/gibbs-minimization-1.png]]
 
 You can see we found the minimum. We can compute the mole fractions pretty easily.
 
@@ -1438,10 +1370,14 @@ print('y_I = {0:1.3f} y_B = {1:1.3f} y_P1 = {2:1.3f} y_P2 = {3:1.3f}'.format(yI,
 #+END_SRC
 
 #+RESULTS:
-: y_I = 0.031 y_B = 0.031 y_P1 = 0.258 y_P2 = 0.680
+:RESULTS:
+y_I = 0.031 y_B = 0.031 y_P1 = 0.259 y_P2 = 0.679
+:END:
 
 *** summary
+
 I found setting up the constraints in this example to be more confusing than the Matlab syntax.
+
 ** Using constrained optimization to find the amount of each phase present
    :PROPERTIES:
    :categories: optimization
@@ -1499,15 +1435,17 @@ for ci, wi in zip(COMPOSITIONS, y):
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -0.233299644373
-:             Iterations: 2
-:             Function evaluations: 12
-:             Gradient evaluations: 2
-: Al         +0.00%
-: NiAl       +0.00%
-: Ni3Al     +46.66%
-: Ni        +53.34%
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -0.23329964437327755
+            Iterations: 2
+            Function evaluations: 10
+            Gradient evaluations: 2
+Al         +0.00%
+NiAl       +0.00%
+Ni3Al     +46.66%
+Ni        +53.34%
+:END:
 
 So, the sample will be about 47% /by weight/ of Ni3Al, and 53% /by weight/ of pure Ni.
 
@@ -1549,15 +1487,17 @@ for ci, xi in zip(COMPOSITIONS, y):
 #+END_SRC
 
 #+RESULTS:
-: Optimization terminated successfully.    (Exit mode 0)
-:             Current function value: -0.25
-:             Iterations: 2
-:             Function evaluations: 12
-:             Gradient evaluations: 2
-: Al         +0.00%
-: NiAl       +0.00%
-: Ni3Al     +50.00%
-: Ni        +50.00%
+:RESULTS:
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -0.2500000000000001
+            Iterations: 2
+            Function evaluations: 10
+            Gradient evaluations: 2
+Al         +0.00%
+NiAl       +0.00%
+Ni3Al     +50.00%
+Ni        +50.00%
+:END:
 
 This means we have a 1:1 molar ratio of Ni and Ni_{0.75}Al_{0.25}. That works out to the overall bulk composition in this particular problem.
 
@@ -1584,8 +1524,10 @@ print(xNi2)
 #+END_SRC
 
 #+RESULTS:
-: 0.875
-: 0.874192746384855
+:RESULTS:
+0.875
+0.874192746384855
+:END:
 
 You can see the overall mole fraction of Ni is practically the same in each case.
 
@@ -1610,7 +1552,9 @@ print(np.dot(nu, M))
 #+END_SRC
 
 #+RESULTS:
-: 0
+:RESULTS:
+0
+:END:
 
 You can see that sum of the stoichiometric coefficients times molecular weights is zero. In other words a CO and H_2O have the same mass as H_2 and CO_2.
 
@@ -1628,7 +1572,9 @@ print(np.dot(reactants, atomic_masses) + np.dot(products, atomic_masses))
 #+END_SRC
 
 #+RESULTS:
-: 0.0
+:RESULTS:
+0.0
+:END:
 
 That is all there is to mass conservation with reactions. Nothing changes if there are lots of reactions, as long as each reaction is properly balanced, and none of them are nuclear reactions!
 
@@ -1705,7 +1651,6 @@ print('At r={0} Ca={1}'.format(rspan[-1], Ca[-1]))
 plt.plot(rspan, Ca)
 plt.xlabel('Particle radius')
 plt.ylabel('$C_A$')
-plt.savefig('images/effectiveness-factor.png')
 
 r = rspan
 eta_numerical = (np.trapz(k * Ca * 4 * np.pi * (r**2), r)
@@ -1719,11 +1664,13 @@ print(eta_analytical)
 #+END_SRC
 
 #+RESULTS:
-: At r=0.5 Ca=0.20000148865173356
-: 0.563011348314
-: 0.563003362801
+:RESULTS:
+At r=0.5 Ca=0.20000148865173356
+0.5630113483142608
+0.5630033628012618
+[[file:./.ob-jupyter/2a9e650f47260588a2aab1857444f1311b1ee209.png]]
+:END:
 
-[[./images/effectiveness-factor.png]]
 
 You can see the concentration of A inside the particle is significantly lower than outside the particle. That is because it is reacting away faster than it can diffuse into the particle. Hence, the overall reaction rate in the particle is lower than it would be without the diffusion limit.
 
@@ -1795,7 +1742,7 @@ plt.ylabel('fanning friction factor')
 # You can see why we use 0.01 as an initial guess for solving for the
 # Fanning friction factor; it falls in the middle of ranges possible
 # for these Re numbers.
-plt.savefig('images/pipe-diameter-1.png')
+
 
 def objective(D):
     v = Q / (np.pi * D**2 / 4)
@@ -1811,8 +1758,11 @@ print('The minimum pipe diameter is {0} m\n'.format(D))
 #+END_SRC
 
 #+RESULTS:
-: The minimum pipe diameter is 0.0389653369530596 m
-:
+:RESULTS:
+The minimum pipe diameter is 0.0389653369530596 m
+
+[[file:./.ob-jupyter/ac8cedc30a63c3e34a560aa84fafb6f753e4ffbe.png]]
+:END:
 
 
 Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.
@@ -1853,15 +1803,15 @@ We use numpy.loadtxt to read the file, and tell the function the format of each 
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.loadtxt('data/antoine_data.dat',
-                  dtype=[('id', np.int),
+data = np.loadtxt('../data/antoine_data.dat',
+                  dtype=[('id', int),
                          ('formula', 'S8'),
                          ('name', 'S28'),
-                         ('A', np.float),
-                         ('B', np.float),
-                         ('C', np.float),
-                         ('Tmin', np.float),
-                         ('Tmax', np.float),
+                         ('A', float),
+                         ('B', float),
+                         ('C', float),
+                         ('Tmin', float),
+                         ('Tmax', float),
                          ('??', 'S4'),
                          ('?', 'S4')],
                   skiprows=7)
@@ -1898,12 +1848,22 @@ Pcrc = [        1,      10,     40,     100,    400,    760]
 
 plt.plot(Tcrc, Pcrc, 'bo')
 plt.legend(['Antoine','CRC Handbook'], loc='best')
-plt.savefig('images/antoine-2.png')
 #+END_SRC
 
 #+RESULTS:
-: 56.9792617813
-: The vapor pressure is 400 mmHg at T = 57.0 degC
+:RESULTS:
+# [goto error]
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+Cell In[82], line 22
+     19 acetone = data[names == 'acetone']
+     21 # for readability we unpack the array into variables
+---> 22 id, formula, name, A, B, C, Tmin, Tmax, u1, u2 = acetone
+     24 T = np.linspace(Tmin, Tmax)
+     25 P = 10**(A - B / ( T + C))
+
+ValueError: not enough values to unpack (expected 10, got 0)
+:END:
 
 [[file:images/antoine-1.png]]
 
@@ -2033,14 +1993,13 @@ plt.plot(Vr,Pr)
 plt.ylim([0, 2])
 plt.xlabel('$V_R$')
 plt.ylabel('$P_R$')
-plt.savefig('images/maxwell-eq-area-1.png')
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x1113846d8>]
-: (0, 2)
-: <matplotlib.text.Text object at 0x111347080>
-: <matplotlib.text.Text object at 0x111347e48>
+:RESULTS:
+: Text(0, 0.5, '$P_R$')
+[[file:./.ob-jupyter/560aa58fe263c86fe68d6a2d73b579e13de33ebe.png]]
+:END:
 
 [[./images/maxwell-eq-area-1.png]]
 
@@ -2050,11 +2009,13 @@ The idea is to pick a Pr and draw a line through the EOS. We want the areas betw
 y = 0.65
 
 plt.plot([0.5, 4.0], [y, y], 'k--')
-plt.savefig('images/maxwell-eq-area-2.png')
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x111092f28>]
+:RESULTS:
+| <matplotlib.lines.Line2D | at | 0x11fba1330> |
+[[file:./.ob-jupyter/19d58b622291607576218d81dbce21d2702530c3.png]]
+:END:
 
 [[./images/maxwell-eq-area-2.png]]
 
@@ -2066,13 +2027,14 @@ v = np.roots(vdWp)
 v.sort()
 print(v)
 
-plt.plot(v[0], y, 'bo', v[1], y, 'bo', v[2], y, 'bo')
-plt.savefig('images/maxwell-eq-area-3.png')
+plt.plot(v[0], y, 'bo', v[1], y, 'bo', v[2], y, 'bo');
 #+END_SRC
 
 #+RESULTS:
-: [ 0.60286812  1.09743234  2.32534056]
-: [<matplotlib.lines.Line2D object at 0x110b2ef98>, <matplotlib.lines.Line2D object at 0x1115a1ac8>, <matplotlib.lines.Line2D object at 0x1115a1588>]
+:RESULTS:
+[0.60286812 1.09743234 2.32534056]
+[[file:./.ob-jupyter/721ded8c38c44900bdfed27d9fc2b053ae8cb227.png]]
+:END:
 
 [[./images/maxwell-eq-area-3.png]]
 
@@ -2091,8 +2053,10 @@ print(e1, e2)  # interesting these look so large
 #+END_SRC
 
 #+RESULTS:
-: 0.063225945606 0.0580212098122
-: 0.321466743765 -0.798140339268
+:RESULTS:
+0.06322594560601252 0.05802120981218639
+0.3214667437645078 -0.7981403392675809
+:END:
 
 #+BEGIN_SRC jupyter-python 
 from scipy.optimize import fsolve
@@ -2121,8 +2085,46 @@ print(A1, A2)
 #+END_SRC
 
 #+RESULTS:
-: 0.646998351872
-: 0.0617526473994 0.0617526473994
+:RESULTS:
+/Users/jkitchin/anaconda3/lib/python3.10/site-packages/numpy/core/shape_base.py:65: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+  ary = asanyarray(ary)
+# [goto error]
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+Cell In[88], line 12
+      9     A2 = quad(Prfh, v[1], v[2]) - (v[2] - v[1]) * y
+     10     return  A1 - A2
+---> 12 y_eq, = fsolve(equal_area, 0.65)
+     13 print(y_eq)
+     15 Tr = 0.9
+
+File ~/anaconda3/lib/python3.10/site-packages/scipy/optimize/_minpack_py.py:163, in fsolve(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)
+     51 """
+     52 Find the roots of a function.
+     53 
+   (...)
+    153 
+    154 """
+    155 options = {'col_deriv': col_deriv,
+    156            'xtol': xtol,
+    157            'maxfev': maxfev,
+   (...)
+    160            'factor': factor,
+    161            'diag': diag}
+--> 163 res = _root_hybr(func, x0, args, jac=fprime, **options)
+    164 if full_output:
+    165     x = res['x']
+
+File ~/anaconda3/lib/python3.10/site-packages/scipy/optimize/_minpack_py.py:240, in _root_hybr(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)
+    238     if maxfev == 0:
+    239         maxfev = 200 * (n + 1)
+--> 240     retval = _minpack._hybrd(func, x0, args, 1, xtol, maxfev,
+    241                              ml, mu, epsfcn, factor, diag)
+    242 else:
+    243     _check_func('fsolve', 'fprime', Dfun, x0, args, n, (n, n))
+
+ValueError: The array returned by a function changed size between calls
+:END:
 
 Now let us plot the equal areas and indicate them by shading.
 
@@ -2142,26 +2144,25 @@ plt.text(v[0], 1, 'A1 = {0}'.format(A1))
 plt.text(v[2], 1, 'A2 = {0}'.format(A2))
 plt.xlabel('$V_R$')
 plt.ylabel('$P_R$')
-plt.title('$T_R$ = 0.9')
-
-plt.savefig('images/maxwell-eq-area-4.png')
-plt.savefig('images/maxwell-eq-area-4.svg')
+plt.title('$T_R$ = 0.9');
 #+END_SRC
 
 
 #+RESULTS:
-#+begin_example
+:RESULTS:
+# [goto error]
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[89], line 6
+      2 ax = fig.add_subplot(111)
+      4 ax.plot(Vr,Pr)
+----> 6 hline = np.ones(Vr.size) * y_eq
+      8 ax.plot(Vr, hline)
+      9 ax.fill_between(Vr, hline, Pr, where=(Vr >= v[0]) & (Vr <= v[1]), facecolor='gray')
 
-[<matplotlib.lines.Line2D object at 0x1113a5b70>]
-[<matplotlib.lines.Line2D object at 0x11108fc88>]
-<matplotlib.collections.PolyCollection object at 0x1115c9518>
-<matplotlib.collections.PolyCollection object at 0x1118da358>
-<matplotlib.text.Text object at 0x1115c2ac8>
-<matplotlib.text.Text object at 0x1118daef0>
-<matplotlib.text.Text object at 0x111347080>
-<matplotlib.text.Text object at 0x111347e48>
-<matplotlib.text.Text object at 0x111360d68>
-#+end_example
+NameError: name 'y_eq' is not defined
+[[file:./.ob-jupyter/7676837ece18aa095d081b323e3ec8c3101aa8cd.png]]
+:END:
 
 [[./images/maxwell-eq-area-4.png]]
 ** Time dependent concentration in a first order reversible reaction in a batch reactor
@@ -2219,13 +2220,14 @@ import matplotlib.pyplot as plt
 plt.plot(tspan, Ca, tspan, Cb)
 plt.xlabel('Time (min)')
 plt.ylabel('C (mol/L)')
-plt.legend(['$C_A$', '$C_B$'])
-plt.savefig('images/reversible-batch.png')
+plt.legend(['$C_A$', '$C_B$']);
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/8af0e14a3e886048e808f3e72dd9c048eb66a246.png]]
+:END:
 
-[[./images/reversible-batch.png]]
 
 That is it. The main difference between this and Matlab is the order of arguments in odeint is different, and the ode function has differently ordered arguments.
 
@@ -2236,7 +2238,7 @@ That is it. The main difference between this and Matlab is the order of argument
    :updated:  2013/02/27 14:47:24
    :END:
 
-A common problem to solve in reaction engineering is finding the equilibrium conversion.[fn:fogler-setup] A typical problem to solve is the following nonlinear equation:
+A common problem to solve in reaction engineering is finding the equilibrium conversion. A typical problem to solve is the following nonlinear equation:
 
 $1.44 = \frac{X_e^2}{(1-X_e)^2}$
 
@@ -2261,11 +2263,11 @@ print('The equilibrium conversion is X = {0:1.2f}'.format(Xe))
 #+END_SRC
 
 #+RESULTS:
-: The equilibrium conversion is X = 0.55
+:RESULTS:
+The equilibrium conversion is X = 0.55
+:END:
 
-*** Footnotes
-
-[fn:fogler-setup] See Fogler, 4th ed. page 1025 for the setup of this equation.
+See Fogler, 4th ed. page 1025 for the setup of this equation.
 
 ** Integrating a batch reactor design equation
    :PROPERTIES:
@@ -2296,8 +2298,10 @@ print('Estimated absolute error = {0}'.format(abserr))
 #+END_SRC
 
 #+RESULTS:
-: t = 9000.000000000007 seconds (2.500000000000002 hours)
-: Estimated absolute error = 2.1220327407235617e-07
+:RESULTS:
+t = 9000.000000000007 seconds (2.500000000000002 hours)
+Estimated absolute error = 2.1220327407235617e-07
+:END:
 
 
 You can see the estimate error is very small compared to the solution.
@@ -2317,8 +2321,8 @@ To do this we have to write a function that takes arguments with uncertainty, an
 from scipy.integrate import quad
 import uncertainties as u
 
-k = u.ufloat((1.0e-3, 1.0e-4))
-Ca0 = u.ufloat((1.0, 0.01))# mol/L
+k = u.ufloat(1.0e-3, 1.0e-4)
+Ca0 = u.ufloat(1.0, 0.01)# mol/L
 
 @u.wrap
 def func(k, Ca0):
@@ -2332,7 +2336,9 @@ print('t = {0} seconds ({1} hours)'.format(sol, sol/3600))
 #+END_SRC
 
 #+RESULTS:
-: t = (9.0+/-0.9)e+03 seconds (2.50+/-0.25 hours)
+:RESULTS:
+t = (9.0+/-0.9)e+03 seconds (2.50+/-0.25 hours)
+:END:
 
 The result shows about a 10% uncertainty in the time, which is similar to the largest uncertainty in the inputs.  This information should certainly be used in making decisions about how long to actually run the reactor to be sure of reaching the goal. For example, in this case, running the reactor for 3 hours (that is roughly + 2\sigma) would ensure at a high level of confidence (approximately 95% confidence) that you reach at least 90% conversion.
 
@@ -2368,13 +2374,14 @@ tspan = np.linspace(0,10000)
 sol = odeint(func, X0, tspan)
 plt.plot(tspan,sol)
 plt.xlabel('Time (sec)')
-plt.ylabel('Conversion')
-plt.savefig('images/2013-01-06-batch-conversion.png')
+plt.ylabel('Conversion');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/87269b76abec09c7481958741b9928ebdb90ca8a.png]]
+:END:
 
-[[./images/2013-01-06-batch-conversion.png]]
 
 You can read off of this figure to find the time required to achieve a particular conversion.
 
@@ -2386,7 +2393,7 @@ You can read off of this figure to find the time required to achieve a particula
    :updated:  2013/03/06 16:39:36
    :END:
 
-If there is a pressure drop in a plug flow reactor, [fn:2] there are two equations needed to determine the exit conversion: one for the conversion, and one from the pressure drop.
+If there is a pressure drop in a plug flow reactor,  there are two equations needed to determine the exit conversion: one for the conversion, and one from the pressure drop.
 
 \begin{eqnarray}
 \frac{dX}{dW} &=& \frac{k'}{F_A0} \left ( \frac{1-X}{1 + \epsilon X} \right) y\\
@@ -2423,19 +2430,16 @@ sol = odeint(dFdW, F0, Wspan)
 plt.plot(Wspan, sol[:,0], label='Conversion')
 plt.plot(Wspan, sol[:,1], 'g--', label='y=$P/P_0$')
 plt.legend(loc='best')
-plt.xlabel('Catalyst weight (lb_m)')
-plt.savefig('images/2013-01-08-pdrop.png')
+plt.xlabel('Catalyst weight (lb_m)');
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/41bb433daae3777e806ce5876376f4eeb4d99a1e.png]]
+:END:
 
-Here is the resulting figure.
+See Fogler, 4th edition. page 193.
 
-[[./images/2013-01-08-pdrop.png]]
-
-*** Footnotes
-
-[fn:2] Fogler, 4th edition. page 193.
 ** Solving CSTR design equations
   :PROPERTIES:
   :categories: nonlinear algebra
@@ -2474,7 +2478,9 @@ print('The exit concentration is {0} mol/L'.format(CA_sol))
 #+END_SRC
 
 #+RESULTS:
-: The exit concentration is 0.005 mol/L
+:RESULTS:
+The exit concentration is 0.005 mol/L
+:END:
 
 It is a little confusing why it is necessary to put a comma after the CA_sol in the fsolve command. If you do not put it there, you get brackets around the answer.
 
@@ -2528,7 +2534,7 @@ P2 = 3.0 # MPa
 s2 = s1 # this is what isentropic means
 
 sat_liquid2 = IAPWS97(P=P2, s=s1)
-T2, = sat_liquid2.T
+T2 = sat_liquid2.T
 h2 = sat_liquid2.h
 
 # work done to compress liquid. This is an approximation, since the
@@ -2537,11 +2543,12 @@ h2 = sat_liquid2.h
 WdotP = v1*(P2 - P1);
 
 print('The compressor work is: {0:1.4f} kJ/kg'.format(WdotP))
-
 #+END_SRC
 
 #+RESULTS:
-: The compressor work is: 0.0030 kJ/kg
+:RESULTS:
+The compressor work is: 0.0030 kJ/kg
+:END:
 
 The compression work is almost negligible. This number is 1000 times smaller than we computed with Xsteam. I wonder what the units of v1 actually are.
 
@@ -2555,36 +2562,42 @@ steam = IAPWS97(P=P3, T=T3)
 h3 = steam.h
 s3 = steam.s
 
-Qb, = h3 - h2 # heat required to make the steam
+Qb = h3 - h2 # heat required to make the steam
 
 print('The boiler heat duty is: {0:1.2f} kJ/kg'.format(Qb))
 #+END_SRC
 
 #+RESULTS:
-: The boiler heat duty is: 3260.69 kJ/kg
+:RESULTS:
+The boiler heat duty is: 3260.69 kJ/kg
+:END:
 
 *** Isentropic expansion through turbine to point 4
 #+BEGIN_SRC jupyter-python 
 steam =  IAPWS97(P=P1, s=s3)
-T4, = steam.T
+T4 = steam.T
 h4 = steam.h
 s4 = s3 # isentropic
-Qc, = h4 - h1 # work required to cool from T4 to T1
+Qc = h4 - h1 # work required to cool from T4 to T1
 
 print('The condenser heat duty is {0:1.2f} kJ/kg'.format(Qc))
 #+END_SRC
 
 #+RESULTS:
-: The condenser heat duty is 2317.00 kJ/kg
+:RESULTS:
+The condenser heat duty is 2317.00 kJ/kg
+:END:
 
 *** To get from point 4 to point 1
 #+BEGIN_SRC jupyter-python 
-WdotTurbine, = h4 - h3 # work extracted from the expansion
+WdotTurbine = h4 - h3 # work extracted from the expansion
 print('The turbine work is: {0:1.2f} kJ/kg'.format(WdotTurbine))
 #+END_SRC
 
 #+RESULTS:
-: The turbine work is: -946.71 kJ/kg
+:RESULTS:
+The turbine work is: -946.71 kJ/kg
+:END:
 
 *** Efficiency
 
@@ -2596,7 +2609,9 @@ print('The overall efficiency is {0:1.2%}.'.format(eta))
 #+END_SRC
 
 #+RESULTS:
-: The overall efficiency is 29.03%.
+:RESULTS:
+The overall efficiency is 29.03%.
+:END:
 
 *** Entropy-temperature chart
 
@@ -2622,28 +2637,15 @@ plt.plot(svap, T, 'r-')
 plt.plot(sliq, T, 'b-')
 
 plt.xlabel('Entropy (kJ/(kg K)')
-plt.ylabel('Temperature (K)')
-plt.savefig('images/iawps-steam.png')
+plt.ylabel('Temperature (K)');
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-<matplotlib.figure.Figure object at 0x111c916d8>
-[<matplotlib.lines.Line2D object at 0x111d15780>]
-[<matplotlib.lines.Line2D object at 0x111c991d0>]
-[<matplotlib.lines.Line2D object at 0x111d191d0>]
-[<matplotlib.lines.Line2D object at 0x111c99ac8>]
-[<matplotlib.lines.Line2D object at 0x111d19a20>]
-[<matplotlib.lines.Line2D object at 0x111cdf358>]
-[<matplotlib.lines.Line2D object at 0x111c37358>]
-[<matplotlib.lines.Line2D object at 0x111c37390>]
-<matplotlib.text.Text object at 0x110b2ec18>
-<matplotlib.text.Text object at 0x111cecc88>
-#+end_example
+:RESULTS:
+[[file:./.ob-jupyter/173f65851dd5548523759e2bbe2337ad3dbf25c4.png]]
+:END:
 
 
-[[./images/iawps-steam.png]]
 
 
 We can plot our Rankine cycle path like this. We compute the entropies along the non-isentropic paths.
@@ -2660,22 +2662,22 @@ S41 = [s.s for s in [IAPWS97(P=P1, T=t) for t in T41]]
 
 And then we plot the paths.
 
-#+BEGIN_SRC jupyter-python 
+#+BEGIN_SRC jupyter-python
+plt.plot(svap, T, 'r-')
+plt.plot(sliq, T, 'b-')
+
+
 plt.plot([s1, s2], [T1, T2], 'r-', lw=4) # Path 1 to 2
 plt.plot(S23, T23, 'b-', lw=4) # path from 2 to 3 is isobaric
 plt.plot([s3, s4], [T3, T4], 'g-', lw=4) # path from 3 to 4 is isentropic
-plt.plot(S41, T41, 'k-', lw=4) # and from 4 to 1 is isobaric
-plt.savefig('images/iawps-steam-2.png')
-plt.savefig('images/iawps-steam-2.svg')
+plt.plot(S41, T41, 'k-', lw=4); # and from 4 to 1 is isobaric
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x111c124a8>]
-: [<matplotlib.lines.Line2D object at 0x11108f2b0>]
-: [<matplotlib.lines.Line2D object at 0x1118e1710>]
-: [<matplotlib.lines.Line2D object at 0x111da6ef0>]
+:RESULTS:
+[[file:./.ob-jupyter/9ae0df782395bd54d3c5de2fe44c0c301fc72dee.png]]
+:END:
 
-[[./images/iawps-steam-2.png]]
 
 *** Summary
 
@@ -2714,15 +2716,14 @@ import matplotlib.pyplot as plt
 plt.clf()
 plt.plot([p[0] for p in boundary],
          [p[1] for p in boundary])
-plt.ylim([0, 1])
-plt.savefig('images/boundary-1.png')
+plt.ylim([0, 1]);
 #+END_SRC
 
 #+RESULTS:
-: [<matplotlib.lines.Line2D object at 0x10b417470>]
-: (0, 1)
+:RESULTS:
+[[file:./.ob-jupyter/b0e9e5f10ec8219cf0ef7b4a547518fb523caf6a.png]]
+:END:
 
-[[./images/boundary-1.png]]
 
 In this example, the boundary is complicated, and not described by a simple function. We will check for intersections of the line from the arbitrary point to the reference point with each segment defining the boundary. If there is an intersection in the boundary, we count that as a crossing. We choose the origin (0, 0) in this case for the reference point. For an arbitrary point (x1, y1), the equation of the line is therefore (provided x1 !=0):
 
@@ -2841,9 +2842,16 @@ for x in X:
             plt.plot(x, y, 'r.')
         else:
             plt.plot(x, y, 'b.')
-
-plt.savefig('images/boundary-2.png')
 #+END_SRC
+
+#+RESULTS:
+:RESULTS:
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/339476128.py:64: RuntimeWarning: invalid value encountered in double_scalars
+  m1 = y1 / x1
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_15573/339476128.py:64: RuntimeWarning: divide by zero encountered in double_scalars
+  m1 = y1 / x1
+[[file:./.ob-jupyter/ccef25831a6a887a8196159d169af96df2a7de17.png]]
+:END:
 
 [[./images/boundary-2.png]]
 
