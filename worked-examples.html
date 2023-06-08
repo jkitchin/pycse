@@ -488,14 +488,10 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="worked-examples">
+  <section class="tex2jax_ignore mathjax_ignore" id="worked-examples">
 <h1>Worked examples<a class="headerlink" href="#worked-examples" title="Permalink to this heading">#</a></h1>
 <section id="peak-finding-in-raman-spectroscopy">
 <h2>Peak finding in Raman spectroscopy<a class="headerlink" href="#peak-finding-in-raman-spectroscopy" title="Permalink to this heading">#</a></h2>
-<p>CLOSED: <span class="timestamp-wrapper"><span class="timestamp">[2014-10-14 Tue 15:01]</span></span></p>
-<p>:categories: data analysis
-:date:     2013/02/27 10:55:57
-:updated:  2014/10/14 15:01:48</p>
 <p>Raman spectroscopy is a vibrational spectroscopy. The data typically comes as intensity vs. wavenumber, and it is discrete. Sometimes it is necessary to identify the precise location of a peak. In this post, we will use spline smoothing to construct an interpolating function of the data, and then use fminbnd to identify peak positions.</p>
 <p>This example was originally worked out in Matlab at <a class="reference external" href="http://matlab.cheme.cmu.edu/2012/08/27/peak-finding-in-raman-spectroscopy/">http://matlab.cheme.cmu.edu/2012/08/27/peak-finding-in-raman-spectroscopy/</a></p>
 <p><span class="xref myst">loadtxt</span></p>
@@ -505,7 +501,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="n">w</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../data/raman.txt&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">w</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../../data/raman.txt&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Raman shift (cm$^{-1}$)&#39;</span><span class="p">)</span>
@@ -514,50 +510,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">w</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../data/raman.txt&#39;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Raman shift (cm$^{-1}$)&#39;</span><span class="p">)</span>
-
-<span class="nn">File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/npyio.py:1338,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1335</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1336</span>     <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1338</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">_read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1339</span>             <span class="n">converters</span><span class="o">=</span><span class="n">converters</span><span class="p">,</span> <span class="n">skiplines</span><span class="o">=</span><span class="n">skiprows</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1340</span>             <span class="n">unpack</span><span class="o">=</span><span class="n">unpack</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1341</span>             <span class="n">max_rows</span><span class="o">=</span><span class="n">max_rows</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1343</span> <span class="k">return</span> <span class="n">arr</span>
-
-<span class="nn">File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/npyio.py:975,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
-<span class="g g-Whitespace">    </span><span class="mi">973</span>     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">974</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">975</span>     <span class="n">fh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">_datasource</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">976</span>     <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">977</span>         <span class="n">encoding</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s1">&#39;encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
-
-<span class="nn">File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/_datasource.py:193,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
-<span class="g g-Whitespace">    </span><span class="mi">156</span> <span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
-<span class="g g-Whitespace">    </span><span class="mi">158</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">189</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">190</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">192</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">193</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
-
-<span class="nn">File ~/anaconda3/lib/python3.10/site-packages/numpy/lib/_datasource.py:533,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
-<span class="g g-Whitespace">    </span><span class="mi">530</span>     <span class="k">return</span> <span class="n">_file_openers</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">found</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">531</span>                               <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">532</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">533</span>     <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
-
-<span class="ne">FileNotFoundError</span>: ../data/raman.txt not found.
-</pre></div>
-</div>
+<img alt="_images/119c264980ffed205551bf4d415a0c0bd5aca4d5fc5eff655fac56a52b418c43.png" src="_images/119c264980ffed205551bf4d415a0c0bd5aca4d5fc5eff655fac56a52b418c43.png" />
 </div>
 </div>
 <p>The next thing to do is narrow our focus to the region we are interested in between 1340 cm<sup>-1</sup> and 1360 cm<sup>-1</sup>.</p>
@@ -574,6 +527,9 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/a5efe5f23eae78f07e4cb3e730003c7d17d6b4b04305ab772fe60c903963cbcc.png" src="_images/a5efe5f23eae78f07e4cb3e730003c7d17d6b4b04305ab772fe60c903963cbcc.png" />
+</div>
 </div>
 <p>Next we consider a scipy:UnivariateSpline. This function “smooths” the data.</p>
 <div class="cell docutils container">
@@ -589,6 +545,9 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity (counts)&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/3cd8fad3eb9e733e4b0ae1cb3cd3bf0eae9777d300e87ea34ff589b324a16571.png" src="_images/3cd8fad3eb9e733e4b0ae1cb3cd3bf0eae9777d300e87ea34ff589b324a16571.png" />
 </div>
 </div>
 <p>Note that the UnivariateSpline function returns a “callable” function! Our next goal is to find the places where there are peaks. This is defined by the first derivative of the data being equal to zero. It is easy to get the first derivative of a UnivariateSpline with a second argument as shown below.</p>
@@ -622,6 +581,13 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Roots = [1346.4623087  1347.42700893 1348.16689639]
+</pre></div>
+</div>
+<img alt="_images/07dddaef5786201efe3066639e5dbcc19f01fde8dcfefc54f0975d813104921d.png" src="_images/07dddaef5786201efe3066639e5dbcc19f01fde8dcfefc54f0975d813104921d.png" />
+<img alt="_images/de4219c599a3578675f068361d6ec74e1b0010bc0195f7bfc00f05f9f0c1a5c1.png" src="_images/de4219c599a3578675f068361d6ec74e1b0010bc0195f7bfc00f05f9f0c1a5c1.png" />
+</div>
 </div>
 <p>In the end, we have illustrated how to construct a spline smoothing interpolation function and to find maxima in the function, including generating some initial guesses. There is more art to this than you might like, since you have to judge how much smoothing is enough or too much. With too much, you may smooth peaks out. With too little, noise may be mistaken for peaks.</p>
 <section id="summary-notes">
@@ -638,7 +604,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="n">datafile</span> <span class="o">=</span> <span class="s1">&#39;../data/gc-data-21.txt&#39;</span>
+<span class="n">datafile</span> <span class="o">=</span> <span class="s1">&#39;../../data/gc-data-21.txt&#39;</span>
 
 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -669,6 +635,9 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/36037e77d1ff89c98196c8cfabcb6ba742b5725c1dc7529fbc567ab686520c40.png" src="_images/36037e77d1ff89c98196c8cfabcb6ba742b5725c1dc7529fbc567ab686520c40.png" />
+</div>
 </div>
 <p>You can see there is a non-zero baseline. We will normalize that by the average between 4 and 4.4 seconds.</p>
 <div class="cell docutils container">
@@ -681,6 +650,9 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity (arb. units)&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/dd6c2a03865f2634c714ae95126a4c324b6cc8526d52dcfaaa5605659bc71d75.png" src="_images/dd6c2a03865f2634c714ae95126a4c324b6cc8526d52dcfaaa5605659bc71d75.png" />
 </div>
 </div>
 <p>The peaks are asymmetric, decaying gaussian functions. We define a function for this</p>
@@ -734,6 +706,9 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/85c540d36d9491babc37c27d1379a8bfea0d74882e2a67188f1087c0e1d00a0e.png" src="_images/85c540d36d9491babc37c27d1379a8bfea0d74882e2a67188f1087c0e1d00a0e.png" />
+</div>
 </div>
 <p>Next, we use nonlinear curve fitting from scipy.optimize.curve_fit</p>
 <div class="cell docutils container">
@@ -749,6 +724,13 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;initial guess&#39;</span><span class="p">,</span><span class="s1">&#39;final fit&#39;</span><span class="p">]);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.31047745e+03 4.87474058e+00 5.55428411e-02 2.50644959e-02
+ 5.32571621e+03 5.14121367e+00 4.68231264e-02 1.04110231e-01]
+</pre></div>
+</div>
+<img alt="_images/7ecb5288258ce0e6f923f11f1d7bb09e9356265a3bfcc6a5cd6e1e15852e1381.png" src="_images/7ecb5288258ce0e6f923f11f1d7bb09e9356265a3bfcc6a5cd6e1e15852e1381.png" />
 </div>
 </div>
 <p>The fits are not perfect. The small peak is pretty good, but there is an unphysical tail on the larger peak, and a small mismatch at the peak. There is not much to do about that, it means the model peak we are using is not a good model for the peak. We will still integrate the areas though.</p>
@@ -780,6 +762,15 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Area 1 = 1310.48
+Area 2 = 5325.72
+Area 1 is 19.75% of the whole area
+Area 2 is 80.25% of the whole area
+</pre></div>
+</div>
+<img alt="_images/9e16dc073e9099debc972adffbffa4343c16b8882e8bcaf4baf2c74e24a737c4.png" src="_images/9e16dc073e9099debc972adffbffa4343c16b8882e8bcaf4baf2c74e24a737c4.png" />
+</div>
 </div>
 <p>This sample was air, and the first peak is oxygen, and the second peak is nitrogen. we come pretty close to the actual composition of air, although it is low on the oxygen content. To do better, one would have to use a calibration curve.</p>
 <p>In the end, the overlap of the peaks is pretty small, but it is still difficult to reliably and reproducibly deconvolute them. By using an algorithm like we have demonstrated here, it is possible at least to make the deconvolution reproducible.</p>
@@ -789,7 +780,6 @@ document.write(`
 <li><p>The order of arguments to np.trapz is reversed.</p></li>
 <li><p>The order of arguments to the fitting function scipy.optimize.curve_fit is different than in Matlab.</p></li>
 <li><p>The scipy.optimize.curve_fit function expects a fitting function that has all parameters as arguments, where Matlab expects a vector of parameters.</p></li>
-<li></li>
 </ol>
 </section>
 </section>
@@ -804,7 +794,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Liquid water (\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=2#Thermo-Condensed">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=2#Thermo-Condensed</a>})</p>
+<p>Liquid water (<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=2#Thermo-Condensed">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=2#Thermo-Condensed</a>)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># valid over 298-500</span>
@@ -823,7 +813,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Gas phase water (\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=1&amp;amp;Type=JANAFG&amp;amp;Table=on#JANAFG">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=1&amp;Type=JANAFG&amp;Table=on#JANAFG</a>})</p>
+<p>Gas phase water (<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=1&amp;amp;Type=JANAFG&amp;amp;Table=on#JANAFG">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=1&amp;Type=JANAFG&amp;Table=on#JANAFG</a>)</p>
 <p>Interestingly, these parameters are listed as valid only above 500K. That means we have to extrapolate the values down to 298K. That is risky for polynomial models, as they can deviate substantially outside the region they were fitted to.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -880,6 +870,11 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The boiling point is 373.20608131187146 K
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -892,6 +887,9 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;The boiling point is approximately </span><span class="si">{0:1.2f}</span><span class="s1"> $^\circ$C&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bp</span><span class="o">-</span><span class="mf">273.15</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/39480a90e00ae58ba4d8caaa9c72184fc08da2fee3ee87bb2735e8584185aed8.png" src="_images/39480a90e00ae58ba4d8caaa9c72184fc08da2fee3ee87bb2735e8584185aed8.png" />
 </div>
 </div>
 <section id="summary">
@@ -1001,6 +999,16 @@ In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs e
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully    (Exit mode 0)
+            Current function value: -91.20483230796889
+            Iterations: 2
+            Function evaluations: 11
+            Gradient evaluations: 2
+[0.45502309 0.45502309 0.54497691 0.54497691]
+</pre></div>
+</div>
+</div>
 </div>
 <section id="compute-mole-fractions-and-partial-pressures">
 <h3>Compute mole fractions and partial pressures<a class="headerlink" href="#compute-mole-fractions-and-partial-pressures" title="Permalink to this heading">#</a></h3>
@@ -1012,6 +1020,14 @@ In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs e
 
 <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="n">yj</span><span class="p">,</span> <span class="n">Pj</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:10s}</span><span class="s1">: </span><span class="si">{1:1.2f}</span><span class="s1"> </span><span class="si">{2:1.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CO        : 0.23 2.28
+H2O       : 0.23 2.28
+CO2       : 0.27 2.72
+H2        : 0.27 2.72
 </pre></div>
 </div>
 </div>
@@ -1028,16 +1044,16 @@ In Post 1536 we used the NIST webbook to compute a temperature dependent Gibbs e
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.4344629441456016
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
 <section id="finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers">
 <h2>Finding equilibrium composition by direct minimization of Gibbs free energy on mole numbers<a class="headerlink" href="#finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers" title="Permalink to this heading">#</a></h2>
-<p>CLOSED: <span class="timestamp-wrapper"><span class="timestamp">[2014-09-10 Wed 13:15]</span></span></p>
-<p>:date:     2013/03/01 12:27:48
-:updated:  2014/09/10 13:15:30
-:categories: optimization
-:tags:     thermodynamics</p>
 <p><a class="reference external" href="http://matlab.cheme.cmu.edu/2011/12/25/finding-equilibrium-composition-by-direct-minimization-of-gibbs-free-energy-on-mole-numbers/">Matlab post</a>
 Adapted from problem 4.5 in Cutlip and Shacham
 Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 1000K at a ratio of 4 mol H2O to 1 mol ethane. Estimate the equilibrium distribution of products (CH4, C2H4, C2H2, CO2, CO, O2, H2, H2O, and C2H6).</p>
@@ -1124,6 +1140,31 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-103.62526515484863
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: -104.40395152367506
+            Iterations: 14
+            Function evaluations: 172
+            Gradient evaluations: 14
+CH4        0.06644
+C2H4       8.773e-08
+C2H2       4.017e-14
+CO2        0.545
+CO         1.389
+O2         1.081e-13
+H2         5.346
+H2O        1.521
+C2H6       1.632e-07
+[ 0.00000000e+00 -1.77635684e-15  4.44089210e-16]
+True
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/1892264215.py:6: RuntimeWarning: invalid value encountered in log
+  G = np.sum(nj * (Gjo / R / T + np.log(nj / Enj)))
+</pre></div>
+</div>
+</div>
 </div>
 <p>I found it necessary to tighten the accuracy parameter to get pretty good matches to the solutions found in Matlab. It was also necessary to increase the number of iterations. Even still, not all of the numbers match well, especially the very small numbers. You can, however, see that the constraints were satisfied pretty well.</p>
 <p>Interestingly there is a distribution of products! That is interesting because only steam and ethane enter the reactor, but a small fraction of methane is formed! The main product is hydrogen. The stoichiometry of steam reforming is ideally <span class="math notranslate nohighlight">\(C_2H_6 + 4H_2O \rightarrow 2CO_2 + 7 H2\)</span>. Even though nearly all the ethane is consumed, we do not get the full yield of hydrogen. It appears that another equilibrium, one between CO, CO2, H2O and H2, may be limiting that, since the rest of the hydrogen is largely in the water. It is also of great importance that we have not said anything about reactions, i.e. how these products were formed.</p>
@@ -1138,6 +1179,12 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.6379999999999981
+1.3788752810890879
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="equilibrium-constant-based-on-mole-numbers">
@@ -1146,6 +1193,11 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">((</span><span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">7</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.3788826772653788
 </pre></div>
 </div>
 </div>
@@ -1160,11 +1212,6 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </section>
 <section id="the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition">
 <h2>The Gibbs free energy of a reacting mixture and the equilibrium composition<a class="headerlink" href="#the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition" title="Permalink to this heading">#</a></h2>
-<p>CLOSED: <span class="timestamp-wrapper"><span class="timestamp">[2014-09-10 Wed 12:21]</span></span></p>
-<p>:categories: optimization
-:date:     2013/02/18 09:00:00
-:updated:  2014/09/10 12:21:56
-:tags:     thermodynamics, reaction engineering</p>
 <p><a class="reference external" href="http://matlab.cheme.cmu.edu/2011/12/20/the-gibbs-free-energy-of-a-reacting-mixture-and-the-equilibrium-composition/">Matlab post</a></p>
 <p>In this post we derive the equations needed to find the equilibrium composition of a reacting mixture. We use the method of direct minimization of the Gibbs free energy of the reacting mixture.</p>
 <p>The Gibbs free energy of a mixture is defined as <span class="math notranslate nohighlight">\(G = \sum\limits_j \mu_j n_j\)</span> where <span class="math notranslate nohighlight">\(\mu_j\)</span> is the chemical potential of species <span class="math notranslate nohighlight">\(j\)</span>, and it is temperature and pressure dependent, and <span class="math notranslate nohighlight">\(n_j\)</span> is the number of moles of species <span class="math notranslate nohighlight">\(j\)</span>.</p>
@@ -1228,6 +1275,15 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+</pre></div>
+</div>
+<img alt="_images/e0938c9ccc5e4e2c25fafa5d889df481279723d65bedb87dd16951a47799efa5.png" src="_images/e0938c9ccc5e4e2c25fafa5d889df481279723d65bedb87dd16951a47799efa5.png" />
+</div>
 </div>
 <p>Now we simply minimize our Gwigglewiggle function. Based on the figure above, the miminum is near 0.45.</p>
 <div class="cell docutils container">
@@ -1244,8 +1300,19 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.46959618248998036
+</pre></div>
 </div>
-<p><img alt="img" src="images/gibbs-minim-2.png" /></p>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+  diffg += R * T * x1 * np.log(x2 * P / P0)
+</pre></div>
+</div>
+<img alt="_images/6750504a72904a406eb910aed4e887d7e12d583a0433a9ad5c2aebdd2ae1cd82.png" src="_images/6750504a72904a406eb910aed4e887d7e12d583a0433a9ad5c2aebdd2ae1cd82.png" />
+</div>
+</div>
 <p>To compute equilibrium mole fractions we do this:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1261,6 +1328,12 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.05732201863242677 0.05732201863242677 0.8853559627351465
+[0.05732202 0.05732202 0.88535596]
+</pre></div>
+</div>
+</div>
 </div>
 <p><span class="math notranslate nohighlight">\(K = \frac{a_P}{a_I a_B} = \frac{y_p P/P^\circ}{y_i P/P^\circ y_b P/P^\circ} = \frac{y_P}{y_i y_b}\frac{P^\circ}{P}\)</span>.</p>
 <p>We can express the equilibrium constant like this :<span class="math notranslate nohighlight">\(K = \prod\limits_j a_j^{\nu_j}\)</span>, and compute it with a single line of code.</p>
@@ -1270,6 +1343,13 @@ Ethane and steam are fed to a steam cracker at a total pressure of 1 atm and at 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;K from delta G &#39;</span><span class="p">,</span><span class="n">K</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;K as ratio of mole fractions &#39;</span><span class="p">,</span><span class="n">yp</span> <span class="o">/</span> <span class="p">(</span><span class="n">yi</span> <span class="o">*</span> <span class="n">yb</span><span class="p">)</span> <span class="o">*</span> <span class="n">P0</span> <span class="o">/</span> <span class="n">P</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;compact notation: &#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">((</span><span class="n">y_j</span> <span class="o">*</span> <span class="n">P</span> <span class="o">/</span> <span class="n">P0</span><span class="p">)</span><span class="o">**</span><span class="n">nu_j</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>K from delta G  107.77629474221368
+K as ratio of mole fractions  107.77920006547463
+compact notation:  107.77920006547463
 </pre></div>
 </div>
 </div>
@@ -1305,7 +1385,7 @@ S = standard entropy (J/mol*K)</p>
 </div>
 <section id="hydrogen">
 <h3>hydrogen<a class="headerlink" href="#hydrogen" title="Permalink to this heading">#</a></h3>
-<p>\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&amp;Units=SI&amp;Mask=1#Thermo-Gas</a>}</p>
+<p><a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C1333740&amp;Units=SI&amp;Mask=1#Thermo-Gas</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># T = 298-1000K valid temperature range</span>
@@ -1330,7 +1410,7 @@ S = standard entropy (J/mol*K)</p>
 </section>
 <section id="h-sub-2-sub-o">
 <h3>H<sub>2</sub>O<a class="headerlink" href="#h-sub-2-sub-o" title="Permalink to this heading">#</a></h3>
-<p>\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=1#Thermo-Gas</a>}</p>
+<p><a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C7732185&amp;Units=SI&amp;Mask=1#Thermo-Gas</a></p>
 <p>Note these parameters limit the temperature range we can examine, as these parameters are not valid below 500K. There is another set of parameters for lower temperatures, but we do not consider them here.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1356,7 +1436,7 @@ S = standard entropy (J/mol*K)</p>
 </section>
 <section id="co">
 <h3>CO<a class="headerlink" href="#co" title="Permalink to this heading">#</a></h3>
-<p>\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&amp;Units=SI&amp;Mask=1#Thermo-Gas</a>}</p>
+<p><a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C630080&amp;Units=SI&amp;Mask=1#Thermo-Gas</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 298. - 1300K valid temperature range</span>
@@ -1381,7 +1461,7 @@ S = standard entropy (J/mol*K)</p>
 </section>
 <section id="co-sub-2-sub">
 <h3>CO<sub>2</sub><a class="headerlink" href="#co-sub-2-sub" title="Permalink to this heading">#</a></h3>
-<p>\url{<a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&amp;Units=SI&amp;Mask=1#Thermo-Gas</a>}</p>
+<p><a class="reference external" href="http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&amp;amp;Units=SI&amp;amp;Mask=1#Thermo-Gas">http://webbook.nist.gov/cgi/cbook.cgi?ID=C124389&amp;Units=SI&amp;Mask=1#Thermo-Gas</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 298. - 1200.K valid temperature range</span>
@@ -1418,6 +1498,12 @@ S = standard entropy (J/mol*K)</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>deltaH = -41.15
+deltaG = -28.62
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="non-standard-state-delta-h-and-delta-g">
@@ -1446,10 +1532,12 @@ S = standard entropy (J/mol*K)</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">Hrxn</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$\Delta H_</span><span class="si">{rxn}</span><span class="s1">$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Temperature (K)&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;(kJ/mol)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;images/wgs-nist-1.png&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/43fd3c7367f7cf287fb83e306e0b4dd210dc1f4f96b25fb9904f15e56a99328a.png" src="_images/43fd3c7367f7cf287fb83e306e0b4dd210dc1f4f96b25fb9904f15e56a99328a.png" />
 </div>
 </div>
 <p>Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.</p>
@@ -1469,6 +1557,9 @@ S = standard entropy (J/mol*K)</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Equilibrium constant&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c3490f04a2a2cbec3f6c6bfe1b2cc6de634cb4b80eb3ccf186f49b4763b28d35.png" src="_images/c3490f04a2a2cbec3f6c6bfe1b2cc6de634cb4b80eb3ccf186f49b4763b28d35.png" />
 </div>
 </div>
 </section>
@@ -1512,6 +1603,11 @@ S = standard entropy (J/mol*K)</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The equilibrium conversion for these feed conditions is: 0.55
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="compute-gas-phase-pressures-of-each-species">
@@ -1528,6 +1624,11 @@ S = standard entropy (J/mol*K)</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.2747854427996614 2.2747854427996614 2.7252145572003386 2.7252145572003386
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="compare-the-equilibrium-constants">
@@ -1537,6 +1638,12 @@ S = standard entropy (J/mol*K)</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">K_Temperature</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">((</span><span class="n">P_CO2</span><span class="o">*</span><span class="n">P_H2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">P_CO</span><span class="o">*</span><span class="n">P_H2O</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.4352267476228722
+1.4352267476228684
 </pre></div>
 </div>
 </div>
@@ -1551,12 +1658,7 @@ S = standard entropy (J/mol*K)</p>
 </section>
 <section id="constrained-minimization-to-find-equilibrium-compositions">
 <h2>Constrained minimization to find equilibrium compositions<a class="headerlink" href="#constrained-minimization-to-find-equilibrium-compositions" title="Permalink to this heading">#</a></h2>
-<p>CLOSED: <span class="timestamp-wrapper"><span class="timestamp">[2016-04-04 Mon 13:35]</span></span></p>
-<p>:categories: optimization
-:date:     2013/02/05 09:00:00
-:updated:  2016/04/04 13:35:51
-:tags:     thermodynamics, reaction engineering</p>
-<p>adapated from Chemical Reactor analysis and design fundamentals, Rawlings and Ekerdt, appendix A.2.3.</p>
+<p>Adapated from Chemical Reactor analysis and design fundamentals, Rawlings and Ekerdt, appendix A.2.3.</p>
 <p><a class="reference external" href="http://matlab.cheme.cmu.edu/2011/08/12/constrained-minimization-to-find-equilibrium-compositions/">Matlab post</a></p>
 <p>The equilibrium composition of a reaction is the one that minimizes the total Gibbs free energy. The Gibbs free energy of a reacting ideal gas mixture depends on the mole fractions of each species, which are determined by the initial mole fractions of each species, the extent of reactions that convert each species, and the equilibrium constants.</p>
 <p>Reaction 1: <span class="math notranslate nohighlight">\(I + B \rightleftharpoons P1\)</span></p>
@@ -1635,6 +1737,23 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully    (Exit mode 0)
+            Current function value: -2.5594238377522345
+            Iterations: 7
+            Function evaluations: 24
+            Gradient evaluations: 7
+[0.13343719 0.35056497]
+-2.5594238377522345
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/1928982228.py:17: RuntimeWarning: invalid value encountered in log
+  d * np.log(P) + yI * d * np.log(yI) +
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/1928982228.py:18: RuntimeWarning: invalid value encountered in log
+  yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
+</pre></div>
+</div>
+</div>
 </div>
 <p>One way we can verify our solution is to plot the gibbs function and see where the minimum is, and whether there is more than one minimum. We start by making grids over the range of 0 to 0.5. Note we actually start slightly above zero because at zero there are some numerical imaginary elements of the gibbs function or it is numerically not defined since there are logs of zero there. We also set all elements where the sum of the two extents is greater than 0.5 to near zero, since those regions violate the constraints.</p>
 <div class="cell docutils container">
@@ -1683,6 +1802,9 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/847b4345af4a83f5bcd8194ab786df89439134ef434b2bafb68163575d361782.png" src="_images/847b4345af4a83f5bcd8194ab786df89439134ef434b2bafb68163575d361782.png" />
+</div>
 </div>
 <p>You can see we found the minimum. We can compute the mole fractions pretty easily.</p>
 <div class="cell docutils container">
@@ -1699,6 +1821,11 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 <span class="n">yP2</span> <span class="o">=</span> <span class="p">(</span><span class="n">yP20</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_I = </span><span class="si">{0:1.3f}</span><span class="s1"> y_B = </span><span class="si">{1:1.3f}</span><span class="s1"> y_P1 = </span><span class="si">{2:1.3f}</span><span class="s1"> y_P2 = </span><span class="si">{3:1.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yI</span><span class="p">,</span><span class="n">yB</span><span class="p">,</span><span class="n">yP1</span><span class="p">,</span><span class="n">yP2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y_I = 0.031 y_B = 0.031 y_P1 = 0.259 y_P2 = 0.679
 </pre></div>
 </div>
 </div>
@@ -1757,6 +1884,19 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully    (Exit mode 0)
+            Current function value: -0.23329964437327755
+            Iterations: 2
+            Function evaluations: 10
+            Gradient evaluations: 2
+Al         +0.00%
+NiAl       +0.00%
+Ni3Al     +46.66%
+Ni        +53.34%
+</pre></div>
+</div>
+</div>
 </div>
 <p>So, the sample will be about 47% <em>by weight</em> of Ni3Al, and 53% <em>by weight</em> of pure Ni.</p>
 <p>It may be convenient to formulate this in terms of moles.</p>
@@ -1797,6 +1937,19 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully    (Exit mode 0)
+            Current function value: -0.2500000000000001
+            Iterations: 2
+            Function evaluations: 10
+            Gradient evaluations: 2
+Al         +0.00%
+NiAl       +0.00%
+Ni3Al     +50.00%
+Ni        +50.00%
+</pre></div>
+</div>
+</div>
 </div>
 <p>This means we have a 1:1 molar ratio of Ni and Ni<sub>0.75</sub>Al<sub>0.25</sub>. That works out to the overall bulk composition in this particular problem.</p>
 <p>Let us verify that these two approaches really lead to the same conclusions. On a weight basis we estimate 53.3%wt Ni and 46.7%wt Ni3Al, whereas we predict an equimolar mixture of the two phases. Below we compute the mole fraction of Ni in each case.</p>
@@ -1822,6 +1975,12 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.875
+0.874192746384855
+</pre></div>
+</div>
+</div>
 </div>
 <p>You can see the overall mole fraction of Ni is practically the same in each case.</p>
 </section>
@@ -1836,6 +1995,11 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 <span class="n">nu</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
 <span class="n">M</span> <span class="o">=</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">44</span><span class="p">];</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0
 </pre></div>
 </div>
 </div>
@@ -1855,16 +2019,16 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0
+</pre></div>
+</div>
+</div>
 </div>
 <p>That is all there is to mass conservation with reactions. Nothing changes if there are lots of reactions, as long as each reaction is properly balanced, and none of them are nuclear reactions!</p>
 </section>
 <section id="numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead">
 <h2>Numerically calculating an effectiveness factor for a porous catalyst bead<a class="headerlink" href="#numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead" title="Permalink to this heading">#</a></h2>
-<p>CLOSED: <span class="timestamp-wrapper"><span class="timestamp">[2015-01-05 Mon 09:59]</span></span></p>
-<p>:categories: BVP
-:date:     2013/02/13 09:00:00
-:updated:  2015/01/05 09:59:14
-:tags:     reaction engineering</p>
 <p><a class="reference external" href="http://matlab.cheme.cmu.edu/2011/11/18/numerically-calculating-an-effectiveness-factor-for-a-porous-catalyst-bead/">Matlab post</a></p>
 <p>If reaction rates are fast compared to diffusion in a porous catalyst pellet, then the observed kinetics will appear to be slower than they really are because not all of the catalyst surface area will be effectively used. For example, the reactants may all be consumed in the near surface area of a catalyst bead, and the inside of the bead will be unutilized because no reactants can get in due to the high reaction rates.</p>
 <p>References: Ch 12. Elements of Chemical Reaction Engineering, Fogler, 4th edition.</p>
@@ -1930,6 +2094,14 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 <span class="nb">print</span><span class="p">(</span><span class="n">eta_analytical</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>At r=0.5 Ca=0.20000148865173356
+0.5630113483142608
+0.5630033628012618
+</pre></div>
+</div>
+<img alt="_images/fd96e14539ccc19a3479d0fc6359db343b8b5537d5de4ce7efc91818f2db28b8.png" src="_images/fd96e14539ccc19a3479d0fc6359db343b8b5537d5de4ce7efc91818f2db28b8.png" />
 </div>
 </div>
 <p>You can see the concentration of A inside the particle is significantly lower than outside the particle. That is because it is reacting away faster than it can diffuse into the particle. Hence, the overall reaction rate in the particle is lower than it would be without the diffusion limit.</p>
@@ -2004,6 +2176,12 @@ A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The minimum pipe diameter is 0.0389653369530596 m
+</pre></div>
+</div>
+<img alt="_images/3d1cfb36a9c0ea7cfdc77f0e3d0f43e673d4ce96eac3d355b30928eea9d535a9.png" src="_images/3d1cfb36a9c0ea7cfdc77f0e3d0f43e673d4ce96eac3d355b30928eea9d535a9.png" />
+</div>
 </div>
 <p>Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.</p>
 </section>
@@ -2032,7 +2210,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../data/antoine_data.dat&#39;</span><span class="p">,</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../../data/antoine_data.dat&#39;</span><span class="p">,</span>
                   <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;formula&#39;</span><span class="p">,</span> <span class="s1">&#39;S8&#39;</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;S28&#39;</span><span class="p">),</span>
@@ -2047,9 +2225,20 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 
 <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
-<span class="n">acetone</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">names</span> <span class="o">==</span> <span class="s1">&#39;acetone&#39;</span><span class="p">]</span>
-
-<span class="c1"># for readability we unpack the array into variables</span>
+<span class="n">acetone</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">names</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;acetone&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">acetone</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(107, b&#39;C3H6O&#39;, b&#39;acetone&#39;, 7.2316, 1277.03, 237.23, -32., 77., b&#39;Y2&#39;, b&#39;0&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># for readability we unpack the array into variables</span>
 <span class="nb">id</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">acetone</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
@@ -2076,14 +2265,19 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">Pcrc</span> <span class="o">=</span> <span class="p">[</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">10</span><span class="p">,</span>     <span class="mi">40</span><span class="p">,</span>     <span class="mi">100</span><span class="p">,</span>    <span class="mi">400</span><span class="p">,</span>    <span class="mi">760</span><span class="p">]</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Tcrc</span><span class="p">,</span> <span class="n">Pcrc</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Antoine&#39;</span><span class="p">,</span><span class="s1">&#39;CRC Handbook&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Antoine&#39;</span><span class="p">,</span><span class="s1">&#39;CRC Handbook&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>38.61381981965211
+The vapor pressure is 400 mmHg at T = 38.6 degC
+</pre></div>
 </div>
-<p><img alt="img" src="images/antoine-1.png" /></p>
+<img alt="_images/4e2828df707331702dfed4098d07fc6a18070145bda0aaf68df6d333129ec319.png" src="_images/4e2828df707331702dfed4098d07fc6a18070145bda0aaf68df6d333129ec319.png" />
+</div>
+</div>
 <p>This result is close to the value reported <a class="reference external" href="http://en.wikipedia.org/wiki/Acetone_%28data_page%29#Vapor_pressure_of_liquid"> here</a> (39.5 degC), from the CRC Handbook. The difference is probably that the value reported in the CRC is an actual experimental number.</p>
-<p><img alt="img" src="images/antoine-2.png" /></p>
 </section>
 <section id="calculating-a-bubble-point-pressure-of-a-mixture">
 <h2>Calculating a bubble point pressure of a mixture<a class="headerlink" href="#calculating-a-bubble-point-pressure-of-a-mixture" title="Permalink to this heading">#</a></h2>
@@ -2098,15 +2292,15 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
 
 <span class="c1"># load our thermodynamic data</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/antoine_data.dat&#39;</span><span class="p">,</span>
-                  <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;../../data/antoine_data.dat&#39;</span><span class="p">,</span>
+                  <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;formula&#39;</span><span class="p">,</span> <span class="s1">&#39;S8&#39;</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;S28&#39;</span><span class="p">),</span>
-                         <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
-                         <span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
-                         <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
-                         <span class="p">(</span><span class="s1">&#39;Tmin&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
-                         <span class="p">(</span><span class="s1">&#39;Tmax&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;Tmin&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;Tmax&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;??&#39;</span><span class="p">,</span> <span class="s1">&#39;S4&#39;</span><span class="p">),</span>
                          <span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;S4&#39;</span><span class="p">)],</span>
                   <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
@@ -2158,6 +2352,18 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 498.4320267   182.16010994  898.31061294 1081.48181768  837.88860027]
+699.654633507494
+The bubble point is 69.46 degC
+y_benzene    = 0.142
+y_toluene    = 0.053
+y_chloroform = 0.255
+y_acetone    = 0.308
+y_methanol   = 0.242
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="the-equal-area-method-for-the-van-der-waals-equation">
@@ -2183,23 +2389,31 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Vr</span><span class="p">,</span><span class="n">Pr</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$V_R$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$P_R$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$P_R$&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/4daee9f3e19f07776fdc4125540c66c6aa6db2c3c2c6cd88c357a52ccd301753.png" src="_images/4daee9f3e19f07776fdc4125540c66c6aa6db2c3c2c6cd88c357a52ccd301753.png" />
 </div>
-<p><img alt="img" src="images/maxwell-eq-area-1.png" /></p>
+</div>
 <p>The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection. Let us draw a line on the figure at y = 0.65.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.65</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Vr</span><span class="p">,</span><span class="n">Pr</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$V_R$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$P_R$&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/a4b16d2b496add87522ad703db041e4615cea61eaafb114596a148091e537004.png" src="_images/a4b16d2b496add87522ad703db041e4615cea61eaafb114596a148091e537004.png" />
 </div>
-<p><img alt="img" src="images/maxwell-eq-area-2.png" /></p>
+</div>
 <p>To find the areas, we need to know where the intersection of the vdW eqn with the horizontal line. This is the same as asking what are the roots of the vdW equation at that Pr. We need all three intersections so we can integrate from the first root to the middle root, and then the middle root to the third root. We take advantage of the polynomial nature of the vdW equation, which allows us to use the roots command to get all the roots at once. The polynomial is <span class="math notranslate nohighlight">\(V_R^3 - \frac{1}{3}(1+8 T_R/P_R) + 3/P_R - 1/P_R = 0\)</span>. We use the coefficients t0 get the roots like this.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2212,8 +2426,13 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.60286812 1.09743234 2.32534056]
+</pre></div>
 </div>
-<p><img alt="img" src="images/maxwell-eq-area-3.png" /></p>
+<img alt="_images/90bca00321de2a4a0ad41bade52788ad2a1b89084be499b6e39a409abc9f3476.png" src="_images/90bca00321de2a4a0ad41bade52788ad2a1b89084be499b6e39a409abc9f3476.png" />
+</div>
+</div>
 <section id="compute-areas">
 <h3>Compute areas<a class="headerlink" href="#compute-areas" title="Permalink to this heading">#</a></h3>
 <p>for A1, we need the area under the line minus the area under the vdW curve. That is the area between the curves. For A2, we want the area under the vdW curve minus the area under the line. The area under the line between root 2 and root 1 is just the width (root2 - root1)*y</p>
@@ -2229,6 +2448,12 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.06322594560601252 0.05802120981218639
+0.3214667437645078 -0.7981403392675809
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2239,8 +2464,8 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
     <span class="n">vdWp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">Tr</span> <span class="o">/</span> <span class="n">y</span><span class="p">),</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">]</span>
     <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">vdWp</span><span class="p">)</span>
     <span class="n">v</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-    <span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">A2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span>
     <span class="k">return</span>  <span class="n">A1</span> <span class="o">-</span> <span class="n">A2</span>
 
 <span class="n">y_eq</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">equal_area</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">)</span>
@@ -2255,6 +2480,16 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">A2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">y_eq</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span> <span class="n">A2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6469983518722509
+0.06175264739937192 0.06175264739937192
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/jkitchin/anaconda3/lib/python3.10/site-packages/numpy/core/shape_base.py:65: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
+  ary = asanyarray(ary)
 </pre></div>
 </div>
 </div>
@@ -2281,8 +2516,10 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/6e74c5c56d795c26ad071abb1ab4bfc33f9cf8fb0f035003766aed984797e107.png" src="_images/6e74c5c56d795c26ad071abb1ab4bfc33f9cf8fb0f035003766aed984797e107.png" />
 </div>
-<p><img alt="img" src="images/maxwell-eq-area-4.png" /></p>
+</div>
 </section>
 </section>
 <section id="time-dependent-concentration-in-a-first-order-reversible-reaction-in-a-batch-reactor">
@@ -2334,6 +2571,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/bd9046abd4e255a6027ce3a962d520be9d81fa0ed54135f315852393c2f661a3.png" src="_images/bd9046abd4e255a6027ce3a962d520be9d81fa0ed54135f315852393c2f661a3.png" />
+</div>
 </div>
 <p>That is it. The main difference between this and Matlab is the order of arguments in odeint is different, and the ode function has differently ordered arguments.</p>
 </section>
@@ -2356,6 +2596,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">X0</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="n">Xe</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">X0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The equilibrium conversion is X = </span><span class="si">{0:1.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Xe</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The equilibrium conversion is X = 0.55
 </pre></div>
 </div>
 </div>
@@ -2383,6 +2628,12 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 9000.000000000007 seconds (2.500000000000002 hours)
+Estimated absolute error = 2.1220327407235617e-07
+</pre></div>
+</div>
+</div>
 </div>
 <p>You can see the estimate error is very small compared to the solution.</p>
 </section>
@@ -2407,6 +2658,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 
 <span class="n">sol</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Ca0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;t = </span><span class="si">{0}</span><span class="s1"> seconds (</span><span class="si">{1}</span><span class="s1"> hours)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">sol</span><span class="o">/</span><span class="mi">3600</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = (9.0+/-0.9)e+03 seconds (2.50+/-0.25 hours)
 </pre></div>
 </div>
 </div>
@@ -2440,6 +2696,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Conversion&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/b2e8bb0901a3fb496ea7f0556dc07ab1bfdb863bce98e2805f27a2e0c16ea3b9.png" src="_images/b2e8bb0901a3fb496ea7f0556dc07ab1bfdb863bce98e2805f27a2e0c16ea3b9.png" />
 </div>
 </div>
 <p>You can read off of this figure to find the time required to achieve a particular conversion.</p>
@@ -2485,6 +2744,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/6b025f09db43b8b149eb9292b09d5eb0b60da667b0c1731efd9702c33ad918ee.png" src="_images/6b025f09db43b8b149eb9292b09d5eb0b60da667b0c1731efd9702c33ad918ee.png" />
+</div>
 </div>
 <p>See Fogler, 4th edition. page 193.</p>
 </section>
@@ -2519,6 +2781,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The exit concentration is 0.005 mol/L
+</pre></div>
+</div>
+</div>
 </div>
 <p>It is a little confusing why it is necessary to put a comma after the CA_sol in the fsolve command. If you do not put it there, you get brackets around the answer.</p>
 </section>
@@ -2537,9 +2804,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <p>We have saturated liquid here, and we get the thermodynamic properties for the given temperature.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#import iapws</span>
-<span class="c1">#print iapws.__version__</span>
-<span class="kn">from</span> <span class="nn">iapws</span> <span class="kn">import</span> <span class="n">IAPWS97</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iapws</span> <span class="kn">import</span> <span class="n">IAPWS97</span>
 
 <span class="n">T1</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">+</span> <span class="mf">273.15</span> <span class="c1">#in K</span>
 
@@ -2575,6 +2840,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The compressor work is: 0.0030 kJ/kg
+</pre></div>
+</div>
+</div>
 </div>
 <p>The compression work is almost negligible. This number is 1000 times smaller than we computed with Xsteam. I wonder what the units of v1 actually are.</p>
 </section>
@@ -2595,6 +2865,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The boiler heat duty is: 3260.69 kJ/kg
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="isentropic-expansion-through-turbine-to-point-4">
@@ -2611,6 +2886,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The condenser heat duty is 2317.00 kJ/kg
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="to-get-from-point-4-to-point-1">
@@ -2619,6 +2899,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">WdotTurbine</span> <span class="o">=</span> <span class="n">h4</span> <span class="o">-</span> <span class="n">h3</span> <span class="c1"># work extracted from the expansion</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The turbine work is: </span><span class="si">{0:1.2f}</span><span class="s1"> kJ/kg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WdotTurbine</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The turbine work is: -946.71 kJ/kg
 </pre></div>
 </div>
 </div>
@@ -2631,6 +2916,11 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eta</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">WdotTurbine</span> <span class="o">-</span> <span class="n">WdotP</span><span class="p">)</span> <span class="o">/</span> <span class="n">Qb</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The overall efficiency is </span><span class="si">{0:1.2%}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eta</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The overall efficiency is 29.03%.
 </pre></div>
 </div>
 </div>
@@ -2664,6 +2954,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/45b74803c2c512765847a0545ad914158237535f3f164b14443fa325bd3c70a7.png" src="_images/45b74803c2c512765847a0545ad914158237535f3f164b14443fa325bd3c70a7.png" />
+</div>
 </div>
 <p>We can plot our Rankine cycle path like this. We compute the entropies along the non-isentropic paths.</p>
 <div class="cell docutils container">
@@ -2690,6 +2983,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">S41</span><span class="p">,</span> <span class="n">T41</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">);</span> <span class="c1"># and from 4 to 1 is isobaric</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/79d388239d187f4900cfd11c2a98de32082c2ba621fee1cb3fd9c7f72f00182d.png" src="_images/79d388239d187f4900cfd11c2a98de32082c2ba621fee1cb3fd9c7f72f00182d.png" />
 </div>
 </div>
 </section>
@@ -2729,6 +3025,9 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="_images/216888fcb4e4e73f4db8f611b64547ce1915233e00eaead8b8c0cd77d4428caa.png" src="_images/216888fcb4e4e73f4db8f611b64547ce1915233e00eaead8b8c0cd77d4428caa.png" />
+</div>
 </div>
 <p>In this example, the boundary is complicated, and not described by a simple function. We will check for intersections of the line from the arbitrary point to the reference point with each segment defining the boundary. If there is an intersection in the boundary, we count that as a crossing. We choose the origin (0, 0) in this case for the reference point. For an arbitrary point (x1, y1), the equation of the line is therefore (provided x1 !=0):</p>
 <p><span class="math notranslate nohighlight">\(y = \frac{y1}{x1} x\)</span>.</p>
@@ -2737,8 +3036,6 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <p>Setting these two equations equal to each other, we can solve for the value of <span class="math notranslate nohighlight">\(x\)</span>, and if <span class="math notranslate nohighlight">\(bx1 &lt;= x &lt;= bx2\)</span> then we would say there is an intersection with that segment. The solution for x is:</p>
 <p><span class="math notranslate nohighlight">\(x = \frac{m bx1 - by1}{m - y1/x1}\)</span></p>
 <p>This can only fail if <span class="math notranslate nohighlight">\(m = y1/x1\)</span> which means the segments are parallel and either do not intersect or go through each other. One issue we have to resolve is what to do when the intersection is at the boundary. In that case, we would see an intersection with two segments since bx1 of one segment is also bx2 of another segment. We resolve the issue by only counting intersections with bx1. Finally, there may be intersections at values of <span class="math notranslate nohighlight">\(x\)</span> greater than the point, and we are not interested in those because the intersections are not between the point and reference point.</p>
-<p>Here are all of the special cases that we  have to handle:</p>
-<p><img alt="img" src="images/region-determination.png" /></p>
 <p>We will have to do float comparisons, so we will define <a class="reference internal" href="math.html"><span class="doc std std-doc">tolerance functions</span></a> for all of these. I tried this previously with regular comparison operators, and there were many cases that did not work because of float comparisons. In the code that follows, we define the tolerance functions, the function that handles almost all the special cases, and show that it almost always correctly identifies the region a point is in.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2841,10 +3138,19 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/339476128.py:64: RuntimeWarning: invalid value encountered in double_scalars
+  m1 = y1 / x1
+/var/folders/3q/ht_2mtk52hl7ydxrcr87z2gr0000gn/T/ipykernel_20616/339476128.py:64: RuntimeWarning: divide by zero encountered in double_scalars
+  m1 = y1 / x1
+</pre></div>
 </div>
-<p><img alt="img" src="images/boundary-2.png" /></p>
+<img alt="_images/0ee1e7a9228865c6ff1e35aaf649f5ebb441c1aeda15450721ddcd26f9d8579a.png" src="_images/0ee1e7a9228865c6ff1e35aaf649f5ebb441c1aeda15450721ddcd26f9d8579a.png" />
+</div>
+</div>
 <p>If you look carefully, there are two blue points in the red region, which means there is some edge case we do not capture in our function. Kudos to the person who figures it out.
 Update: It was pointed out that the points intersect a point on the line.</p>
+<p>Today I would use a package like <a class="reference external" href="https://pypi.org/project/shapely/">Shapely</a> for this.</p>
 </section>
 </section>
 
