@@ -1,0 +1,1239 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Nonlinear algebra &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/07-nla-1';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Special nonlinear systems - polynomials" href="08-nla-2.html" />
+    <link rel="prev" title="Nth differential equations" href="05-nth-odes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/07-nla-1.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/07-nla-1.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/07-nla-1.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Nonlinear algebra</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-nonlinear-algebra">Introduction to nonlinear algebra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-raphson-method-for-finding-solutions">Newton-Raphson method for finding solutions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-problems">Problem problems</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivatives-of-functions">Derivatives of functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fsolve">fsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-worked-example">A worked example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-objective-functions">Parameterized objective functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="nonlinear-algebra">
+<h1>Nonlinear algebra<a class="headerlink" href="#nonlinear-algebra" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: scipy.optimize.fsolve, scipy.misc.derivative, list comprehension</p></li>
+</ul>
+<section id="introduction-to-nonlinear-algebra">
+<h2>Introduction to nonlinear algebra<a class="headerlink" href="#introduction-to-nonlinear-algebra" title="Permalink to this heading">#</a></h2>
+<p>In non-linear algebra, we seek solutions to the equation <span class="math notranslate nohighlight">\(f(x) = 0\)</span> where <span class="math notranslate nohighlight">\(f(x)\)</span> is <em>non-linear</em> in <span class="math notranslate nohighlight">\(x\)</span>. These are examples of non-linear algebraic equations:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(e^x=4\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(x^2 + x - 1 = 0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(f(F_A) = F_{A0} - F_{A} - k F_A^2 / \nu / V = 0\)</span></p></li>
+</ul>
+<p>There is not a general theory for whether there is a solution, multiple solutions, or no solution to nonlinear algebraic equations. For example,</p>
+<p><span class="math notranslate nohighlight">\(sin(x) = 2\)</span> has no solution. We define <span class="math notranslate nohighlight">\(f(x) = sin(x) - 2\)</span> and plot it. You can see there no intersections with the x-axis at y=0, meaning no solutions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s1">&#39;k.-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/91232de655d8ddfcc6ce49fa63bb9c93534edcf6bccca561f2636fe9d7ed05c0.png" src="../_images/91232de655d8ddfcc6ce49fa63bb9c93534edcf6bccca561f2636fe9d7ed05c0.png" />
+</div>
+</div>
+<p>In contrast, <span class="math notranslate nohighlight">\(sin(x) = 0.5\)</span> will have an infinite number of solutions, everywhere the function intersects the x-axis.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1">#plt.plot(x, f2(x))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.025</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+<span class="c1">#plt.axhline(0, ls=&#39;--&#39;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d1d0d4047611859188ca1f0be7acab12c6164dd741d12286a9362c10589486ae.png" src="../_images/d1d0d4047611859188ca1f0be7acab12c6164dd741d12286a9362c10589486ae.png" />
+</div>
+</div>
+<p>Finally, <span class="math notranslate nohighlight">\(sin(x) = x - 1\)</span> has only one solution.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f3</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f3</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d4b92610d19ff190aeac2745be5323f48d7fe70a63d002e3d68b776509f29d4d.png" src="../_images/d4b92610d19ff190aeac2745be5323f48d7fe70a63d002e3d68b776509f29d4d.png" />
+</div>
+</div>
+<p>The equation <span class="math notranslate nohighlight">\(e^{-0.5 x} \sin(x) = 0.5\)</span>, evidently has two solutions, but other versions of this equation might have 0, 1, multiple or infinite solutions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f3</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4000</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f3</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="c1">#plt.title(&#39;$e^{-0.5 x} \sin(x) = 0.5$&#39;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;objective&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8c573c5e127242f8cbff68c53275dbe3abd5e4eda7c0153df9f06d3bdb20bc1b.png" src="../_images/8c573c5e127242f8cbff68c53275dbe3abd5e4eda7c0153df9f06d3bdb20bc1b.png" />
+</div>
+</div>
+<p><strong>exercise</strong> modify the equation to see 0, 1, many or infinite solutions.</p>
+<p>Graphical methods like this are invaluable to visually assess if there are any solutions, and if so how many solutions at least over some range of solutions. Sometimes, this is the fastest way to estimate a solution. Here we focus on nonlinear algebra problems that cannot be analytically solved. These kinds of problems require an iterative solution approach.</p>
+<section id="newton-raphson-method-for-finding-solutions">
+<h3>Newton-Raphson method for finding solutions<a class="headerlink" href="#newton-raphson-method-for-finding-solutions" title="Permalink to this heading">#</a></h3>
+<p>Notes adapted from <a class="reference external" href="https://en.wikipedia.org/wiki/Newton%27s_method">https://en.wikipedia.org/wiki/Newton%27s_method</a>.</p>
+<p>The key idea is that we start with a guess that is close to the solution, and then the function is approximated by a line tangent to the function to find where the line intersects the x-axis. For well-behaved functions, this is a better estimate of where the function equals zero than the first guess. Then, we repeat this until we get sufficiently close to zero.</p>
+<p>So, we start with the point (x0, f(x0)), and we compute f’(x0), which is the slope of the line tangent to f(x0). We can express an equation for this line as: <span class="math notranslate nohighlight">\(y - f(x0) = f'(x0)(x - x0)\)</span> If we now solve this for the <span class="math notranslate nohighlight">\(x\)</span> where <span class="math notranslate nohighlight">\(y=0\)</span> leads to:</p>
+<p><span class="math notranslate nohighlight">\(0 = f'(x0)(x - x0) + f(x0)\)</span></p>
+<p>which leads to</p>
+<p><span class="math notranslate nohighlight">\(x = x0 - f(x0) / f'(x0)\)</span></p>
+<p>To implement this, we need to decide what is the tolerance for defining 0, and what is the maximum number of iterations we want to consider?</p>
+<p>We will first consider what is the square root of 612? This is equivalent to finding a solution to <span class="math notranslate nohighlight">\(x^2 = 612\)</span></p>
+<p><span class="math notranslate nohighlight">\(f(x) = x^2 - 612\)</span></p>
+<p>Let’s start with a guess of x=25, since we know <span class="math notranslate nohighlight">\(x^2=625\)</span>. We also know <span class="math notranslate nohighlight">\(f'(x) = 2x\)</span>.</p>
+<p>The approach is iterative, so we will specify the maximum number of steps to iterate to, and a criteria for stopping.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="mi">25</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">612</span>
+
+<span class="k">def</span> <span class="nf">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="n">fprime</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(24.74, 0.06759999999997035, 612.0676)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(24.738633791430882, 1.8665258494365844e-06, 612.0000018665258)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.25</span>
+
+<span class="n">Nmax</span> <span class="o">=</span> <span class="mi">25</span>  <span class="c1"># stop if we hit this many iterations</span>
+<span class="n">TOL</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="c1"># stop if we are less than this number</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;The function to solve.&quot;</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">612</span>
+
+<span class="k">def</span> <span class="nf">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="s2">&quot;Derivative of the function to solve.&quot;</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span>
+
+<span class="c1"># Here is the iterative solution</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nmax</span><span class="p">):</span>
+    <span class="n">xnew</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="n">fprime</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">xnew</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">xnew</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">xnew</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">TOL</span><span class="p">:</span>
+        <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">Nmax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Max iterations exceeded&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">xnew</span><span class="p">,</span> <span class="n">xnew</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0: -1224.125
+1: -612.3124744715614
+2: -306.65598207645877
+3: -154.3258518917108
+4: -79.14574344693564
+5: -43.43915671458881
+6: -28.76391400152738
+7: -25.020286679532415
+8: -24.740219034714983
+9: -24.738633804496054
+10: -24.73863375370596
+-24.73863375370596 611.9999999999999
+</pre></div>
+</div>
+</div>
+</div>
+<p>That is pretty remarkable, it only took two iterations. That is partly because we started pretty close to the answer. Try this again with different initial guesses and see how the number of iterations changes. Also try with negative numbers. There are two solutions that are possible, and the one you get depends on the initial guess.</p>
+<p>One reason it takes so few iterations here is that Newton’s method converges quadratically when you are close to the solution, and in this simple case we have a quadratic function, so we get to the answer in just a few steps.</p>
+</section>
+<section id="problem-problems">
+<h3>Problem problems<a class="headerlink" href="#problem-problems" title="Permalink to this heading">#</a></h3>
+<p>There are pathological situations you can get into. Consider this simple looking polynomial:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;f(x)&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/69ceaf842f439cc25d80a925df877980093023eaefd0a8b7166837aecdfe509f.png" src="../_images/69ceaf842f439cc25d80a925df877980093023eaefd0a8b7166837aecdfe509f.png" />
+</div>
+</div>
+<p>It seems obvious there is a root near -1.7. But if you use a guess around x=0, the algorithm simply oscillates back and forth and never converges. Let’s see:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nmax</span><span class="p">):</span>
+    <span class="n">xnew</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="n">fprime</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">xnew</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">xnew</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">f</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">fprime</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">xnew</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">TOL</span><span class="p">:</span>
+        <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">Nmax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Max iterations exceeded&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">xnew</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0: 1.4  1.9439999999999995  3.879999999999999
+1: 0.8989690721649484  0.9285595695281881  0.4244361781273245
+2: -1.2887793276654596  2.4369578531870273  2.9828564662535015
+3: -2.105767299013565  -3.1259765087015694  11.302767752784657
+4: -1.8291999504602496  -0.46205275489156605  8.03791737629134
+5: -1.771715812062107  -0.01794341645386366  7.416930756132674
+6: -1.76929656115579  -3.1094202426196205e-05  7.391230963953113
+7: -1.769292354251341  -9.39386346487936e-11  7.391186304436758
+-1.769292354251341
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Exercise:</strong> Try several initial guesses, and see which ones converge.</p>
+<p>You can also run into problems when:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f'(x) = 0\)</span> at the initial guess, or a subsequent unpdate, then you get a singularity in the update.</p></li>
+<li><p>The first derivative is discontinuous at the root. Then you may not converge because the update can bounce back and forth.</p></li>
+<li><p>The first derivative is undefined at the root</p></li>
+</ul>
+<p>We do not frequently run into these issues, but they do occur from time to time. The solution is usually to use a better initial guess.</p>
+</section>
+</section>
+<section id="derivatives-of-functions">
+<h2>Derivatives of functions<a class="headerlink" href="#derivatives-of-functions" title="Permalink to this heading">#</a></h2>
+<p>When you can derive an analytical derivative, you should probably consider doing that, because otherwise we have to approximate the derivatives numerically using finite differences, which is less accurate and computationally more expensive, or we need to use advance libraries that are capable of finding derivatives automatically. We will first see how to the finite differences approach, and later learn about the automatic approach.</p>
+<p>Let’s examine the <code class="docutils literal notranslate"><span class="pre">scipy.misc.derivative</span></code> function. You provide a function, an x-value that you want the derivative at, and a dx to use in a finite-difference formula. By default, three points are used in the difference formula. You want to use a small dx to get an accurate result, but not too small or you can get numerical errors.</p>
+<p><strong>exercise</strong>: Try this out with different values of dx from 0.1 to 1e-15.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">derivative</span>
+<span class="o">?</span>derivative
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+
+<span class="n">x0</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">),</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x0</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># the numerical and analytical derivative</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2190/1845505028.py:6: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  derivative(f, x0, dx=1e-6), 3 * x0**2  # the numerical and analytical derivative
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(431.9999997051127, 432)
+</pre></div>
+</div>
+</div>
+</div>
+<p>It would be nice to have some adaptive code that just does the right thing to find a dx adaptively. Here is an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fprime</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate the derivative of func at x0. dx is the initial spacing to use, and</span>
+<span class="sd">    it will be adaptively made smaller to get the derivative accurately with a</span>
+<span class="sd">    tolerance. nmax is the maximum number of divisions to make.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d0</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmax</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">dnew</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d0</span> <span class="o">-</span> <span class="n">dnew</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dnew</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d0</span> <span class="o">=</span> <span class="n">dnew</span>
+
+    <span class="c1"># You only get here when the loop has completed and not returned a value</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Maximum number of divisions reached&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And, here is our derivative function in action:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+
+<span class="n">fprime</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2190/1563071673.py:7: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  d0 = derivative(func, x0, dx=dx)
+/tmp/ipykernel_2190/1563071673.py:10: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  dnew = derivative(func, x0, dx=dx)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>432.0000001520384
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s wrap the Newton method in a function too, using our fprime function to get the derivative.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">newton</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmax</span><span class="p">):</span>
+        <span class="n">xnew</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">func</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="n">fprime</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">xnew</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">xnew</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">xnew</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Max iterations exceeded&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we have a pretty convenient way to solve equations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">612</span>
+
+<span class="n">newton</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">612</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2190/1563071673.py:7: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  d0 = derivative(func, x0, dx=dx)
+/tmp/ipykernel_2190/1563071673.py:10: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  dnew = derivative(func, x0, dx=dx)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(24.738633753705965, 24.73863375370596)
+</pre></div>
+</div>
+</div>
+</div>
+<p>This is the basic idea behind nonlinear algebra solvers. Similar to the ode solver we used, there are functions in scipy written to solve nonlinear equations. We consider these next.</p>
+</section>
+<section id="fsolve">
+<h2>fsolve<a class="headerlink" href="#fsolve" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">scipy.optimize.fsolve</span></code> is the main function we will use to solve nonlinear algebra problems. <code class="docutils literal notranslate"><span class="pre">fsolve</span></code> can be used with functions where you have the derivative, and where you don’t.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
+<span class="o">?</span>fsolve
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s see the simplest example.</p>
+<p>Solve <span class="math notranslate nohighlight">\(e^x = 2\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>  <span class="c1"># equal to zero at the solution</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">ans</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.69314718]
+0.6931471805599453
+0.69
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that the result is an array. We can <em>unpack</em> the array with this syntax. Note the comma. Why a comma? it indicates to Python that the results should be unpacked into the variable in a special way, i.e. the first value of the result goes into the first variable. That is all there is in this case.</p>
+<p>This is the preferred way to get the value of the solution into x:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6931471805599456
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here are two checks on the answer.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">objective</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4.440892098500626e-16, 3.3306690738754696e-16)
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can get a lot more information by setting full output to 1. Note you have to assign 4 variables to the output in this case. That status will be 1 if it succeeds.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ans</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ans</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.69314718]),
+ {&#39;nfev&#39;: 10,
+  &#39;fjac&#39;: array([[-1.]]),
+  &#39;r&#39;: array([-2.00000148]),
+  &#39;qtf&#39;: array([-4.74712714e-10]),
+  &#39;fvec&#39;: array([4.4408921e-16])},
+ 1,
+ &#39;The solution converged.&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here is an example with no solution, and a different status flag.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-28.0696978]),
+ {&#39;nfev&#39;: 20,
+  &#39;fjac&#39;: array([[1.]]),
+  &#39;r&#39;: array([6.75011061e-13]),
+  &#39;qtf&#39;: array([2.]),
+  &#39;fvec&#39;: array([2.])},
+ 5,
+ &#39;The iteration is not making good progress, as measured by the \n  improvement from the last ten iterations.&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ans</span><span class="p">,</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">objective2</span><span class="p">(</span><span class="n">ans</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">objective2</span><span class="p">(</span><span class="n">ans</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mf">1e-6</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2.000000000000645, False)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>scipy.optimize.root is preferred now.</p>
+</div>
+</section>
+<section id="a-worked-example">
+<h2>A worked example<a class="headerlink" href="#a-worked-example" title="Permalink to this heading">#</a></h2>
+<p>We can integrate fsolve with a variety of other problems. For example, here is an integral equation we need to solve in engineering problems. The volume of a plug flow reactor can be defined by this equation: <span class="math notranslate nohighlight">\(V = \int_{Fa(V=0)}^{Fa} \frac{1}{r_a} dFa\)</span> where <span class="math notranslate nohighlight">\(r_a\)</span> is the rate law. Suppose we know the reactor volume is 100 L, the inlet concentration of A is 1 mol/L, the volumetric flow is 10 L/min, and <span class="math notranslate nohighlight">\(r_a = -k Ca\)</span>, with <span class="math notranslate nohighlight">\(k=0.23\)</span> 1/min. What is the exit molar flow rate? We need to solve the following equation:</p>
+<div class="math notranslate nohighlight">
+\[100 = \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa\]</div>
+<p>The equation to solve here is:</p>
+<p><span class="math notranslate nohighlight">\(f(Fa) = 100 - \int_{Fa(V=0)}^{Fa} \frac{1}{-k Fa/\nu} dFa\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span>   <span class="c1"># 1 / min</span>
+<span class="n">nu</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># L / min</span>
+<span class="n">Cao</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># mol / L</span>
+<span class="n">Fa0</span> <span class="o">=</span> <span class="n">Cao</span> <span class="o">*</span> <span class="n">nu</span>
+
+<span class="k">def</span> <span class="nf">integrand</span><span class="p">(</span><span class="n">Fa</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Fa</span> <span class="o">/</span> <span class="n">nu</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">Fa</span><span class="p">):</span>
+    <span class="n">integral</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">Fa0</span><span class="p">,</span> <span class="n">Fa</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">100.0</span> <span class="o">-</span> <span class="n">integral</span>
+
+<span class="n">objective</span><span class="p">(</span><span class="mf">0.15</span><span class="o">*</span><span class="n">Fa0</span><span class="p">),</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">Fa0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(17.51652239626604, 1.5)
+</pre></div>
+</div>
+</div>
+</div>
+<p>To make a plot, there is a subtlety. We cannot integrate an array of <span class="math notranslate nohighlight">\(F_A\)</span> values. Previously, we used a for loop to get around this. There is another syntax called <em>list comprehension</em> that we can also use:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">objective</span><span class="p">(</span><span class="n">fa</span><span class="p">)</span> <span class="k">for</span> <span class="n">fa</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>  <span class="c1"># list comprehension</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-200.33718604270166,
+ -100.22479069513437,
+ -0.11239534756747105,
+ 30.024438589821685]
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can already see the answer must be between 1 and 2 because the sign changes between these two values, and that it is closer to 1 than 2.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">fa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">Fa0</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">objective</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fa</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fa</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Molar flow rate (mol/min)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;objective&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0ffdabed4bf740ffbff8477dcfbdb8b07bd5644dc42b753302c1f9d2246c1c43.png" src="../_images/0ffdabed4bf740ffbff8477dcfbdb8b07bd5644dc42b753302c1f9d2246c1c43.png" />
+</div>
+</div>
+<p>You can see there is one answer in this range, near a flow rate of 1.0 mol/min. We use that as an initial guess for fsolve:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Fa_guess</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">Fa_exit</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">Fa_guess</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The exit flow rate is </span><span class="si">{</span><span class="n">Fa_exit</span><span class="si">:</span><span class="s1">1.4f</span><span class="si">}</span><span class="s1"> mol/min.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The exit flow rate is 1.0026 mol/min.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Checking the answer different ways.</span>
+<span class="n">objective</span><span class="p">(</span><span class="n">Fa_exit</span><span class="p">),</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">Fa0</span><span class="p">,</span> <span class="n">Fa_exit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-2.8421709430404007e-13, (100.00000000000028, 7.324573703052905e-07))
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="parameterized-objective-functions">
+<h2>Parameterized objective functions<a class="headerlink" href="#parameterized-objective-functions" title="Permalink to this heading">#</a></h2>
+<p>Now, suppose we want to see how our solution varies with a parameter value. For example, we can change the rate constant by changing the temperature. Say we want to compute the exit molar flow rate at a range of rate constants, e.g. from 0.02 to 2 1/min. In other words, we treat the rate constant as a <em>parameter</em> and use it in an additional argument.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">integrand</span><span class="p">(</span><span class="n">Fa</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Fa</span> <span class="o">/</span> <span class="n">nu</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">Fa</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="n">integral</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">Fa0</span><span class="p">,</span> <span class="n">Fa</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="mf">100.0</span> <span class="o">-</span> <span class="n">integral</span>
+
+<span class="n">KRANGE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fa_exit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KRANGE</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">guess</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">KRANGE</span><span class="p">):</span>
+    <span class="n">ans</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">guess</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,),</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fa_exit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span>
+        <span class="n">guess</span> <span class="o">=</span> <span class="n">ans</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;k = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> failed. </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">Fa0</span> <span class="o">-</span> <span class="n">fa_exit</span><span class="p">)</span> <span class="o">/</span> <span class="n">Fa0</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">KRANGE</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;b.-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;k (1/min)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Conversion&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e762dafd9179d1cf66f32c7706778e8038f22cf610c5db2bff4e8a75fd80a761.png" src="../_images/e762dafd9179d1cf66f32c7706778e8038f22cf610c5db2bff4e8a75fd80a761.png" />
+</div>
+</div>
+<p>You can see here that any rate constant above about 0.5 1/min leads to near complete conversion, so heating above the temperature required for this would be wasteful.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>In this lecture we reviewed methods to solve non-linear algebraic equations (they also work on linear algebra, but it is considered wasteful since there are more efficient methods to solve those).</p>
+<ul class="simple">
+<li><p>The key idea is to create a function that is equal to zero at the solution, and then use <code class="docutils literal notranslate"><span class="pre">scipy.optimize.fsolve</span></code> with an initial guess to find the solution.</p></li>
+<li><p>We introduced <em>list comprehension</em> which is a convenient syntax for for loops.</p></li>
+<li><p>We also looked at <code class="docutils literal notranslate"><span class="pre">scipy.misc.derivative</span></code> which is a convenient way to numerically estimate the derivative of a function by finite difference formulas.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05-nth-odes.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">N<sup>th</sup> differential equations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08-nla-2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Special nonlinear systems - polynomials</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-nonlinear-algebra">Introduction to nonlinear algebra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-raphson-method-for-finding-solutions">Newton-Raphson method for finding solutions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-problems">Problem problems</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivatives-of-functions">Derivatives of functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fsolve">fsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-worked-example">A worked example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-objective-functions">Parameterized objective functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

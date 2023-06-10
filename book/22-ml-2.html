@@ -1,0 +1,1264 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Topics in machine learning &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/22-ml-2';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Gaussian Process Regression" href="23-gp.html" />
+    <link rel="prev" title="Introduction to machine learning" href="21-machine-learning.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/22-ml-2.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/22-ml-2.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/22-ml-2.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Topics in machine learning</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choice-of-activation-functions-in-neural-networks">Choice of activation functions in neural networks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tanh">tanh</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relu">relu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-radial-basis-function">Gaussian (radial basis function)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-test-splits-on-data">Train/test splits on data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="topics-in-machine-learning">
+<h1>Topics in machine learning<a class="headerlink" href="#topics-in-machine-learning" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: autograd</p></li>
+</ul>
+<section id="choice-of-activation-functions-in-neural-networks">
+<h2>Choice of activation functions in neural networks<a class="headerlink" href="#choice-of-activation-functions-in-neural-networks" title="Permalink to this heading">#</a></h2>
+<p>The activation function in a neural network provides the nonlinearity in the model. We previously learned that one interpretation of the activation function is that it is a basis function that you can expand the data in to find a functional representation that fits the data.</p>
+<p>Today we explore the impact of the activation function on the fitting, and extrapolation of neural networks. The following code is for setting up a neural network, and initializing the parameters with random numbers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">layer_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">layer_sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(1, 3), (3, 1)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">autograd.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">autograd.numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+
+<span class="k">def</span> <span class="nf">nn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;a neural network.</span>
+<span class="sd">    params is a list of (weights, bias) for each layer.</span>
+<span class="sd">    inputs goes into the nn. Each row corresponds to one output label.</span>
+<span class="sd">    activation is the nonlinear activation function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">activation</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="c1"># no activation on the last layer</span>
+    <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="k">def</span> <span class="nf">init_random_params</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="p">,</span> <span class="n">rs</span><span class="o">=</span><span class="n">npr</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a list of (weights, biases) tuples, one for each layer.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span>   <span class="c1"># weight matrix</span>
+             <span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>           <span class="c1"># bias vector</span>
+            <span class="k">for</span> <span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">layer_sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+
+<span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">autograd.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">autograd.numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span> <span class="nf">nn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">):</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;autograd&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>As before, we are going to consider this dataset so we can evaluate fitting and extrapolation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some generated data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y&#39;)
+</pre></div>
+</div>
+<img alt="../_images/1be0ae9f70b817c3b1838fa94a85943e3807cabc02af0e8ba58e95c323f86243.png" src="../_images/1be0ae9f70b817c3b1838fa94a85943e3807cabc02af0e8ba58e95c323f86243.png" />
+</div>
+</div>
+<section id="tanh">
+<h3>tanh<a class="headerlink" href="#tanh" title="Permalink to this heading">#</a></h3>
+<p>First we review the case of <code class="docutils literal notranslate"><span class="pre">tanh</span></code> which is a classic activation function. The <code class="docutils literal notranslate"><span class="pre">tanh</span></code> function is “active” between about ± 2.5, and outside that window it saturates. That means the derivative of this function becomes close to zero outside that window. So if you have large values of inputs, you should scale them to avoid this issue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">xt</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y&#39;)
+</pre></div>
+</div>
+<img alt="../_images/7fd1e65ed41ff07d19f0e03ac0ec8a97bc4435a78b2d4be4d05f4341374fdde5.png" src="../_images/7fd1e65ed41ff07d19f0e03ac0ec8a97bc4435a78b2d4be4d05f4341374fdde5.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective1</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">pred</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">autograd.misc.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="n">params1</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
+    <span class="n">params1</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective1</span><span class="p">),</span> <span class="n">params1</span><span class="p">,</span>
+                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective1</span><span class="p">(</span><span class="n">params1</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objective1</span><span class="p">(</span><span class="n">params1</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tolerance reached, stopping&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.02031579054497993
+Step 100: 9.470108542508113e-05
+Tolerance reached, stopping
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>adam
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(array([[ 0.8581524 ,  3.00081719, 33.46094787]]),
+  array([-0.44095259,  0.20622903,  0.57208745])),
+ (array([[0.43813468],
+         [0.39815538],
+         [0.66964931]]), array([-0.24135423]))]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can examine the fit and extrapolation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params1</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/jkitchin/anaconda/lib/python3.6/site-packages/ipykernel_launcher.py:2: RuntimeWarning: invalid value encountered in power
+  
+</pre></div>
+</div>
+<img alt="../_images/e71df77769f0513dd1efb15afec259ce4c966a17d77ee37bf02e89264f7faf64.png" src="../_images/e71df77769f0513dd1efb15afec259ce4c966a17d77ee37bf02e89264f7faf64.png" />
+</div>
+</div>
+<p>For large enough <span class="math notranslate nohighlight">\(x\)</span>, all of the <code class="docutils literal notranslate"><span class="pre">tanh</span></code> functions saturate at <span class="math notranslate nohighlight">\(y=1\)</span>. So, the neural network also saturates at a constant value for large <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p><strong>exercise</strong> Can you work out from the NN math what the saturated values should be?</p>
+</section>
+<section id="relu">
+<h3>relu<a class="headerlink" href="#relu" title="Permalink to this heading">#</a></h3>
+<p>A common activation function in deep learning is the Relu:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">relu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">relu</span><span class="p">(</span><span class="n">X2</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x116032d68&gt;]
+</pre></div>
+</div>
+<img alt="../_images/14f05297c32cf7c6c4e1487ced06febff2fd13780881f14db41e27b46bddc534.png" src="../_images/14f05297c32cf7c6c4e1487ced06febff2fd13780881f14db41e27b46bddc534.png" />
+</div>
+</div>
+<p>This is popular because if is very fast to compute, and the derivatives are constant. For positive <span class="math notranslate nohighlight">\(x\)</span> there is no saturation. For negative <span class="math notranslate nohighlight">\(x\)</span>, however, the neuron is “dead”.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective2</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">pred</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">autograd.misc.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="n">params2</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
+    <span class="n">params2</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective2</span><span class="p">),</span> <span class="n">params2</span><span class="p">,</span>
+                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective2</span><span class="p">(</span><span class="n">params2</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objective2</span><span class="p">(</span><span class="n">params2</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tolerance reached, stopping&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.022935107138404756
+Step 100: 0.005829843039978749
+Step 200: 0.005829606810484628
+Step 300: 0.0058293834707628354
+Step 400: 0.005829150369017916
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params2</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3659fa6cebdf27f87d547c4f905649a432bb06b3a60fd540d2cfeaff53e5ab35.png" src="../_images/3659fa6cebdf27f87d547c4f905649a432bb06b3a60fd540d2cfeaff53e5ab35.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(array([[-0.0255299 ,  1.1907681 ,  0.00864436]]),
+  array([-0.00742165,  0.01023201, -0.01454366])),
+ (array([[4.57585173e-04],
+         [5.64269160e-01],
+         [1.53277921e-02]]), array([0.40150588]))]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li><p>The fit is not very good.</p></li>
+<li><p>we have piecewise linear fits here.</p></li>
+<li><p>There are negative weights, which means there are some “dead neurons”. Maybe other initial guesses might improve this.</p></li>
+</ol>
+<p>Let’s look at the extrapolating behavior.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">xf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params2</span><span class="p">,</span> <span class="n">xf</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xf</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c0994980fea30f6cba055654c412e7f7dd2dc8d9c36e8d8921ec49b5bcb78edc.png" src="../_images/c0994980fea30f6cba055654c412e7f7dd2dc8d9c36e8d8921ec49b5bcb78edc.png" />
+</div>
+</div>
+<p>Notes this extrapolates linearly on the right, and is constant on the left. These are properties of the Relu.</p>
+</section>
+<section id="gaussian-radial-basis-function">
+<h3>Gaussian (radial basis function)<a class="headerlink" href="#gaussian-radial-basis-function" title="Permalink to this heading">#</a></h3>
+<p>Finally we consider the Gaussian activation function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">rbf</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x3</span><span class="p">,</span> <span class="n">rbf</span><span class="p">(</span><span class="n">x3</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x11604c860&gt;]
+</pre></div>
+</div>
+<img alt="../_images/79015d7eb462d859df6bd594880066f51f111aeea8abfc6739b42c55f7af9bd8.png" src="../_images/79015d7eb462d859df6bd594880066f51f111aeea8abfc6739b42c55f7af9bd8.png" />
+</div>
+</div>
+<p>Now we fit the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective3</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">rbf</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">pred</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">autograd.misc.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="n">params3</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
+    <span class="n">params3</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective3</span><span class="p">),</span> <span class="n">params3</span><span class="p">,</span>
+                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective3</span><span class="p">(</span><span class="n">params3</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objective3</span><span class="p">(</span><span class="n">params3</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tolerance reached, stopping&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.044939585962014965
+Step 100: 0.0011542874884383635
+Step 200: 0.0010876920508755116
+Step 300: 0.0010358096429036955
+Step 400: 0.0009656108931741562
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params3</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">activation</span><span class="o">=</span><span class="n">rbf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/45ce8d79859fc5e3402753647132bdefd406a52a466d90e90319f0433409e570.png" src="../_images/45ce8d79859fc5e3402753647132bdefd406a52a466d90e90319f0433409e570.png" />
+</div>
+</div>
+<p>Note we have piecewise linear fits here.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params3</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">activation</span><span class="o">=</span><span class="n">rbf</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/jkitchin/anaconda/lib/python3.6/site-packages/ipykernel_launcher.py:2: RuntimeWarning: invalid value encountered in power
+  
+</pre></div>
+</div>
+<img alt="../_images/a6b2d13c7ac93e50984e989200cb15dfb153bf304564efa13824c85a833badae.png" src="../_images/a6b2d13c7ac93e50984e989200cb15dfb153bf304564efa13824c85a833badae.png" />
+</div>
+</div>
+<p>Notes this extrapolates to zero when you are far from the data. It fits reasonably in the region trained. “If your function is nonlinear enough, somewhere the nonlinearity matches your data.” (Z. Ulissi).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective33</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">pred</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">autograd.misc.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="n">params33</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
+    <span class="n">params33</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective33</span><span class="p">),</span> <span class="n">params33</span><span class="p">,</span>
+                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective33</span><span class="p">(</span><span class="n">params33</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objective33</span><span class="p">(</span><span class="n">params33</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tolerance reached, stopping&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.03112012882087711
+Step 100: 0.0014384069532381233
+Step 200: 0.0014337848224818045
+Step 300: 0.00135225789812894
+Step 400: 0.0009914228562819495
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params3</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/jkitchin/anaconda/lib/python3.6/site-packages/ipykernel_launcher.py:2: RuntimeWarning: invalid value encountered in power
+  
+</pre></div>
+</div>
+<img alt="../_images/f54c4e0648dc2ba5e636ac42d3e1e811e1f952608e73616974f1ca3beec25bc6.png" src="../_images/f54c4e0648dc2ba5e636ac42d3e1e811e1f952608e73616974f1ca3beec25bc6.png" />
+</div>
+</div>
+<p><strong>Exercise</strong> how many neurons do you need to get a better fit for sin as the activation function.</p>
+</section>
+<section id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h3>
+<p>We can think of single layer neural networks as partial expansions in the activation function space. That means the extrapolation behavior will be like the dominating feature of the activation functions, e.g. relu extrapolates like a line, tanh saturates at large x, and Gaussians effectively go to zero. Unexpected things can happen at the edges of the data, so at intermediate extrapolations you do not always know what will happen.</p>
+</section>
+</section>
+<section id="train-test-splits-on-data">
+<h2>Train/test splits on data<a class="headerlink" href="#train-test-splits-on-data" title="Permalink to this heading">#</a></h2>
+<p>So far we have not considered how to split your data when fitting. This becomes important for a few reasons:</p>
+<ol class="arabic simple">
+<li><p>We need to be able to tell if we are overfitting. One way to do this is to compare fitting errors to prediction errors.</p></li>
+</ol>
+<p>This means we need a way to split a dataset into a train set and a test set. Then, we can do training on the train set, and testing on the test set.</p>
+<p>Let’s start by remembering what our dataset is.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.        , 0.02040816, 0.04081633, 0.06122449, 0.08163265,
+        0.10204082, 0.12244898, 0.14285714, 0.16326531, 0.18367347,
+        0.20408163, 0.2244898 , 0.24489796, 0.26530612, 0.28571429,
+        0.30612245, 0.32653061, 0.34693878, 0.36734694, 0.3877551 ,
+        0.40816327, 0.42857143, 0.44897959, 0.46938776, 0.48979592,
+        0.51020408, 0.53061224, 0.55102041, 0.57142857, 0.59183673,
+        0.6122449 , 0.63265306, 0.65306122, 0.67346939, 0.69387755,
+        0.71428571, 0.73469388, 0.75510204, 0.7755102 , 0.79591837,
+        0.81632653, 0.83673469, 0.85714286, 0.87755102, 0.89795918,
+        0.91836735, 0.93877551, 0.95918367, 0.97959184, 1.        ]),
+ array([0.        , 0.27327588, 0.34430604, 0.39413203, 0.43379842,
+        0.46729519, 0.49657523, 0.52275796, 0.54655177, 0.56843674,
+        0.58875504, 0.60776012, 0.62564559, 0.64256306, 0.65863376,
+        0.67395628, 0.68861208, 0.70266925, 0.71618542, 0.72920982,
+        0.74178487, 0.75394744, 0.76572977, 0.77716026, 0.78826405,
+        0.79906353, 0.80957873, 0.81982765, 0.82982653, 0.83959009,
+        0.84913171, 0.85846357, 0.86759685, 0.87654178, 0.88530778,
+        0.89390354, 0.90233709, 0.91061587, 0.9187468 , 0.9267363 ,
+        0.93459037, 0.94231461, 0.94991425, 0.9573942 , 0.96475906,
+        0.97201316, 0.97916057, 0.98620513, 0.99315047, 1.        ]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>The way to split this is that we use indexing. We start by making an array of integers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<span class="n">ind</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+       34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we randomly shuffle the array of integers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>np.random.permutation
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+<span class="n">pind</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([39, 26, 28, 31, 10,  6,  5, 29, 44, 32, 22, 38, 36, 40, 33, 30, 23,
+       13,  8, 11, 43, 34, 19, 35, 41, 14, 48, 16, 24, 17, 42, 12, 20, 46,
+       45, 27,  2, 25,  4, 47,  7,  9, 49, 18,  3,  1, 37, 15, 21,  0])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we decide on the train/test split. A common choice is 80/20. We find the integer that is closest to 80% of the index array.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">split</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.8</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pind</span><span class="p">))</span>
+<span class="n">split</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>40
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_ind</span> <span class="o">=</span> <span class="n">pind</span><span class="p">[:</span><span class="n">split</span><span class="p">]</span>
+<span class="n">test_ind</span> <span class="o">=</span> <span class="n">pind</span><span class="p">[</span><span class="n">split</span><span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_ind</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_ind</span><span class="p">))</span>
+<span class="n">test_ind</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>40 10
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 7,  9, 49, 18,  3,  1, 37, 15, 21,  0])
+</pre></div>
+</div>
+</div>
+</div>
+<p>We check that we have a reasonable choice here.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_ind</span><span class="p">]</span>
+<span class="n">train_y</span> <span class="o">=</span> <span class="n">Y2</span><span class="p">[</span><span class="n">train_ind</span><span class="p">]</span>
+
+<span class="n">test_x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">test_ind</span><span class="p">]</span>
+<span class="n">test_y</span> <span class="o">=</span> <span class="n">Y2</span><span class="p">[</span><span class="n">test_ind</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;train&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x1169fbf60&gt;
+</pre></div>
+</div>
+<img alt="../_images/2fd7abd0ece481931f9bd7e46661c915be1a74c473f2b9e8508feab5a7e9ebd5.png" src="../_images/2fd7abd0ece481931f9bd7e46661c915be1a74c473f2b9e8508feab5a7e9ebd5.png" />
+</div>
+</div>
+<p>Now, we train on the train data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective10</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">train_x</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">train_y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">pred</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">autograd.misc.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="n">params10</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
+    <span class="n">params10</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective10</span><span class="p">),</span> <span class="n">params10</span><span class="p">,</span>
+                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective10</span><span class="p">(</span><span class="n">params10</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">objective10</span><span class="p">(</span><span class="n">params10</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tolerance reached, stopping&#39;</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.008962303917373491
+Tolerance reached, stopping
+</pre></div>
+</div>
+</div>
+</div>
+<p>As usual, we should check the fit on the train data. This is a little trickier than before, because the points are out of order.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params10</span><span class="p">,</span> <span class="n">train_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_x</span><span class="p">,</span> <span class="n">nn</span><span class="p">(</span><span class="n">params10</span><span class="p">,</span> <span class="n">test_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])),</span> <span class="s1">&#39;go&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">,</span> <span class="s1">&#39;y*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x116da2550&gt;]
+</pre></div>
+</div>
+<img alt="../_images/a02265f87df1e5d30d0a51f0ffa3744834d60baccbc2f791377e361a81483ef8.png" src="../_images/a02265f87df1e5d30d0a51f0ffa3744834d60baccbc2f791377e361a81483ef8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rmse_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">train_y</span> <span class="o">-</span> <span class="n">nn</span><span class="p">(</span><span class="n">params10</span><span class="p">,</span> <span class="n">train_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">rmse_test</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">test_y</span> <span class="o">-</span> <span class="n">nn</span><span class="p">(</span><span class="n">params10</span><span class="p">,</span> <span class="n">test_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;RMSE train = </span><span class="si">{</span><span class="n">rmse_train</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span>
+<span class="s1">RMSE test = </span><span class="si">{</span><span class="n">rmse_test</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">&#39;&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RMSE train = 0.142
+RMSE test = 0.151
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here, the test RMSE is <em>a little higher</em> than the train data. This suggests a possible overfitting, but not by much. This may also be due to extrapolation errors because the first two test points are technically outside the training data. For the train/test split to be meaningful, it is important that the two datasets have similar distributions of values.</p>
+</section>
+<section id="id1">
+<h2>Summary<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>Today we reviewed the role of activation functions in neural networks, and observed that it doesn’t generally matter what you use (but the details always matter in individual cases). The mathematical form of these activation functions determines how they will extrapolate, which can be important depending on your application.</p>
+<p>We then explored how to efficiently split a dataset into a train and test set so that overfitting can be evaluated. This becomes increasingly important for when you plan to explore many models (choices of hyperparameters), and then you split the data three ways (train, test and validate).</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="21-machine-learning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to machine learning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="23-gp.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Gaussian Process Regression</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choice-of-activation-functions-in-neural-networks">Choice of activation functions in neural networks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tanh">tanh</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relu">relu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-radial-basis-function">Gaussian (radial basis function)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-test-splits-on-data">Train/test splits on data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

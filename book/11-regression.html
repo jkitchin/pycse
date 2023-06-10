@@ -1,0 +1,1333 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Nonlinear regression &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/11-regression';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Uncertainty quantification in nonlinear regression" href="12-nonlinear-regression-2.html" />
+    <link rel="prev" title="Introduction to optimization" href="10-min-max.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/11-regression.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/11-regression.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/11-regression.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Nonlinear regression</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-of-data-is-a-form-of-function-minimization">Regression of data is a form of function minimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-confidence-intervals">Parameter confidence intervals</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-with-curve-fit">An example with curve_fit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-estimation">Uncertainty estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-about-uncertainty-on-the-predictions">What about uncertainty on the predictions?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="nonlinear-regression">
+<h1>Nonlinear regression<a class="headerlink" href="#nonlinear-regression" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: scipy.optimize.minimize, scipy.optimize.curve_fit, pycse.nlinfit</p></li>
+</ul>
+<section id="regression-of-data-is-a-form-of-function-minimization">
+<h2>Regression of data is a form of function minimization<a class="headerlink" href="#regression-of-data-is-a-form-of-function-minimization" title="Permalink to this heading">#</a></h2>
+<p>When we say regression, we really mean find some parameters of a model that best reproduces some known data. By “best reproduces” we mean the sum of all the errors between the values predicted by the model, and the real data is minimized.</p>
+<p>Suppose we have the following data that shows how the energy of a material depends on the volume of the material.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">13.71</span><span class="p">,</span> <span class="mf">14.82</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">17.23</span><span class="p">,</span> <span class="mf">18.52</span><span class="p">])</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">56.29</span><span class="p">,</span> <span class="o">-</span><span class="mf">56.41</span><span class="p">,</span> <span class="o">-</span><span class="mf">56.46</span><span class="p">,</span> <span class="o">-</span><span class="mf">56.463</span><span class="p">,</span><span class="o">-</span><span class="mf">56.41</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">volumes</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ba92d3d9e6ee7e63846abec245645c932685e8ef839f84e9a1a8053d1a843cdd.png" src="../_images/ba92d3d9e6ee7e63846abec245645c932685e8ef839f84e9a1a8053d1a843cdd.png" />
+</div>
+</div>
+<p>In Materials Science we often want to fit an equation of state to this data. We will use this equation:</p>
+<p><span class="math notranslate nohighlight">\(E = E_0 + \frac{B_0 V}{B_0'}\left(\frac{(V_0 / V)^{B_0'}}{B_0' - 1} + 1 \right) - \frac{V_0 B_0}{B_0' - 1}\)</span></p>
+<p>from <a class="reference external" href="https://journals.aps.org/prb/pdf/10.1103/PhysRevB.28.5480">https://journals.aps.org/prb/pdf/10.1103/PhysRevB.28.5480</a>. In this model there are four parameters:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>name</p></th>
+<th class="head"><p>desc</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>E_0</p></td>
+<td><p>energy at the minimim</p></td>
+</tr>
+<tr class="row-odd"><td><p>B_0</p></td>
+<td><p>bulk modulus</p></td>
+</tr>
+<tr class="row-even"><td><p>B_0’</p></td>
+<td><p>first derivative of the bulk modulus</p></td>
+</tr>
+<tr class="row-odd"><td><p>V_0</p></td>
+<td><p>volume at the energy minimum</p></td>
+</tr>
+</tbody>
+</table>
+<p>We would like to find the value of these parameters that best fits the data above. That means, find the set of parameters that minimize the sum of the squared errors between the model and data.</p>
+<p>First we need a function that will use the parameters and return the energy for a given volume.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">Murnaghan</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
+    <span class="s1">&#39;From PRB 28,5480 (1983)&#39;</span>
+    <span class="n">E0</span><span class="p">,</span> <span class="n">B0</span><span class="p">,</span> <span class="n">BP</span><span class="p">,</span> <span class="n">V0</span> <span class="o">=</span> <span class="n">parameters</span>
+    <span class="c1"># the backslash here means the line is contined on the next line.</span>
+    <span class="c1"># or use () around the whole expression</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="n">E0</span> <span class="o">+</span> <span class="n">B0</span> <span class="o">*</span> <span class="n">vol</span> <span class="o">/</span> <span class="n">BP</span> <span class="o">*</span> 
+        <span class="p">(((</span><span class="n">V0</span> <span class="o">/</span> <span class="n">vol</span><span class="p">)</span><span class="o">**</span><span class="n">BP</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">B0</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">E</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">Murnaghan</span><span class="p">((</span><span class="o">-</span><span class="mf">56.45</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">16.7</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-55.95396512, -55.9854448 , -56.01576305, -56.04493457,
+       -56.07297374, -56.09989473, -56.12571141, -56.15043744,
+       -56.1740862 , -56.19667087, -56.21820436, -56.23869938,
+       -56.25816839, -56.27662367, -56.29407727, -56.31054101,
+       -56.32602655, -56.34054532, -56.35410858, -56.36672737,
+       -56.37841258, -56.38917489, -56.39902482, -56.40797271,
+       -56.41602873, -56.42320289, -56.42950503, -56.43494484,
+       -56.43953184, -56.44327541, -56.44618477, -56.44826902,
+       -56.44953708, -56.44999775, -56.4496597 , -56.44853145,
+       -56.4466214 , -56.4439378 , -56.4404888 , -56.43628241,
+       -56.43132653, -56.42562893, -56.41919727, -56.41203909,
+       -56.40416182, -56.39557278, -56.38627918, -56.37628814,
+       -56.36560665, -56.35424162])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we need a function that computes the summed squared errors for a set of parameters. The use of squared errors is preferable in many cases to the absolute values because it has a continuous derivative. We will learn more about this later.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">pars</span><span class="p">):</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">energies</span> <span class="o">-</span> <span class="n">Murnaghan</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">volumes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># we return the summed squared error directly</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">objective</span><span class="p">((</span><span class="o">-</span><span class="mf">56.45</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.52</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.15514191157778542
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally,  we need an initial guess to start the minimization. As with all minimization problems, this can be the most difficult step. It is always a good idea to use properties of the model and data where possible to make these guesses. We have no way to plot anything in four dimensions, so we use analysis instead.</p>
+<p>We can derive some of these from the data we have. First, we can get the minimum in energy and the corresponding volume that we know from the data. These are not the final answer, but they are a good guess for it.</p>
+<p>The B<sub>0</sub> parameter is related to the curvature at the minimum, which is the second derivative. We get that from repeated calls to <code class="docutils literal notranslate"><span class="pre">numpy.gradient</span></code>. Finally, <span class="math notranslate nohighlight">\(B_0'\)</span> is related to the derivative of <span class="math notranslate nohighlight">\(B\)</span> at the minimum, so we estimate that too.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">energies</span><span class="p">)</span>
+<span class="n">dedv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">volumes</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">dedv</span><span class="p">,</span> <span class="n">volumes</span><span class="p">)</span>
+<span class="n">Bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">volumes</span><span class="p">)</span>
+
+
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="n">energies</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span>
+      <span class="n">B</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span>
+      <span class="n">Bp</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span>
+      <span class="n">volumes</span><span class="p">[</span><span class="n">imin</span><span class="p">]]</span>
+
+<span class="n">x0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-56.463, 0.02575384116153356, -0.00900405886406903, 17.23]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we are ready to fit our function. As usual, we also plot the data and the fit for visual inspection.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">volumes</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data&#39;</span><span class="p">)</span>
+<span class="n">vfit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">volumes</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">volumes</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vfit</span><span class="p">,</span> <span class="n">Murnaghan</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">vfit</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;fit&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
+  success: True
+   status: 0
+      fun: 1.4912984000626383e-05
+        x: [-5.647e+01  5.723e-01  2.742e+00  1.656e+01]
+      nit: 28
+      jac: [-2.419e-06 -8.417e-07  3.751e-08  8.639e-07]
+ hess_inv: [[ 3.081e-01 -2.983e+00  7.646e+01 -2.454e+00]
+            [-2.983e+00  5.047e+01 -1.534e+03  4.746e+01]
+            [ 7.646e+01 -1.534e+03  6.851e+04 -2.867e+03]
+            [-2.454e+00  4.746e+01 -2.867e+03  1.553e+02]]
+     nfev: 175
+     njev: 35
+</pre></div>
+</div>
+<img alt="../_images/0fc644ff2485785a6a4aa55c85023c7500dbbc09c6b81c944359f6f4f72ca354.png" src="../_images/0fc644ff2485785a6a4aa55c85023c7500dbbc09c6b81c944359f6f4f72ca354.png" />
+</div>
+</div>
+<p>That looks pretty good. We should ask ourselves, how do we know we got a minimum? We should see that the objective function is really at a minimum <em>for each of the parameters</em>. Here, we show that it is a minimum for the first parameter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">E0_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+
+<span class="n">errs</span> <span class="o">=</span> <span class="p">[</span><span class="n">objective</span><span class="p">([</span><span class="n">e0</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span> <span class="k">for</span> <span class="n">e0</span> <span class="ow">in</span> <span class="n">E0_range</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">E0_range</span><span class="p">,</span> <span class="n">errs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;E0&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;summed squared error&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1722273462dfadcf629a32a3c8a7638d836d8e3e1f0cc7f243528dc960c27423.png" src="../_images/1722273462dfadcf629a32a3c8a7638d836d8e3e1f0cc7f243528dc960c27423.png" />
+</div>
+</div>
+<p>You can see visually that the error goes up on each side of the parameter estimate.</p>
+<p><strong>exercise</strong> Repeat this analysis for the other three parameters.</p>
+<p>Later when we learn about linear algebra, we will learn that if you can show the eigenvalues of the Hessian of the objective function is positive definite, that also means you are at a minimum. It means the error goes up in any direction away from the minimum.</p>
+<p>Usually we do some regression to find one of these:</p>
+<ol class="arabic simple">
+<li><p>Parameters for the model - because the parameters mean something</p></li>
+<li><p>Properties of the model - because the properties mean something</p></li>
+</ol>
+<p>In this particular case, we can do both. Some of the parameters are directly meaningful, like the E0, and V0 are the energy at the minimum, and the corresponding volume. B0 is also meaningful, it is called the bulk modulus, and it is a material property.</p>
+<p>Now that we have a model though we can also define properties of it, e.g. <em>in this case</em> we have from thermodynamics that <span class="math notranslate nohighlight">\(P = -dE/dV\)</span>. We can use our model to define this derivative. I use <code class="docutils literal notranslate"><span class="pre">scipy.misc.derivative</span></code> for this for convenience. The only issue with it is the energy function has arguments that are not in the right order for the derivative, so I make a proxy function here that just reverses the order of the arguments.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">derivative</span>
+<span class="o">?</span>derivative
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>Murnaghan
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">proxy</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">pars0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Murnaghan</span><span class="p">(</span><span class="n">pars0</span><span class="p">,</span> <span class="n">V0</span><span class="p">)</span>
+
+<span class="n">Murnaghan</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mf">16.5</span><span class="p">),</span> <span class="n">proxy</span><span class="p">(</span><span class="mf">16.5</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-56.46833281366552, -56.46833281366552)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">derivative</span>
+
+<span class="n">pars</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+<span class="k">def</span> <span class="nf">P</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">proxy</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">pars0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Murnaghan</span><span class="p">(</span><span class="n">pars0</span><span class="p">,</span> <span class="n">V0</span><span class="p">)</span>
+    <span class="n">dEdV</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">proxy</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">pars</span><span class="p">,),</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">dEdV</span>
+
+<span class="c1"># Some examples</span>
+<span class="n">P</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="n">P</span><span class="p">(</span><span class="n">pars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">P</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2282/3278399195.py:7: DeprecationWarning: scipy.misc.derivative is deprecated in SciPy v1.10.0; and will be completely removed in SciPy v1.12.0. You may consider using findiff: https://github.com/maroba/findiff or numdifftools: https://github.com/pbrod/numdifftools
+  dEdV = derivative(proxy, V, args=(pars,), dx=1e-6)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.02060957626781601, -0.0, -0.042680504463987745)
+</pre></div>
+</div>
+</div>
+</div>
+<p>The result above shows that it takes positive pressure to compress the material, the pressure is zero at the minimum, and it takes negative pressure to cause it to expand.</p>
+<p>This example is just meant to illustrate what one can do with a model once you have it.</p>
+</section>
+<section id="parameter-confidence-intervals">
+<h2>Parameter confidence intervals<a class="headerlink" href="#parameter-confidence-intervals" title="Permalink to this heading">#</a></h2>
+<p>We have left out an important topic in the discussion above: How certain are we of the parameters we estimated? This is a complicated question that requires moderately sophisticated statistics to answer. We will build up to the solution in steps.</p>
+<p>First, we recall that in a statistical sense we are <em>estimating</em> the values of the parameters. Specifically, we estimate the <em>mean</em> of the parameters, from a fixed number of data points.</p>
+<p>Let’s say we have made 10 measurements that have an average of 16.1, and a standard deviation of 0.01. What is the range of values that we are 95% confident the next measurement will fall in?</p>
+<p>We have to take into account the fact that we only have 10 measurements to make the estimation from, so the estimate is more uncertain than if we have 100 or 1000 measurements. The student t-tables tell us precisely how much more uncertain depending on the confidence level you want.</p>
+<p>The point here is not for you to memorize or derive these formulas, only to illustrate that the uncertainty is not simply the standard deviation. It also includes the effect of the sample size.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats.distributions</span> <span class="kn">import</span> <span class="n">t</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># number of measurements</span>
+<span class="n">dof</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># degrees of freedom</span>
+<span class="n">avg_x</span> <span class="o">=</span> <span class="mf">16.1</span>  <span class="c1"># average measurement</span>
+<span class="n">std_x</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># standard deviation of measurements</span>
+
+<span class="c1"># Find 95% prediction interval for next measurement</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">0.95</span>
+
+<span class="n">pred_interval</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span> <span class="o">*</span> <span class="n">std_x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">plus_side</span> <span class="o">=</span> <span class="n">avg_x</span> <span class="o">+</span> <span class="n">pred_interval</span>
+<span class="n">minus_side</span> <span class="o">=</span> <span class="n">avg_x</span> <span class="o">-</span> <span class="n">pred_interval</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pred_interval</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We are 95% confident the next measurement will be between </span><span class="si">{</span><span class="n">minus_side</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">plus_side</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.007153569059525722
+We are 95% confident the next measurement will be between 16.093 and 16.107
+</pre></div>
+</div>
+</div>
+</div>
+<p>To consider the uncertainty in model parameters, we need some way to estimate the standard deviation of the parameters. <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> does not provide much help with that. We will instead turn to <code class="docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code>. This function will return information that is helpful in estimating the uncertainty. It is like <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> in the sense that it minimizes the summed squared errors between a model described in a function, and data defined in variables. Note in particular the docstring for the output variable pcov, which tells you how to compute the standard deviation errors on the parameters.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+
+curve_fit<span class="o">?</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="an-example-with-curve-fit">
+<h3>An example with curve_fit<a class="headerlink" href="#an-example-with-curve-fit" title="Permalink to this heading">#</a></h3>
+<p>Given the data below, fit the following curve:</p>
+<p><span class="math notranslate nohighlight">\(y(x) = \frac{a x}{b + x}\)</span> to it.</p>
+<p>That means, estimate the values of <span class="math notranslate nohighlight">\(a, b\)</span> that best fit the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.387</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">,</span> <span class="mf">0.136</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.255</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.189</span><span class="p">,</span> <span class="mf">1.124</span><span class="p">,</span> <span class="mf">0.783</span><span class="p">,</span> <span class="mf">0.402</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a135b70d67f5cdcf29b44c306243a822a6ef9b700c9e3e29bbde743e710b865a.png" src="../_images/a135b70d67f5cdcf29b44c306243a822a6ef9b700c9e3e29bbde743e710b865a.png" />
+</div>
+</div>
+<p>What should we use for an initial guess? At <span class="math notranslate nohighlight">\(x=0\)</span>, <span class="math notranslate nohighlight">\(y = 0\)</span>, which isn’t that helpful. At large <span class="math notranslate nohighlight">\(x\)</span>, we have <span class="math notranslate nohighlight">\(y=a\)</span>. From the data, we can guess that <span class="math notranslate nohighlight">\(a \approx 1.2\)</span>. For small x, we have <span class="math notranslate nohighlight">\(y = a/b x\)</span>. So, if we estimate the slope, we can estimate b. We arrive at these guesses by thoughtful inspection of the data, and the model that we use to fit it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.5  , 0.387, 0.24 , 0.136, 0.04 , 0.011])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a0</span> <span class="o">=</span> <span class="mf">1.2</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># m = a / b  -&gt;  b = a / m</span>
+
+<span class="n">b0</span> <span class="o">=</span> <span class="n">a0</span> <span class="o">/</span> <span class="n">m</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">a0</span><span class="p">,</span> <span class="n">b0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1.2, 0.0781156032363354)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now for the fitting.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>curve_fit
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is the function we want to fit to our data</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="n">initial_guess</span> <span class="o">=</span> <span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">]</span>
+<span class="n">pars</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">initial_guess</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pcov</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.32753143 0.02646156]
+[[9.45332917e-05 7.10675655e-06]
+ [7.10675655e-06 1.05658850e-06]]
+</pre></div>
+</div>
+</div>
+</div>
+<p><em>Always</em> check the fit visually.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+<span class="n">xfit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/630a06715957cbbaedb630abb4ed85156d884819561dea3b243ca0a7a7d62dd8.png" src="../_images/630a06715957cbbaedb630abb4ed85156d884819561dea3b243ca0a7a7d62dd8.png" />
+</div>
+</div>
+<p><strong>exercise</strong> Try different initial guesses and find one that does not look this good.</p>
+</section>
+<section id="uncertainty-estimation">
+<h3>Uncertainty estimation<a class="headerlink" href="#uncertainty-estimation" title="Permalink to this heading">#</a></h3>
+<p>Recall from the documentation of curve_fit that the standard deviation of each parameter is defined by:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcov</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[9.45332917e-05, 7.10675655e-06],
+       [7.10675655e-06, 1.05658850e-06]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([9.45332917e-05, 1.05658850e-06])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.00972282, 0.0010279 ])
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can use these to estimate confidence intervals on the two parameters. Note that here we still use the student-t multipliers to account for the uncertainty caused by having a small data set.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.stats.distributions</span> <span class="kn">import</span> <span class="n">t</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># 95% confidence interval = 100*(1-alpha)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>    <span class="c1"># number of data points</span>
+<span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span>  <span class="c1"># number of parameters</span>
+
+<span class="n">dof</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>  <span class="c1"># number of degrees of freedom</span>
+
+<span class="c1"># student-t value for the dof and confidence level</span>
+<span class="n">tval</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+
+<span class="n">SERRS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">SERRS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">ci</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">tval</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1"> +/- </span><span class="si">{</span><span class="n">ci</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">pars</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">)):</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">var</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;p</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">p</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sigma</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tval</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sigma</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tval</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.328 +/- 0.027
+0.026 +/- 0.003
+p0: 1.328 [1.301  1.355]
+p1: 0.026 [0.024  0.029]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The interpretation of this is that we do not know exactly what the parameters are, but we can be 95% confident that they fall in these ranges. These ranges do not include zero, so that is an indication that the parameters are significant.</p>
+<p>It is <em>not expected</em> that you learn all the details above. They have been coded into the “Python computations in science and engineering” <a class="reference external" href="https://kitchingroup.cheme.cmu.edu/pycse/">pycse</a> package. This is not part of Anaconda; you have to install it yourself. This code block should do that and install some dependencies (you only need to run it once).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>uncertainties
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>quantities
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>pycse
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting uncertainties
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading uncertainties-3.1.7-py2.py3-none-any.whl (98 kB)
+?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/98.4 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━ <span class=" -Color -Color-Green">81.9/98.4 kB</span> <span class=" -Color -Color-Red">2.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">98.4/98.4 kB</span> <span class=" -Color -Color-Red">2.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting future (from uncertainties)
+  Downloading future-0.18.3.tar.gz (840 kB)
+?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/840.9 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">840.9/840.9 kB</span> <span class=" -Color -Color-Red">28.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Preparing metadata (setup.py) ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+?25hBuilding wheels for collected packages: future
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Building wheel for future (setup.py) ... ?25l-
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> \
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> |
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> /
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> done
+?25h  Created wheel for future: filename=future-0.18.3-py3-none-any.whl size=492024 sha256=a73a3436693d1c31ad48128941be2036c411e11046911af77dfc27f6623e4a03
+  Stored in directory: /home/runner/.cache/pip/wheels/a0/0b/ee/e6994fadb42c1354dcccb139b0bf2795271bddfe6253ccdf11
+Successfully built future
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: future, uncertainties
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed future-0.18.3 uncertainties-3.1.7
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">22.0.4</span> -&gt; <span class=" -Color -Color-Green">23.1.2</span>
+<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting quantities
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading quantities-0.14.1-py3-none-any.whl (87 kB)
+?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/87.9 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">87.9/87.9 kB</span> <span class=" -Color -Color-Red">2.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25hRequirement already satisfied: numpy&gt;=1.19 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from quantities) (1.24.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: quantities
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed quantities-0.14.1
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">22.0.4</span> -&gt; <span class=" -Color -Color-Green">23.1.2</span>
+<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pycse in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (2.2.0)
+Requirement already satisfied: numpy in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from pycse) (1.24.3)
+Requirement already satisfied: scipy in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from pycse) (1.10.1)
+Requirement already satisfied: numdifftools in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from pycse) (0.9.41)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> A new release of pip is available: <span class=" -Color -Color-Red">22.0.4</span> -&gt; <span class=" -Color -Color-Green">23.1.2</span>
+<span class=" -Color -Color-Bold">[</span><span class=" -Color -Color-Blue">notice</span><span class=" -Color -Color-Bold">]</span> To update, run: <span class=" -Color -Color-Green">pip install --upgrade pip</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>After that, you can import the nlinfit command and use it to get confidence intervals directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycse</span> <span class="kn">import</span> <span class="n">nlinfit</span>
+
+nlinfit<span class="o">?</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">26</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">pycse</span> <span class="kn">import</span> <span class="n">nlinfit</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;pinfo&#39;</span><span class="p">,</span> <span class="s1">&#39;nlinfit&#39;</span><span class="p">)</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.16</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pycse</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">22</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="c1"># * Setup inline images for IPython</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="c1"># Make inline figures the default</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="kn">from</span> <span class="nn">.PYCSE</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="n">polyfit</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span>     <span class="n">regress</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="n">lbic</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">22</span> <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">feq</span><span class="p">,</span> <span class="n">flt</span><span class="p">,</span> <span class="n">fgt</span><span class="p">,</span> <span class="n">fle</span><span class="p">,</span> <span class="n">fge</span><span class="p">,</span> <span class="n">read_gsheet</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="kn">from</span> <span class="nn">.hashcache</span> <span class="kn">import</span> <span class="n">hashcache</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="c1"># from .beginner import *</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.8.16</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pycse</span><span class="o">/</span><span class="n">utils</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">13</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ne">---&gt; </span><span class="mi">13</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="k">def</span> <span class="nf">feq</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">spacing</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Fuzzy equals.</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span><span class="sd">     x == y with tolerance</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span><span class="sd">     &quot;&quot;&quot;</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pandas&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pars</span><span class="p">,</span> <span class="n">pars_ci</span><span class="p">,</span> <span class="n">se</span> <span class="o">=</span> <span class="n">nlinfit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">a0</span><span class="p">,</span> <span class="n">b0</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">par</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pars</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">par</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">pars_ci</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">se</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">1.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.328, [1.058 1.598], 0.0097
+0.026, [-0.002  0.055], 0.0010
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is important to realize that:</p>
+<ol class="arabic simple">
+<li><p>The size of the confidence interval depends on the number of parameters, data points, and desired confidence level.</p></li>
+<li><p>The root of this is the minimization of an error function.</p></li>
+</ol>
+</section>
+<section id="what-about-uncertainty-on-the-predictions">
+<h3>What about uncertainty on the predictions?<a class="headerlink" href="#what-about-uncertainty-on-the-predictions" title="Permalink to this heading">#</a></h3>
+<p>Consider the fit again, and extrapolate it to larger <span class="math notranslate nohighlight">\(x\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+<span class="n">xfit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">])</span>
+<span class="n">func</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.3205427044923441
+</pre></div>
+</div>
+<img alt="../_images/f507c88cd249c2ac249f22bef468c9211992e9e8eea00adb93ea862342a776cf.png" src="../_images/f507c88cd249c2ac249f22bef468c9211992e9e8eea00adb93ea862342a776cf.png" />
+</div>
+</div>
+<p>We estimate the model plateaus at about y=1.32, but what is an appropriate estimate of the error in this? There are uncertainties in the model parameters, so there must be uncertainty in the predictions. To estimate this, we first look at how to generate a distribution of random numbers with a normal distribution around some mean with some standard error.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p0_mean</span> <span class="o">=</span> <span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">p0_se</span> <span class="o">=</span> <span class="n">se</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">p0_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">p0_mean</span><span class="p">,</span> <span class="n">p0_se</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p0_dist</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([  2.,   4.,  25.,  47.,  85., 184., 300., 364., 560., 639., 650.,
+        622., 584., 370., 249., 168.,  83.,  45.,  15.,   4.]),
+ array([1.29334694, 1.29662789, 1.29990883, 1.30318978, 1.30647072,
+        1.30975167, 1.31303262, 1.31631356, 1.31959451, 1.32287546,
+        1.3261564 , 1.32943735, 1.33271829, 1.33599924, 1.33928019,
+        1.34256113, 1.34584208, 1.34912302, 1.35240397, 1.35568492,
+        1.35896586]),
+ &lt;a list of 20 Patch objects&gt;)
+</pre></div>
+</div>
+<img alt="../_images/c712381aa323a42b1eed2f1150d29b2eb7c74dd432e04cfb73a97f7655575d2d.png" src="../_images/c712381aa323a42b1eed2f1150d29b2eb7c74dd432e04cfb73a97f7655575d2d.png" />
+</div>
+</div>
+<p>So the idea is we can generate a distribution of the parameters</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p1_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">pars</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">se</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">y5</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span> <span class="k">for</span> <span class="n">p0</span><span class="p">,</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p0_dist</span><span class="p">,</span> <span class="n">p1_dist</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y5</span><span class="p">)</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y5</span><span class="p">),</span> <span class="n">se</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1.320574553734933, 0.009627737492640521, 0.0010279049095515843)
+</pre></div>
+</div>
+<img alt="../_images/862eb310bf3d41a450512f9f81af642667b89aebfa77819b2677e8a9510fd476.png" src="../_images/862eb310bf3d41a450512f9f81af642667b89aebfa77819b2677e8a9510fd476.png" />
+</div>
+</div>
+<p>Well, in 20/20 hindsight, we might have guessed the uncertainty in the asymptote would be just like the uncertainty in the <span class="math notranslate nohighlight">\(a\)</span> parameter. In this case, it is appropriate to use three significant figures given the uncertainty on the answer. A useful guideline is that the 95% confidence interval is about ± 2 σ. At ± 1 σ you only have about a 60% confidence interval.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;At x=5, y=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y5</span><span class="p">)</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1"> +- </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y5</span><span class="p">)</span><span class="si">:</span><span class="s1">1.3f</span><span class="si">}</span><span class="s1"> at about the 95% confidence level.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>At x=5, y=1.321 +- 0.019 at about the 95% confidence level.
+</pre></div>
+</div>
+</div>
+</div>
+<p>So we are not that uncertain after all in this case.</p>
+<p>This method of error propagation is not perfect as it assumes the errors between the parameters are independent, and that they are normally distributed. However, the method is very simple to do, and simply relies on sampling the parameters from their respective distributions, and letting the results propagate naturally through the model. You do need to check for convergence with the sample size. This method is called a Monte Carlo propagation of errors.</p>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>We covered a lot of ground today. The key points are:</p>
+<ol class="arabic simple">
+<li><p>Regression is a minimization of an accumulated error function.</p></li>
+<li><p>If you need uncertainty on the parameters from a regression, use <code class="docutils literal notranslate"><span class="pre">pycse.nlinfit</span></code>.</p></li>
+<li><p>If you need uncertainty on model predictions, you can either simulate it, or derive it. We will learn more about deriving it later.</p></li>
+</ol>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="10-min-max.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="12-nonlinear-regression-2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Uncertainty quantification in nonlinear regression</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-of-data-is-a-form-of-function-minimization">Regression of data is a form of function minimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-confidence-intervals">Parameter confidence intervals</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-with-curve-fit">An example with curve_fit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-estimation">Uncertainty estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-about-uncertainty-on-the-predictions">What about uncertainty on the predictions?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

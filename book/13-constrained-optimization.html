@@ -1,0 +1,1179 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Constrained optimization &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/13-constrained-optimization';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to linear algebra" href="15-intro-linear-algebra.html" />
+    <link rel="prev" title="Uncertainty quantification in nonlinear regression" href="12-nonlinear-regression-2.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/13-constrained-optimization.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/13-constrained-optimization.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/13-constrained-optimization.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Constrained optimization</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-minimization">Constrained minimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy-optimize-minimize-with-constraints">scipy.optimize.minimize with constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equality-constraints">Equality constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inequality-constraints">Inequality constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-application">An application</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="constrained-optimization">
+<h1>Constrained optimization<a class="headerlink" href="#constrained-optimization" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: scipy.optimize.minimize</p></li>
+</ul>
+<section id="constrained-minimization">
+<h2>Constrained minimization<a class="headerlink" href="#constrained-minimization" title="Permalink to this heading">#</a></h2>
+<p>So far we have predominantly focused on unconstrained minimization. Sometimes, however, we seek to minimize an objective function and find solutions that meet some kind of constraint.</p>
+<p>The volume of a cylindrical can is <span class="math notranslate nohighlight">\(V = (\pi/4) D^2 L\)</span>. The cost of the top/bottom of the can is \<span class="math notranslate nohighlight">\(0.025 / cm&lt;sup&gt;2&lt;/sup&gt;, and the cost of the sides is \\\)</span>0.043 / cm<sup>2</sup>. If we require a volume of 355 cm<sup>3</sup>, what is the optimal length and diameter to minimize the cost of the can?</p>
+<p>This is a constrained minimization; we want to minimize the cost by changing the height of the can and the diameter of the top while maintaining the volume.</p>
+<p>The key to solving this problem is recognizing that the equality constraint means the can length and diameter are not independent because of the equation for the volume. This allows us to solve for one, and then use it in the cost function</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="mi">355</span>   <span class="c1"># cm^3</span>
+<span class="n">cost_tb</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># $/cm^2</span>
+<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span> <span class="c1"># $/cm^2</span>
+
+<span class="k">def</span> <span class="nf">cost</span><span class="p">(</span><span class="n">D</span><span class="p">):</span>
+    <span class="n">area_top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    
+    <span class="n">L</span> <span class="o">=</span> <span class="n">V</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># this is the elimination step</span>
+    <span class="n">area_side</span> <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
+    
+    <span class="c1">#print((np.pi / 4) * D**2 * L)</span>
+    
+    <span class="k">return</span> <span class="n">area_top</span> <span class="o">*</span> <span class="n">cost_tb</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">area_side</span> <span class="o">*</span> <span class="n">cost_side</span>
+
+<span class="n">cost</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">DD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">cost</span><span class="p">(</span><span class="n">DD</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1ab6e2d3afe3754fcf4c10670f9b30cbb46ee5b5fe3253ca660b150592790dc7.png" src="../_images/1ab6e2d3afe3754fcf4c10670f9b30cbb46ee5b5fe3253ca660b150592790dc7.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">sol</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
+  success: True
+   status: 0
+      fun: 9.960758701630095
+        x: [ 9.195e+00]
+      nit: 5
+      jac: [-1.192e-07]
+ hess_inv: [[ 4.239e+00]]
+     nfev: 12
+     njev: 6
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="mi">355</span>
+<span class="n">ct</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># Cost of the top $/cm**2</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="mf">0.043</span>  <span class="c1"># Cost of the side $/cm**2</span>
+
+<span class="k">def</span> <span class="nf">cost</span><span class="p">(</span><span class="n">D</span><span class="p">):</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">top_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">top_bottom_cost</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ct</span> <span class="o">*</span> <span class="n">top_area</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span> <span class="c1"># solved from the volume</span>
+    <span class="n">side_cost</span> <span class="o">=</span> <span class="n">cs</span> <span class="o">*</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
+    <span class="k">return</span> <span class="n">top_bottom_cost</span> <span class="o">+</span> <span class="n">side_cost</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cost</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Diameter&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Cost&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b1601af01153cfe849bf6145680eec6e33379e0d06b9266bcefa29cea2caf694.png" src="../_images/b1601af01153cfe849bf6145680eec6e33379e0d06b9266bcefa29cea2caf694.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+<span class="n">D</span><span class="p">,</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The optimal diameter is </span><span class="si">{</span><span class="n">D</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> cm. The optimal length is </span><span class="si">{</span><span class="n">L</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> cm. The cost is $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
+  success: True
+   status: 0
+      fun: 9.960758701630144
+        x: [ 9.195e+00]
+      nit: 5
+      jac: [ 1.192e-07]
+ hess_inv: [[ 4.237e+00]]
+     nfev: 12
+     njev: 6
+The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.96.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we used the method of elimination to solve an <em>equality constraint</em> minimization.</p>
+<section id="scipy-optimize-minimize-with-constraints">
+<h3>scipy.optimize.minimize with constraints<a class="headerlink" href="#scipy-optimize-minimize-with-constraints" title="Permalink to this heading">#</a></h3>
+<p>In other problems, we might simply require some part of the solution to be less than or greater than some number. We call these inequality constraints.</p>
+<p>Here we will consider a strategy for solving these kinds of problems.</p>
+<p><code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> can be used with constraints. Before we get to how this is done, we need to introduce a new data type in Python: the dictionary.</p>
+<p>A dictionary, also known as a lookup or hash table, is a data structure that allows you to look up values by a key. A dictionary is created with curly brackets {} that contain <code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">value</span></code> pairs. You can use anything that is “hashable” as a key, and anything as a value. Things that are hashable are: strings, numbers, tuples. You cannot use a list or array; they are mutable and not hashable. Here is an example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span>
+     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+     <span class="mf">5.0</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">}</span>
+<span class="n">d</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 1,
+ &#39;type&#39;: &#39;function&#39;,
+ &#39;func&#39;: &lt;function __main__.f(x)&gt;,
+ 4: &#39;int&#39;,
+ 5.0: &#39;float&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we can retrieve data from it like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mf">5.0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, &#39;int&#39;, &#39;float&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">d</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 42,
+ &#39;type&#39;: &#39;function&#39;,
+ &#39;func&#39;: &lt;function __main__.f(x)&gt;,
+ 4: &#39;int&#39;,
+ 5.0: &#39;float&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is usually an error to ask for a key that does not exist.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;NotHere&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;NotHere&#39;</span><span class="p">]</span>
+
+<span class="ne">KeyError</span>: &#39;NotHere&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>But, here is a little surprise. The dictionary has a key for 5.0 (a float), but not for 5 (an int):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mf">5.0</span><span class="p">],</span> <span class="nb">hash</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="nb">hash</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;float&#39;, &#39;float&#39;, 5, 5)
+</pre></div>
+</div>
+</div>
+</div>
+<p>The integer 5 and float 5.0 hash to the same value, so the dictionary returns something for both of them.</p>
+<p>We can get the function, and call it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">](</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9
+</pre></div>
+</div>
+</div>
+</div>
+<p>The reason we have to consider dictionaries is that <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> uses dictionaries to specify constraints. See the constraints arg here.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">](</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">-----------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-15-f7e9af1e5701&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">a</span>
+
+<span class="ne">TypeError</span>: &#39;tuple&#39; object does not support item assignment
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="o">?</span>minimize
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have to write functions that codify the constraints, and then pass them to minimize.</p>
+</section>
+<section id="equality-constraints">
+<h3>Equality constraints<a class="headerlink" href="#equality-constraints" title="Permalink to this heading">#</a></h3>
+<p>We first repeat the problem we did before.</p>
+<p>The volume of a cylindrical can is <span class="math notranslate nohighlight">\(V = (\pi/4) D^2 L\)</span>. The cost of the top/bottom of the can is \<span class="math notranslate nohighlight">\(0.025 / cm&lt;sup&gt;2&lt;/sup&gt;, and the cost of the sides is \\\)</span>0.043 / cm<sup>2</sup>. If we require a volume of 355 cm<sup>3</sup>, what is the optimal length and diameter to minimize the cost of the can?</p>
+<p>We have two variables to modify: <span class="math notranslate nohighlight">\(D, L\)</span>, but there is an equality constraint in this problem that is described in the volume equation. We codify this in a function that returns zero when the constraint is satisfied. We also define a variable for the constraints dictionary.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">equality_constraint</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">D</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L</span>
+    <span class="k">return</span> <span class="n">V</span> <span class="o">-</span> <span class="mi">355</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">equality_constraint</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we can setup the objective function with the two variables we want to vary to find the minimum. We still need a guess. The advantage of the previous method of elimination is we had a 1D objective that was easy to plot. Here, we would have to consider a contour plot to see where the minimum is. We just use our previous answer.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cost_top</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># $/cm^2</span>
+<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span> <span class="c1"># $/cm^2</span>
+
+<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">D</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">x</span>  <span class="c1"># Now we vary both variables.</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">top_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">side_area</span> <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">top_area</span> <span class="o">*</span> <span class="n">cost_top</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">side_area</span> <span class="o">*</span> <span class="n">cost_side</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cost</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">(</span><span class="mf">9.2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">equality_constraint</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+<span class="n">sol</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-2.072357574434136e-08
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: 9.960758701245243
+     jac: array([1.44435978, 1.24215055])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 28
+     nit: 7
+    njev: 7
+  status: 0
+ success: True
+       x: array([9.19508759, 5.34597263])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">COST</span> <span class="o">=</span> <span class="n">objective</span><span class="p">([</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">COST</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">VOLUME</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">DD</span><span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">LL</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">VOLUME</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mi">354</span><span class="p">,</span> <span class="mi">356</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.contour.QuadContourSet at 0x11ccd36d8&gt;
+</pre></div>
+</div>
+<img alt="../_images/f8763cc37b7e25f015804039b95e13d1419b133aaa3a6d27cb80f82e3acd9c26.png" src="../_images/f8763cc37b7e25f015804039b95e13d1419b133aaa3a6d27cb80f82e3acd9c26.png" />
+</div>
+</div>
+<p>You can have multiple equality constraints, you just make a list of dictionaries. Suppose we seek to minimize <span class="math notranslate nohighlight">\(x1 + x2 + x3^2\)</span> subject to the equality constraints <span class="math notranslate nohighlight">\(x1=1\)</span>, and <span class="math notranslate nohighlight">\(x1^2 + x2^2 = 1\)</span>. Some analysis suggests that this really means x1=1, x2=0, and then x3 must also be zero to minimize the function, which has a minimum value of 1.</p>
+<p>Here we can set this up as a minimization problem:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">x3</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">eq1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">-</span> <span class="mi">1</span>   <span class="c1"># x = 1</span>
+
+<span class="k">def</span> <span class="nf">eq2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">x1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># x1**2 + x2**2 = 1</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">eq1</span><span class="p">},</span>
+               <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">eq2</span><span class="p">}]</span>
+
+<span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: 1.0000051566408261
+     jac: array([ 1.        ,  1.        , -0.00425012])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 409
+     nit: 65
+    njev: 65
+  status: 0
+ success: True
+       x: array([ 1.00000000e+00,  6.40736032e-07, -2.12506583e-03])
+</pre></div>
+</div>
+</div>
+</div>
+<p>As expected, x1=1, and x2 and x3 are near zero. They are not zero because of tolerance. You can make the tolerance tighter, (say tol=1e-9) to see the difference.</p>
+</section>
+<section id="inequality-constraints">
+<h3>Inequality constraints<a class="headerlink" href="#inequality-constraints" title="Permalink to this heading">#</a></h3>
+<p>Inequality constraints are those where some part of the solution is greater than or less than a value. In <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> we codify this by writing functions that are non-negative, i.e. <strong>greater than or equal to zero at the solution</strong>.</p>
+<p>Maximize <span class="math notranslate nohighlight">\(x^3 - 3x\)</span> subject to <span class="math notranslate nohighlight">\(x \le 2.5\)</span>. First, recall we can rewrite the inequality as <span class="math notranslate nohighlight">\(-x \ge -2.5\)</span>, and again as <span class="math notranslate nohighlight">\(-x + 2.5 \ge 0\)</span>. That means for our solution we require <span class="math notranslate nohighlight">\(-x+2.5\)</span> to be positive. Also, since we are maximizing the function, our objective is multiplied by -1. When possible, it is always a good idea to visualize the problem:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">objective</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.lines.Line2D at 0x11ccc8048&gt;
+</pre></div>
+</div>
+<img alt="../_images/972735a2b46e045b2e108995f1d5a92a07bbcc782cf3638366be3d9c90c3c0b5.png" src="../_images/972735a2b46e045b2e108995f1d5a92a07bbcc782cf3638366be3d9c90c3c0b5.png" />
+</div>
+</div>
+<p>You can see by inspection there is a minimum around x=-1, and at x=2.5. Note the one at x=2.5 is not a minimum in the sense that the derivative=0 there, it is just the smallest value that also satisfies the constraint. To solve this problem, we set up the following code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ieq</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">x</span> <span class="o">+</span> <span class="mf">2.5</span>   <span class="c1"># -x + 2.5 &gt;= 0</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">ieq</span><span class="p">}</span>
+<span class="c1">#                       ^^^^</span>
+<span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: 2.0
+     jac: array([-4.47034836e-08])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 3
+     nit: 1
+    njev: 1
+  status: 0
+ success: True
+       x: array([1.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that there are two solutions. Which one you get depends on your initial guess.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: -1.999999999942188
+     jac: array([2.63750553e-05])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 13
+     nit: 4
+    njev: 4
+  status: 0
+ success: True
+       x: array([-0.99999561])
+</pre></div>
+</div>
+</div>
+</div>
+<p>You have to decide which one is better. In this case, it is the one at x=2.5 which has a higher maximum than the one at x=-1.</p>
+</section>
+<section id="an-application">
+<h3>An application<a class="headerlink" href="#an-application" title="Permalink to this heading">#</a></h3>
+<p>Let us suppose that a merry farmer has 75 roods (4 roods = 1 acre) on which to plant two crops: wheat and corn. To produce these crops, it costs the farmer (for seed, water, fertilizer, etc. ) \<span class="math notranslate nohighlight">\(120 per rood for the wheat, and \\\)</span>210 per rood for the corn. The farmer has \<span class="math notranslate nohighlight">\(15,000 available for expenses, but after the harvest the farmer must store the crops while awaiting favorable or good market conditions. The farmer has storage space for 4,000 bushels. Each rood yields an average of 110 bushels of wheat or 30 bushels of corn. If the net profit per bushel of wheat (after all the expenses) is \\\)</span>1.30 and for corn is \$2.00, how should the merry farmer plant the 75 roods to maximize profit?</p>
+<p>It is not obvious what to do. Wheat is cheaper to plant, and yields more per rood, but it is less profitable.</p>
+<p>Let <span class="math notranslate nohighlight">\(x\)</span> be the number of roods of wheat planted, and <span class="math notranslate nohighlight">\(y\)</span> be the number of roods of corn planted. The profit function is: <span class="math notranslate nohighlight">\( P = (110)(\)</span>1.3)x + (30)(<span class="math notranslate nohighlight">\(2)y = 143x + 60y \)</span></p>
+<p>There are some constraint inequalities, specified by the limits on expenses, storage and roodage. They are:</p>
+<p><span class="math notranslate nohighlight">\(\$120x + \$210y &lt;= \$15000\)</span> (The total amount spent cannot exceed the amount the farm has)</p>
+<p><span class="math notranslate nohighlight">\(110x + 30y &lt;= 4000\)</span> (The amount generated should not exceed storage space.)</p>
+<p><span class="math notranslate nohighlight">\(x + y &lt;= 75\)</span> (We cannot plant more space than we have.)</p>
+<p><span class="math notranslate nohighlight">\(0 &lt;= x\)</span> and <span class="math notranslate nohighlight">\(0 &lt;= y \)</span> (all amounts of planted land must be positive.)</p>
+<p>To solve this problem, we cast it as minimization problem, which minimizes a function f(X) subject to some constraints. We create a proxy function for the negative of profit, which we seek to minimize.</p>
+<p>Note we use inequality constraints here. You could put some as equality, e.g. if you want to make sure you spend all $15000, or if you want to ensure you fill up your storage. It could be a mistake to require both of those though, as it may be infeasible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">c1</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;Constraint on total cost to plant.&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="c1"># $120 * x + $210 * y &lt;= 15000</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">120</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">210</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">15000</span><span class="p">)</span>  <span class="c1"># this is &gt;= 0 at the solution</span>
+
+<span class="k">def</span> <span class="nf">c2</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;Storage constraint&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="c1"># 110 * x + 30 * y &lt;= 4000</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">110</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">4000</span><span class="p">)</span> <span class="c1"># this is &gt;= 0 at the solution</span>
+
+<span class="k">def</span> <span class="nf">c3</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;Land area constraint&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="c1"># x + y &lt;= 75</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">75</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">c4</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;positivity constraint&#39;</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">c5</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;positivity constraint&#39;</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">profit</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="s1">&#39;Profit function we want to maximize&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">143</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">profit</span><span class="p">,</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">}</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">c5</span><span class="p">]])</span>
+<span class="n">sol</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: -6315.624999538349
+     jac: array([-143.,  -60.])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 13
+     nit: 3
+    njev: 3
+  status: 0
+ success: True
+       x: array([21.875, 53.125])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">profit</span><span class="p">,</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c1</span><span class="p">},</span>
+                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c2</span><span class="p">},</span>
+                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c3</span><span class="p">},</span>
+                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c4</span><span class="p">},</span>
+                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c5</span><span class="p">}])</span>
+<span class="n">sol</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     fun: -6315.624999538349
+     jac: array([-143.,  -60.])
+ message: &#39;Optimization terminated successfully.&#39;
+    nfev: 13
+     nit: 3
+    njev: 3
+  status: 0
+ success: True
+       x: array([21.875, 53.125])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We should plant </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of wheat, and </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of corn. We will earn $</span><span class="si">{</span><span class="o">-</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> in profit.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>We should plant 21.87 roods of wheat, and 53.12 roods of corn. We will earn $6315.62 in profit.
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can always verify aspects of our solution. Here is the land area.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We used </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of land&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>We used 75.00 roods of land
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We will pay $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">120</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">210</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> to plant.&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We will store </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">110</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">:</span><span class="s1">1.0f</span><span class="si">}</span><span class="s1"> bushels.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>We will pay $13781.25 to plant.
+We will store 4000 bushels.
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can see we did not need to spend all the money because we do not have enough storage space to accommodate more crops. It would be a mistake to make these both equality constraints, because then there would be no feasible solution.</p>
+</section>
+<section id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> provides a convenient interface to solving a broad set of optimization problems both unconstrained and constrained. There is a significant body of knowledge hidden from us under this interface. For example there are 14 choices for different optimization algorithms in the interface, and the default one is chosen for you depending on arguments passed to it. It is easy to tell if the defaults are suitable; if you get a solution they are. If you don’t get a solution, then you have to assess whether there is a solution, and whether a better algorithm would be appropriate. The details of these algorithms are the subject of dedicated courses in optimization.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="12-nonlinear-regression-2.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Uncertainty quantification in nonlinear regression</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="15-intro-linear-algebra.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Introduction to linear algebra</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-minimization">Constrained minimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy-optimize-minimize-with-constraints">scipy.optimize.minimize with constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equality-constraints">Equality constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inequality-constraints">Inequality constraints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-application">An application</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

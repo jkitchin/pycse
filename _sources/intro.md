@@ -1,9 +1,12 @@
 # Welcome to pycse - Python Computations in Science and Engineering
 
-This content was created from a series of blog posts that began more than 10 years ago. I have collected these, and ordered them in ways that make some sense. Python has changed over these years, and some things may be out of date, or not in the current style. I have only lightly modified these in converting from org-mode to notebooks. The most notable changes are changing the org-files to use Jupyter-python instead of the plain Python blocks. I deleted some content that does not work anymore.
+There are three main areas of content here:
+
+1. The pycse book - these are notes from a course in mathematical modeling I teach at CMU.
+2. The pycse blog - these are from a series of blog posts that I wrote over the past decade
+3. pycse documentation - these are generated from docstrings in the pycse module I wrote.
 
 
-You can find an older [pdf](https://github.com/jkitchin/pycse/blob/master/pycse.pdf) with all the previous content. The original org-mode content is at https://github.com/jkitchin/pycse/tree/master/pycse-chapters.
 
 
 ```{tableofcontents}

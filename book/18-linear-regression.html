@@ -1,0 +1,1429 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Linear regression &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/18-linear-regression';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to automatic differentiation" href="20-autograd-applications.html" />
+    <link rel="prev" title="Interpolation" href="17-linear-algebra-2.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/18-linear-regression.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/18-linear-regression.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/18-linear-regression.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Linear regression</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-of-polynomial-fitting">An example of polynomial fitting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-intervals-on-the-parameters">Confidence intervals on the parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ridge-regression">Ridge regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lasso-regression">LASSO regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-selection-of">Advanced selection of λ</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="linear-regression">
+<h1>Linear regression<a class="headerlink" href="#linear-regression" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: numpy.linalg.solve</p></li>
+</ul>
+<p>In linear regression, we seek to find models in the form <span class="math notranslate nohighlight">\(y = a_{0} f_{0}(x) + a_{1} f_{1}(x) + ... + a_{n} f_{n}(x) + \epsilon\)</span>, where <span class="math notranslate nohighlight">\(a_{i}\)</span> are coefficients to be determined, and ε are the residual errors. We call this linear regression because the model is linear in the unknown coefficients <span class="math notranslate nohighlight">\(a_{i}\)</span>. The functions can be any function of <span class="math notranslate nohighlight">\(x\)</span>. In the function <code class="docutils literal notranslate"><span class="pre">numpy.polyfit</span></code> these functions are polynomials in <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>If we are given some data as pairs of (x, y), we can construct a set of equations of the form:</p>
+<p><span class="math notranslate nohighlight">\([f_{0}(x_{i}), f_{1}(x_{i}), ..., f_{n}(x_{i})]\cdot[a_{0}, a_{1}, ...,  a_{n}]^T = y_{i}\)</span></p>
+<p>There will be one of these equations for every data point, so we end up with a matrix equation that looks like:</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{X} \mathbf{a} = \mathbf{y}\)</span></p>
+<p>There are <em>usually</em> more data points than in the vector of <span class="math notranslate nohighlight">\(\mathbf{a}\)</span>, so the shapes of these arrays are not suitable to solve directly. You can of course set up an objective function and use <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>, but there is a better approach.</p>
+<p>To be a little more specific, suppose we have <span class="math notranslate nohighlight">\(m\)</span> pairs of <span class="math notranslate nohighlight">\((x, y)\)</span> data points, and we want to fit a model containing <span class="math notranslate nohighlight">\(n\)</span> parameters. Then, the dimensions of the <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> will be <span class="math notranslate nohighlight">\((m, n)\)</span>, the dimensions of <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> will be <span class="math notranslate nohighlight">\((n, 1)\)</span>, and the dimensions of <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> will be <span class="math notranslate nohighlight">\((m, 1)\)</span>.  We have more equations than unknowns here, and we cannot use <code class="docutils literal notranslate"><span class="pre">numpy.linalg.solve</span></code> because \mathbf{X} is not square. Note that if it was square, we would be doing the kind of interpolation we described in the last lecture.</p>
+<p>We can modify the equation though if we <em>left multiply</em> each side of the equation by <span class="math notranslate nohighlight">\(\mathbf{X}^T\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{X}^T \mathbf{X} \mathbf{a} = \mathbf{X}^T \mathbf{y}\)</span></p>
+<p>The array <span class="math notranslate nohighlight">\(\mathbf{X}^T \mathbf{X}\)</span> now has the shape <span class="math notranslate nohighlight">\((n, m) * (m, n) = (n, n)\)</span>. The right hand side <span class="math notranslate nohighlight">\(\mathbf{X}^T \mathbf{y}\)</span> has a shape of <span class="math notranslate nohighlight">\((n, m) * (m, 1) = (n, 1)\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> is still <span class="math notranslate nohighlight">\((n, 1)\)</span>. This new matrix equation can be solved efficiently with <code class="docutils literal notranslate"><span class="pre">numpy.linalg.solve</span></code>. We will not prove this, but solving this modified equation <em>is equivalent</em> to finding the set of parameters that minimizes the summed squared errors: <span class="math notranslate nohighlight">\(\sum (\mathbf{X} \cdot \mathbf{a} - \mathbf{y})^2\)</span>.</p>
+<p>The parameters are then found by:</p>
+<p>a = (X.T &#64; X).inv &#64; X.T &#64; y</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="ne">NameError</span>: name &#39;np&#39; is not defined
+</pre></div>
+</div>
+</div>
+</div>
+<p>An alternative form is called the normal equation: <span class="math notranslate nohighlight">\(\mathbf{a} = (\mathbf{X}\cdot\mathbf{X}^T)^{-1}\mathbf{X}^T \mathbf{y}\)</span>. This is symbolically correct, but relies on the inverse which is expensive to compute for large systems. It is not used practically, instead the equations are solved efficiently using a different algorithm.</p>
+<section id="an-example-of-polynomial-fitting">
+<h2>An example of polynomial fitting<a class="headerlink" href="#an-example-of-polynomial-fitting" title="Permalink to this heading">#</a></h2>
+<p>Our goal in this example is to fit a polynomial to some time-dependent concentration data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">250.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">])</span>
+<span class="n">Ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">30.6</span><span class="p">,</span> <span class="mf">25.6</span><span class="p">,</span> <span class="mf">22.2</span><span class="p">,</span> <span class="mf">19.5</span><span class="p">,</span> <span class="mf">17.4</span><span class="p">])</span><span class="o">*</span><span class="mf">1e-3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Fit a fourth order polynomial to this data and determine the confidence interval for each parameter. This data is from example 5-1 in Fogler, Elements of Chemical Reaction Engineering.</p>
+<p>We want the equation <span class="math notranslate nohighlight">\(Ca(t) = b0 + b1*t + b2*t^2 + b3*t^3 + b4*t^4\)</span> fit to the data in the least squares sense. We can write this in a linear algebra form as: <span class="math notranslate nohighlight">\(\mathbf{T} \mathbf{p} = \mathbf{Ca}\)</span> where <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> is a matrix of columns <span class="math notranslate nohighlight">\([1, t, t^2, t^3, t^4]\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{p}\)</span> is a column vector of the fitting parameters. We want to solve for the <span class="math notranslate nohighlight">\(\mathbf{p}\)</span> vector and estimate the confidence intervals.</p>
+<p>First, we setup the array of function values, and then we solve for the paramters.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">time</span><span class="o">**</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">X</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.00000e+00, 0.00000e+00, 0.00000e+00, 0.00000e+00, 0.00000e+00],
+       [1.00000e+00, 5.00000e+01, 2.50000e+03, 1.25000e+05, 6.25000e+06],
+       [1.00000e+00, 1.00000e+02, 1.00000e+04, 1.00000e+06, 1.00000e+08],
+       [1.00000e+00, 1.50000e+02, 2.25000e+04, 3.37500e+06, 5.06250e+08],
+       [1.00000e+00, 2.00000e+02, 4.00000e+04, 8.00000e+06, 1.60000e+09],
+       [1.00000e+00, 2.50000e+02, 6.25000e+04, 1.56250e+07, 3.90625e+09],
+       [1.00000e+00, 3.00000e+02, 9.00000e+04, 2.70000e+07, 8.10000e+09]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">vander</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># this is equivalent, but the columns are in the opposite order.</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.00000e+00, 0.00000e+00, 0.00000e+00, 0.00000e+00, 1.00000e+00],
+       [6.25000e+06, 1.25000e+05, 2.50000e+03, 5.00000e+01, 1.00000e+00],
+       [1.00000e+08, 1.00000e+06, 1.00000e+04, 1.00000e+02, 1.00000e+00],
+       [5.06250e+08, 3.37500e+06, 2.25000e+04, 1.50000e+02, 1.00000e+00],
+       [1.60000e+09, 8.00000e+06, 4.00000e+04, 2.00000e+02, 1.00000e+00],
+       [3.90625e+09, 1.56250e+07, 6.25000e+04, 2.50000e+02, 1.00000e+00],
+       [8.10000e+09, 2.70000e+07, 9.00000e+04, 3.00000e+02, 1.00000e+00]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">time</span><span class="o">**</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">time</span><span class="o">**</span><span class="mi">4</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.00000e+00, 0.00000e+00, 0.00000e+00, 0.00000e+00, 0.00000e+00],
+       [1.00000e+00, 5.00000e+01, 2.50000e+03, 1.25000e+05, 6.25000e+06],
+       [1.00000e+00, 1.00000e+02, 1.00000e+04, 1.00000e+06, 1.00000e+08],
+       [1.00000e+00, 1.50000e+02, 2.25000e+04, 3.37500e+06, 5.06250e+08],
+       [1.00000e+00, 2.00000e+02, 4.00000e+04, 8.00000e+06, 1.60000e+09],
+       [1.00000e+00, 2.50000e+02, 6.25000e+04, 1.56250e+07, 3.90625e+09],
+       [1.00000e+00, 3.00000e+02, 9.00000e+04, 2.70000e+07, 8.10000e+09]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Ca</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 4.99902597e-02 -2.97846320e-04  1.34348485e-06 -3.48484848e-09
+  3.69696970e-12]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">Ca</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">X</span> <span class="o">@</span> <span class="n">a</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Ca&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10c0c2ef0&gt;
+</pre></div>
+</div>
+<img alt="../_images/074c00607d042de04430bd4e6aaf4c462ace80af831f100a8df644c62055a991.png" src="../_images/074c00607d042de04430bd4e6aaf4c462ace80af831f100a8df644c62055a991.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tfit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">Cafit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">tfit</span><span class="o">**</span><span class="mi">0</span><span class="p">,</span> <span class="n">tfit</span><span class="p">,</span> <span class="n">tfit</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">tfit</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">tfit</span><span class="o">**</span><span class="mi">4</span><span class="p">])</span> <span class="o">@</span> <span class="n">a</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">Ca</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">tfit</span><span class="p">,</span> <span class="n">Cafit</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Ca&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10c118048&gt;
+</pre></div>
+</div>
+<img alt="../_images/d72643392a8794c2659e7924270bc6c4fb5d76e017b355facaa144715b773fc4.png" src="../_images/d72643392a8794c2659e7924270bc6c4fb5d76e017b355facaa144715b773fc4.png" />
+</div>
+</div>
+<p>We previously claimed that solving this equation was equivalent to minimizing the summed squared errors. Here we demonstrate that is consistent with our observation for the first parameter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">errs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="p">:</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">A</span> <span class="o">-</span> <span class="n">Ca</span><span class="p">))</span>
+    <span class="n">errs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">err</span><span class="p">]</span>
+    
+<span class="c1"># errs = [np.sum(np.square(X @ [p, *a[1:]] - Ca)) for p in P]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">errs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;slope&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;SSE&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;SSE&#39;</span><span class="p">,</span> <span class="s1">&#39;best fit&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10c60a0b8&gt;
+</pre></div>
+</div>
+<img alt="../_images/9ef8feac6c1da62f480d1cc3e0eb50a57d6e375e39564aeae55814665448652e.png" src="../_images/9ef8feac6c1da62f480d1cc3e0eb50a57d6e375e39564aeae55814665448652e.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">SSE</span><span class="p">(</span><span class="n">pars</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">pars</span> <span class="o">-</span> <span class="n">Ca</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">numdifftools</span> <span class="k">as</span> <span class="nn">nd</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">Hessian</span><span class="p">(</span><span class="n">SSE</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.67392305e+20, 2.87547709e+13, 5.43139168e+07, 2.02420036e+00,
+       9.28150756e+02])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>nd.Jacobian
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">SSE</span><span class="p">)</span>  <span class="c1"># this is the derivative: dSSE / dpar</span>
+<span class="n">J</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-3.19189120e-16,  9.38367549e-15,  4.62079277e-10,
+        -3.28306822e-04, -9.60000000e+00]])
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Exercise</strong> Demonstrate that the SSE is minimized for the other parameters. Try estimating the Hessian of the sum of squared errors and then see if it is positive definite.</p>
+<p>As we have seen many times before, Numpy provides a function for doing least squares linear regression. It returns more information about the fit than what we have done so far, and is a little more convenient because we do not have to do all the transposes and left multiplications.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>np.linalg.lstsq
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pars</span><span class="p">,</span> <span class="n">residuals</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">singular_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Ca</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">pars</span><span class="p">,</span> <span class="n">residuals</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">singular_values</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([ 4.99902596e-02, -2.97846320e-04,  1.34348484e-06, -3.48484840e-09,
+         3.69696954e-12]),
+ array([1.05194694e-08]),
+ 5,
+ array([9.14856013e+09, 3.79175229e+06, 5.21123386e+03, 2.15423665e+01,
+        1.00603128e+00]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This determinant is huge.</span>
+<span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1.5348867187457242e+43,
+ array([[ 9.87012987e-01, -3.18903319e-02,  3.25757576e-04,
+         -1.31313131e-06,  1.81818182e-09],
+        [-3.18903319e-02,  3.18684464e-03, -4.69545455e-05,
+          2.29360269e-07, -3.57575758e-10],
+        [ 3.25757576e-04, -4.69545455e-05,  7.59747475e-07,
+         -3.90303030e-09,  6.28282828e-12],
+        [-1.31313131e-06,  2.29360269e-07, -3.90303030e-09,
+          2.06599327e-11, -3.39393939e-14],
+        [ 1.81818182e-09, -3.57575758e-10,  6.28282828e-12,
+         -3.39393939e-14,  5.65656566e-17]]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>The key points to note are that the rank is equal to the number of parameters we are estimating, which means we have enough information to get pretty good estimates of the parameters.</p>
+</section>
+<section id="confidence-intervals-on-the-parameters">
+<h2>Confidence intervals on the parameters<a class="headerlink" href="#confidence-intervals-on-the-parameters" title="Permalink to this heading">#</a></h2>
+<p>The confidence intervals reflect the range of values we are confident the true parameter lies in. Remember we are only <em>estimating</em> these parameters from a small amount of data.</p>
+<p>The degrees of freedom is roughly equal to the number of data points minus the number of parameters.</p>
+<p>We define <span class="math notranslate nohighlight">\(\sigma^2 = SSE / dof\)</span> where <span class="math notranslate nohighlight">\(SSE\)</span> is the summed squared error, and <span class="math notranslate nohighlight">\(dof\)</span> is the degrees of freedom.</p>
+<p>The covariance matrix is defined as <span class="math notranslate nohighlight">\((\mathbf{X}^T \mathbf{X})^{-1}\)</span>. Finally, we compute the standard error on the parameters as:</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{se} = \sqrt{diag(\sigma^2 cov)}\)</span>.</p>
+<p>This will be an array with one element for each parameter. You can think of this standard error as the uncertainty in the mean value of each parameter.</p>
+<p>The confidence intervals are finally computed by calculating a student t-value that accounts for the additional uncertainty we have because of the small number of degrees of freedom.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dof</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ca</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span>  <span class="c1"># This assumes len(pars) is less than len(Ca)</span>
+<span class="n">errs</span> <span class="o">=</span> <span class="n">Ca</span> <span class="o">-</span> <span class="n">X</span> <span class="o">@</span> <span class="n">pars</span>
+<span class="n">sigma2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">errs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">dof</span>
+
+<span class="n">covariance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X</span><span class="p">)</span>
+<span class="n">se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">sigma2</span> <span class="o">*</span> <span class="n">covariance</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">scipy.stats.distributions</span> <span class="kn">import</span> <span class="n">t</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># 100*(1 - alpha) confidence level</span>
+<span class="n">sT</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>  <span class="c1"># student T multiplier</span>
+
+<span class="n">CI</span> <span class="o">=</span> <span class="n">sT</span> <span class="o">*</span> <span class="n">se</span>
+
+<span class="k">for</span> <span class="n">beta</span><span class="p">,</span> <span class="n">ci</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">CI</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">beta</span><span class="si">:</span><span class="s1"> 1.2e</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">beta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ci</span><span class="si">:</span><span class="s1"> 1.4e</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">beta</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ci</span><span class="si">:</span><span class="s1"> 1.4e</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 5.00e-02 [ 4.9680e-02  5.0300e-02]
+-2.98e-04 [-3.1546e-04 -2.8023e-04]
+ 1.34e-06 [ 1.0715e-06  1.6155e-06]
+-3.48e-09 [-4.9032e-09 -2.0665e-09]
+ 3.70e-12 [ 1.3501e-12  6.0439e-12]
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is also common to estimate an <span class="math notranslate nohighlight">\(R^2\)</span> value, where values close to one mean the model accounts for most of the variance in the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SS_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Ca</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Ca</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">SS_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">errs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">#  http://en.wikipedia.org/wiki/Coefficient_of_determination</span>
+<span class="n">Rsq</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">SS_err</span><span class="o">/</span><span class="n">SS_tot</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;R^2 = </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Rsq</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>R^2 = 0.9999869672459537
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we would say the model looks very good, but with the caveat that we fit five parameters to seven data points, and some of the parameters are very small, suggesting they may not be necessary (although they are in front of terms like x<sup>4</sup> which can be very large).</p>
+<p>Now you can use this model to interpolate new values in the fitted range. This is not a model you can extrapolate with though, <em>even though it is a linear model</em>. What is happening?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">newt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">700</span><span class="p">)</span>
+
+<span class="n">newT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">newt</span><span class="o">**</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">newCa</span> <span class="o">=</span> <span class="n">newT</span> <span class="o">@</span> <span class="n">pars</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">Ca</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">newt</span><span class="p">,</span> <span class="n">newCa</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Ca&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7c04fc55e296ffee3fbc2a535c47bc7cd0588d9d78bb35a19144ec3073f7a710.png" src="../_images/7c04fc55e296ffee3fbc2a535c47bc7cd0588d9d78bb35a19144ec3073f7a710.png" />
+</div>
+</div>
+<p>It is almost certainly not reasonable for the concentration of A to start increasing again after about 350 time units.</p>
+</section>
+<section id="regularization">
+<h2>Regularization<a class="headerlink" href="#regularization" title="Permalink to this heading">#</a></h2>
+<p>When we do linear regression we get a coefficient for every function in the model. However, there can be bad behavior with regular regression, especially for certain classes of functions, and when the functions are correlated with each other. To explore why this happens, we will look at some regression models of varying complexity. We start by looking at some data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">#Setting seed for reproducibility</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y&#39;)
+</pre></div>
+</div>
+<img alt="../_images/999d8c82085f1373e478252385155d29e91deba5b7679f636cf55b20ed727b8f.png" src="../_images/999d8c82085f1373e478252385155d29e91deba5b7679f636cf55b20ed727b8f.png" />
+</div>
+</div>
+<p>Our goal is to fit a linear regression model to this data. We want to avoid underfitting and overfitting. If we just fit polynomials to this data, we find some undesirable behavior. Let’s look at fits up to a 12<sup>th</sup> order polynomials.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;       &#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;x^</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">&lt;6d</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">N</span><span class="p">:</span>
+    <span class="n">pars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">13</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):]</span> <span class="o">=</span> <span class="n">pars</span>
+    <span class="c1"># This way of printing is to get columnar output</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">j</span><span class="si">:</span><span class="s1"> 6.2f</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        x^12    x^11    x^10    x^9     x^8     x^7     x^6     x^5     x^4     x^3     x^2     x^1     x^0     
+ 1   0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00   -0.47    1.40
+ 3   0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.09   -0.92    2.08   -0.33
+ 6   0.00    0.00    0.00    0.00    0.00    0.00    0.01   -0.09    0.58   -1.80    2.37   -0.66    0.43
+ 9   0.00    0.00    0.00   -0.00    0.10   -1.02    5.90  -20.81   46.10  -63.24   50.45  -19.91    3.34
+12   0.01   -0.21    2.83  -22.43   114.61  -395.70   940.66  -1541.20   1715.97  -1258.64   574.27  -144.86   15.53
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10ef22a20&gt;
+</pre></div>
+</div>
+<img alt="../_images/197bc55412b91ae4f49cc5f383621551533f19df1863d24eb6c81015de22ce00.png" src="../_images/197bc55412b91ae4f49cc5f383621551533f19df1863d24eb6c81015de22ce00.png" />
+</div>
+</div>
+<p>The most undesirable behavior is that the coefficients grow large, which puts a lot of weight in places we might not want. This also leads to <em>wiggles</em> in the fit, which are probably not reasonable. The solution to this issue is called <em>regularization</em>, which means we add a penalty to our objective function that serves to reduce the magnitude of the parameters. There are several approaches to regularization. In <em>ridge regression</em> we add an L<sub>2</sub> penalty to the parameters, i.e. the sum of the parameters squared. In <em>LASSO</em> regression we add an L<sub>1</sub> penalty to the parameters, i.e. the sum of the absolute values of the parameters.</p>
+<p>In <em>ridge regression</em> the parameters are driven by the penalty to become smaller. In <em>LASSO regression</em> as many of the parameters are driven to zero as possible.</p>
+<section id="ridge-regression">
+<h3>Ridge regression<a class="headerlink" href="#ridge-regression" title="Permalink to this heading">#</a></h3>
+<p>In ridge regression we define our objective function to minimize the summed squared error as usual, and add a term proportional to the sum of the squared parameters.</p>
+<p>So, if our regression model looks like <span class="math notranslate nohighlight">\(\mathbf{X} \mathbf{\beta} = \mathbf{y}\)</span> we seek to minimize:</p>
+<p><span class="math notranslate nohighlight">\((\mathbf{y} - \mathbf{X} \mathbf{p})^T (\mathbf{y} - \mathbf{X} \mathbf{p}) + \lambda ||\mathbf{p}||_2^2\)</span></p>
+<p>Where <span class="math notranslate nohighlight">\(\mathbf{p}\)</span> are the fitting parameters, and <span class="math notranslate nohighlight">\(\lambda\)</span> is the proportionality constant.</p>
+<p>Finding the parameters is done by solving this modified normal equation:</p>
+<p><span class="math notranslate nohighlight">\((\mathbf{Z}^T \mathbf{Z} + \lambda(\mathbf{I} \mathbf{p}) = \mathbf{Z}^T \mathbf{w}\)</span></p>
+<p>We have changed variable names because it is considered important to standardize our variables:</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{Z} = (\mathbf{X} - mean(\mathbf{X})) / std(\mathbf{X})\)</span></p>
+<p>Standardization means that the variable has a mean of 0 and a standard deviation of 1.
+and</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{w} = (\mathbf{y} - mean(\mathbf{y})) / std(\mathbf{y})\)</span></p>
+<p>λ is a parameter that affects the amount of <em>regularization</em>.</p>
+<p>It is common to <em>standardize</em> the input/output variables which means we make the average of each column equal to zero and scale them to have unit variance. Doing this eliminates the intercept from the model since it would then go through the point (0, 0).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vander</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">12</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># since we standardize we do not consider the last column of ones.</span>
+<span class="n">xmean</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># average of every column</span>
+<span class="n">xstd</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">xmean</span><span class="p">,</span> <span class="n">xstd</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([2.48293800e+06, 5.69542539e+05, 1.31727857e+05, 3.07737861e+04,
+        7.27890923e+03, 1.74895299e+03, 4.28974856e+02, 1.08219836e+02,
+        2.84377137e+01, 7.96966389e+00, 2.50619449e+00]),
+ array([5.49844745e+06, 1.19967517e+06, 2.62434616e+05, 5.75785285e+04,
+        1.26746927e+04, 2.80017452e+03, 6.20905075e+02, 1.38066119e+02,
+        3.06634869e+01, 6.68612694e+00, 1.29948184e+00]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>We standardize the input vector like this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">xmean</span><span class="p">)</span> <span class="o">/</span> <span class="n">xstd</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-4.51570742e-01, -4.74747292e-01, -5.01945433e-01,
+        -5.34466351e-01, -5.74286823e-01, -6.24586878e-01,
+        -6.90882461e-01, -7.83767494e-01, -9.26532389e-01,
+        -1.17850947e+00, -1.69774938e+00],
+       [-4.51570742e-01, -4.74747292e-01, -5.01945432e-01,
+        -5.34466343e-01, -5.74286732e-01, -6.24585880e-01,
+        -6.90871835e-01, -7.83658517e-01, -9.25477673e-01,
+        -1.16921589e+00, -1.62845348e+00],
+       [-4.51570742e-01, -4.74747291e-01, -5.01945428e-01,
+        -5.34466303e-01, -5.74286377e-01, -6.24582765e-01,
+        -6.90845295e-01, -7.83441365e-01, -9.23804082e-01,
+        -1.15749676e+00, -1.55915759e+00],
+       [-4.51570742e-01, -4.74747289e-01, -5.01945409e-01,
+        -5.34466158e-01, -5.74285295e-01, -6.24574871e-01,
+        -6.90789345e-01, -7.83060815e-01, -9.21368736e-01,
+        -1.14335208e+00, -1.48986170e+00],
+       [-4.51570740e-01, -4.74747279e-01, -5.01945342e-01,
+        -5.34465725e-01, -5.74282527e-01, -6.24557568e-01,
+        -6.90684382e-01, -7.82450214e-01, -9.18028759e-01,
+        -1.12678184e+00, -1.42056580e+00],
+       [-4.51570734e-01, -4.74747245e-01, -5.01945146e-01,
+        -5.34464609e-01, -5.74276285e-01, -6.24523454e-01,
+        -6.90503562e-01, -7.81531480e-01, -9.13641275e-01,
+        -1.10778605e+00, -1.35126991e+00],
+       [-4.51570715e-01, -4.74747145e-01, -5.01944637e-01,
+        -5.34462035e-01, -5.74263502e-01, -6.24461420e-01,
+        -6.90211649e-01, -7.80215100e-01, -9.08063405e-01,
+        -1.08636471e+00, -1.28197402e+00],
+       [-4.51570660e-01, -4.74746887e-01, -5.01943444e-01,
+        -5.34456605e-01, -5.74239246e-01, -6.24355575e-01,
+        -6.89763875e-01, -7.78400133e-01, -9.01152273e-01,
+        -1.06251781e+00, -1.21267813e+00],
+       [-4.51570515e-01, -4.74746272e-01, -5.01940864e-01,
+        -5.34445941e-01, -5.74195969e-01, -6.24184038e-01,
+        -6.89104793e-01, -7.75974208e-01, -8.92765001e-01,
+        -1.03624537e+00, -1.14338223e+00],
+       [-4.51570166e-01, -4.74744915e-01, -5.01935651e-01,
+        -5.34426201e-01, -5.74122583e-01, -6.23917588e-01,
+        -6.88167132e-01, -7.72813523e-01, -8.82758712e-01,
+        -1.00754736e+00, -1.07408634e+00],
+       [-4.51569385e-01, -4.74742109e-01, -5.01925700e-01,
+        -5.34391431e-01, -5.74003332e-01, -6.23518179e-01,
+        -6.86870658e-01, -7.68782848e-01, -8.70990530e-01,
+        -9.76423809e-01, -1.00479045e+00],
+       [-4.51567734e-01, -4.74736610e-01, -5.01907597e-01,
+        -5.34332723e-01, -5.73816455e-01, -6.22937319e-01,
+        -6.85121022e-01, -7.63735521e-01, -8.57317576e-01,
+        -9.42874701e-01, -9.35494554e-01],
+       [-4.51564426e-01, -4.74726323e-01, -5.01876003e-01,
+        -5.34237136e-01, -5.73532609e-01, -6.22114310e-01,
+        -6.82808621e-01, -7.57513453e-01, -8.41596974e-01,
+        -9.06900040e-01, -8.66198661e-01],
+       [-4.51558086e-01, -4.74707848e-01, -5.01822825e-01,
+        -5.34086359e-01, -5.73113040e-01, -6.20974352e-01,
+        -6.79807452e-01, -7.49947124e-01, -8.23685847e-01,
+        -8.68499826e-01, -7.96902768e-01],
+       [-4.51546408e-01, -4.74675829e-01, -5.01736113e-01,
+        -5.33855050e-01, -5.72507477e-01, -6.19426512e-01,
+        -6.75973970e-01, -7.40855583e-01, -8.03441317e-01,
+        -8.27674058e-01, -7.27606875e-01],
+       [-4.51525640e-01, -4.74622064e-01, -5.01598643e-01,
+        -5.33508826e-01, -5.71651739e-01, -6.17361549e-01,
+        -6.71145938e-01, -7.30046452e-01, -7.80720507e-01,
+        -7.84422737e-01, -6.58310982e-01],
+       [-4.51489843e-01, -4.74534294e-01, -5.01386096e-01,
+        -5.33001847e-01, -5.70465023e-01, -6.14649610e-01,
+        -6.65141290e-01, -7.17315922e-01, -7.55380541e-01,
+        -7.38745863e-01, -5.89015089e-01],
+       [-4.51429851e-01, -4.74394585e-01, -5.01064773e-01,
+        -5.32273944e-01, -5.68846867e-01, -6.11137786e-01,
+        -6.57756980e-01, -7.02448753e-01, -7.27278540e-01,
+        -6.90643436e-01, -5.19719197e-01],
+       [-4.51331820e-01, -4.74177215e-01, -5.00588757e-01,
+        -5.31247233e-01, -5.66673761e-01, -6.06647526e-01,
+        -6.48767842e-01, -6.85218278e-01, -6.96271628e-01,
+        -6.40115456e-01, -4.50423304e-01],
+       [-4.51175268e-01, -4.73845932e-01, -4.99896422e-01,
+        -5.29822175e-01, -5.63795386e-01, -6.00971924e-01,
+        -6.37925445e-01, -6.65386397e-01, -6.62216927e-01,
+        -5.87161922e-01, -3.81127411e-01],
+       [-4.50930433e-01, -4.73350456e-01, -4.98906179e-01,
+        -5.27872994e-01, -5.60030473e-01, -5.93872859e-01,
+        -6.24956946e-01, -6.42703584e-01, -6.24971561e-01,
+        -5.31782835e-01, -3.11831518e-01],
+       [-4.50554779e-01, -4.72622055e-01, -4.97511360e-01,
+        -5.25242416e-01, -5.55162243e-01, -5.85078002e-01,
+        -6.09563951e-01, -6.16908880e-01, -5.84392652e-01,
+        -4.73978195e-01, -2.42535625e-01],
+       [-4.49988437e-01, -4.71568022e-01, -4.95574092e-01,
+        -5.21735651e-01, -5.48933434e-01, -5.74277690e-01,
+        -5.91421364e-01, -5.87729898e-01, -5.40337323e-01,
+        -4.13748002e-01, -1.73239732e-01],
+       [-4.49148311e-01, -4.70064831e-01, -4.92918028e-01,
+        -5.17113546e-01, -5.41040868e-01, -5.61121654e-01,
+        -5.70176249e-01, -5.54882822e-01, -4.92662697e-01,
+        -3.51092256e-01, -1.03943839e-01],
+       [-4.47920532e-01, -4.67949738e-01, -4.89319788e-01,
+        -5.11084845e-01, -5.31129568e-01, -5.45215618e-01,
+        -5.45446680e-01, -5.18072404e-01, -4.41225896e-01,
+        -2.86010957e-01, -3.46479464e-02],
+       [-4.46150923e-01, -4.65010553e-01, -4.84498932e-01,
+        -5.03297473e-01, -5.18786380e-01, -5.26117757e-01,
+        -5.16820602e-01, -4.76991968e-01, -3.85884044e-01,
+        -2.18504104e-01,  3.46479464e-02],
+       [-4.43633011e-01, -4.60973281e-01, -4.78106295e-01,
+        -4.93328776e-01, -5.03533098e-01, -5.03335016e-01,
+        -4.83854684e-01, -4.31323408e-01, -3.26494263e-01,
+        -1.48571698e-01,  1.03943839e-01],
+       [-4.40093118e-01, -4.55487286e-01, -4.69710486e-01,
+        -4.80674622e-01, -4.84819068e-01, -4.76319301e-01,
+        -4.46073173e-01, -3.80737188e-01, -2.62913676e-01,
+        -7.62137395e-02,  1.73239732e-01],
+       [-4.35171939e-01, -4.48107595e-01, -4.58782343e-01,
+        -4.64737294e-01, -4.62013247e-01, -4.44463517e-01,
+        -4.02966752e-01, -3.24892342e-01, -1.94999407e-01,
+        -1.43022735e-03,  2.42535625e-01],
+       [-4.28401952e-01, -4.38273928e-01, -4.44677116e-01,
+        -4.44812071e-01, -4.34395702e-01, -4.07097488e-01,
+        -3.53991397e-01, -2.63436476e-01, -1.22608577e-01,
+         7.57788380e-02,  3.11831518e-01],
+       [-4.19179897e-01, -4.25285966e-01, -4.26614151e-01,
+        -4.20072423e-01, -4.01148538e-01, -3.63483722e-01,
+        -2.98567230e-01, -1.96005764e-01, -4.55983098e-02,
+         1.55413456e-01,  3.81127411e-01],
+       [-4.06733459e-01, -4.08274358e-01, -4.03653801e-01,
+        -3.89553717e-01, -3.61346216e-01, -3.12813055e-01,
+        -2.36077376e-01, -1.22224952e-01,  3.61742720e-02,
+         2.37473628e-01,  4.50423304e-01],
+       [-3.90081174e-01, -3.86166876e-01, -3.74671306e-01,
+        -3.52135338e-01, -3.13945264e-01, -2.54200142e-01,
+        -1.65866816e-01, -4.17073557e-02,  1.22852045e-01,
+         3.21959353e-01,  5.19719197e-01],
+       [-3.67984439e-01, -3.57649112e-01, -3.38327344e-01,
+        -3.06521131e-01, -2.57773345e-01, -1.86678824e-01,
+        -8.72412479e-02,  4.59451396e-02,  2.14577888e-01,
+         4.08870631e-01,  5.89015089e-01],
+       [-3.38890377e-01, -3.21119011e-01, -2.93034947e-01,
+        -2.51218052e-01, -1.91517670e-01, -1.09197354e-01,
+         5.34061721e-04,  1.41142077e-01,  3.11494676e-01,
+         4.98207462e-01,  6.58310982e-01],
+       [-3.00864144e-01, -2.74634512e-01, -2.36922456e-01,
+        -1.84512937e-01, -1.13712744e-01, -2.06134791e-02,
+         9.82354210e-02,  2.44304431e-01,  4.13745288e-01,
+         5.89969846e-01,  7.27606875e-01],
+       [-2.51509103e-01, -2.15853466e-01, -1.67792168e-01,
+        -1.04447268e-01, -2.27274078e-02,  8.03106034e-02,
+         2.06681857e-01,  3.55864604e-01,  5.21472600e-01,
+         6.84157784e-01,  7.96902768e-01],
+       [-1.87873098e-01, -1.41964957e-01, -8.30743082e-02,
+        -8.78982265e-03,  8.32488271e-02,  1.94913435e-01,
+         3.26736260e-01,  4.76266428e-01,  6.34819489e-01,
+         7.80771275e-01,  8.66198661e-01],
+       [-1.06338869e-01, -4.96110640e-02,  2.02240515e-02,
+         1.04992888e-01,  2.06220175e-01,  3.24639619e-01,
+         4.59306528e-01,  6.05965167e-01,  7.53928834e-01,
+         8.79810319e-01,  9.35494554e-01],
+       [-2.49643730e-03,  6.52019706e-02,  1.45575543e-01,
+         2.39768535e-01,  3.48399725e-01,  4.71045281e-01,
+         6.05346710e-01,  7.45427513e-01,  8.78943510e-01,
+         9.81274916e-01,  1.00479045e+00],
+       [ 1.29004954e-01,  2.07204286e-01,  2.96994943e-01,
+         3.98773349e-01,  5.12225361e-01,  6.35803666e-01,
+         7.65858153e-01,  8.95131587e-01,  1.01000640e+00,
+         1.08516507e+00,  1.07408634e+00],
+       [ 2.94628003e-01,  3.81975864e-01,  4.79107950e-01,
+         5.85649077e-01,  7.00376467e-01,  8.20710876e-01,
+         9.41890643e-01,  1.05556694e+00,  1.14726037e+00,
+         1.19148077e+00,  1.14338223e+00],
+       [ 5.02144550e-01,  5.96074200e-01,  6.97226779e-01,
+         8.04482658e-01,  9.15791446e-01,  1.02769174e+00,
+         1.13454355e+00,  1.22723456e+00,  1.29084830e+00,
+         1.30022203e+00,  1.21267813e+00],
+       [ 7.60862016e-01,  8.57177583e-01,  9.57433060e-01,
+         1.05984875e+00,  1.16168606e+00,  1.25880581e+00,
+         1.34496698e+00,  1.41064685e+00,  1.44091308e+00,
+         1.41138884e+00,  1.28197402e+00],
+       [ 1.08188264e+00,  1.17424545e+00,  1.26666856e+00,
+         1.35685520e+00,  1.44157263e+00,  1.51625355e+00,
+         1.57436289e+00,  1.60632765e+00,  1.59759757e+00,
+         1.52498120e+00,  1.35126991e+00],
+       [ 1.47839937e+00,  1.55769746e+00,  1.63283424e+00,
+         1.70119168e+00,  1.75928006e+00,  1.80238255e+00,
+         1.82398629e+00,  1.81481224e+00,  1.76104466e+00,
+         1.64099911e+00,  1.42056580e+00],
+       [ 1.96603258e+00,  2.01961291e+00,  2.06489834e+00,
+         2.09918153e+00,  2.11897482e+00,  2.11969402e+00,
+         2.09514633e+00,  2.03664731e+00,  1.93139722e+00,
+         1.75944258e+00,  1.48986170e+00],
+       [ 2.56321233e+00,  2.57395238e+00,  2.57301382e+00,
+         2.55783700e+00,  2.52518276e+00,  2.47084929e+00,
+         2.38920747e+00,  2.27239100e+00,  2.10879813e+00,
+         1.88031161e+00,  1.55915759e+00],
+       [ 3.29161100e+00,  3.23680354e+00,  3.16864609e+00,
+         3.08491801e+00,  2.98281189e+00,  2.85867654e+00,
+         2.70759061e+00,  2.52261286e+00,  2.29339027e+00,
+         2.00360618e+00,  1.62845348e+00],
+       [ 4.17663195e+00,  4.02665312e+00,  3.86471144e+00,
+         3.68899469e+00,  3.49717607e+00,  3.28617760e+00,
+         3.05177426e+00,  2.78789388e+00,  2.48531651e+00,
+         2.12932631e+00,  1.69774938e+00]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we just confirm we have standardized all the columns. The only one that stands out is the column of ones, which does not have unit standard deviation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">Z</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-0. -0.  0.  0.  0. -0.  0.  0.  0. -0.  0.] [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We similarly standardize the y data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ymean</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">ystd</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">ymean</span><span class="p">)</span> <span class="o">/</span> <span class="n">ystd</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To get an estimate of the parameters we have to specify a value of λ. If we set λ=0, we have regular linear regression. If we set λ=∞, all the weights will go to zero. We need something in between. It is a good idea to try several values of λ from a very small value to a large value, on a log scale.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lambdas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">1e-13</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;lambda     &#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;x^</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">&lt;11d</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="k">for</span> <span class="n">lam</span> <span class="ow">in</span> <span class="n">lambdas</span><span class="p">:</span>
+    <span class="n">l2p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">Z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">p</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">l2p</span><span class="p">):]</span> <span class="o">=</span> <span class="n">l2p</span>
+    <span class="c1"># This way of printing is to get columnar output</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">lam</span><span class="si">:</span><span class="s1">6.2g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">j</span><span class="si">:</span><span class="s1"> 8.2f</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">Z</span> <span class="o">@</span> <span class="n">l2p</span><span class="p">)</span> <span class="o">*</span> <span class="n">ystd</span> <span class="o">+</span> <span class="n">ymean</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">lam</span><span class="si">:</span><span class="s1">1.2g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lambda      x^11         x^10         x^9          x^8          x^7          x^6          x^5          x^4          x^3          x^2          x^1          
+     0 -34043.54 190691.01-464362.98 645651.76-566688.59 328402.49-128144.25 33874.94-6032.60  691.22  -40.28
+ 1e-13 -13149.13 64363.30-129320.28 133383.30-67613.99 5161.66 12758.58-7038.91 1606.47 -156.63    4.82
+3.2e-10 -1054.80 3732.42-3866.47 -865.34 3642.53 -286.76-3426.18 3217.32-1354.26  284.92  -24.21
+ 1e-06   -11.38    6.95   17.29    8.03  -18.81  -29.90   13.53   55.80  -61.16   19.93   -1.06
+0.0032    -0.28   -0.10    0.10    0.32    0.54    0.63    0.39   -0.43   -1.76   -2.04    1.87
+    10     0.11    0.08    0.04   -0.01   -0.06   -0.11   -0.17   -0.22   -0.25   -0.22   -0.06
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x10c408550&gt;
+</pre></div>
+</div>
+<img alt="../_images/e60a628048323f482db554d53f0b2d75ba802a3939a2662cc913a724707c04c5.png" src="../_images/e60a628048323f482db554d53f0b2d75ba802a3939a2662cc913a724707c04c5.png" />
+</div>
+</div>
+<p>One way people have evaluated a reasonable value of λ is to look at how the coefficients vary with λ using a <em>ridge plot</em>. In this plot, you look for a range that balances the large swings associated with regular unconstrained regression and the damping caused by large values of λ. Here a value of <span class="math notranslate nohighlight">\(10^{-6} \le \lambda \le 10^{-8}\)</span> would be considered reasonable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lambdas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>
+
+<span class="n">pars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">11</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lambdas</span><span class="p">)))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lam</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lambdas</span><span class="p">):</span>
+    <span class="n">l2p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">Z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">pars</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">l2p</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">pars</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\lambda$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;parameters&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;parameters&#39;)
+</pre></div>
+</div>
+<img alt="../_images/30b53da730c41f82569b873192c3062def126039aa84d2eccd3313e6c02a0508.png" src="../_images/30b53da730c41f82569b873192c3062def126039aa84d2eccd3313e6c02a0508.png" />
+</div>
+</div>
+</section>
+<section id="lasso-regression">
+<h3>LASSO regression<a class="headerlink" href="#lasso-regression" title="Permalink to this heading">#</a></h3>
+<p>In LASSO regression, we seek to minimize the summed squared errors <em>plus</em> the sum of the absolute value of the parameters. Unlike linear least squares regression and ridge regression, there is no analytical solution to get the parameters; they can only be obtained numerically using an iterative solver. We again have a parameter λ we have to choose. Setting this parameter to zero will be equivalent to normal linear regression. Setting this parameter to infinity will again cause all coefficients to go to zero. We again have to find a balance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.   , 0.   , 0.   , 0.   , 0.   , 0.001, 0.002, 0.008, 0.027,
+       0.09 , 0.3  ])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="n">SSE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="p">((</span><span class="n">Z</span> <span class="o">@</span> <span class="n">pars</span><span class="p">)</span> <span class="o">*</span> <span class="n">ystd</span> <span class="o">+</span> <span class="n">ymean</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">SSE</span> <span class="o">+</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pars</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">pars</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.002</span><span class="p">,),</span>
+               <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nelder-mead&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">}</span>
+              <span class="p">)</span>
+              
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># prints small numbers as practically zero</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">Z</span> <span class="o">@</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">ystd</span> <span class="o">+</span> <span class="n">ymean</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimization terminated successfully. [-1136.619  4326.498 -5793.292  2495.305   965.232  -963.678    42.783
+    -0.      110.263   -56.924     9.691]
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x110a2b080&gt;]
+</pre></div>
+</div>
+<img alt="../_images/79ebab9437e0e1f8cdf5f05254fe9360076cf8808fd6849660a560478c6e7a8b.png" src="../_images/79ebab9437e0e1f8cdf5f05254fe9360076cf8808fd6849660a560478c6e7a8b.png" />
+</div>
+</div>
+<p>Now, we can explore the effect of λ more thoroughly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lambdas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;lambda     &#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;x^</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">&lt;11d</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="k">for</span> <span class="n">lam</span> <span class="ow">in</span> <span class="n">lambdas</span><span class="p">:</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="p">(</span><span class="n">lam</span><span class="p">,),</span>
+                   <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">})</span>
+
+    <span class="c1"># This way of printing is to get columnar output</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">lam</span><span class="si">:</span><span class="s1">8.2g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">j</span><span class="si">:</span><span class="s1"> 9.2f</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">Z</span> <span class="o">@</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">ystd</span> <span class="o">+</span> <span class="n">ymean</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">lam</span><span class="si">:</span><span class="s1">1.2g</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lambda      x^11         x^10         x^9          x^8          x^7          x^6          x^5          x^4          x^3          x^2          x^1          
+       0    -25.23    30.61    24.12   -10.35   -33.44   -17.15    30.64    37.80   -56.92    20.40    -1.27
+   1e-05     62.83  -145.15    -6.82   185.23    16.40  -169.17   -91.99   306.09  -213.54    60.76    -5.41
+ 0.00032      0.00     0.00    -0.00    -0.00    -0.00    -0.00     0.90     3.42    -6.69    -0.00     1.60
+    0.01     -0.09     0.00     0.00    -0.00     0.51     0.58     0.32     0.00    -1.80    -2.20     1.90
+    0.32      0.34     0.15     0.11     0.00    -0.00     0.09    -0.02    -0.85    -0.54    -0.87     0.78
+      10      0.00     0.00    -0.00     0.00    -0.00    -0.00    -0.02    -0.07    -0.02    -0.63    -0.00
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x110c4f048&gt;
+</pre></div>
+</div>
+<img alt="../_images/838e52ce96f8f0971a32a2848e974cbf5069075cd0326e09c240b49e0b6ee3a6.png" src="../_images/838e52ce96f8f0971a32a2848e974cbf5069075cd0326e09c240b49e0b6ee3a6.png" />
+</div>
+</div>
+<p>You can see that by increasing λ we are making more and more of the parameters go to zero; in other words the functions they correspond to are not part of the model any longer. This is called sparsifying the model. It reduces over-fitting by reducing the model complexity. Finding the most suitable value for λ requires some sophisticated programming and analysis, and it is an important topic in machine learning and data science.</p>
+<p>LASSO has some important benefits, and some disadvantanges. The benefits include sparsification of the model; the method removes inputs that are not needed, or that are highly correlated with other inputs. This can make models more interpretable as there are fewer terms, and the terms are more independent.</p>
+<p>The disadvantages, however, are that we cannot use linear algebra to find the parameters. The penalty imposes a nonlinear behavior to the objective function, so we must use an iterative solver. For features that are correlated, we have no control over which feature is eliminated. Different initial guesses may lead to different feature elimination. If the features are really correlated, this will not affect the fit quality, but it will mean some models favor one feature over another. This is less of a problem in polynomial models, but often a problem in models based on physical properties that are correlated, e.g. high melting points of materials tend to be correlated with how hard they are. With LASSO, one model could favor the melting point and another could favor the hardness.</p>
+</section>
+<section id="advanced-selection-of">
+<h3>Advanced selection of λ<a class="headerlink" href="#advanced-selection-of" title="Permalink to this heading">#</a></h3>
+<p>A more advanced way to select a value of λ is called k-fold validation. It is complex to code this, and the standard method to do it is in <a class="reference external" href="https://scikit-learn.org/stable/index.html">scikit-learn</a>, see specifically the <a class="reference external" href="https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression">ridge regression example</a> and the  <a class="reference external" href="https://scikit-learn.org/stable/modules/linear_model.html#lasso">LASSO example</a>. The basic idea is that you split your data set into <span class="math notranslate nohighlight">\(k\)</span> <em>folds</em>, and then you fit <span class="math notranslate nohighlight">\(k-1\)</span> folds to get the paramters. On the remaining fold (which was not used for fitting) you estimate the model errors. Initially with no regularization, the errors will be high due to overfitting. As you add regularization, the errors will begin decrease. Eventually though, the model will start underfitting, and the errors will go back up. The λ that provides the lowest test errors is usually considered the best choice.</p>
+<p>We will not cover these more advanced methods as they rely on learning the scikit-learn API in depth, and some other higher level Python libraries we have not covered like Pandas. These are more appropriate in a data science/machine learning focused course.</p>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>In this lecture we introduced the concept of linear regression. In the normal linear regression, we simply solve linear equations that ultimately minimize the summed squared errors between the model and data. With some additional linear algebra, we can also estimate the confidence intervals on the parameters.</p>
+<p>One issue with normal linear regression is that the parameters are unconstrained, which can lead to some functions having undesirably large parameters. We introduced two types of <em>regularization</em> to mitigate this issue: ridge regression and LASSO regression. In both cases, a penalty function is added to the objective function being minimized. In ridge regression the penalty is an L2 norm on the parameters which penalizes large parameters, leading to a reduction in their magnitude. In LASSO reduction the penalty is an L1 norm, which drives parameters towards zero. Both methods rely on a hyperparameter λ that determines how much regularization is applied. With both regularization approaches we have to use some judgment in how much regularization to apply (the magnitude of λ), and we only provided a heuristic approach to doing this.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="17-linear-algebra-2.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Interpolation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="20-autograd-applications.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Introduction to automatic differentiation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-example-of-polynomial-fitting">An example of polynomial fitting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-intervals-on-the-parameters">Confidence intervals on the parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ridge-regression">Ridge regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lasso-regression">LASSO regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-selection-of">Advanced selection of λ</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

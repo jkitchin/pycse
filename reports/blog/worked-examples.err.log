@@ -1,0 +1,73 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import numpy as np
+import matplotlib.pyplot as plt
+
+w, i = np.loadtxt('../../data/raman.txt', usecols=(0, 1), unpack=True)
+
+plt.plot(w, i)
+plt.xlabel('Raman shift (cm$^{-1}$)')
+plt.ylabel('Intensity (counts)');
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
+Cell [0;32mIn[1], line 4[0m
+[1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+[1;32m      2[0m [38;5;28;01mimport[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mas[39;00m [38;5;21;01mplt[39;00m
+[0;32m----> 4[0m w, i [38;5;241m=[39m [43mnp[49m[38;5;241;43m.[39;49m[43mloadtxt[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m../../data/raman.txt[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43musecols[49m[38;5;241;43m=[39;49m[43m([49m[38;5;241;43m0[39;49m[43m,[49m[43m [49m[38;5;241;43m1[39;49m[43m)[49m[43m,[49m[43m [49m[43munpack[49m[38;5;241;43m=[39;49m[38;5;28;43;01mTrue[39;49;00m[43m)[49m
+[1;32m      6[0m plt[38;5;241m.[39mplot(w, i)
+[1;32m      7[0m plt[38;5;241m.[39mxlabel([38;5;124m'[39m[38;5;124mRaman shift (cm$^[39m[38;5;124m{[39m[38;5;124m-1}$)[39m[38;5;124m'[39m)
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/lib/npyio.py:1356[0m, in [0;36mloadtxt[0;34m(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)[0m
+[1;32m   1353[0m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(delimiter, [38;5;28mbytes[39m):
+[1;32m   1354[0m     delimiter [38;5;241m=[39m delimiter[38;5;241m.[39mdecode([38;5;124m'[39m[38;5;124mlatin1[39m[38;5;124m'[39m)
+[0;32m-> 1356[0m arr [38;5;241m=[39m [43m_read[49m[43m([49m[43mfname[49m[43m,[49m[43m [49m[43mdtype[49m[38;5;241;43m=[39;49m[43mdtype[49m[43m,[49m[43m [49m[43mcomment[49m[38;5;241;43m=[39;49m[43mcomment[49m[43m,[49m[43m [49m[43mdelimiter[49m[38;5;241;43m=[39;49m[43mdelimiter[49m[43m,[49m
+[1;32m   1357[0m [43m            [49m[43mconverters[49m[38;5;241;43m=[39;49m[43mconverters[49m[43m,[49m[43m [49m[43mskiplines[49m[38;5;241;43m=[39;49m[43mskiprows[49m[43m,[49m[43m [49m[43musecols[49m[38;5;241;43m=[39;49m[43musecols[49m[43m,[49m
+[1;32m   1358[0m [43m            [49m[43munpack[49m[38;5;241;43m=[39;49m[43munpack[49m[43m,[49m[43m [49m[43mndmin[49m[38;5;241;43m=[39;49m[43mndmin[49m[43m,[49m[43m [49m[43mencoding[49m[38;5;241;43m=[39;49m[43mencoding[49m[43m,[49m
+[1;32m   1359[0m [43m            [49m[43mmax_rows[49m[38;5;241;43m=[39;49m[43mmax_rows[49m[43m,[49m[43m [49m[43mquote[49m[38;5;241;43m=[39;49m[43mquotechar[49m[43m)[49m
+[1;32m   1361[0m [38;5;28;01mreturn[39;00m arr
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/lib/npyio.py:975[0m, in [0;36m_read[0;34m(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)[0m
+[1;32m    973[0m     fname [38;5;241m=[39m os[38;5;241m.[39mfspath(fname)
+[1;32m    974[0m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(fname, [38;5;28mstr[39m):
+[0;32m--> 975[0m     fh [38;5;241m=[39m [43mnp[49m[38;5;241;43m.[39;49m[43mlib[49m[38;5;241;43m.[39;49m[43m_datasource[49m[38;5;241;43m.[39;49m[43mopen[49m[43m([49m[43mfname[49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mrt[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mencoding[49m[38;5;241;43m=[39;49m[43mencoding[49m[43m)[49m
+[1;32m    976[0m     [38;5;28;01mif[39;00m encoding [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m    977[0m         encoding [38;5;241m=[39m [38;5;28mgetattr[39m(fh, [38;5;124m'[39m[38;5;124mencoding[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mlatin1[39m[38;5;124m'[39m)
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/lib/_datasource.py:193[0m, in [0;36mopen[0;34m(path, mode, destpath, encoding, newline)[0m
+[1;32m    156[0m [38;5;250m[39m[38;5;124;03m"""[39;00m
+[1;32m    157[0m [38;5;124;03mOpen `path` with `mode` and return the file object.[39;00m
+[1;32m    158[0m 
+[0;32m   (...)[0m
+[1;32m    189[0m 
+[1;32m    190[0m [38;5;124;03m"""[39;00m
+[1;32m    192[0m ds [38;5;241m=[39m DataSource(destpath)
+[0;32m--> 193[0m [38;5;28;01mreturn[39;00m [43mds[49m[38;5;241;43m.[39;49m[43mopen[49m[43m([49m[43mpath[49m[43m,[49m[43m [49m[43mmode[49m[43m,[49m[43m [49m[43mencoding[49m[38;5;241;43m=[39;49m[43mencoding[49m[43m,[49m[43m [49m[43mnewline[49m[38;5;241;43m=[39;49m[43mnewline[49m[43m)[49m
+
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/lib/_datasource.py:530[0m, in [0;36mDataSource.open[0;34m(self, path, mode, encoding, newline)[0m
+[1;32m    528[0m     [38;5;28;01mif[39;00m ext [38;5;241m==[39m [38;5;124m'[39m[38;5;124mbz2[39m[38;5;124m'[39m:
+[1;32m    529[0m         mode[38;5;241m.[39mreplace([38;5;124m"[39m[38;5;124m+[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124m"[39m)
+[0;32m--> 530[0m     [38;5;28;01mreturn[39;00m [43m_file_openers[49m[43m[[49m[43mext[49m[43m][49m[43m([49m[43mfound[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m,[49m
+[1;32m    531[0m [43m                              [49m[43mencoding[49m[38;5;241;43m=[39;49m[43mencoding[49m[43m,[49m[43m [49m[43mnewline[49m[38;5;241;43m=[39;49m[43mnewline[49m[43m)[49m
+[1;32m    532[0m [38;5;28;01melse[39;00m:
+[1;32m    533[0m     [38;5;28;01mraise[39;00m [38;5;167;01mFileNotFoundError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;132;01m{[39;00mpath[38;5;132;01m}[39;00m[38;5;124m not found.[39m[38;5;124m"[39m)
+
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '../../data/raman.txt'
+

@@ -1,0 +1,1167 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Systems of first-order differential equations &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/04-fode-2';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Nth differential equations" href="05-nth-odes.html" />
+    <link rel="prev" title="First-order differential equations" href="03-fode-1.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Special nonlinear systems - polynomials</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/04-fode-2.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/04-fode-2.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/04-fode-2.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Systems of first-order differential equations</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#families-of-solutions-to-fodes">Families of solutions to FODEs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Systems of first-order differential equations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brief-review">Brief review</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predator-prey-model-example">Predator-prey model example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qualitative-method-for-systems-of-odes">Qualitative method for systems of ODEs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="systems-of-first-order-differential-equations">
+<h1>Systems of first-order differential equations<a class="headerlink" href="#systems-of-first-order-differential-equations" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: solve_ivp, meshgrid, quiver</p></li>
+</ul>
+<section id="families-of-solutions-to-fodes">
+<h2>Families of solutions to FODEs<a class="headerlink" href="#families-of-solutions-to-fodes" title="Permalink to this heading">#</a></h2>
+<p>Consider <span class="math notranslate nohighlight">\(y' = x - y\)</span>.</p>
+<p>We can interpret this equation as one that defines a direction field. That is, at any given point (x, y) we can compute the derivative of a solution at that point. We will consider how to make a plot that shows this field, and that will help us estimate what solutions to the ODE might look like for different initial values.</p>
+<p>To do this, we should compute the derivative on an array of regularly spaced points in both <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, and then making a plot of that data.</p>
+<p>We need to see a couple of new ideas to make this plot efficiently. What we want is a 2-d plot of a regular grid of (x, y) points, and at each of those points the derivative (dx/dx, dy/dx).</p>
+<p>First, we will need to create four arrays:</p>
+<ol class="arabic simple">
+<li><p>a 2d array of all the x-positions</p></li>
+<li><p>a 2d array of all the y-positions</p></li>
+<li><p>a 2d array of the dx/dx = 1 values</p></li>
+<li><p>a 2d array of the dy/dx values.</p></li>
+</ol>
+<p>We want to generate the x, y arrays. We use <code class="docutils literal notranslate"><span class="pre">np.meshgrid</span></code> for this. The simplest way to do it is to use <code class="docutils literal notranslate"><span class="pre">np.linspace</span></code> to create 1-D arrays with the spacing we want, and then use <code class="docutils literal notranslate"><span class="pre">np.meshgrid</span></code> to generate the 2D arrays. Let’s say we want a uniform grid over the range of x from 0 to 1, and over the range of y from 0 to 3, with 5 points in each direction.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># 1d arrays</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># 1d arrays</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>   <span class="c1"># 2d arrays</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([[0.  , 0.25, 0.5 , 0.75, 1.  ],
+        [0.  , 0.25, 0.5 , 0.75, 1.  ],
+        [0.  , 0.25, 0.5 , 0.75, 1.  ],
+        [0.  , 0.25, 0.5 , 0.75, 1.  ],
+        [0.  , 0.25, 0.5 , 0.75, 1.  ]]),
+ array([[0.  , 0.  , 0.  , 0.  , 0.  ],
+        [0.75, 0.75, 0.75, 0.75, 0.75],
+        [1.5 , 1.5 , 1.5 , 1.5 , 1.5 ],
+        [2.25, 2.25, 2.25, 2.25, 2.25],
+        [3.  , 3.  , 3.  , 3.  , 3.  ]]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we have X, Y arrays that map out all the (x, y) pairs we want to consider. So, the (x, y) pair in the second row and third column of the array is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.5, 0.75)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.25, 0.25, 0.25, 0.25, 0.25])
+</pre></div>
+</div>
+</div>
+</div>
+<p>These are arrays, so we can do math with them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">-</span> <span class="n">Y</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.  ,  0.25,  0.5 ,  0.75,  1.  ],
+       [-0.75, -0.5 , -0.25,  0.  ,  0.25],
+       [-1.5 , -1.25, -1.  , -0.75, -0.5 ],
+       [-2.25, -2.  , -1.75, -1.5 , -1.25],
+       [-3.  , -2.75, -2.5 , -2.25, -2.  ]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Another example of math</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.        , 0.25      , 0.5       , 0.75      , 1.        ],
+       [0.75      , 0.79056942, 0.90138782, 1.06066017, 1.25      ],
+       [1.5       , 1.52069063, 1.58113883, 1.67705098, 1.80277564],
+       [2.25      , 2.26384628, 2.30488611, 2.37170825, 2.46221445],
+       [3.        , 3.01039864, 3.04138127, 3.09232922, 3.16227766]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="o">**</span><span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1., 1., 1., 1., 1.],
+       [1., 1., 1., 1., 1.],
+       [1., 1., 1., 1., 1.],
+       [1., 1., 1., 1., 1.],
+       [1., 1., 1., 1., 1.]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we are ready to compute a distance field for the FODE. We will consider the range from -1 to 1 in both x and y, and then plot the results with <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.quiver</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Review the documentation for this function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>plt.quiver
+</pre></div>
+</div>
+</div>
+</div>
+<p>We define the ode function, create the grids, and then make the plot.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">yprime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># dx/dx</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">yprime</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>  <span class="c1"># dy/dx</span>
+
+<span class="c1"># This normalizes the arrows so they are all the same length</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">U</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">U</span> <span class="o">/=</span> <span class="n">N</span>  <span class="c1"># equivalent to U = U / N</span>
+<span class="n">V</span> <span class="o">/=</span> <span class="n">N</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a70006af1069930afcb935b24b5475675772815f0b8d2b802d09dc5eff216c71.png" src="../_images/a70006af1069930afcb935b24b5475675772815f0b8d2b802d09dc5eff216c71.png" />
+</div>
+</div>
+<p>If you pick a point, the arrows show you which way the solution goes from there. You just follow the arrows to get an approximate solution to this equation. Let’s consider some specific solutions. Suppose we start with the initial condition that <span class="math notranslate nohighlight">\(y(-1) = 0\)</span>. You can trace the arrows to estimate where the solution goes.</p>
+<p>Let us use a numerical solver to see how it works.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">yprime</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">message</span>  <span class="c1"># you should at least check this message to see if it worked.</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;The solver successfully reached the end of the integration interval.&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we plot the solution</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ks&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y&#39;)
+</pre></div>
+</div>
+<img alt="../_images/56bd6603a2a1efa928ae9fd8c092888c789229a10cdd14b427e09cdee7aebd0f.png" src="../_images/56bd6603a2a1efa928ae9fd8c092888c789229a10cdd14b427e09cdee7aebd0f.png" />
+</div>
+</div>
+<p>Here are some more examples.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol2</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">yprime</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,),</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">sol3</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">yprime</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,),</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">sol4</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">yprime</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol2</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol2</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol3</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol3</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol4</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol4</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># overlay the direction field</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c2ec6cc7fa8d1b6ea23175f3346d745114e4ed32af1b02fca4dc4f0a72a83f0b.png" src="../_images/c2ec6cc7fa8d1b6ea23175f3346d745114e4ed32af1b02fca4dc4f0a72a83f0b.png" />
+</div>
+</div>
+<p>You can see the solution looks different depending on the initial condition, but in each case the solution follows the direction field.</p>
+<p>Direction field plots can be very helpful to visualize what nearby solutions might look like, or to get a qualitative idea of what a solution might look like, or to see if anything unusual happens in the solution space. We will see them again when we consider systems of differential equations.</p>
+<p><strong>Exercise:</strong> Make a direction field plot for <span class="math notranslate nohighlight">\(y'=-y\)</span> for the range of x from 0 to 4. What does the direction field tell you? How does this compare to what you know from the solution?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
+<span class="n">U</span> <span class="o">=</span> <span class="n">X1</span><span class="o">**</span><span class="mi">0</span>
+<span class="n">V</span> <span class="o">=</span> <span class="o">-</span><span class="n">Y1</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">U</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">U</span> <span class="o">/=</span> <span class="n">N</span>
+<span class="n">V</span> <span class="o">/=</span> <span class="n">N</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.quiver.Quiver at 0x7f952916e220&gt;
+</pre></div>
+</div>
+<img alt="../_images/9020cf4ee479f9d922c30e3dfeefe5d26c2579825619e79564e14ba63593c8de.png" src="../_images/9020cf4ee479f9d922c30e3dfeefe5d26c2579825619e79564e14ba63593c8de.png" />
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>Systems of first-order differential equations<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>Many engineering systems are governed by <em>systems of coupled</em> differential equations. This usually means there are two or more independent variables and outputs, and the rate of change of the outputs depends on two or more of the independent variables.</p>
+<p>Let’s consider the following tank mixing problem. You have two tanks: Tank A has 30 gallons containing 55 ounces of dissolved salt, and Tank B has 20 gallons containing 26 ounces of salt. Additionally,</p>
+<ul class="simple">
+<li><p>Water with a salt concentration of 1 oz/gal flows into Tank A at a rate of 1.5 gal/min.</p></li>
+<li><p>Water with a salt concentration of 3 oz/gal flows into Tank B at a rate of 1 gal/min</p></li>
+<li><p>Water flows from Tank A to Tank B at a rate of 3 gal/min.</p></li>
+<li><p>Water flows from Tank B to Tank A at a rate of 1.5 gal/min</p></li>
+<li><p>Water drains from Tank B at a rate of 2.5 gal/min.</p></li>
+</ul>
+<p><img alt="two-tank-mixing.png" src="book/attachment:two-tank-mixing.png" /></p>
+<p>Plot the concentration of salt in Tank A and B as a function of time.</p>
+<p>First, we can define initial conditions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">V_A</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># gal</span>
+<span class="n">V_B</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1"># gal</span>
+
+<span class="n">S_A0</span> <span class="o">=</span> <span class="mi">55</span> <span class="o">/</span> <span class="n">V_A</span> <span class="c1"># oz/gallon in Tank A at T=0</span>
+<span class="n">S_B0</span> <span class="o">=</span> <span class="mi">26</span> <span class="o">/</span> <span class="n">V_B</span> <span class="c1"># oz/gallon in Tank B at T=0</span>
+
+<span class="n">S_A0</span><span class="p">,</span> <span class="n">S_B0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1.8333333333333333, 1.3)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, let’s define the flow rates and check the net volumetric flow into each tank.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_A</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="c1"># volumetric flow into A gal/min</span>
+<span class="n">C_A</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># salt concentration in flow oz/gal</span>
+
+<span class="n">f_B</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># volumetric flow into B, gal/min</span>
+<span class="n">C_B</span> <span class="o">=</span> <span class="mi">3</span>   <span class="c1"># salt concentration into B, oz/gal</span>
+
+<span class="n">f_AB</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># flow from A to B, gal/min</span>
+<span class="n">f_BA</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="c1"># flow from B to A, gal/min</span>
+
+<span class="n">f_Bexit</span> <span class="o">=</span> <span class="mf">2.5</span>  <span class="c1"># flow out of B</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Net flow into A = </span><span class="si">{</span><span class="n">f_A</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f_AB</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">f_BA</span><span class="si">}</span><span class="s1"> gal/min&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Net flow into B = </span><span class="si">{</span><span class="n">f_B</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">f_AB</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f_BA</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f_Bexit</span><span class="si">}</span><span class="s1"> gal/min&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Net flow into A = 0.0 gal/min
+Net flow into B = 0.0 gal/min
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can see the net volumetric flow in each tank is 0, so we do not have to worry about the volumes changing.</p>
+<p>We seek solutions for <span class="math notranslate nohighlight">\(S_A(t)\)</span> and <span class="math notranslate nohighlight">\(S_B(t)\)</span> where <span class="math notranslate nohighlight">\(S_x(t)\)</span> represents the concentration (in oz/gal). Since these change with time, we need to solve the mass balances:</p>
+<p><span class="math notranslate nohighlight">\(\frac{dS_A}{dt} = \frac{1}{V_A}(f_A C_A - f_{AB} S_A(t) + f_{BA} S_B(t))\)</span></p>
+<p>and</p>
+<p><span class="math notranslate nohighlight">\(\frac{dS_B}{dt} = \frac{1}{V_B}(f_B C_B + f_{AB} S_A(t) - F_{BA} S_B(t) - F_{Bexit} S_B(t))\)</span></p>
+<p>Before we get into the solution, what should we expect to happen here? The concentration of salt into tank A is less than the initial concentration, and the initial concentration in Tank B is also lower than in Tank A, so we expect the concentration in Tank A to start decreasing. Similarly, we expect the concentration in Tank B to start rising since the concentration in each incoming stream is higher than the initial concentration.</p>
+<p>At some point, the two tanks will reach a steady state, but it is not evident how we will approach that steady state. Since the concentration of one stream is higher than all the other concentrations, it is possible for the concentration to go up and then down.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dSdt</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+    <span class="n">S_A</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">S_B</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># split out for readability</span>
+    <span class="n">dSadt</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_A</span> <span class="o">*</span> <span class="n">C_A</span> <span class="o">-</span> <span class="n">f_AB</span> <span class="o">*</span> <span class="n">S_A</span> <span class="o">+</span> <span class="n">f_BA</span> <span class="o">*</span> <span class="n">S_B</span><span class="p">)</span> <span class="o">/</span> <span class="n">V_A</span>
+    <span class="n">dSbdt</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_B</span> <span class="o">*</span> <span class="n">C_B</span> <span class="o">+</span> <span class="n">f_AB</span> <span class="o">*</span> <span class="n">S_A</span> <span class="o">-</span> <span class="n">f_BA</span> <span class="o">*</span> <span class="n">S_B</span> <span class="o">-</span> <span class="n">f_Bexit</span> <span class="o">*</span> <span class="n">S_B</span><span class="p">)</span> <span class="o">/</span> <span class="n">V_B</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dSadt</span><span class="p">,</span> <span class="n">dSbdt</span><span class="p">])</span>
+
+<span class="n">dSdt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.8</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.03,  0.02])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+
+<span class="n">S0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">S_A0</span><span class="p">,</span> <span class="n">S_B0</span><span class="p">])</span>  <span class="c1"># initial conditions</span>
+<span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+
+<span class="c1"># there is a new syntax here. *tspan means to &quot;unpack&quot; tspan into this position</span>
+<span class="c1"># it is equivalent to:</span>
+<span class="c1"># teval = np.linspace(tspan[0], tspan[1], 100)</span>
+<span class="n">teval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">tspan</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">dSdt</span><span class="p">,</span> <span class="n">tspan</span><span class="p">,</span> <span class="n">S0</span><span class="p">,</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">teval</span><span class="p">)</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">message</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;The solver successfully reached the end of the integration interval.&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The shape of our solution is two rows by 50 columns.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2, 50)
+</pre></div>
+</div>
+</div>
+</div>
+<p>One way to plot these solutions is this, where we extract out each row of the solution:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">V_A</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tank A&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">V_B</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tank B&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t (min)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mass of salt (oz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c1e5e0124e860015f47cb8a577198f32425828657e235cdb1e3a2d8fbe5c47ea.png" src="../_images/c1e5e0124e860015f47cb8a577198f32425828657e235cdb1e3a2d8fbe5c47ea.png" />
+</div>
+</div>
+<p>Another way is to convert the solution to an array where the data we want to plot is in columns. We can achieve this by <em>transposing</em> the array to convert it from 2 rows with 50 columns to 50 rows with 2 columns.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.83333333, 1.3       ],
+       [1.64695817, 1.71144196],
+       [1.56328585, 1.84203854],
+       [1.51939197, 1.87552988],
+       [1.49244192, 1.87631636],
+       [1.4734642 , 1.86796457],
+       [1.45940047, 1.85692514],
+       [1.44806492, 1.84752295],
+       [1.43920511, 1.83871313],
+       [1.43189836, 1.83177174],
+       [1.42587515, 1.82630199],
+       [1.42125427, 1.820987  ],
+       [1.41737466, 1.81698638],
+       [1.41353536, 1.81572909],
+       [1.41093864, 1.81311318],
+       [1.40976045, 1.80818399],
+       [1.40845254, 1.80520558],
+       [1.40621031, 1.80628913],
+       [1.40517716, 1.80478864],
+       [1.4044699 , 1.80316002],
+       [1.40334083, 1.80348781],
+       [1.402842  , 1.80249061],
+       [1.40235092, 1.80193034],
+       [1.40162308, 1.80245462],
+       [1.40145916, 1.80159464],
+       [1.4015339 , 1.80026888],
+       [1.40085462, 1.80140733],
+       [1.4005072 , 1.80171624],
+       [1.40096288, 1.79975191],
+       [1.40078697, 1.79979238],
+       [1.39990787, 1.80203193],
+       [1.40028779, 1.80056815],
+       [1.40109182, 1.79789203],
+       [1.40008248, 1.80070447],
+       [1.39983766, 1.8012632 ],
+       [1.40084644, 1.79809363],
+       [1.40035133, 1.79946213],
+       [1.39990725, 1.80069907],
+       [1.40050318, 1.79883362],
+       [1.40020394, 1.79966799],
+       [1.39991442, 1.80048488],
+       [1.40031617, 1.79923755],
+       [1.40009526, 1.79986591],
+       [1.39978364, 1.80077275],
+       [1.40019437, 1.79951776],
+       [1.40027104, 1.79926913],
+       [1.39958516, 1.80131159],
+       [1.39985385, 1.80049314],
+       [1.40067115, 1.79803115],
+       [1.40032191, 1.79907064]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we can also multiply each row by the volumes to get the mass of salt in each tank.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="p">[</span><span class="n">V_A</span><span class="p">,</span> <span class="n">V_B</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t (min)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mass of salt (oz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Tank A&#39;</span><span class="p">,</span> <span class="s1">&#39;Tank B&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c1e5e0124e860015f47cb8a577198f32425828657e235cdb1e3a2d8fbe5c47ea.png" src="../_images/c1e5e0124e860015f47cb8a577198f32425828657e235cdb1e3a2d8fbe5c47ea.png" />
+</div>
+</div>
+<p>This works because you can plot an array where the values to be plotted are all in columns.</p>
+<section id="brief-review">
+<h3>Brief review<a class="headerlink" href="#brief-review" title="Permalink to this heading">#</a></h3>
+<p>For systems of first order differential equations, you need to:</p>
+<ol class="arabic simple">
+<li><p>Define a function <span class="math notranslate nohighlight">\(y'(t, y)\)</span> where <span class="math notranslate nohighlight">\(y\)</span> will be an array of values. The function must return an array that is the same shape as <span class="math notranslate nohighlight">\(y\)</span>. For example, if you have two equations, <span class="math notranslate nohighlight">\(y\)</span> will contain the two function values, and <span class="math notranslate nohighlight">\(y'\)</span> must return two derivative values.</p></li>
+<li><p>You also need two initial conditions, one for each function, at the same value of <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p>The solution from solve_ivp will return an array for the y-values, with each function in <em>a row</em> of that array. You can either extract the rows to plot them, or transpose the array and plot them all.</p></li>
+</ol>
+</section>
+<section id="predator-prey-model-example">
+<h3>Predator-prey model example<a class="headerlink" href="#predator-prey-model-example" title="Permalink to this heading">#</a></h3>
+<p>The Lotka-Volterra model can be used to simulate predator-prey populations. Suppose we have <span class="math notranslate nohighlight">\(u\)</span> preys (e.g. rabbits) and <span class="math notranslate nohighlight">\(v\)</span> predators (e.g. foxes). Then, we can do a “mass balance” on each species as</p>
+<p><span class="math notranslate nohighlight">\(\frac{du}{dt} = a u - b u v\)</span></p>
+<p><span class="math notranslate nohighlight">\(\frac{dv}{dt} = -c v + d b u v\)</span></p>
+<p>Here <span class="math notranslate nohighlight">\(a\)</span> is the natural growth rate of rabbits with no foxes. <span class="math notranslate nohighlight">\(b\)</span> is the rate that foxes eat rabbits. <span class="math notranslate nohighlight">\(c\)</span> is the rate that foxes die, and <span class="math notranslate nohighlight">\(d\)</span> describes how many new foxes result from the rabbits that are eaten. Suppose we start with 10 rabbits and 5 foxes. Plot the number of each species from t=0 to t=15.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mf">0.75</span>
+
+<span class="n">Y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span> <span class="c1"># initial conditions</span>
+<span class="n">tspan</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15000</span><span class="p">)</span> <span class="c1"># timespan to integrate over</span>
+<span class="n">teval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">tspan</span><span class="p">,</span> <span class="mi">15000</span><span class="p">)</span> <span class="c1"># points to evaluate the solution on</span>
+
+<span class="k">def</span> <span class="nf">dXdt</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="n">rabbits</span><span class="p">,</span> <span class="n">foxes</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="n">drabbitdt</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">rabbits</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">rabbits</span> <span class="o">*</span> <span class="n">foxes</span>
+    <span class="n">dfoxesdt</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">foxes</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">b</span> <span class="o">*</span> <span class="n">rabbits</span> <span class="o">*</span> <span class="n">foxes</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">drabbitdt</span><span class="p">,</span> <span class="n">dfoxesdt</span><span class="p">])</span>
+
+<span class="c1"># hard to read alternative : Please do not do this.</span>
+<span class="k">def</span> <span class="nf">ode</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">a</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+           <span class="o">-</span><span class="n">c</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">b</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">dXdt</span><span class="p">,</span> <span class="n">tspan</span><span class="p">,</span> <span class="n">Y0</span><span class="p">,</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">teval</span><span class="p">)</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">message</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;The solver successfully reached the end of the integration interval.&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="c1">#plt.ylim([0, 50])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;rabbits&#39;</span><span class="p">,</span> <span class="s1">&#39;foxes&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">tspan</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 15000.0)
+</pre></div>
+</div>
+<img alt="../_images/5517653eefb9b609bacca0ce8b446a273be4524db85d01a868426f775266f6d6.png" src="../_images/5517653eefb9b609bacca0ce8b446a273be4524db85d01a868426f775266f6d6.png" />
+</div>
+</div>
+<p>This is a classic boom/bust cycle of predator/prey.</p>
+</section>
+<section id="qualitative-method-for-systems-of-odes">
+<h3>Qualitative method for systems of ODEs<a class="headerlink" href="#qualitative-method-for-systems-of-odes" title="Permalink to this heading">#</a></h3>
+<p>We can consider direction fields for systems of ODEs to examine the qualitative behavior of solutions when there are two equations. The key here is to compute for each point (rabbit, fox) we compute (drabbit/dt, dfox/dt), and then plot these.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="c1"># rabbit grid</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="c1"># fox grid</span>
+
+<span class="n">R</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="c1"># 2D arrays of (rabbit, fox) points</span>
+
+<span class="n">DR</span><span class="p">,</span> <span class="n">DF</span> <span class="o">=</span> <span class="n">dXdt</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">R</span><span class="p">,</span> <span class="n">F</span><span class="p">])</span> <span class="c1"># These are dR/dt and dF/dt</span>
+
+<span class="c1"># This normalizes the arrows so they are all the same length and just show the direction</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">DR</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">DF</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">DR</span> <span class="o">/=</span> <span class="n">N</span>
+<span class="n">DF</span> <span class="o">/=</span> <span class="n">N</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">DR</span><span class="p">,</span> <span class="n">DF</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of rabbits&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Number of foxes&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;b.&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/591af3080824cd8ae9b6b39a847773ac0904df56e7742f68c543973e1371b1c0.png" src="../_images/591af3080824cd8ae9b6b39a847773ac0904df56e7742f68c543973e1371b1c0.png" />
+</div>
+</div>
+<p>In this view, we have a <em>limit cycle</em> which just shows the number of rabbits and foxes goes up and down periodically as you travel around the solution curve. Time is parametric in this plot. It starts at t=0 at the initial state, and increases as you go around the cycle.</p>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>Systems of first order differential equations are solved the same way as single first order differential equations. The main difference is the system must be defined as:</p>
+<p><span class="math notranslate nohighlight">\(Y'(t) = f(x, Y)\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(Y'\)</span> is a vector/array of first derivatives, and <span class="math notranslate nohighlight">\(Y\)</span> is a vector/array of function values.</p>
+<p>You still use <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp</span></code> to solve the equations, but you need an initial condition for each equation.</p>
+<div class="alert alert-warning">
+There are other ode integrators in scipy that have different function signatures than `scipy.integrate.solve_ivp`.
+<p>For example, <code class="docutils literal notranslate"><span class="pre">scipy.integrate.odeint</span></code> requires functions like <span class="math notranslate nohighlight">\(y' = f(y, t)\)</span> which is the opposite of <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp</span></code>. You <strong>have</strong> to keep track of which one you are using.</p>
+<p><code class="docutils literal notranslate"><span class="pre">scipy.integrate.odeint</span></code> is older than <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_ivp</span></code>, but it has fewer features (e.g. no events, fewer solver options).</p>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03-fode-1.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">First-order differential equations</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05-nth-odes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">N<sup>th</sup> differential equations</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#families-of-solutions-to-fodes">Families of solutions to FODEs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Systems of first-order differential equations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brief-review">Brief review</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predator-prey-model-example">Predator-prey model example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qualitative-method-for-systems-of-odes">Qualitative method for systems of ODEs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

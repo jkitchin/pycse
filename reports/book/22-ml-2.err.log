@@ -1,0 +1,52 @@
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+    return loop.run_until_complete(inner)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+    await self.async_execute_cell(
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import autograd.numpy as np
+import autograd.numpy.random as npr
+
+def nn(params, inputs, activation=np.tanh):
+    """a neural network.
+    params is a list of (weights, bias) for each layer.
+    inputs goes into the nn. Each row corresponds to one output label.
+    activation is the nonlinear activation function.
+    """
+    for W, b in params[:-1]:
+        outputs = np.dot(inputs, W) + b
+        inputs = activation(outputs)
+    # no activation on the last layer
+    W, b = params[-1]
+    return np.dot(inputs, W) + b
+
+def init_random_params(scale, layer_sizes, rs=npr.RandomState(0)):
+    """Build a list of (weights, biases) tuples, one for each layer."""
+    return [(rs.randn(insize, outsize) * scale,   # weight matrix
+             rs.randn(outsize) * scale)           # bias vector
+            for insize, outsize in zip(layer_sizes[:-1], layer_sizes[1:])]
+
+init_random_params(0.1, (1, 3, 1))
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[2], line 1[0m
+[0;32m----> 1[0m [38;5;28;01mimport[39;00m [38;5;21;01mautograd[39;00m[38;5;21;01m.[39;00m[38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+[1;32m      2[0m [38;5;28;01mimport[39;00m [38;5;21;01mautograd[39;00m[38;5;21;01m.[39;00m[38;5;21;01mnumpy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mrandom[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnpr[39;00m
+[1;32m      4[0m [38;5;28;01mdef[39;00m [38;5;21mnn[39m(params, inputs, activation[38;5;241m=[39mnp[38;5;241m.[39mtanh):
+
+[0;31mModuleNotFoundError[0m: No module named 'autograd'
+
