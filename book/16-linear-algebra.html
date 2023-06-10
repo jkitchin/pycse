@@ -674,18 +674,6 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sympy</span>
-sympy.Matrix.rref<span class="o">?</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">sympy</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;pinfo&#39;</span><span class="p">,</span> <span class="s1">&#39;sympy.Matrix.rref&#39;</span><span class="p">)</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;sympy&#39;
 </pre></div>
 </div>
 </div>
@@ -701,15 +689,8 @@ sympy.Matrix.rref<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Matrix([
-[1.0,   0,   0,  2.0, -2.0],
-[  0, 1.0,   0,  1.0, -1.0],
-[  0,   0, 1.0, -2.0,    0],
-[  0,   0,   0,    0,    0],
-[  0,   0,   0,    0,    0],
-[  0,   0,   0,    0,    0]])
-</pre></div>
-</div>
+<div class="output text_latex math notranslate nohighlight">
+\[\begin{split}\displaystyle \left[\begin{matrix}1 &amp; 0 &amp; 0 &amp; 2 &amp; -2\\0 &amp; 1 &amp; 0 &amp; 1 &amp; -1\\0 &amp; 0 &amp; 1 &amp; -2 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\end{matrix}\right]\end{split}\]</div>
 </div>
 </div>
 <div class="cell docutils container">
@@ -730,9 +711,32 @@ sympy.Matrix.rref<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 2HBr        -&gt;  H2 +  2Br          
- HBr         -&gt;  H +  Br            
- 2Br         -&gt;  Br2                
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[13], line 2
+      1 labels = [&#39;H2&#39;,  &#39;H&#39;, &#39;Br2&#39;, &#39;Br&#39;, &#39;HBr&#39;]
+----&gt; 2 for row in np.array(reduced_form).astype(np.float):
+      3     if not np.all(row == 0):  # skip rows of all zeros
+      4         reactants, products = [], []
+
+File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/__init__.py:305, in __getattr__(attr)
+    300     warnings.warn(
+    301         f&quot;In the future `np.{attr}` will be defined as the &quot;
+    302         &quot;corresponding NumPy scalar.&quot;, FutureWarning, stacklevel=2)
+    304 if attr in __former_attrs__:
+--&gt; 305     raise AttributeError(__former_attrs__[attr])
+    307 # Importing Tester requires importing all of UnitTest which is not a
+    308 # cheap import Since it is mainly used in test suits, we lazy import it
+    309 # here to save on the order of 10 ms of import time for most users
+    310 #
+    311 # The previous way Tester was imported also had a side effect of adding
+    312 # the full `numpy.testing` namespace
+    313 if attr == &#39;testing&#39;:
+
+AttributeError: module &#39;numpy&#39; has no attribute &#39;float&#39;.
+`np.float` was a deprecated alias for the builtin `float`. To avoid this error in existing code, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
 </pre></div>
 </div>
 </div>
@@ -741,16 +745,6 @@ sympy.Matrix.rref<span class="o">?</span>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">reduced_form</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 1.,  0.,  0.,  2., -2.],
-       [ 0.,  1.,  0.,  1., -1.],
-       [ 0.,  0.,  1., -2.,  0.],
-       [ 0.,  0.,  0.,  0.,  0.],
-       [ 0.,  0.,  0.,  0.,  0.],
-       [ 0.,  0.,  0.,  0.,  0.]])
 </pre></div>
 </div>
 </div>
@@ -792,15 +786,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0.,  0.,  0.],
-       [ 1., -2.,  1.,  0.,  0.],
-       [ 0.,  1., -2.,  1.,  0.],
-       [ 0.,  0.,  1., -2.,  1.],
-       [ 0.,  0.,  0.,  1., -2.]])
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -815,15 +800,6 @@ sympy.Matrix.rref<span class="o">?</span>
         <span class="k">elif</span> <span class="n">j</span> <span class="o">-</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">A</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0.,  0.,  0.],
-       [ 1., -2.,  1.,  0.,  0.],
-       [ 0.,  1., -2.,  1.,  0.],
-       [ 0.,  0.,  1., -2.,  1.],
-       [ 0.,  0.,  0.,  1., -2.]])
 </pre></div>
 </div>
 </div>
@@ -845,17 +821,6 @@ sympy.Matrix.rref<span class="o">?</span>
 <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># upper diagonal</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">L</span> <span class="o">+</span> <span class="n">U</span>
 <span class="n">A</span>  <span class="c1"># always a good idea to check we have the right structure.</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0., ...,  0.,  0.,  0.],
-       [ 1., -2.,  1., ...,  0.,  0.,  0.],
-       [ 0.,  1., -2., ...,  0.,  0.,  0.],
-       ...,
-       [ 0.,  0.,  0., ..., -2.,  1.,  0.],
-       [ 0.,  0.,  0., ...,  1., -2.,  1.],
-       [ 0.,  0.,  0., ...,  0.,  1., -2.]])
 </pre></div>
 </div>
 </div>
@@ -889,12 +854,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0, 0.15)
-</pre></div>
-</div>
-<img alt="../_images/30f5fa8f76239659e03c3464ed905da80c39bd0f0f5d31ac913c968a6982da08.png" src="../_images/30f5fa8f76239659e03c3464ed905da80c39bd0f0f5d31ac913c968a6982da08.png" />
-</div>
 </div>
 <p>Note that we have approximated the solution by discretizing and estimating the derivatives that the points. You have to check for convergence by increasing the number of points <span class="math notranslate nohighlight">\(N\)</span>.</p>
 <p>This method worked because the BVP was <em>linear</em>, i.e. no products, powers, etc of derivatives, so that the final set of equations after discretization was linear. If the BVP was nonlinear, we would end up with a set of coupled nonlinear equations that you would have to use <code class="docutils literal notranslate"><span class="pre">scipy.optimize.fsolve</span></code> to solve, or <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_bvp</span></code>, and these would both require an initial guess to solve.</p>
@@ -918,11 +877,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-9999999.17259463, -4999998.58529732]), -1.000000082740374e-10)
-</pre></div>
-</div>
-</div>
 </div>
 <p>Now consider this slightly different system where we just change -0.46 to -0.47. Surely that should not be a big deal right?</p>
 <div class="cell docutils container">
@@ -936,11 +890,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-3.33333333, -0.56666667])
-</pre></div>
-</div>
-</div>
 </div>
 <p>That seems like a big change in the answer for such a small change in one coefficient. What is happening? The determinant of this matrix is small, and the condition number is high, which means it is an ill-conditioned system of equations.</p>
 <div class="cell docutils container">
@@ -949,17 +898,11 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.030000000000000023, 82.35119021800712)
-</pre></div>
-</div>
-</div>
 </div>
 <p>Graphically, this means the two lines are nearly parallel, so even the smallest shift in the slope will result in a large change in the intersection.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">x2_0</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x1</span>
@@ -968,19 +911,6 @@ sympy.Matrix.rref<span class="o">?</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2_0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2_1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;x2&#39;)
-</pre></div>
-</div>
-<img alt="../_images/c63eb60384fd2906ae516927cca7e155bbd8a2a163cfac7805037698ba8cadec.png" src="../_images/c63eb60384fd2906ae516927cca7e155bbd8a2a163cfac7805037698ba8cadec.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>np.linalg.solve
 </pre></div>
 </div>
 </div>
@@ -1015,11 +945,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>125
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can do better than that with elementwise multiplication:</p>
 <div class="cell docutils container">
@@ -1028,21 +953,11 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>125
-</pre></div>
-</div>
-</div>
 </div>
 <p>The best approach, however, is the linear algebra approach:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">@</span> <span class="n">b</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(125, 125)
 </pre></div>
 </div>
 </div>
@@ -1066,11 +981,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>162.39
-</pre></div>
-</div>
-</div>
 </div>
 <p>Compare this to the more modern numpy approach.</p>
 <div class="cell docutils container">
@@ -1087,11 +997,6 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>162.39000000000001
-</pre></div>
-</div>
-</div>
 </div>
 <p>Finally, consider the sum of the product of three vectors. Let <span class="math notranslate nohighlight">\(y = \sum\limits_{i=1}^n w_i x_i y_i\)</span>. This is like a weighted sum of products.</p>
 <div class="cell docutils container">
@@ -1105,23 +1010,10 @@ sympy.Matrix.rref<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>57.71
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>57.71
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">vdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(125, 125)
 </pre></div>
 </div>
 </div>

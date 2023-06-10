@@ -509,7 +509,7 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0., 0., 0., 0.]),
  array([1., 1., 1., 1.]),
- array([4.63918095e-310, 0.00000000e+000, 6.95024254e-310, 6.95024552e-310]))
+ array([4.67958893e-310, 0.00000000e+000, 4.94065646e-324, 6.92966808e-310]))
 </pre></div>
 </div>
 </div>
@@ -613,7 +613,6 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
     <span class="n">I</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
     <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">I</span><span class="p">)</span>
 
-<span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
@@ -643,13 +642,6 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 <p>We can also examine the derivatives of our solution. We have to rely on numerical derivatives of our solution because x and y are arrays. <code class="docutils literal notranslate"><span class="pre">np.gradient</span></code> will compute the derivative using a reasonable approximation. We know the derivative analytically from the ODE.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>np.gradient
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dydx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># edge_order=2 is a more accurate estimate</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dydx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;numerical&#39;</span><span class="p">)</span>
@@ -661,7 +653,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7ff11837ff40&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f9054c32af0&gt;
 </pre></div>
 </div>
 <img alt="../_images/6fbbbff2186e7ceed0c2a3e9bbda1316101ebda5f06ce8eb294d4ed7f213d82a.png" src="../_images/6fbbbff2186e7ceed0c2a3e9bbda1316101ebda5f06ce8eb294d4ed7f213d82a.png" />
@@ -777,13 +769,6 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 <p>This ODE has a known analytical solution: <span class="math notranslate nohighlight">\(y(x) = x^2 + e^x\)</span>. We will use this for comparison.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>range
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -813,8 +798,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 <p>We can check out the solution graphically:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Euler&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Analytical&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
@@ -893,20 +877,12 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
-<span class="o">?</span>solve_ivp
 </pre></div>
 </div>
 </div>
 </div>
 <p>Here is a minimal use of the function, with keyword arguments.</p>
 <p><code class="docutils literal notranslate"><span class="pre">y0</span></code> is an array containing the initial values.  <code class="docutils literal notranslate"><span class="pre">fun</span></code> is a function with a signature of f(t, y). Here, <span class="math notranslate nohighlight">\(t\)</span> is considered the independent variable. You can call it whatever you want, so f(x, y) is also fine. Since <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> had <span class="math notranslate nohighlight">\(t\)</span> in mind, the second argument is the <code class="docutils literal notranslate"><span class="pre">t_span</span></code>, which is a tuple of two numbers for where the integration starts (t0, or x0) and where it ends.  <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> returns an object.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>f
-</pre></div>
-</div>
-</div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y0</span> <span class="o">=</span> <span class="mi">1</span>
@@ -916,7 +892,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 </div>
-<p>The output of <code class="docutils literal notranslate"><span class="pre">solve_ip</span></code> is an object containing results in attributes on the object.</p>
+<p>The output of <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> is an object containing results in attributes on the object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span>
@@ -972,14 +948,11 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">),</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Analytical&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7ff1181e9190&gt;
-</pre></div>
-</div>
 <img alt="../_images/79ae800ca3a32ee3b683fdd6c3ab9b823d0d3960aa3d7e529744ab2d7a947268.png" src="../_images/79ae800ca3a32ee3b683fdd6c3ab9b823d0d3960aa3d7e529744ab2d7a947268.png" />
 </div>
 </div>
@@ -1019,7 +992,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7ff1181959d0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f901ea68b80&gt;
 </pre></div>
 </div>
 <img alt="../_images/54007635e7b8732b2f8b743b58d03874ad950d3ea610a3696456d34c014d5d51.png" src="../_images/54007635e7b8732b2f8b743b58d03874ad950d3ea610a3696456d34c014d5d51.png" />
@@ -1089,7 +1062,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y=4 at x=1.0579740235381905. Confirming: y = 3.999838223738076
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y=4 at x=1.0579740235381918. Confirming: y = 3.999838223738083
 </pre></div>
 </div>
 </div>
@@ -1109,7 +1082,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3.9999994300847312
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3.9999994300847304
 </pre></div>
 </div>
 </div>

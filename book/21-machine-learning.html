@@ -466,18 +466,6 @@ least_squares<span class="o">?</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">autograd.numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">autograd</span> <span class="kn">import</span> <span class="n">jacobian</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">least_squares</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;autograd&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <p>Here is the data we are going to work with.</p>
 <div class="cell docutils container">
@@ -486,7 +474,6 @@ least_squares<span class="o">?</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
 
-<span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
@@ -495,7 +482,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/87f8075f844bf3a2bb9155017dd01972a8ff06a5d5557349e333e58e0bb532f1.png" src="../_images/87f8075f844bf3a2bb9155017dd01972a8ff06a5d5557349e333e58e0bb532f1.png" />
+<img alt="../_images/e8cd5d882540611f8de27f3bd45ac070247c821137fa7c79c7980e98823bcc46.png" src="../_images/e8cd5d882540611f8de27f3bd45ac070247c821137fa7c79c7980e98823bcc46.png" />
 </div>
 </div>
 <p>We have to define a function for our model, and then another one for the residuals. For now, we stick with a syntax we are familiar with, and one that works with <code class="docutils literal notranslate"><span class="pre">least_squares</span></code>.</p>
@@ -519,69 +506,6 @@ least_squares<span class="o">?</span>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>np.random.randn<span class="o">?</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">Signature:</span> np<span class=" -Color -Color-Blue">.</span>random<span class=" -Color -Color-Blue">.</span>randn<span class=" -Color -Color-Blue">(*</span>args<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">**</span>kwargs<span class=" -Color -Color-Blue">)</span>
-<span class=" -Color -Color-Red">Docstring:</span>
-randn(d0, d1, ..., dn)
-
-Return a sample (or samples) from the &quot;standard normal&quot; distribution.
-
-.. note::
-    This is a convenience function for users porting code from Matlab,
-    and wraps `standard_normal`. That function takes a
-    tuple to specify the size of the output, which is consistent with
-    other NumPy functions like `numpy.zeros` and `numpy.ones`.
-
-.. note::
-    New code should use the ``standard_normal`` method of a ``default_rng()``
-    instance instead; please see the :ref:`random-quick-start`.
-
-If positive int_like arguments are provided, `randn` generates an array
-of shape ``(d0, d1, ..., dn)``, filled
-with random floats sampled from a univariate &quot;normal&quot; (Gaussian)
-distribution of mean 0 and variance 1. A single float randomly sampled
-from the distribution is returned if no argument is provided.
-
-Parameters
-----------
-d0, d1, ..., dn : int, optional
-    The dimensions of the returned array, must be non-negative.
-    If no argument is given a single Python float is returned.
-
-Returns
--------
-Z : ndarray or float
-    A ``(d0, d1, ..., dn)``-shaped array of floating-point samples from
-    the standard normal distribution, or a single such float if
-    no parameters were supplied.
-
-See Also
---------
-standard_normal : Similar, but takes a tuple as its argument.
-normal : Also accepts mu and sigma arguments.
-random.Generator.standard_normal: which should be used for new code.
-
-Notes
------
-For random samples from :math:`N(\mu, \sigma^2)`, use:
-
-``sigma * np.random.randn(...) + mu``
-
-Examples
---------
-&gt;&gt;&gt; np.random.randn()
-2.1923875335537315  # random
-
-Two-by-four array of samples from N(3, 6.25):
-
-&gt;&gt;&gt; 3 + 2.5 * np.random.randn(2, 4)
-array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
-       [ 0.39924804,  4.68456316,  4.99394529,  4.84057254]])  # random
-<span class=" -Color -Color-Red">File:</span>      ~/anaconda3/lib/python3.10/site-packages/autograd/tracer.py
-<span class=" -Color -Color-Red">Type:</span>      function
 </pre></div>
 </div>
 </div>
@@ -609,22 +533,22 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     message: The maximum number of function evaluations is exceeded.
      success: False
       status: 0
-         fun: [-2.793e-05  5.069e-04 ...  8.621e-04  1.222e-03]
-           x: [-1.002e+02 -1.950e+01 -5.470e+01 -2.545e+00  4.443e+01
-                5.094e-01  2.318e+00  3.756e+01  5.331e+00  2.923e+00]
-        cost: 1.3710023341647375e-05
-         jac: [[-1.000e+00  9.878e-01 ...  0.000e+00 -4.320e-01]
-               [-1.000e+00  9.987e-01 ... -7.101e-03 -3.479e-01]
+         fun: [-4.058e-04  3.866e-03 ... -2.938e-03 -3.829e-03]
+           x: [-5.466e+01 -5.907e+01 -2.512e+00 -2.894e+00 -5.204e+01
+               -1.636e-02  9.995e-01 -3.586e+01 -3.983e+01 -2.767e+00]
+        cost: 0.0001496528859832665
+         jac: [[-1.000e+00  9.939e-01 ... -0.000e+00  5.624e-01]
+               [-1.000e+00  9.945e-01 ...  2.273e-03  1.114e-01]
                ...
-               [-1.000e+00  1.000e+00 ... -1.243e-05 -1.272e-05]
-               [-1.000e+00  1.000e+00 ... -1.011e-05 -1.011e-05]]
-        grad: [ 2.406e-05 -2.404e-05 -1.211e-09 -5.848e-07  2.373e-05
-                9.053e-06  2.842e-05  2.403e-05  1.208e-07  1.804e-06]
-  optimality: 2.8417918763870087e-05
+               [-1.000e+00  1.000e+00 ... -0.000e+00 -0.000e+00]
+               [-1.000e+00  1.000e+00 ... -0.000e+00 -0.000e+00]]
+        grad: [ 4.884e-04 -4.878e-04 -1.323e-05 -7.267e-05  3.703e-04
+               -5.397e-03 -1.081e-02 -4.883e-04 -5.781e-09 -6.958e-06]
+  optimality: 0.010809319930342648
  active_mask: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00
                 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00]
         nfev: 1000
-        njev: 822
+        njev: 869
 </pre></div>
 </div>
 </div>
@@ -637,7 +561,7 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.3710023341647375e-05
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0001496528859832665
 </pre></div>
 </div>
 </div>
@@ -651,7 +575,8 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0., -0., -0., -0.,  0.,  0.,  0.,  0.,  0.,  0.])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.   , -0.   , -0.   , -0.   ,  0.   , -0.005, -0.011, -0.   ,
+       -0.   , -0.   ])
 </pre></div>
 </div>
 </div>
@@ -668,8 +593,8 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([532.608,  12.364,   0.627,   0.163,   0.022,   0.   ,   0.   ,
-         0.   ,   0.   ,   0.   ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([62788.003,  3351.02 ,     1.226,     0.318,     0.003,     0.   ,
+          -0.   ,     0.   ,     0.   ,     0.   ])
 </pre></div>
 </div>
 </div>
@@ -682,7 +607,7 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6.043692147746189e-36
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-3.99150473594598e-26
 </pre></div>
 </div>
 </div>
@@ -699,7 +624,7 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/790caca53bbefd37b77259502e1b097848620bdeedfff808dbec2ccbd59026d6.png" src="../_images/790caca53bbefd37b77259502e1b097848620bdeedfff808dbec2ccbd59026d6.png" />
+<img alt="../_images/f6b5548f83f1c5a6ea43fdb3140a09843391a14fe97bea3a55c4019f8b946851.png" src="../_images/f6b5548f83f1c5a6ea43fdb3140a09843391a14fe97bea3a55c4019f8b946851.png" />
 </div>
 </div>
 <p>Evidently, we just have not reached the required tolerances for least_squares to claim success.</p>
@@ -712,8 +637,8 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-100.187,  -19.503,  -54.702,   -2.545,   44.428,    0.509,
-          2.318,   37.565,    5.331,    2.923])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-54.664, -59.072,  -2.512,  -2.894, -52.045,  -0.016,   1.   ,
+       -35.863, -39.83 ,  -2.767])
 </pre></div>
 </div>
 </div>
@@ -725,8 +650,8 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-100.187,  -19.503,  -54.702,   -2.545,   44.428,    0.509,
-          2.318,   37.565,    5.331,    2.923])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-54.664, -59.072,  -2.512,  -2.894, -52.045,  -0.016,   1.   ,
+       -35.863, -39.83 ,  -2.767])
 </pre></div>
 </div>
 </div>
@@ -746,7 +671,7 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1fa8a64d0c3ab0de2351dffe41a76be3cbb8f78f1d15dc25daac4607a2562086.png" src="../_images/1fa8a64d0c3ab0de2351dffe41a76be3cbb8f78f1d15dc25daac4607a2562086.png" />
+<img alt="../_images/f3000540a1573c2dfc01dab9114b86e18bc75600f3374d82a236359eeda41504.png" src="../_images/f3000540a1573c2dfc01dab9114b86e18bc75600f3374d82a236359eeda41504.png" />
 </div>
 </div>
 <p>You can see that this model saturates for large <span class="math notranslate nohighlight">\(x\)</span>. That might be anticipated from knowledge of the tanh function, it also saturates at large values of <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -760,7 +685,7 @@ array([[-4.49401501,  4.00950034, -1.81814867,  7.29718677],   # random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2c01f99f4c1667581131bb2e1fd71ad8c0146ec3bd82ae95c504d71f3af45edb.png" src="../_images/2c01f99f4c1667581131bb2e1fd71ad8c0146ec3bd82ae95c504d71f3af45edb.png" />
+<img alt="../_images/2b282f05efb25582eee9e44380c3c1b744d56c80b7dc2a4b3b623cb0c40ceb25.png" src="../_images/2b282f05efb25582eee9e44380c3c1b744d56c80b7dc2a4b3b623cb0c40ceb25.png" />
 </div>
 </div>
 <p>Up to here, this is mostly review for us. It is just a nonlinear regression (admittedly to a strange looking function), and analysis of the resulting model. Note that the model is very flexible, and it can be used to fit a variety of other functions.</p>
@@ -887,8 +812,12 @@ w1: (3, 1), b1: (1,)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.02252298981875618
-Step 100: 0.00010016662197145314
-Tolerance reached at epoch 198, stopping
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010016662197145352
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance reached at epoch 198, stopping
 </pre></div>
 </div>
 </div>
@@ -908,8 +837,8 @@ Tolerance reached at epoch 198, stopping
 w1: [[ 0.711]
  [ 0.434]
  [-0.414]], b1: [-0.306]
-[-100.187  -19.503  -54.702   -2.545   44.428    0.509    2.318   37.565
-    5.331    2.923]
+[-54.664 -59.072  -2.512  -2.894 -52.045  -0.016   1.    -35.863 -39.83
+  -2.767]
 </pre></div>
 </div>
 </div>
@@ -931,7 +860,7 @@ w1: [[ 0.711]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f8a3090b392c4ad7a1a3cb71214824f5e4d83b50e5a628189509a6da7acbc099.png" src="../_images/f8a3090b392c4ad7a1a3cb71214824f5e4d83b50e5a628189509a6da7acbc099.png" />
+<img alt="../_images/28180e4578c3725cf1f4aded63e7d93db2bf4cab79f350e6f4a841513a1fc820.png" src="../_images/28180e4578c3725cf1f4aded63e7d93db2bf4cab79f350e6f4a841513a1fc820.png" />
 </div>
 </div>
 </section>

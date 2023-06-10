@@ -15,27 +15,50 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from sympy import Symbol, Poly
+import numpy as np
+from sympy import Symbol
 from sympy.polys.polytools import   poly_from_expr
 
 x = Symbol('x')
 W = 1
 for i in range(1, 21):
-    W = W * (x-i)
+    W = W * (x - i)
 
-print(W.expand())
+P, d = poly_from_expr(W.expand())
+p = P.all_coeffs()
+x = np.arange(1, 21, dtype=np.float)
+print('\nThese are the known roots\n',x)
 
-P,d = poly_from_expr(W.expand())
-print(P)
+# evaluate the polynomial at the known roots
+print('\nThe polynomial evaluates to {0} at the known roots'.format(np.polyval(p, x)))
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Cell [0;32mIn[30], line 1[0m
-[0;32m----> 1[0m [38;5;28;01mfrom[39;00m [38;5;21;01msympy[39;00m [38;5;28;01mimport[39;00m Symbol, Poly
-[1;32m      2[0m [38;5;28;01mfrom[39;00m [38;5;21;01msympy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpolys[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpolytools[39;00m [38;5;28;01mimport[39;00m   poly_from_expr
-[1;32m      4[0m x [38;5;241m=[39m Symbol([38;5;124m'[39m[38;5;124mx[39m[38;5;124m'[39m)
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+Cell [0;32mIn[32], line 12[0m
+[1;32m     10[0m P, d [38;5;241m=[39m poly_from_expr(W[38;5;241m.[39mexpand())
+[1;32m     11[0m p [38;5;241m=[39m P[38;5;241m.[39mall_coeffs()
+[0;32m---> 12[0m x [38;5;241m=[39m np[38;5;241m.[39marange([38;5;241m1[39m, [38;5;241m21[39m, dtype[38;5;241m=[39m[43mnp[49m[38;5;241;43m.[39;49m[43mfloat[49m)
+[1;32m     13[0m [38;5;28mprint[39m([38;5;124m'[39m[38;5;130;01m\n[39;00m[38;5;124mThese are the known roots[39m[38;5;130;01m\n[39;00m[38;5;124m'[39m,x)
+[1;32m     15[0m [38;5;66;03m# evaluate the polynomial at the known roots[39;00m
 
-[0;31mModuleNotFoundError[0m: No module named 'sympy'
+File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/__init__.py:305[0m, in [0;36m__getattr__[0;34m(attr)[0m
+[1;32m    300[0m     warnings[38;5;241m.[39mwarn(
+[1;32m    301[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mIn the future `np.[39m[38;5;132;01m{[39;00mattr[38;5;132;01m}[39;00m[38;5;124m` will be defined as the [39m[38;5;124m"[39m
+[1;32m    302[0m         [38;5;124m"[39m[38;5;124mcorresponding NumPy scalar.[39m[38;5;124m"[39m, [38;5;167;01mFutureWarning[39;00m, stacklevel[38;5;241m=[39m[38;5;241m2[39m)
+[1;32m    304[0m [38;5;28;01mif[39;00m attr [38;5;129;01min[39;00m __former_attrs__:
+[0;32m--> 305[0m     [38;5;28;01mraise[39;00m [38;5;167;01mAttributeError[39;00m(__former_attrs__[attr])
+[1;32m    307[0m [38;5;66;03m# Importing Tester requires importing all of UnitTest which is not a[39;00m
+[1;32m    308[0m [38;5;66;03m# cheap import Since it is mainly used in test suits, we lazy import it[39;00m
+[1;32m    309[0m [38;5;66;03m# here to save on the order of 10 ms of import time for most users[39;00m
+[1;32m    310[0m [38;5;66;03m#[39;00m
+[1;32m    311[0m [38;5;66;03m# The previous way Tester was imported also had a side effect of adding[39;00m
+[1;32m    312[0m [38;5;66;03m# the full `numpy.testing` namespace[39;00m
+[1;32m    313[0m [38;5;28;01mif[39;00m attr [38;5;241m==[39m [38;5;124m'[39m[38;5;124mtesting[39m[38;5;124m'[39m:
+
+[0;31mAttributeError[0m: module 'numpy' has no attribute 'float'.
+`np.float` was a deprecated alias for the builtin `float`. To avoid this error in existing code, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
 
