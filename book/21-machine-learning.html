@@ -55,6 +55,13 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -166,7 +173,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
@@ -203,7 +210,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
 </ul>
 
     </div>
@@ -300,6 +310,23 @@ const thebe_selector_output = ".output, .cell_output"
   <i class="fab fa-github"></i>
   </span>
 <span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/21-machine-learning.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
 </a>
 </li>
       
@@ -453,7 +480,7 @@ document.write(`
 <section id="flexible-nonlinear-models-for-regression">
 <h2>Flexible nonlinear models for regression<a class="headerlink" href="#flexible-nonlinear-models-for-regression" title="Permalink to this heading">#</a></h2>
 <p>Today we are going to take a meandering path to using autograd to train a neural network for regression. First let us consider this very general looking nonlinear model that we might fit to data. There are 10 parameters in it, so we should expect we can get it to fit some data pretty well.</p>
-<p><span class="math notranslate nohighlight">\(y = b1 + w10 tanh(w00 x + b00) + w11 tanh(w01 x + b01) + w12 tanh(w02 x + b02)\)</span></p>
+<p><span class="math notranslate nohighlight">\(y = b1 + w10 \tanh(w00 x + b00) + w11 \tanh(w01 x + b01) + w12 \tanh(w02 x + b02)\)</span></p>
 <p>For now let us not concern ourselves with how we chose this particular model. We will return to the choices later.</p>
 <p>We will use it to fit data that is generated from <span class="math notranslate nohighlight">\(y = x^\frac{1}{3}\)</span>. First, we just do a least_squares fit. This function is similar to <code class="docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code>.</p>
 <div class="cell docutils container">
@@ -533,22 +560,22 @@ least_squares<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     message: The maximum number of function evaluations is exceeded.
      success: False
       status: 0
-         fun: [-4.058e-04  3.866e-03 ... -2.938e-03 -3.829e-03]
-           x: [-5.466e+01 -5.907e+01 -2.512e+00 -2.894e+00 -5.204e+01
-               -1.636e-02  9.995e-01 -3.586e+01 -3.983e+01 -2.767e+00]
-        cost: 0.0001496528859832665
-         jac: [[-1.000e+00  9.939e-01 ... -0.000e+00  5.624e-01]
-               [-1.000e+00  9.945e-01 ...  2.273e-03  1.114e-01]
+         fun: [-4.037e-04  3.819e-03 ... -2.934e-03 -3.819e-03]
+           x: [-7.118e+01  7.608e+01  2.521e+00  3.022e+00 -6.895e+01
+               -1.113e-02  9.245e-01 -4.594e+01 -3.988e+01 -2.891e+00]
+        cost: 0.0001482890074279067
+         jac: [[-1.000e+00 -9.953e-01 ... -0.000e+00  5.625e-01]
+               [-1.000e+00 -9.957e-01 ...  2.265e-03  1.110e-01]
                ...
-               [-1.000e+00  1.000e+00 ... -0.000e+00 -0.000e+00]
-               [-1.000e+00  1.000e+00 ... -0.000e+00 -0.000e+00]]
-        grad: [ 4.884e-04 -4.878e-04 -1.323e-05 -7.267e-05  3.703e-04
-               -5.397e-03 -1.081e-02 -4.883e-04 -5.781e-09 -6.958e-06]
-  optimality: 0.010809319930342648
+               [-1.000e+00 -1.000e+00 ... -0.000e+00 -0.000e+00]
+               [-1.000e+00 -1.000e+00 ... -0.000e+00 -0.000e+00]]
+        grad: [ 7.318e-04  7.311e-04  1.960e-05  1.078e-04  5.309e-04
+               -1.194e-02 -2.390e-02 -7.317e-04 -4.800e-08 -1.037e-05]
+  optimality: 0.023901545234402494
  active_mask: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00
                 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00]
         nfev: 1000
-        njev: 869
+        njev: 960
 </pre></div>
 </div>
 </div>
@@ -561,7 +588,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0001496528859832665
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0001482890074279067
 </pre></div>
 </div>
 </div>
@@ -575,7 +602,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.   , -0.   , -0.   , -0.   ,  0.   , -0.005, -0.011, -0.   ,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.001,  0.001,  0.   ,  0.   ,  0.001, -0.012, -0.024, -0.001,
        -0.   , -0.   ])
 </pre></div>
 </div>
@@ -593,8 +620,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([62788.003,  3351.02 ,     1.226,     0.318,     0.003,     0.   ,
-          -0.   ,     0.   ,     0.   ,     0.   ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([136037.973,   7290.233,      1.218,      0.316,      0.003,
+            0.   ,     -0.   ,      0.   ,      0.   ,      0.   ])
 </pre></div>
 </div>
 </div>
@@ -607,7 +634,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-3.99150473594598e-26
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-1.716118898930132e-25
 </pre></div>
 </div>
 </div>
@@ -624,7 +651,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f6b5548f83f1c5a6ea43fdb3140a09843391a14fe97bea3a55c4019f8b946851.png" src="../_images/f6b5548f83f1c5a6ea43fdb3140a09843391a14fe97bea3a55c4019f8b946851.png" />
+<img alt="../_images/c414c052cb8adefb8881788bac02dac78d3f45fe03c410ed8b96f8a47ceee800.png" src="../_images/c414c052cb8adefb8881788bac02dac78d3f45fe03c410ed8b96f8a47ceee800.png" />
 </div>
 </div>
 <p>Evidently, we just have not reached the required tolerances for least_squares to claim success.</p>
@@ -637,8 +664,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-54.664, -59.072,  -2.512,  -2.894, -52.045,  -0.016,   1.   ,
-       -35.863, -39.83 ,  -2.767])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-71.184,  76.08 ,   2.521,   3.022, -68.951,  -0.011,   0.924,
+       -45.943, -39.884,  -2.891])
 </pre></div>
 </div>
 </div>
@@ -650,8 +677,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-54.664, -59.072,  -2.512,  -2.894, -52.045,  -0.016,   1.   ,
-       -35.863, -39.83 ,  -2.767])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-71.184,  76.08 ,   2.521,   3.022, -68.951,  -0.011,   0.924,
+       -45.943, -39.884,  -2.891])
 </pre></div>
 </div>
 </div>
@@ -671,7 +698,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f3000540a1573c2dfc01dab9114b86e18bc75600f3374d82a236359eeda41504.png" src="../_images/f3000540a1573c2dfc01dab9114b86e18bc75600f3374d82a236359eeda41504.png" />
+<img alt="../_images/5c086866aafff19d1212ab0254210344dee1e46a8fef28fd7f37e472305069b3.png" src="../_images/5c086866aafff19d1212ab0254210344dee1e46a8fef28fd7f37e472305069b3.png" />
 </div>
 </div>
 <p>You can see that this model saturates for large <span class="math notranslate nohighlight">\(x\)</span>. That might be anticipated from knowledge of the tanh function, it also saturates at large values of <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -701,7 +728,7 @@ y = [w10, w11, w12] @ np.tanh([w01 * x + b01]) + b1
 </div>
 <p>Another way to read these equations is that we have an input of <span class="math notranslate nohighlight">\(x\)</span>. We multiply the input by a vector weights (<span class="math notranslate nohighlight">\(\mathbf{w0}\)</span>), add a vector of offsets (biases), <span class="math notranslate nohighlight">\(\mathbf{b0}\)</span>, <em>activate</em> that by the nonlinear <code class="docutils literal notranslate"><span class="pre">tanh</span></code> function, then multiply that by a new set of weights, and add a final bias. We typically call this kind of model a <em>neural network</em>. There is an input layer, one hidden layer with 3 neurons that are activated by <code class="docutils literal notranslate"><span class="pre">tanh</span></code>, and one output layer with linear activation.</p>
 <p>A conventional graphical representation of this function as a neural network is shown here:
-<img alt="nn.png" src="book/attachment:nn.png" /></p>
+<img alt="nn.png" src="../_images/nn.png" /></p>
 <p>These models are called neural networks because they were originally modeled after neurons. Neurons take input, and if the input is large enough the neuron is activated and has an output. The <code class="docutils literal notranslate"><span class="pre">tanh</span></code> function approximates this behavior in a smooth, differentiable way. Remarkably, neural networks have been shown to be universal function approximators and hence they are extremely useful.</p>
 <p>When you use a neural network, you have several choices to make:</p>
 <ol class="arabic simple">
@@ -814,7 +841,7 @@ w1: (3, 1), b1: (1,)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.02252298981875618
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010016662197145352
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010016662197145348
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance reached at epoch 198, stopping
@@ -837,8 +864,8 @@ w1: (3, 1), b1: (1,)
 w1: [[ 0.711]
  [ 0.434]
  [-0.414]], b1: [-0.306]
-[-54.664 -59.072  -2.512  -2.894 -52.045  -0.016   1.    -35.863 -39.83
-  -2.767]
+[-71.184  76.08    2.521   3.022 -68.951  -0.011   0.924 -45.943 -39.884
+  -2.891]
 </pre></div>
 </div>
 </div>

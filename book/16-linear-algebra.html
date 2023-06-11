@@ -55,6 +55,13 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -166,7 +173,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
@@ -203,7 +210,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
 </ul>
 
     </div>
@@ -300,6 +310,23 @@ const thebe_selector_output = ".output, .cell_output"
   <i class="fab fa-github"></i>
   </span>
 <span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/16-linear-algebra.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
 </a>
 </li>
       
@@ -748,6 +775,33 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[14], line 1
+----&gt; 1 np.array(reduced_form).astype(np.float)
+
+File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/__init__.py:305, in __getattr__(attr)
+    300     warnings.warn(
+    301         f&quot;In the future `np.{attr}` will be defined as the &quot;
+    302         &quot;corresponding NumPy scalar.&quot;, FutureWarning, stacklevel=2)
+    304 if attr in __former_attrs__:
+--&gt; 305     raise AttributeError(__former_attrs__[attr])
+    307 # Importing Tester requires importing all of UnitTest which is not a
+    308 # cheap import Since it is mainly used in test suits, we lazy import it
+    309 # here to save on the order of 10 ms of import time for most users
+    310 #
+    311 # The previous way Tester was imported also had a side effect of adding
+    312 # the full `numpy.testing` namespace
+    313 if attr == &#39;testing&#39;:
+
+AttributeError: module &#39;numpy&#39; has no attribute &#39;float&#39;.
+`np.float` was a deprecated alias for the builtin `float`. To avoid this error in existing code, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+</pre></div>
+</div>
+</div>
 </div>
 <p>From here you can use the code from above to construct the equations.</p>
 </section>
@@ -786,6 +840,15 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0.,  0.,  0.],
+       [ 1., -2.,  1.,  0.,  0.],
+       [ 0.,  1., -2.,  1.,  0.],
+       [ 0.,  0.,  1., -2.,  1.],
+       [ 0.,  0.,  0.,  1., -2.]])
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -800,6 +863,15 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
         <span class="k">elif</span> <span class="n">j</span> <span class="o">-</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0.,  0.,  0.],
+       [ 1., -2.,  1.,  0.,  0.],
+       [ 0.,  1., -2.,  1.,  0.],
+       [ 0.,  0.,  1., -2.,  1.],
+       [ 0.,  0.,  0.,  1., -2.]])
 </pre></div>
 </div>
 </div>
@@ -821,6 +893,17 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># upper diagonal</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">L</span> <span class="o">+</span> <span class="n">U</span>
 <span class="n">A</span>  <span class="c1"># always a good idea to check we have the right structure.</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-2.,  1.,  0., ...,  0.,  0.,  0.],
+       [ 1., -2.,  1., ...,  0.,  0.,  0.],
+       [ 0.,  1., -2., ...,  0.,  0.,  0.],
+       ...,
+       [ 0.,  0.,  0., ..., -2.,  1.,  0.],
+       [ 0.,  0.,  0., ...,  1., -2.,  1.],
+       [ 0.,  0.,  0., ...,  0.,  1., -2.]])
 </pre></div>
 </div>
 </div>
@@ -854,6 +937,9 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/621a86a206a10149107de396eedef0e6072f2046616b37c41d68c15012f4a542.png" src="../_images/621a86a206a10149107de396eedef0e6072f2046616b37c41d68c15012f4a542.png" />
+</div>
 </div>
 <p>Note that we have approximated the solution by discretizing and estimating the derivatives that the points. You have to check for convergence by increasing the number of points <span class="math notranslate nohighlight">\(N\)</span>.</p>
 <p>This method worked because the BVP was <em>linear</em>, i.e. no products, powers, etc of derivatives, so that the final set of equations after discretization was linear. If the BVP was nonlinear, we would end up with a set of coupled nonlinear equations that you would have to use <code class="docutils literal notranslate"><span class="pre">scipy.optimize.fsolve</span></code> to solve, or <code class="docutils literal notranslate"><span class="pre">scipy.integrate.solve_bvp</span></code>, and these would both require an initial guess to solve.</p>
@@ -877,6 +963,11 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-9999999.17259463, -4999998.58529732]), -1.000000082740374e-10)
+</pre></div>
+</div>
+</div>
 </div>
 <p>Now consider this slightly different system where we just change -0.46 to -0.47. Surely that should not be a big deal right?</p>
 <div class="cell docutils container">
@@ -890,11 +981,21 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-3.33333333, -0.56666667])
+</pre></div>
+</div>
+</div>
 </div>
 <p>That seems like a big change in the answer for such a small change in one coefficient. What is happening? The determinant of this matrix is small, and the condition number is high, which means it is an ill-conditioned system of equations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.030000000000000023, 82.35119021800712)
 </pre></div>
 </div>
 </div>
@@ -913,6 +1014,9 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/feed20c94bedd2d352bc9898b6244797cceff191305d7e0891507090fed40c39.png" src="../_images/feed20c94bedd2d352bc9898b6244797cceff191305d7e0891507090fed40c39.png" />
 </div>
 </div>
 <p>This system of equations is sensitive to roundoff errors, both in the coefficients of <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> and in the numerics of solving the equations.</p>
@@ -945,6 +1049,11 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>125
+</pre></div>
+</div>
+</div>
 </div>
 <p>We can do better than that with elementwise multiplication:</p>
 <div class="cell docutils container">
@@ -953,11 +1062,21 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>125
+</pre></div>
+</div>
+</div>
 </div>
 <p>The best approach, however, is the linear algebra approach:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">@</span> <span class="n">b</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(125, 125)
 </pre></div>
 </div>
 </div>
@@ -981,6 +1100,11 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>162.39
+</pre></div>
+</div>
+</div>
 </div>
 <p>Compare this to the more modern numpy approach.</p>
 <div class="cell docutils container">
@@ -997,6 +1121,11 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>162.39000000000001
+</pre></div>
+</div>
+</div>
 </div>
 <p>Finally, consider the sum of the product of three vectors. Let <span class="math notranslate nohighlight">\(y = \sum\limits_{i=1}^n w_i x_i y_i\)</span>. This is like a weighted sum of products.</p>
 <div class="cell docutils container">
@@ -1010,10 +1139,23 @@ The aliases was originally deprecated in NumPy 1.20; for more details and guidan
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>57.71
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>57.71
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">vdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(125, 125)
 </pre></div>
 </div>
 </div>

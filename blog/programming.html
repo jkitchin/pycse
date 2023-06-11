@@ -55,6 +55,13 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -164,7 +171,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../book/02-integration-1.html">Integration in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/03-fode-1.html">First-order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../book/05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../book/05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/07-nla-1.html">Nonlinear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/08-nla-2.html">Polynomials in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/09-bvp.html">Boundary value problems</a></li>
@@ -201,7 +208,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
 </ul>
 
     </div>
@@ -298,6 +308,23 @@ const thebe_selector_output = ".output, .cell_output"
   <i class="fab fa-github"></i>
   </span>
 <span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/blog/programming.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
 </a>
 </li>
       
@@ -439,7 +466,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-lists">Working with lists</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-a-dictionary-of-counts">Getting a dictionary of counts</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-your-python">About your python</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-temporary-directory-changing">Automatic, temporary directory changing</a></li>
 </ul>
             </nav>
         </div>
@@ -674,7 +700,7 @@ a        =  [4, 5, 1, 6, 8, 3, 2]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;b&#39;, &#39;d&#39;, &#39;a&#39;, &#39;abracadabra&#39;, &#39;c&#39;]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;abracadabra&#39;, &#39;b&#39;, &#39;a&#39;, &#39;c&#39;, &#39;d&#39;]
 </pre></div>
 </div>
 </div>
@@ -735,9 +761,6 @@ a        =  [4, 5, 1, 6, 8, 3, 2]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>120
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -934,139 +957,19 @@ Here is some text. use the &lt;FONT style=&quot;BACKGROUND-COLOR: LightGray&quot
     <span class="k">return</span> <span class="kc">False</span>
 
 <span class="nb">print</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span> <span class="k">if</span> <span class="n">punctuation_p</span><span class="p">(</span><span class="n">word</span><span class="p">)])</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">punctuation_p</span><span class="p">,</span> <span class="n">words</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">punctuation_p</span><span class="p">,</span> <span class="n">words</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;units.&#39;, &#39;dimensionless.&#39;, &#39;modification.&#39;, &#39;want.&#39;, &#39;numbers.&#39;, &#39;=&#39;, &#39;*&#39;, &#39;u.m&#39;, &#39;=&#39;, &#39;*&#39;, &#39;u.m&#39;, &#39;#&#39;, &#39;a/L&#39;, &#39;type(a/L)&#39;]
-&lt;filter object at 0x7fece830ce80&gt;
+[&#39;units.&#39;, &#39;dimensionless.&#39;, &#39;modification.&#39;, &#39;want.&#39;, &#39;numbers.&#39;, &#39;=&#39;, &#39;*&#39;, &#39;u.m&#39;, &#39;=&#39;, &#39;*&#39;, &#39;u.m&#39;, &#39;#&#39;, &#39;a/L&#39;, &#39;type(a/L)&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <p>In this section we examined a few ways to interact with lists using list comprehension and functional programming. These approaches make it possible to work on arbitrary size lists, without needing to know in advance how big the lists are. New lists are automatically generated as results, without the need to preallocate lists, i.e. you do not need to know the size of the output. This can be handy as it avoids needing to write loops in some cases and leads to more compact code.</p>
 <p>Ordinarily a print statement prints to stdout, or your terminal/screen. You can redirect this so that printing is done to a file, for example. This might be helpful if you use print statements for debugging, and later want to save what is printed to a file. Here we make a simple function that prints some things.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">debug</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step 1&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finished&#39;</span><span class="p">)</span>
-
-<span class="n">debug</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>step 1
-7
-finished
-</pre></div>
-</div>
-</div>
-</div>
-<p>Now, let us redirect the printed lines to a file. We create a file object, and set sys.stdout equal to that file object.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;__stdout__ before = </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;stdout before = </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data/debug.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span>
-
-<span class="c1"># note that sys.__stdout__ does not change, but stdout does.</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;__stdout__ after = </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;stdout after = </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-
-<span class="n">debug</span><span class="p">()</span>
-
-<span class="c1"># reset stdout back to console</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># try to make it a habit to close files</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Note it can be important to close files. If you are looping through large numbers of files, you will eventually run out of file handles, causing an error. We can use a context manager to automatically close the file like this</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="c1"># use the open context manager to automatically close the file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data/debug.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span>
-    <span class="n">debug</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">)</span>
-
-<span class="c1"># reset stdout</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>See, the file is closed for us! We can see the contents of our file like this.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cat ../data/debug.txt
-</pre></div>
-</div>
-<p>The approaches above are not fault safe. Suppose our debug function raised an exception. Then, it could be possible the line to reset the stdout would not be executed. We can solve this with try/finally code.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;before: &#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data/debug-2.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span>
-        <span class="c1"># print to the original stdout</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;during: &#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">)</span>
-        <span class="n">debug</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;something bad happened&#39;</span><span class="p">)</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="c1"># reset stdout</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;after: &#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c1"># verify it is closed</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="c1"># verify this is reset</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">Exception</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">25</span><span class="p">],</span> <span class="n">line</span> <span class="mi">10</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;during: &#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>         <span class="n">debug</span><span class="p">()</span>
-<span class="ne">---&gt; </span><span class="mi">10</span>         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;something bad happened&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">finally</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>     <span class="c1"># reset stdout</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
-
-<span class="ne">Exception</span>: something bad happened
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span><span class="w"> </span>cat<span class="w"> </span>data/debug-2.txt
-</pre></div>
-</div>
-</div>
-</div>
-<p>See <a class="reference external" href="http://www.python.org/dev/peps/pep-0343/%3E">http://www.python.org/dev/peps/pep-0343/&gt;</a>(number 5) for another example of redirecting using a function decorator. I think it is harder to understand, because it uses a generator.</p>
-<p>There were a couple of points in this section:</p>
-<ol class="arabic simple">
-<li><p>You can control where things are printed in your programs by modifying the value of sys.stdout</p></li>
-<li><p>You can use try/except/finally blocks to make sure code gets executed in the event an exception is raised</p></li>
-<li><p>You can use context managers to make sure files get closed, and code gets executed if exceptions are raised.</p></li>
-</ol>
 </section>
 <section id="getting-a-dictionary-of-counts">
 <h2>Getting a dictionary of counts<a class="headerlink" href="#getting-a-dictionary-of-counts" title="Permalink to this heading">#</a></h2>
@@ -1086,6 +989,11 @@ finished
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 3, &#39;b&#39;: 2, &#39;d&#39;: 1, &#39;e&#39;: 2}
+</pre></div>
+</div>
+</div>
 </div>
 <p>That seems like too much code, and that there must be a list comprehension approach combined with a dictionary constructor.</p>
 <div class="cell docutils container">
@@ -1093,6 +1001,11 @@ finished
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">]</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">((</span><span class="n">el</span><span class="p">,</span><span class="n">L</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">el</span><span class="p">))</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">L</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;a&#39;: 3, &#39;b&#39;: 2, &#39;d&#39;: 1, &#39;e&#39;: 2}
 </pre></div>
 </div>
 </div>
@@ -1105,6 +1018,12 @@ finished
 <span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">L</span><span class="p">)[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Counter({&#39;a&#39;: 3, &#39;b&#39;: 2, &#39;e&#39;: 2, &#39;d&#39;: 1})
+3
 </pre></div>
 </div>
 </div>
@@ -1127,6 +1046,15 @@ finished
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3.8.16 (default, Jan 11 2023, 00:28:51) 
+[GCC 11.3.0]
+/opt/hostedtoolcache/Python/3.8.16/x64/bin/python
+linux
+/opt/hostedtoolcache/Python/3.8.16/x64
+</pre></div>
+</div>
+</div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">platform</span></code> module provides similar, complementary information.</p>
 <div class="cell docutils container">
@@ -1145,10 +1073,20 @@ finished
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>uname_result(system=&#39;Linux&#39;, node=&#39;fv-az577-248&#39;, release=&#39;5.15.0-1038-azure&#39;, version=&#39;#45-Ubuntu SMP Mon Apr 24 15:40:42 UTC 2023&#39;, machine=&#39;x86_64&#39;, processor=&#39;x86_64&#39;)
+Linux
+(&#39;64bit&#39;, &#39;ELF&#39;)
+x86_64
+fv-az577-248
+Linux-5.15.0-1038-azure-x86_64-with-glibc2.34
+x86_64
+(&#39;default&#39;, &#39;Jan 11 2023 00:28:51&#39;)
+3.8.16
+</pre></div>
 </div>
-</section>
-<section id="automatic-temporary-directory-changing">
-<h2>Automatic, temporary directory changing<a class="headerlink" href="#automatic-temporary-directory-changing" title="Permalink to this heading">#</a></h2>
+</div>
+</div>
 <p>If you are doing some analysis that requires you to change directories, e.g. to read a file, and then change back to another directory to read another file, you have probably run into problems if there is an error somewhere. You would like to make sure that the code changes back to the original directory after each error. We will look at a few ways to accomplish that here.</p>
 <p>The try/except/finally method is the traditional way to handle exceptions, and make sure that some code “finally” runs. Let us look at two examples here. In the first example, we try to change into a directory that does not exist.</p>
 <div class="cell docutils container">
@@ -1168,6 +1106,14 @@ finished
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running final code&#39;</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">CWD</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finally inside </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>initially inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog
+Exception caught:  &lt;class &#39;FileNotFoundError&#39;&gt;
+Running final code
+finally inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog
 </pre></div>
 </div>
 </div>
@@ -1192,6 +1138,16 @@ finished
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running final code&#39;</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">CWD</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finally inside </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>initially inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog
+inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog/data
+[&#39;test.docx&#39;, &#39;gc-data-21.txt&#39;, &#39;testdata.txt&#39;, &#39;example3.xls&#39;, &#39;debug-2.txt&#39;, &#39;antoine_database.mat&#39;, &#39;debug-4.txt&#39;, &#39;antoine_data.dat&#39;, &#39;raman.txt&#39;, &#39;example.xlsx&#39;, &#39;debug-3.txt&#39;, &#39;example4.xlsx&#39;, &#39;example4.xls&#39;, &#39;PT.txt&#39;, &#39;example2.xls&#39;, &#39;debug.txt&#39;]
+Exception caught:  &lt;class &#39;Exception&#39;&gt;
+Running final code
+finally inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog
 </pre></div>
 </div>
 </div>
@@ -1225,6 +1181,37 @@ finished
 <span class="nb">print</span><span class="p">()</span>
 <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s1">&#39;../data/run2&#39;</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>initially inside /home/runner/work/pycse/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/blog
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">29</span><span class="p">],</span> <span class="n">line</span> <span class="mi">20</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span>         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">CWD</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="c1"># Now we use the context manager</span>
+<span class="ne">---&gt; </span><span class="mi">20</span> <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s1">&#39;../data&#39;</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span>     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;boom&#39;</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/contextlib.py:113,</span> in <span class="ni">_GeneratorContextManager.__enter__</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span> <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span>
+<span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">113</span>     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">114</span> <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;generator didn&#39;t yield&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+<span class="nn">Cell In[29], line 9,</span> in <span class="ni">cd</span><span class="nt">(path)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initially inside </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">CWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">9</span> <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;inside </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">try</span><span class="p">:</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../data&#39;
 </pre></div>
 </div>
 </div>
@@ -1313,7 +1300,6 @@ finished
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-lists">Working with lists</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-a-dictionary-of-counts">Getting a dictionary of counts</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-your-python">About your python</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-temporary-directory-changing">Automatic, temporary directory changing</a></li>
 </ul>
   </nav></div>
 

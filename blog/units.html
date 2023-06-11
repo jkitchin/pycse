@@ -55,6 +55,13 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -166,7 +173,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../book/02-integration-1.html">Integration in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/03-fode-1.html">First-order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../book/05-nth-odes.html">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../book/05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/07-nla-1.html">Nonlinear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/08-nla-2.html">Polynomials in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../book/09-bvp.html">Boundary value problems</a></li>
@@ -203,7 +210,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
 </ul>
 
     </div>
@@ -300,6 +310,23 @@ const thebe_selector_output = ".output, .cell_output"
   <i class="fab fa-github"></i>
   </span>
 <span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/blog/units.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
 </a>
 </li>
       
@@ -443,7 +470,7 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="units">
+  <section class="tex2jax_ignore mathjax_ignore" id="units">
 <h1>Units<a class="headerlink" href="#units" title="Permalink to this heading">#</a></h1>
 <section id="using-units-in-python">
 <h2>Using units in python<a class="headerlink" href="#using-units-in-python" title="Permalink to this heading">#</a></h2>
@@ -525,6 +552,18 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span> <span class="k">as</span> <span class="n">_fsolve</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>It is a little tedious to do this, but we might only have to do it once if we store the new fsolve command in a module. You might notice the wrapped function we wrote above only works for one dimensional problems. If there are multiple dimensions, we have to be a little more careful. In the next example, we expand the wrapped function definition to do both one and multidimensional problems. It appears we cannot use numpy.array element-wise multiplication because you cannot mix units in an array. We will use lists instead. When the problem is one-dimensional, the function will take a scalar, but when it is multidimensional it will take a list or array. We will use try/except blocks to handle these two cases. We will assume multidimensional cases, and if that raises an exception because the argument is not a list, we assume it is scalar. Here is the more robust code example.</p>
 <div class="cell docutils container">
@@ -586,6 +625,18 @@ document.write(`
 <span class="n">Xguess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="p">,</span> <span class="mf">5.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="p">]</span>
 <span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func2</span><span class="p">,</span> <span class="n">Xguess</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s2a = </span><span class="si">{0}</span><span class="se">\n</span><span class="s1">s2b = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span> <span class="k">as</span> <span class="n">_fsolve</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
 </div>
 </div>
@@ -680,6 +731,18 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span> <span class="k">as</span> <span class="n">_fsolve</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>The only downside I can see in the quantities module is that it only handle temperature differences, and not absolute temperatures. If you only use absolute temperatures, this would not be a problem I think. But, if you have mixed temperature scales, the quantities module does not convert them on an absolute scale.</p>
 <div class="cell docutils container">
@@ -690,6 +753,18 @@ document.write(`
 
 <span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">K</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">degF</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">T</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">degC</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">K</span><span class="p">))</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
 </div>
 </div>
@@ -718,6 +793,18 @@ document.write(`
 <span class="n">sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dCadt</span><span class="p">,</span> <span class="n">Ca0</span><span class="p">,</span> <span class="n">tspan</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">Ca0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
 </div>
 </div>
@@ -821,7 +908,6 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span> <span class="n">sol</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$C_A$ (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;images/ode-units-ca.png&#39;</span><span class="p">)</span>
 
 <span class="c1">##################################################################</span>
 <span class="c1"># test coupled ODEs</span>
@@ -860,6 +946,18 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>That is not too bad. This is another example of a function you would want to save in a module for reuse. There is one bad feature of the wrapped odeint function, and that is that it changes the solution for coupled ODEs from an ndarray to a list. That is necessary because you apparently cannot have mixed units in an ndarray. It is fine, however, to have a list of mixed units. This is not a huge problem, but it changes the syntax for plotting results for the wrapped odeint function compared to the unwrapped function without units.</p>
 </section>
@@ -876,6 +974,18 @@ document.write(`
 
 <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">L</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">L</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="c1"># characteristic length</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
 </div>
 </div>
@@ -914,6 +1024,18 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>Now consider the ODE <span class="math notranslate nohighlight">\(\frac{dCa}{dt} = -k Ca\)</span>. We let <span class="math notranslate nohighlight">\(X = Ca/Ca0\)</span>, so <span class="math notranslate nohighlight">\(Ca0 dX = dCa\)</span>. Let <span class="math notranslate nohighlight">\(\tau = t * k\)</span> which in this case is dimensionless. That means <span class="math notranslate nohighlight">\(d\tau = k dt\)</span>. Substitution of these new variables leads to:</p>
 <p><span class="math notranslate nohighlight">\(Ca0*k \frac{dX}{d\tau} = -k Ca0 X \)</span></p>
@@ -943,6 +1065,18 @@ document.write(`
 <span class="n">X_sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dXdtau</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">tauspan</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ca at t = </span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">X_sol</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ca0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">quantities</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">Ca0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
 </div>
 </div>

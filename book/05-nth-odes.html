@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Nth differential equations &#8212; pycse - Python Computations in Science and Engineering</title>
+    <title>Nth order differential equations &#8212; pycse - Python Computations in Science and Engineering</title>
   
   
   
@@ -55,6 +55,13 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -166,7 +173,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">N<sup>th</sup> differential equations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">N<sup>th</sup> order differential equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
@@ -203,7 +210,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
 </ul>
 
     </div>
@@ -300,6 +310,23 @@ const thebe_selector_output = ".output, .cell_output"
   <i class="fab fa-github"></i>
   </span>
 <span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/05-nth-odes.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
 </a>
 </li>
       
@@ -418,7 +445,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>N<sup>th</sup> differential equations</h1>
+    <h1>N<sup>th</sup> order differential equations</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -428,6 +455,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-van-der-pol-oscillator">The Van der Pol oscillator</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-parameterized-ode-many-times">Solving a parameterized ODE many times</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
@@ -441,13 +469,15 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="n-sup-th-sup-differential-equations">
-<h1>N<sup>th</sup> differential equations<a class="headerlink" href="#n-sup-th-sup-differential-equations" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="n-sup-th-sup-order-differential-equations">
+<h1>N<sup>th</sup> order differential equations<a class="headerlink" href="#n-sup-th-sup-order-differential-equations" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p>KEYWORDS: solve_ivp</p></li>
 </ul>
 <p>So far we have focused on computational solutions to first order differential equations, including systems of first order differential equations. The reason for that is simply that all numerical integration strategies only work with the first derivative.</p>
 <p>Many differential equations involve higher order derivatives though. We can solve these by converting them to systems of first-order differential equations through a series of variable changes.</p>
+<section id="the-van-der-pol-oscillator">
+<h2>The Van der Pol oscillator<a class="headerlink" href="#the-van-der-pol-oscillator" title="Permalink to this heading">#</a></h2>
 <p>Let’s consider the <a class="reference external" href="https://en.wikipedia.org/wiki/Van_der_Pol_oscillator">Van der Pol oscillator</a>.</p>
 <p><span class="math notranslate nohighlight">\(\frac{d^2x}{dt^2} - \mu(1-x^2)\frac{dx}{dt} + x = 0\)</span></p>
 <p>We define a new variable: <span class="math notranslate nohighlight">\(v = x'\)</span>, and then have <span class="math notranslate nohighlight">\(v' = x''\)</span>.</p>
@@ -551,9 +581,9 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 2.07283325e+00,  2.02004874e+00,  2.00590349e+00,
          2.00196134e+00,  2.00085100e+00,  2.00053732e+00,
          2.00044864e+00],
-       [-6.93889390e-17,  8.56953397e-16,  6.93889390e-16,
-        -2.96290770e-15,  2.27595720e-15, -5.34294831e-15,
-         5.73933262e-15]])
+       [-6.93889390e-18, -2.25514052e-17, -1.45716772e-15,
+        -2.13717932e-15, -2.19269047e-15, -2.63677968e-15,
+        -5.89545773e-15]])
 </pre></div>
 </div>
 </div>
@@ -616,7 +646,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.00044864e+00, 5.73933262e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 2.00044864e+00, -5.89545773e-15])
 </pre></div>
 </div>
 </div>
@@ -646,10 +676,9 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>([array([2.86945317e-15, 6.29888301e+00, 1.25977615e+01, 1.88966387e+01,
-         2.51955156e+01, 3.14943923e+01, 3.77932690e+01])],
- array([6.29888301, 6.2988785 , 6.29887721, 6.29887685, 6.29887676,
-        6.29887672]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>([array([ 6.29888301, 12.5977615 , 18.89663872, 25.19551557, 31.49439233,
+         37.79326904])],
+ array([6.2988785 , 6.29887721, 6.29887685, 6.29887676, 6.29887672]))
 </pre></div>
 </div>
 </div>
@@ -670,6 +699,7 @@ document.write(`
 </div>
 <p>This limit cycle shows the oscillatory behavior. You can see here that each cycle repeats on top of itself.</p>
 <p><strong>Review</strong> We have been working on finding a steady state oscillatory solution to <span class="math notranslate nohighlight">\(\frac{d^2x}{dt^2} - \mu(1-x^2)\frac{dx}{dt} + x = 0\)</span>, which describes an oscillating system. We examined some ways to tell if a system is oscillating, and to estimate the period of the oscillation.</p>
+</section>
 <section id="solving-a-parameterized-ode-many-times">
 <h2>Solving a parameterized ODE many times<a class="headerlink" href="#solving-a-parameterized-ode-many-times" title="Permalink to this heading">#</a></h2>
 <p><span class="math notranslate nohighlight">\(\mu\)</span> in the Van der Pol system is called a parameter. It is common to study the solution of this system as a function of μ. For <a class="reference external" href="https://en.wikipedia.org/wiki/Van_der_Pol_oscillator#/media/File:VanderPol-lc.svg">example</a>, the oscillatory behavior changes a lot as μ changes. Our aim here is to recreate the figure in that example, showing the steady state limit cycles as a function of μ.</p>
@@ -776,7 +806,9 @@ document.write(`
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For mu=0.5, steady period after 1 iterations
-For mu=0.1, steady period after 0 iterations
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For mu=0.1, steady period after 0 iterations
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For mu=0.01, steady period after 0 iterations
@@ -861,6 +893,7 @@ For mu=0.1, steady period after 0 iterations
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-van-der-pol-oscillator">The Van der Pol oscillator</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-parameterized-ode-many-times">Solving a parameterized ODE many times</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
