@@ -25,11 +25,17 @@ import numpy as np
 import time
 import webbrowser
 import subprocess
+import shutil
 
 
 def pycse():
     """CLI to launch a Docker image with Jupyter lab in the CWD.
     This assumes you have a working Docker installation."""
+    if shutil.which("docker") is None:
+        raise Exception(
+            "docker was not found."
+            " Please install it from https://www.docker.com/"
+        )
     PWD = os.getcwd()
     PORT = np.random.randint(8000, 9000)
 
