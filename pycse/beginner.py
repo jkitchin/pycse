@@ -11,7 +11,6 @@ of these is to delay introducing indexing syntax.
 
 """
 import collections.abc
-import numpy as np
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import quad
 
@@ -69,7 +68,8 @@ def fifth(x):
 
 
 def nth(x, n=0):
-    """Return the nth value of x."""
+    """Return the nth value of x.
+    Note that `n` starts at 0."""
     if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
@@ -179,16 +179,3 @@ def integrate(f, a, b, *args, **kwargs):
             + "See your instructor for help"
         )
     return first(results)
-
-
-def heaviside(x):
-    """Return the heaviside function of x.
-
-    This is equal to zero for x < 0, 0.5 for x==0, and 1 for x > 0.
-    """
-    return 0.5 * (np.sign(x) + 1)
-
-
-def step(x):
-    """Alias for heaviside(x)."""
-    return heaviside(x)

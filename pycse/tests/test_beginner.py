@@ -14,7 +14,6 @@ from pycse.beginner import (
     cut,
     integrate,
     nsolve,
-    heaviside,
 )
 import pytest
 
@@ -163,15 +162,3 @@ def test_nsolve_2():
 
 def test_nsolve_3():
     assert (nsolve(lambda X: [X[0] - 3, X[1] - 4], [2, 2]) == [3, 4]).all()
-
-
-def test_heaviside_1():
-    assert feq(0, heaviside(-1))
-
-
-def test_heaviside_2():
-    assert feq(1, heaviside(1))
-
-
-def test_heaviside_3():
-    assert feq(0.5, heaviside(0))
