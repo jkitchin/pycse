@@ -6,15 +6,15 @@ on:
 
 jobs:
   build:
-    name: nosetest
+    name: pytest
     runs-on: ubuntu-20.04
     timeout-minutes: 5    
     steps:
       - uses: actions/checkout@v3
       - run: |
-          pip install numpy scipy matplotlib pandas IPython ipykernel nbconvert python-coveralls nose nose-cov coverage numdifftools joblib
-          nosetests
-          coverage run -m nose pycse
+          pip install numpy scipy matplotlib pandas IPython ipykernel nbconvert python-coveralls pytest pytest-cov coverage numdifftools joblib
+          pytest
+          coverage run -m pytest pycse
           coverage report -m --include=pycse/*
           
 
