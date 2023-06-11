@@ -63,7 +63,7 @@ def get_hash(func, args, kwargs):
             # outside vars This usually gets a value. But, it includes things
             # like print, which are not variables. I don't know all the
             # variations that might be included, so we just pass on things that
-            # aren't there with None. That is a weakness.             
+            # aren't there with None. That is a weakness.
             [g.get(var, None) for var in func.__code__.co_names],
             func.__code__.co_code,
             args,
@@ -143,7 +143,9 @@ def hashcache(func):
                 "args": args,
                 "arg-names": func.__code__.co_names,
                 "other-names": func.__code__.co_names,
-                "other-values": [g.get(var, None) for var in func.__code__.co_names],
+                "other-values": [
+                    g.get(var, None) for var in func.__code__.co_names
+                ],
                 "kwargs": kwargs,
                 "cwd": os.getcwd(),  # Is this a good idea? Could it leak
                 # sensitive information from the path?

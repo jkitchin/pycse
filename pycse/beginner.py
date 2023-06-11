@@ -10,7 +10,7 @@ elements. There is also a cut function to avoid list slicing syntax. The point
 of these is to delay introducing indexing syntax.
 
 """
-import collections
+import collections.abc
 import numpy as np
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import quad
@@ -18,7 +18,7 @@ from scipy.integrate import quad
 
 def first(x):
     """Return the first element of x if it is iterable, else return x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     return x[0]
@@ -26,7 +26,7 @@ def first(x):
 
 def second(x):
     """Return the second element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 2:
@@ -37,7 +37,7 @@ def second(x):
 
 def third(x):
     """Return the third element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 3:
@@ -48,7 +48,7 @@ def third(x):
 
 def fourth(x):
     """Return the fourth element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 4:
@@ -59,7 +59,7 @@ def fourth(x):
 
 def fifth(x):
     """Return the fifth element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= 5:
@@ -70,7 +70,7 @@ def fifth(x):
 
 def nth(x, n=0):
     """Return the nth value of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     if not len(x) >= n:
@@ -84,7 +84,7 @@ def cut(x, start=0, stop=None, step=None):
 
     This is to avoid having to introduce the slicing syntax.
     """
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     return x[slice(start, stop, step)]
@@ -92,7 +92,7 @@ def cut(x, start=0, stop=None, step=None):
 
 def last(x):
     """Return the last element of x if it is iterable."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     return x[-1]
@@ -100,7 +100,7 @@ def last(x):
 
 def rest(x):
     """Return everything after the first element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     return x[1:]
@@ -108,7 +108,7 @@ def rest(x):
 
 def butlast(x):
     """Return everything but the last element of x."""
-    if not isinstance(x, collections.Iterable):
+    if not isinstance(x, collections.abc.Iterable):
         raise Exception("{} is not iterable.".format(x))
 
     return x[0:-1]

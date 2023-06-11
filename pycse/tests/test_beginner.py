@@ -16,9 +16,7 @@ from pycse.beginner import (
     nsolve,
     heaviside,
 )
-
-from nose.tools import raises
-
+import pytest
 
 a = [1, 2, 3, 4, 5]
 
@@ -28,10 +26,10 @@ def test_first_a():
     assert first(a) == 1
 
 
-@raises(Exception)
 def test_first_b():
     """Check first raises exception."""
-    assert first(1) == 1
+    with pytest.raises(Exception):
+        assert first(1) == 1
 
 
 def test_second_a():
@@ -39,16 +37,16 @@ def test_second_a():
     assert second(a) == 2
 
 
-@raises(Exception)
 def test_second_b():
     """Check second raises exception on integer."""
-    assert second(1) == 0
+    with pytest.raises(Exception):
+        assert second(1) == 0
 
 
-@raises(Exception)
 def test_second_c():
     """Check second raises exception on too short list."""
-    assert second([1]) == 0
+    with pytest.raises(Exception):
+        assert second([1]) == 0
 
 
 def test_third_a():
@@ -56,16 +54,16 @@ def test_third_a():
     assert third(a) == 3
 
 
-@raises(Exception)
 def test_third_b():
     """Check third raises exception on integer."""
-    assert third(1) == 0
+    with pytest.raises(Exception):
+        assert third(1) == 0
 
 
-@raises(Exception)
 def test_third_c():
     """Check third raises exception on short list."""
-    assert third([1, 2]) == 0
+    with pytest.raises(Exception):
+        assert third([1, 2]) == 0
 
 
 def test_fourth_a():
@@ -73,32 +71,33 @@ def test_fourth_a():
     assert fourth(a) == 4
 
 
-@raises(Exception)
 def test_fourth_b():
     """Check fourth raises exception on integer."""
-    assert fourth(1) == 0
+    with pytest.raises(Exception):
+        assert fourth(1) == 0
 
 
-@raises(Exception)
 def test_fourth_c():
     """Check fourth raises exception on short list."""
-    assert fourth([1]) == 0
+    with pytest.raises(Exception):
+        assert fourth([1]) == 0
 
 
 def test_fifth_a():
+    "Check fifth element."
     assert fifth(a) == 5
 
 
-@raises(Exception)
 def test_fifth_b():
     """Check fourth raises exception on integer."""
-    assert fifth(1) == 0
+    with pytest.raises(Exception):
+        assert fifth(1) == 0
 
 
-@raises(Exception)
 def test_fifth_c():
     """Check fifth raises exception on short list."""
-    assert fifth([1]) == 0
+    with pytest.raises(Exception):
+        assert fifth([1]) == 0
 
 
 def test_rest():
@@ -106,10 +105,10 @@ def test_rest():
     assert rest(a) == [2, 3, 4, 5]
 
 
-@raises(Exception)
 def test_rest_2():
     """Check rest raises exception."""
-    assert rest(1) == [2, 3, 4, 5]
+    with pytest.raises(Exception):
+        assert rest(1) == [2, 3, 4, 5]
 
 
 def test_last():
@@ -117,9 +116,9 @@ def test_last():
     assert last(a) == 5
 
 
-@raises(Exception)
 def test_last_b():
-    assert last(5)
+    with pytest.raises(Exception):
+        assert last(5)
 
 
 def test_butlast():
@@ -130,23 +129,23 @@ def test_nth():
     assert nth(a, 1) == 2
 
 
-@raises(Exception)
 def test_nth_a():
-    assert nth(a, 6) is None
+    with pytest.raises(Exception):
+        assert nth(a, 6) is None
 
 
-@raises(Exception)
 def test_nth_a_exc():
-    assert nth(6) is None
+    with pytest.raises(Exception):
+        assert nth(6) is None
 
 
 def test_cut_a():
     assert cut(a, 1, None, 2) == [2, 4]
 
 
-@raises(Exception)
 def test_cut_a_exc4():
-    assert cut(1, 1, None, 2) == [2, 4]
+    with pytest.raises(Exception):
+        assert cut(1, 1, None, 2) == [2, 4]
 
 
 def test_integrate():
@@ -157,9 +156,9 @@ def test_nsolve():
     assert feq(nsolve(lambda x: x - 3, 2), 3)
 
 
-@raises(Exception)
 def test_nsolve_2():
-    assert feq(nsolve(lambda x: x + 3, 2), 3)
+    with pytest.raises(Exception):
+        assert feq(nsolve(lambda x: x + 3, 2), 3)
 
 
 def test_nsolve_3():

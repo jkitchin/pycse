@@ -239,8 +239,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
 
     Parameters
     ----------
-    model : model function with signature model(x, *p)
-    loss : loss function the model was fitted with loss(*p)
+    model : model function with signature model(x, ...)
+    loss : loss function the model was fitted with loss(...)
     popt : the optimized paramters
     xnew : x-values to predict at
     alpha : confidence level, 95% = 0.05
@@ -302,7 +302,7 @@ def bic(x, y, model, popt):
 
     Parameters
     ----------
-    model : function(x, *p) returns prediction for y
+    model : function(x, ...) returns prediction for y
     popt : optimal parameters
     y : array, known y-values
 

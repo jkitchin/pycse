@@ -8,12 +8,13 @@ There are three main areas of content here:
 
 # Support this work
 
-There are a few ways you can support this work.
+This work is time-consuming and hard. Your support can help me stay motivated to continue and grow it. There are a few ways you can support this work.
 
 
-1. Report issues at https://github.com/jkitchin/pycse/issues
-1. Sponsor me <iframe src="https://github.com/sponsors/jkitchin/card" title="Sponsor jkitchin" height="225" width="600" style="border: 0;"></iframe>
-2. Buy a book at https://pointbreezepubs.gumroad.com/
+1. Report typos, bugs, and issues at https://github.com/jkitchin/pycse/issues. This will help make the work higher quality over time.
+2. Sponsor me <iframe src="https://github.com/sponsors/jkitchin/card" title="Sponsor jkitchin" height="225" width="600" style="border: 0;"></iframe>
+3. Buy a book at https://pointbreezepubs.gumroad.com/. This is a newer project than this one, and it is more current.
+4. Tell people about this project so they can learn from it too.
 
 
 ```{tableofcontents}
