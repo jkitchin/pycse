@@ -2,6 +2,8 @@
 
 ![img](pycse.png)
 
+pycse is a few different things. First, it is short for *Python computations in science and engineering*. I have written a book on the topic and many blog posts that are described below. It is *also* a Python library that augments numpy and scipy for scientific programming. This functionality is described in some of the book and blog content, and in the documentation linked below. The content here has been in the making for over a decade now. Some of it shows its age, but I hope you still find it useful!
+
 There are three main areas of content here:
 
 1. [The pycse book](./book/intro.md) - these are notes from a course in mathematical modeling I teach at CMU.
