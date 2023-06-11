@@ -1,5 +1,7 @@
 # Welcome to pycse - Python Computations in Science and Engineering
 
+![img](pycse.png)
+
 There are three main areas of content here:
 
 1. [The pycse book](./book/intro.md) - these are notes from a course in mathematical modeling I teach at CMU.
