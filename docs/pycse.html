@@ -425,7 +425,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.PYCSE">PYCSE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.utils">pycse.utils</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-plotly">pycse.plotly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-hashcache">pycse.hashcache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.hashcache">pycse.hashcache</a></li>
 </ul>
             </nav>
         </div>
@@ -734,8 +734,39 @@ The url should be viewable by anyone with the link.</p>
 <section id="pycse-plotly">
 <h2>pycse.plotly<a class="headerlink" href="#pycse-plotly" title="Permalink to this heading">#</a></h2>
 </section>
-<section id="pycse-hashcache">
-<h2>pycse.hashcache<a class="headerlink" href="#pycse-hashcache" title="Permalink to this heading">#</a></h2>
+<section id="module-pycse.hashcache">
+<span id="pycse-hashcache"></span><h2>pycse.hashcache<a class="headerlink" href="#module-pycse.hashcache" title="Permalink to this heading">#</a></h2>
+<p>hashcache - a decorator for persistent, file/hash-based cache</p>
+<p>I found some features of joblib were unsuitable for how I want to use a cache.</p>
+<p>1. The “file” Python things the function is in is used to save the results in
+joblib, which leads to repeated runs if you run the same code in Python,
+notebook or stdin, and means the cache is not portable to other machines, and
+maybe not even in time since temp directories and kernel parameters are
+involved. I could not figure out how to change those in joblib.</p>
+<p>2. joblib uses the function source code in the hash, so inconsequential changes
+like whitespace, docstrings and comments change the hash.</p>
+<p>This library aims to provide a simpler version of what I wish joblib did for me.</p>
+<p>Results are cached based on a hash of the function name, argnames, bytecode, arg
+values and kwarg values. I use joblib.hash for this. This means any two
+functions with the same bytecode, even if they have different names,</p>
+<p>The cache location is set as a function attribute:</p>
+<blockquote>
+<div><p>hashcache.cachedir = ‘./cache’</p>
+</div></blockquote>
+<p>Caveats:</p>
+<p>1. hash-based approaches are fragile. If the function bytecode changes, the hash
+will change. That means the cache may not work across Python versions, or if
+some kind of optimization is used, etc.</p>
+<p>There is no utility for pruning the cache. You can simply delete the directory,
+or create a new one.</p>
+<p>You can use hashcache.dryrun to avoid reading/writing and just return the cache.
+Here is a way to delete a cache entry.</p>
+<blockquote>
+<div><p>hashcache.dryrun = True</p>
+<p>h = f(22)</p>
+<p>if os.path.exists(h): os.unlink(h)</p>
+</div></blockquote>
+<p>This is alpha, proof of concept code. Test it a lot for your use case.</p>
 </section>
 </section>
 
@@ -809,7 +840,7 @@ The url should be viewable by anyone with the link.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.PYCSE">PYCSE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.utils">pycse.utils</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-plotly">pycse.plotly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-hashcache">pycse.hashcache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.hashcache">pycse.hashcache</a></li>
 </ul>
   </nav></div>
 
