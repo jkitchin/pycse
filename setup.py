@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="pycse",
-    version="2.2.1",
+    version="2.2.2",
     description="python computations in science and engineering",
     url="https://github.com/jkitchin/pycse",
     maintainer="John Kitchin",
@@ -15,6 +15,7 @@ setup(
     setup_requires=["nose>=1.0"],
     data_files=["requirements.txt", "LICENSE"],
     install_requires=["numpy", "scipy", "numdifftools"],
+    entry_points={"console_scripts": ["pycse = pycse.cli:pycse"]},
     long_description="""\
 python computations in science and engineering
 ===============================================
