@@ -26,6 +26,7 @@ import time
 import webbrowser
 import subprocess
 import shutil
+import sys
 
 
 def pycse():
@@ -36,11 +37,6 @@ def pycse():
             "docker was not found."
             " Please install it from https://www.docker.com/"
         )
-    PWD = os.getcwd()
-    PORT = np.random.randint(8000, 9000)
-
-    JUPYTER_TOKEN = str(uuid.uuid4())
-    os.environ["JUPYTER_TOKEN"] = JUPYTER_TOKEN
 
     # Check setup and get image if needed
     try:
@@ -53,14 +49,56 @@ def pycse():
             ["docker", "pull", "jkitchin/pycse"], capture_output=True
         )
 
-    cmd1 = (
+    # Check if the container is already running
+    p = subprocess.run(
+        ["docker", "ps", "--format", '"{{.Names}}"'], capture_output=True
+    )
+    if "pycse" in p.stdout.decode("utf-8"):
+        ans = input(
+            "There is already a pycse container running."
+            "Do you want to kill it? (y/n)"
+        )
+        if ans.lower() == "y":
+            subprocess.run("docker rm -f pycse".split())
+        else:
+            print(
+                "There can only be one pycse container running at a time."
+                "Connecting to it."
+            )
+
+            # this outputs something like 0.0.0.0:8987
+            p = subprocess.run(
+                "docker port pycse 8888".split(), capture_output=True
+            )
+            output = p.stdout.decode("utf-8").strip()
+            PORT = output.split(":")[-1]
+
+            # We need the token for the running container
+            p = subprocess.run(
+                ["docker", "exec", "pycse", "printenv", "JUPYTER_TOKEN"],
+                capture_output=True,
+            )
+            JUPYTER_TOKEN = p.stdout.decode("utf-8").strip()
+
+            url = f"http://localhost:{PORT}/lab?token={JUPYTER_TOKEN}"
+            webbrowser.open(url)
+            sys.exit()
+
+    # Start a new container.
+    PWD = os.getcwd()
+    PORT = np.random.randint(8000, 9000)
+
+    JUPYTER_TOKEN = str(uuid.uuid4())
+    os.environ["JUPYTER_TOKEN"] = JUPYTER_TOKEN
+
+    cmd = (
         f"docker run -d --name pycse -it --rm -p {PORT}:8888 "
-        f"-e JUPYTER_TOKEN -v {PWD}:/home/jovyan/work"
+        f"-e JUPYTER_TOKEN -v {PWD}:/home/jovyan/work "
         "jkitchin/pycse"
     )
 
-    print("Starting Jupyter lab. Type C-c to quit")
-    subprocess.Popen(cmd1.split())
+    print("Starting Jupyter lab. Type C-c to quit.")
+    subprocess.Popen(cmd.split())
 
     time.sleep(2)
 
