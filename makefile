@@ -11,6 +11,9 @@ pylint:
 test:
 	nosetests
 
+clean:
+	rm -fr build dist
+
 upload:
 	python setup.py sdist bdist_wheel
 	twine upload dist/*
