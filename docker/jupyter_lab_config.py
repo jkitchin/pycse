@@ -6,8 +6,6 @@
 # ------------------------------------------------------------------------------
 ## This is an application.
 
-print("Reading jupyter_lab_config")
-
 ## The date format used by logging formatters for %(asctime)s
 #  Default: '%Y-%m-%d %H:%M:%S'
 # c.Application.log_datefmt = '%Y-%m-%d %H:%M:%S'
@@ -1008,3 +1006,5 @@ c.ServerApp.ip = "*"
 #          Should be in the form of an HTTP origin: ws[s]://hostname[:port]
 #  Default: ''
 # c.ServerApp.websocket_url = ''
+
+c.ContentsManager.allow_hidden = True

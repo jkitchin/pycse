@@ -17,6 +17,13 @@ properly. This should do it:
 
 > docker rm -f pycse
 
+The Docker Desktop app is also helpful for this kind of stuff.
+
+TODO: make this a click app, with cli arguments to update the image? e.g.
+
+> pycse --update
+> pycse path/to/working-dir
+
 """
 
 import os
