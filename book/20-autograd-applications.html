@@ -1,67 +1,85 @@
 
-
 <!DOCTYPE html>
 
-
-<html lang="en" >
-
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Introduction to automatic differentiation &#8212; pycse - Python Computations in Science and Engineering</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
+    
+      
+
+    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js"></script>
-    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('js', new Date());
-                gtag('config', 'G-4H7VFJKEZY');
-            </script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "jkitchin/dsmles");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -70,446 +88,546 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'book/20-autograd-applications';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Introduction to machine learning" href="21-machine-learning.html" />
     <link rel="prev" title="Linear regression" href="18-linear-regression.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+<script>
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){ dataLayer.push(arguments); }
+                    gtag('js', new Date());
+                    gtag('config', 'G-4H7VFJKEZY');
+                </script>
+
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
 
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
         
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
-  </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-  
-
-<a class="navbar-brand logo" href="../intro.html">
-  
-  
-  
-  
-    
-    
       
-    
-    
-    <img src="../_static/pycse.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
-  
-  
-</a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        
-        <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="../intro.html">
-                    Welcome to pycse - Python Computations in Science and Engineering
-                </a>
-            </li>
-        </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+      
+      <img src="../_static/pycse.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">pycse - Python Computations in Science and Engineering</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro.html">
+   Welcome to pycse - Python Computations in Science and Engineering
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  The pycse book
+ </span>
+</p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
-<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to automatic differentiation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   The pycse book
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="00-intro.html">
+   Introduction to Python and Jupyter
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="01-jupyter.html">
+   More about using Jupyter notebooks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02-integration-1.html">
+   Integration in Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="03-fode-1.html">
+   First-order differential equations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04-fode-2.html">
+   Systems of first-order differential equations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="05-nth-odes.html">
+   N
+   <sup>
+    th
+   </sup>
+   order differential equations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07-nla-1.html">
+   Nonlinear algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08-nla-2.html">
+   Polynomials in Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09-bvp.html">
+   Boundary value problems
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="10-min-max.html">
+   Introduction to optimization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11-regression.html">
+   Nonlinear regression
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12-nonlinear-regression-2.html">
+   Uncertainty quantification in nonlinear regression
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13-constrained-optimization.html">
+   Constrained optimization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15-intro-linear-algebra.html">
+   Introduction to linear algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16-linear-algebra.html">
+   Applications of linear algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17-linear-algebra-2.html">
+   Interpolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="18-linear-regression.html">
+   Linear regression
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Introduction to automatic differentiation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21-machine-learning.html">
+   Introduction to machine learning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="22-ml-2.html">
+   Topics in machine learning
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23-gp.html">
+   Gaussian Process Regression
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="conclusions.html">
+   Concluding remarks
+  </a>
+ </li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  The pycse blog
+ </span>
+</p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/intro.html">
+   The PYCSE blog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/basic-python.html">
+   Basic python usage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/math.html">
+   Math
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/linear-algebra.html">
+   Linear algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/nonlinear-algebra.html">
+   Nonlinear algebra
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/statistics.html">
+   Statistics
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/data-analysis.html">
+   Data analysis
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/interpolation.html">
+   Interpolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/optimization.html">
+   Optimization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/differential-equations.html">
+   Differential equations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/plotting.html">
+   Plotting
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/units.html">
+   Units
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/programming.html">
+   Programming
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../blog/worked-examples.html">
+   Worked examples
+  </a>
+ </li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  pycse documentation
+ </span>
+</p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="../docs/running-pycse.html">Running pycse</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../docs/beginner.html">pycse - Beginner mode</a></li>
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="../docs/utils.html">pycse.utils</a></li>
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/about.html">
+   About pycse
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/running-pycse.html">
+   Running pycse
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/pycse.html">
+   Documentation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/beginner.html">
+   pycse - Beginner mode
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/utils.html">
+   pycse.utils
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../docs/execution-statistics.html">
+   Build statistics
+  </a>
+ </li>
 </ul>
 
     </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-  </div>
-  
-  <div id="rtd-footer-container"></div>
+</nav> <!-- To handle the deprecated key -->
 
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
 
-      </div>
-      
-      <main id="main-content" class="bd-main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</label></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-launch-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
-    <i class="fas fa-rocket"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://lab.amdatascience.com/hub/user-redirect/git-pull?repo=https%3A//github.com/jkitchin/pycse&urlpath=lab/tree/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb&branch=master" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch onJupyterHub"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img src="../_static/images/logo_jupyterhub.svg">
-  </span>
-<span class="btn__text-container">JupyterHub</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb" target="_blank"
-   class="btn btn-sm dropdown-item"
-   title="Launch onColab"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  
-    <img src="../_static/images/logo_colab.png">
-  </span>
-<span class="btn__text-container">Colab</span>
-</a>
-</li>
-      
-  </ul>
 </div>
 
 
+          
 
 
-
-
-<div class="dropdown dropdown-source-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
-    <i class="fab fa-github"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
-   class="btn btn-sm btn-source-repository-button dropdown-item"
-   title="Source repository"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="btn__text-container">Repository</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb" target="_blank"
-   class="btn btn-sm btn-source-edit-button dropdown-item"
-   title="Suggest edit"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-pencil-alt"></i>
-  </span>
-<span class="btn__text-container">Suggest edit</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/20-autograd-applications.html&body=Your%20issue%20content%20here." target="_blank"
-   class="btn btn-sm btn-source-issues-button dropdown-item"
-   title="Open an issue"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="btn__text-container">Open issue</span>
-</a>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/book/20-autograd-applications.ipynb" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.ipynb</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script>
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to automatic differentiation</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
             
-            <div>
-                <h2> Contents </h2>
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/book/20-autograd-applications.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/jkitchin/pycse"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/20-autograd-applications.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/jkitchin/pycse/master?urlpath=lab/tree/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        <a class="jupyterhub-button" href="https://lab.amdatascience.com//hub/user-redirect/git-pull?repo=https://github.com/jkitchin/pycse&urlpath=lab/tree/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb&branch=master"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch JupyterHub" data-toggle="tooltip"
+                data-placement="left"><img class="jupyterhub-button-logo"
+                    src="../_static/images/logo_jupyterhub.svg"
+                    alt="Interact on JupyterHub">JupyterHub</button></a>
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/20-autograd-applications.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
             </div>
-            <nav aria-label="Page">
+            <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-scientific-and-engineering-applications-of-autograd">Mathematical, scientific and engineering applications of autograd</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-line-integrals">Evaluating line integrals</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization-with-lagrange-multipliers-and-autograd">Constrained optimization with Lagrange multipliers and autograd</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-derivatives-from-implicit-functions-with-autograd">Getting derivatives from implicit functions with autograd</a></li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mathematical-scientific-and-engineering-applications-of-autograd">
+   Mathematical, scientific and engineering applications of autograd
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#evaluating-line-integrals">
+     Evaluating line integrals
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#constrained-optimization-with-lagrange-multipliers-and-autograd">
+     Constrained optimization with Lagrange multipliers and autograd
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#getting-derivatives-from-implicit-functions-with-autograd">
+     Getting derivatives from implicit functions with autograd
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#scientific-applications">
+   Scientific applications
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#compressibility-variation-from-an-implicit-equation-of-state">
+     Compressibility variation from an implicit equation of state
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#computing-the-pressure-from-a-solid-equation-of-state">
+     Computing the pressure from a solid equation of state
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#sensitivity-analysis-using-automatic-differentiation-in-python">
+     Sensitivity analysis using automatic differentiation in Python
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
 </ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scientific-applications">Scientific applications</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compressibility-variation-from-an-implicit-equation-of-state">Compressibility variation from an implicit equation of state</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-the-pressure-from-a-solid-equation-of-state">Computing the pressure from a solid equation of state</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-analysis-using-automatic-differentiation-in-python">Sensitivity analysis using automatic differentiation in Python</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
-</ul>
+
             </nav>
         </div>
     </div>
 </div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Introduction to automatic differentiation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mathematical-scientific-and-engineering-applications-of-autograd">
+   Mathematical, scientific and engineering applications of autograd
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#evaluating-line-integrals">
+     Evaluating line integrals
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#constrained-optimization-with-lagrange-multipliers-and-autograd">
+     Constrained optimization with Lagrange multipliers and autograd
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#getting-derivatives-from-implicit-functions-with-autograd">
+     Getting derivatives from implicit functions with autograd
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#scientific-applications">
+   Scientific applications
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#compressibility-variation-from-an-implicit-equation-of-state">
+     Compressibility variation from an implicit equation of state
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#computing-the-pressure-from-a-solid-equation-of-state">
+     Computing the pressure from a solid equation of state
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#sensitivity-analysis-using-automatic-differentiation-in-python">
+     Sensitivity analysis using automatic differentiation in Python
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+</ul>
 
-              
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
                 
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-automatic-differentiation">
-<h1>Introduction to automatic differentiation<a class="headerlink" href="#introduction-to-automatic-differentiation" title="Permalink to this heading">#</a></h1>
+  <div class="tex2jax_ignore mathjax_ignore section" id="introduction-to-automatic-differentiation">
+<h1>Introduction to automatic differentiation<a class="headerlink" href="#introduction-to-automatic-differentiation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>KEYWORDS: autograd</p></li>
 </ul>
@@ -518,10 +636,10 @@ document.write(`
 <p>autograd has largely been replaced by jax and pytorch today (2023). autograd is still the easiest starting point in my opinion, so I am leaving this as it is.</p>
 </div>
 <p>Automatic differentiation is the automated application of the chain rule to computer programs to compute derivatives. It is the centerpiece technology in machine learning that enables the “training” or optimization of model parameters to best fit data. We introduce it here in the context of science and engineering applications.</p>
-<section id="mathematical-scientific-and-engineering-applications-of-autograd">
-<h2>Mathematical, scientific and engineering applications of autograd<a class="headerlink" href="#mathematical-scientific-and-engineering-applications-of-autograd" title="Permalink to this heading">#</a></h2>
-<section id="evaluating-line-integrals">
-<h3>Evaluating line integrals<a class="headerlink" href="#evaluating-line-integrals" title="Permalink to this heading">#</a></h3>
+<div class="section" id="mathematical-scientific-and-engineering-applications-of-autograd">
+<h2>Mathematical, scientific and engineering applications of autograd<a class="headerlink" href="#mathematical-scientific-and-engineering-applications-of-autograd" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="evaluating-line-integrals">
+<h3>Evaluating line integrals<a class="headerlink" href="#evaluating-line-integrals" title="Permalink to this headline">¶</a></h3>
 <p>A line integral is an integral of a function along a curve in space. We usually represent the curve by a parametric equation, e.g. <span class="math notranslate nohighlight">\(\mathbf{r}(t) = [x(t), y(t), z(t)] = x(t)\mathbf{i} + y(t)\mathbf{j} + z(t)\mathbf{k}\)</span>.  So, in general the curve will be a vector function, and the function we want to integrate will also be a vector function.</p>
 <p>Then, we can write the line integral definition as:</p>
 <p><span class="math notranslate nohighlight">\(\int_C \mathbf{F(r)} \cdot d\mathbf{r} = \int_a^b \mathbf{F}(\mathbf{r}(t)) \cdot \mathbf{r'}(t) dt\)</span> where <span class="math notranslate nohighlight">\(\mathbf{r'}(t) = \frac{d\mathbf{r}}{dt}\)</span>. This integrand is a scalar function, because of the dot product.</p>
@@ -582,13 +700,13 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.45215047830053945
 </pre></div>
 </div>
-<img alt="../_images/ea9ef73add353d61caaf14e32129973a0304aea0ae9c4eb508b35110353dda93.png" src="../_images/ea9ef73add353d61caaf14e32129973a0304aea0ae9c4eb508b35110353dda93.png" />
+<img alt="../_images/20-autograd-applications_7_1.png" src="../_images/20-autograd-applications_7_1.png" />
 </div>
 </div>
 <p>We get the same result as the analytical solution.</p>
-</section>
-<section id="constrained-optimization-with-lagrange-multipliers-and-autograd">
-<h3>Constrained optimization with Lagrange multipliers and autograd<a class="headerlink" href="#constrained-optimization-with-lagrange-multipliers-and-autograd" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="constrained-optimization-with-lagrange-multipliers-and-autograd">
+<h3>Constrained optimization with Lagrange multipliers and autograd<a class="headerlink" href="#constrained-optimization-with-lagrange-multipliers-and-autograd" title="Permalink to this headline">¶</a></h3>
 <p>Constrained optimization is common in engineering problems solving. A prototypical example (from Greenberg, Advanced Engineering Mathematics, Ch 13.7) is to find the point on a plane that is closest to the origin. The plane is defined by the equation <span class="math notranslate nohighlight">\(2x - y + z = 3\)</span>, and we seek to minimize <span class="math notranslate nohighlight">\(x^2 + y^2 + z^2\)</span> subject to the equality constraint defined by the plane. <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> provides a pretty convenient interface to solve a problem like this, as shown here.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -713,9 +831,9 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 </div>
 </div>
-</section>
-<section id="getting-derivatives-from-implicit-functions-with-autograd">
-<h3>Getting derivatives from implicit functions with autograd<a class="headerlink" href="#getting-derivatives-from-implicit-functions-with-autograd" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="getting-derivatives-from-implicit-functions-with-autograd">
+<h3>Getting derivatives from implicit functions with autograd<a class="headerlink" href="#getting-derivatives-from-implicit-functions-with-autograd" title="Permalink to this headline">¶</a></h3>
 <p>If we have an implicit function: <span class="math notranslate nohighlight">\(f(x, y(x)) = 0\)</span>, but we want to compute the derivative <span class="math notranslate nohighlight">\(dy/dx\)</span> we can use the chain rule to derive:</p>
 <p><span class="math notranslate nohighlight">\(df/dx + df/dy * dy/dx = 0\)</span></p>
 <p>We can then solve for <span class="math notranslate nohighlight">\(dy/dx\)</span>:</p>
@@ -763,7 +881,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
-<img alt="../_images/8530ae3f77826f7363d8003b2d3c59281d93308aa641f6983a946c20af361c0a.png" src="../_images/8530ae3f77826f7363d8003b2d3c59281d93308aa641f6983a946c20af361c0a.png" />
+<img alt="../_images/20-autograd-applications_24_1.png" src="../_images/20-autograd-applications_24_1.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -802,12 +920,12 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="scientific-applications">
-<h2>Scientific applications<a class="headerlink" href="#scientific-applications" title="Permalink to this heading">#</a></h2>
-<section id="compressibility-variation-from-an-implicit-equation-of-state">
-<h3>Compressibility variation from an implicit equation of state<a class="headerlink" href="#compressibility-variation-from-an-implicit-equation-of-state" title="Permalink to this heading">#</a></h3>
+</div>
+</div>
+<div class="section" id="scientific-applications">
+<h2>Scientific applications<a class="headerlink" href="#scientific-applications" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="compressibility-variation-from-an-implicit-equation-of-state">
+<h3>Compressibility variation from an implicit equation of state<a class="headerlink" href="#compressibility-variation-from-an-implicit-equation-of-state" title="Permalink to this headline">¶</a></h3>
 <p>There are two ways to explore how some property varies with some parameter. One is if you have an equation relating them, you simply solve it many times for each parameter. Another is if you can derive an equation for how the property changes with parameter changes, then you have an ODE you can integrate. We explore that here. We will use the van der Waal equation of state to derive an equation for how the compressibility changes with the reduced pressure.</p>
 <p>The general strategy to compute the compressibility as a function of pressure is to integrate <span class="math notranslate nohighlight">\(dV / dP_r\)</span> over a range of <span class="math notranslate nohighlight">\(P_r\)</span> to get the molar volume as a function of <span class="math notranslate nohighlight">\(P_r\)</span>, and then to directly compute the compressibility from <span class="math notranslate nohighlight">\(Z = PV/(RT)\)</span>.</p>
 <p>To use this approach we need to get <span class="math notranslate nohighlight">\(dV / dP_r\)</span> from the van der Waal equation. Here, we follow the work in the previous section to get the derivative from the implicit form of the van der Waal equation:</p>
@@ -893,13 +1011,13 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The solver successfully reached the end of the integration interval.
 </pre></div>
 </div>
-<img alt="../_images/549d70c749bdc3d8e977369597baad37ca444ea8b4aeb1f9e4ad7844cd7f16df.png" src="../_images/549d70c749bdc3d8e977369597baad37ca444ea8b4aeb1f9e4ad7844cd7f16df.png" />
+<img alt="../_images/20-autograd-applications_37_1.png" src="../_images/20-autograd-applications_37_1.png" />
 </div>
 </div>
 <p>There are several advantages of doing this over iteratively solving with fsolve. The biggest one is no initial guesses! It is also faster. What do you think would happen if there were multiple roots in the equation?</p>
-</section>
-<section id="computing-the-pressure-from-a-solid-equation-of-state">
-<h3>Computing the pressure from a solid equation of state<a class="headerlink" href="#computing-the-pressure-from-a-solid-equation-of-state" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="computing-the-pressure-from-a-solid-equation-of-state">
+<h3>Computing the pressure from a solid equation of state<a class="headerlink" href="#computing-the-pressure-from-a-solid-equation-of-state" title="Permalink to this headline">¶</a></h3>
 <p>A solid equation of state describes the energy of a solid under isotropic strain. We can readily compute the pressure at a particular volume from the equation:</p>
 <p><span class="math notranslate nohighlight">\(P = -\frac{dE}{dV}\)</span></p>
 <p>We just need the derivative of this equation:</p>
@@ -930,9 +1048,9 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 </div>
 <p>So it takes positive pressure to compress the system, as expected, and at the minimum the pressure is equal to zero. Seems pretty clear autograd is better than deriving the required pressure derivative.</p>
-</section>
-<section id="sensitivity-analysis-using-automatic-differentiation-in-python">
-<h3>Sensitivity analysis using automatic differentiation in Python<a class="headerlink" href="#sensitivity-analysis-using-automatic-differentiation-in-python" title="Permalink to this heading">#</a></h3>
+</div>
+<div class="section" id="sensitivity-analysis-using-automatic-differentiation-in-python">
+<h3>Sensitivity analysis using automatic differentiation in Python<a class="headerlink" href="#sensitivity-analysis-using-automatic-differentiation-in-python" title="Permalink to this headline">¶</a></h3>
 <p>This <a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.428.6699&amp;rep=rep1&amp;type=pdf">paper</a> describes how sensitivity analysis requires access to the derivatives of a function. Say, for example we have a function describing the time evolution of the concentration of species A:</p>
 <p><span class="math notranslate nohighlight">\([A] = \frac{[A]_0}{k_1 + k_{-1}} (k_1 e^{(-(k_1 + k_{-1})t)} + k_{-1})\)</span></p>
 <p>The local sensitivity of the concentration of A to the parameters <span class="math notranslate nohighlight">\(k1\)</span> and <span class="math notranslate nohighlight">\(k_1\)</span> are defined as <span class="math notranslate nohighlight">\(\frac{\partial A}{\partial k1}\)</span> and <span class="math notranslate nohighlight">\(\frac{\partial A}{\partial k_1}\)</span>. Our goal is to plot the sensitivity as a function of time. We could derive those derivatives, but we will use auto-differentiation instead through the autograd package.</p>
@@ -960,7 +1078,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4f098c0c7af4a6394fbceb12ca0294565889f330bb85759b3f0d7475c772a98e.png" src="../_images/4f098c0c7af4a6394fbceb12ca0294565889f330bb85759b3f0d7475c772a98e.png" />
+<img alt="../_images/20-autograd-applications_45_0.png" src="../_images/20-autograd-applications_45_0.png" />
 </div>
 </div>
 <p>The figure above reproduces Fig. 1 from the paper referenced above.  Next, we use autograd to get the derivatives. We need the derivative of the function with respect to the second and third arguments; the default is the first argument. Second, we want to evaluate this derivative at each time value.  Finally, to reproduce Figure 2a, we plot the absolute value of the sensitivities.</p>
@@ -985,17 +1103,17 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f7773c6dca08234662a7e5f381e5bb37023be4851af0ebbaae134bf5d1a22fce.png" src="../_images/f7773c6dca08234662a7e5f381e5bb37023be4851af0ebbaae134bf5d1a22fce.png" />
+<img alt="../_images/20-autograd-applications_47_0.png" src="../_images/20-autograd-applications_47_0.png" />
 </div>
 </div>
 <p>That looks like the figure in the paper. To summarize the main takeaway, autograd enabled us to readily compute derivatives without having to derive them manually.</p>
-</section>
-</section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>These are just some of <em>many</em> possible applications of automatic differentiation in mathematics and engineering. The key points you should take away from this is that it is often possible to program with derivatives, and to compute derivatives automatically in many cases. This enables you to think about writing programs that reflect the mathematical and scientific ideas you are trying to implement more directly, and in many cases less approximately.</p>
-</section>
-</section>
+</div>
+</div>
 
     <script type="text/x-thebe-config">
     {
@@ -1009,7 +1127,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
             mode: "python"
         },
         kernelOptions: {
-            name: "python3",
+            kernelName: "python3",
             path: "./book"
         },
         predefinedOutput: true
@@ -1017,117 +1135,44 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
     </script>
     <script>kernelName = 'python3'</script>
 
-                </article>
+              </div>
               
-
-              
-              
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="18-linear-regression.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Linear regression</p>
-      </div>
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="18-linear-regression.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Linear regression</p>
+        </div>
     </a>
-    <a class="right-next"
-       href="21-machine-learning.html"
-       title="next page">
-      <div class="prev-next-info">
+    <a class='right-next' id="next-link" href="21-machine-learning.html" title="next page">
+    <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">Introduction to machine learning</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
-</div></div>
-  
-</div>
-
-                </footer>
-              
-            </div>
-            
-            
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-scientific-and-engineering-applications-of-autograd">Mathematical, scientific and engineering applications of autograd</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-line-integrals">Evaluating line integrals</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization-with-lagrange-multipliers-and-autograd">Constrained optimization with Lagrange multipliers and autograd</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-derivatives-from-implicit-functions-with-autograd">Getting derivatives from implicit functions with autograd</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scientific-applications">Scientific applications</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compressibility-variation-from-an-implicit-equation-of-state">Compressibility variation from an implicit equation of state</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-the-pressure-from-a-solid-equation-of-state">Computing the pressure from a solid equation of state</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sensitivity-analysis-using-automatic-differentiation-in-python">Sensitivity analysis using automatic differentiation in Python</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By John Kitchin
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  <p class="copyright">
-    
-      © Copyright 2023.
-      <br/>
-    
-  </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-</div>
-          </footer>
-        
-
-      </main>
     </div>
-  </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By John Kitchin<br/>
+    
+        &copy; Copyright 2023.<br/>
+  </p>
+</footer>
+</main>
 
-  <footer class="bd-footer">
-  </footer>
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
   </body>
 </html>
