@@ -10,12 +10,14 @@ SHELL ["/bin/bash", "-c"]
 USER root
 # These packages are to get PDF export via LaTeX (minimal) and via webpdf
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-	&& apt-get -y install --no-install-recommends pandoc \
-	texlive-xetex texlive-fonts-recommended texlive-plain-generic \
-	xorg xvfb gtk2-engines-pixbuf \
-	dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi xfonts-cyrillic xfonts-scalable \
-	libnss3-dev libxss1 libcups2 libasound2 libpangocairo-1.0-0 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 \
-    nodejs npm libzmq3-dev tree
+    && apt-get -y install --no-install-recommends pandoc \
+    texlive-xetex texlive-fonts-recommended texlive-plain-generic \
+    xorg xvfb gtk2-engines-pixbuf \
+    dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi xfonts-cyrillic xfonts-scalable \
+    libnss3-dev libxss1 libcups2 libasound2 libpangocairo-1.0-0 \
+    libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 \
+    nodejs npm libzmq3-dev tree \
+    curl jq graphviz
 
 # This is for jupyter-lsp
 # see https://github.com/jupyter-lsp/jupyterlab-lsp#installation
@@ -32,6 +34,7 @@ RUN python -m pip install --upgrade pip \
 	jupyterlab-git jupyter-videochat \
 	jupyterlab-spellchecker \
 	jupyterlab-code-formatter \
+	pydotplus ase \
 	&& jupyter labextension install plotlywidget \
 	&& pip install jupyterlab-link-share \
 	&& jupyter server extension disable nbclassic 
