@@ -96,29 +96,49 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
     return decorator
 
 
-# Version 2
+# The manager version
 
 
 def check_result(func):
     """Decorator for functions to check the function result."""
 
-    def wrapper(arguments, result):
-        if isinstance(result, Exception):
-            return None
-        else:
-            return func(arguments, result)
+    # This code defines a wrapper for a callable class, or a function. It feels
+    # weird, but I could not find a way to inspect the func to see if it is a
+    # class method any other way. inspect.ismethod did not work here.
+    if func.__name__ == "__call__":
+
+        def wrapper(self, arguments, result):
+            if isinstance(result, Exception):
+                return None
+            else:
+                return func(self, arguments, result)
+
+    else:
+
+        def wrapper(arguments, result):
+            if isinstance(result, Exception):
+                return None
+            else:
+                return func(arguments, result)
 
     return wrapper
 
 
 def check_exception(func):
     """Decorator for functions to fix exceptions."""
+    if func.__name__ == "__call__":
 
-    def wrapper(arguments, result):
-        if isinstance(result, Exception):
-            return func(arguments, result)
-        else:
-            return None
+        def wrapper(self, arguments, result):
+            if isinstance(result, Exception):
+                return func(self, arguments, result)
+
+    else:
+
+        def wrapper(arguments, result):
+            if isinstance(result, Exception):
+                return func(arguments, result)
+            else:
+                return None
 
     return wrapper
 
