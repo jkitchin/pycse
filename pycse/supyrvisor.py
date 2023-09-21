@@ -13,9 +13,11 @@ This library was a proof of concept in making a decorator for this purpose. In
 the end, I am not sure it is less heavyweight than custodian.
 
 [2023-09-20 Wed] Lightly tested on some examples.
+[2023-09-21 Thu] Added the manager.
 """
 
 import functools
+import inspect
 
 
 def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
@@ -32,7 +34,7 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
     which indicates there is no fix.
 
     MAX_ERRORS is the maximum number of issues to try to fix. A value of -1
-    means for ever.
+    means try forever.
     """
 
     def decorator(func):
@@ -84,6 +86,114 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
 
                     # if run is not None, this goes back to the while loop with
                     # new params in run
+
+            # after the loop, we should raise if we got too many errors
+            if nerrors == max_errors:
+                raise Exception("Too many errors found")
+
+        return wrapper
+
+    return decorator
+
+
+# Version 2
+
+
+def check_result(func):
+    """Decorator for functions to check the function result."""
+
+    def wrapper(arguments, result):
+        if isinstance(result, Exception):
+            return None
+        else:
+            return func(arguments, result)
+
+    return wrapper
+
+
+def check_exception(func):
+    """Decorator for functions to fix exceptions."""
+
+    def wrapper(arguments, result):
+        if isinstance(result, Exception):
+            return func(arguments, result)
+        else:
+            return None
+
+    return wrapper
+
+
+def manager(checkers=(), max_errors=5, verbose=False):
+    """Decorator to manage a function. After the function is run, each function
+    in CHECKERS is run on the result. Each checker function has the signature
+    check(arguments, result). arguments will always be a dictionary of kwargs,
+    including the default values. If the function should be rerun, then the
+    checker function should return a new arguments dictionary to rerun the
+    function with. Otherwise, it should return None.
+
+    The checker functions should be decorated with check_results or
+    check_exception to indicate which one they handle.
+
+    MAX_ERRORS is the maximum number of issues to try to fix. A value of -1
+    means try forever.
+
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            nerrors = 0
+
+            # build the kwargs representation
+            # this converts args to kwargs
+            sig = inspect.signature(func)
+            normalized_args = sig.bind(*args, **kwargs)
+            normalized_args.apply_defaults()
+            runargs = normalized_args.arguments
+
+            while runargs and (nerrors < max_errors):
+                try:
+                    result = func(**runargs)
+                    for checker in checkers:
+                        # run is None if everything checks out
+                        # or run is (args, kwargs) if it needs to be run again
+                        rerun_args = checker(runargs, result)
+                        if rerun_args:
+                            runargs = rerun_args
+                            if verbose:
+                                s = getattr(checker, "__name__", checker)
+                                print(f"Proposed fix in {s}: {runargs}")
+                            nerrors += 1
+                            # short-circuit break because we need to run it now.
+                            # this is a sequential fix, and does not allow a way
+                            # to choose what to fix if there is more than one
+                            # error
+                            break
+                    # After all the checks, run is None if they all passed, that
+                    # means we should return
+                    if not checkers or rerun_args is None:
+                        return result
+                    # Now should be returning to the while loop with new params
+                    # in run
+
+                except Exception as e:
+                    for checker in checkers:
+                        rerun_args = checker(runargs, e)
+                        if rerun_args:
+                            runargs = rerun_args
+                            if verbose:
+                                s = getattr(checker, "__name__", checker)
+                                print(f"Proposed fix in {s}: {runargs}")
+                            nerrors += 1
+                            break  # break out as soon as we get a fix
+
+                    if rerun_args is None:
+                        # no new arguments to rerun with were found
+                        # so nothing can be fixed.
+                        raise (e)
+
+                    # if runargs is not None, this goes back to the while loop
+                    # with new params in run
 
             # after the loop, we should raise if we got too many errors
             if nerrors == max_errors:
