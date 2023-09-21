@@ -35,10 +35,6 @@ See https://kitchingroup.cheme.cmu.edu/pycse for documentation.
       """,
 )
 
-# (shell-command "python setup.py register") to setup user
-# to push to pypi - (shell-command "python setup.py sdist upload")
-
-
-# Set TWINE_USERNAME and TWINE_PASSWORD in .bashrc
+# see ~/.pypirc for 2FA setup with token
 # (shell-command "python setup.py sdist bdist_wheel")
 # (shell-command "twine upload dist/*")
