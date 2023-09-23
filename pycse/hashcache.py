@@ -20,25 +20,8 @@ to the same result.
 
 The cache location is set as a function attribute:
 
-    hashcache.cachedir = './cache'
+    hashcache.cache = './cache'
 
-Caveats:
-
-1. hash-based approaches are fragile. If the function bytecode changes, the hash
-will change. That means the cache may not work across Python versions, or if
-some kind of optimization is used, etc.
-
-There is no utility for pruning the cache. You can simply delete the directory,
-or create a new one.
-
-You can use hashcache.dryrun to avoid reading/writing and just return the cache.
-Here is a way to delete a cache entry.
-
-    hashcache.dryrun = True
-
-    h = f(22)
-
-    if os.path.exists(h): os.unlink(h)
 
 This is alpha, proof of concept code. Test it a lot for your use case. The API
 is not stable, and subject to change.
@@ -53,19 +36,27 @@ Pros:
 1. File-based cache which means many functions can run in parallel reading and
 writing, and you are limited only by file io speeds, and disk space.
 
-2. semi-portability. The cachedir could be synced across machines, and cachedirs
+2. semi-portability. The cache could be synced across machines, and caches
 can be merged with little risk of conflict.
 
 3. No server is required. Everything is done at the OS level.
 
+4. Extendability. You can define your own functions for loading and dumping
+data.
+
 Cons:
 
-1. File-based cache which means if you generate thousands of files, it can be
+1. hashes are fragile and not robust. They are fragile with respect to any
+changes in how byte-code is made, or via mutable arguments, etc. The hashes are
+not robust to system level changes like library versions, or global variables.
+The only advantage of hashes is you can compute them.
+
+2. File-based cache which means if you generate thousands of files, it can be
 slow to delete them. Although it should be fast to access the results since you
 access them directly by path, it will not be fast to iterate over all the
 results, e.g. if you want to implement some kind of search or reporting.
 
-2. No server. You have to roll your own update strategy if you run things on
+3. No server. You have to roll your own update strategy if you run things on
 multiple machines that should all cache to a common location.
 
 Changelog
@@ -73,8 +64,12 @@ Changelog
 
 [2023-09-23 Sat] Changed hash signature (breaking change). It is too difficult
 to figure out how to capture global state, and the use of internal variable
-names is not consistent with using the bytecode to be insensitive to unimportant
-variable name changes.
+names is not consistent with using the bytecode to be insensitive to
+unimportant variable name changes.
+
+Pulled out some functions for loading and dumping data. This is a precursor to
+enabling other backends like lmdb or sqlite instead of files. You can then
+simply provide new functions for this.
 
 """
 
@@ -116,10 +111,6 @@ def get_hash(func, args, kwargs):
     bytecode will evaluate to the same result.
 
     """
-
-    # We get all the arguments, including defaults, and standardize them for the
-    # hash.
-
     return joblib.hash(
         [
             func.__code__.co_name,  # This is the function name
@@ -132,47 +123,70 @@ def get_hash(func, args, kwargs):
     )
 
 
-def hashcache(func):
-    @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
-        """Cache results by hash of the function source, arguments and kwargs.
+def get_hashpath(hsh):
+    """Return path to file for HSH."""
+    cache = Path(hashcache.cache)
+    hshdir = cache / hsh[0:2]
+    hshpath = hshdir / hsh
+    return hshpath
 
-        Set hashcache.cachedir to the directory you want the cache saved in.
-        Default = ./cache Set hashcache.verbose to True to get more verbosity.
-        """
 
-        hsh = get_hash(func, args, kwargs)
+def load_data(hsh, verbose=False):
+    """Load data for HSH.
 
-        cache = Path(hashcache.cachedir)
-        hshdir = cache / hsh[0:2]
-        hshpath = hshdir / hsh
+    HSH is a string for the hash associated with the data you want.
 
-        if hashcache.dryrun:
-            if hashcache.verbose:
-                print(f"Dry run in {hshpath}")
-            return hshpath
+    Returns success, data. If it succeeds, success with be True. If the data
+    does not exist yet, sucess will be False, and data will be None.
 
-        if hashcache.delete:
-            if os.path.exists(hshpath):
-                if hashcache.verbose:
-                    print(f"Deleting {hshpath}")
-                return os.unlink(hshpath)
-            else:
-                print(f"{hshpath} not found")
-                return None
+    """
+    hshpath = get_hashpath(hsh)
+    if os.path.exists(hshpath):
+        data = joblib.load(hshpath)
+        if verbose:
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(data)
+        return True, data["output"]
+    else:
+        return False, None
 
-        # If the hshpath exists, we can read from it.
-        if os.path.exists(hshpath):
-            if hashcache.verbose:
-                print(f"Reading from {hshpath}")
 
-            data = joblib.load(hshpath)
-            if hashcache.verbose:
-                pp = pprint.PrettyPrinter(indent=4)
-                pp.pprint(data)
-            return data["output"]
-        # It didn't exist, so we run the function, and cache it
-        else:
+def dump_data(hsh, data, verbose):
+    """Dump DATA into HSH."""
+    hshpath = get_hashpath(hsh)
+    os.makedirs(hshpath.parent, exist_ok=True)
+
+    files = joblib.dump(data, hshpath)
+
+    if verbose:
+        pp = pprint.PrettyPrinter(indent=4)
+        print(f"wrote {hshpath}")
+        pp.pprint(data)
+
+    return files
+
+
+def hashcache(verbose=False, loader=load_data, dumper=dump_data):
+    """Cache results by hash of the function, arguments and kwargs.
+
+    Set hashcache.cache to the directory you want the cache saved in.
+    Default = cache
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+
+            hsh = get_hash(func, args, kwargs)
+
+            # Try getting the data first
+            success, data = loader(hsh, verbose)
+
+            if success:
+                return data
+
+            # we did not succeed, so we run the function, and cache it
+            # We store some metadata for future analysis.
             t0 = time.time()
             value = func(*args, **kwargs)
             tf = time.time()
@@ -186,9 +200,9 @@ def hashcache(func):
                     " calls will not use the cache."
                 )
 
-            os.makedirs(hshdir, exist_ok=True)
             data = {
                 "output": value,
+                "hash": hsh,
                 "func": func.__code__.co_name,  # This is the function name
                 "module": func.__module__,
                 "args": args,
@@ -196,6 +210,7 @@ def hashcache(func):
                 "standardized-kwargs": get_standardized_args(
                     func, args, kwargs
                 ),
+                "version": hashcache.version,
                 "cwd": os.getcwd(),  # Is this a good idea? Could it leak
                 # sensitive information from the path?
                 # should we include other info like
@@ -204,22 +219,15 @@ def hashcache(func):
                 "run-at": t0,
                 "run-at-human": time.asctime(time.localtime(t0)),
                 "elapsed_time": tf - t0,
-                "version": hashcache.version,
             }
 
-            joblib.dump(data, hshpath)
-            if hashcache.verbose:
-                pp = pprint.PrettyPrinter(indent=4)
-                print(f"wrote {hshpath}")
-                pp.pprint(data)
-
+            dumper(hsh, data, verbose)
             return value
 
-    return wrapper_decorator
+        return wrapper
+
+    return decorator
 
 
-hashcache.cachedir = "./cache"
-hashcache.dryrun = False
-hashcache.delete = False
-hashcache.verbose = False
+hashcache.cache = "cache"
 hashcache.version = "0.0.2"
