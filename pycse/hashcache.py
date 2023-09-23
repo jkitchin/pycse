@@ -43,23 +43,38 @@ Here is a way to delete a cache entry.
 This is alpha, proof of concept code. Test it a lot for your use case. The API
 is not stable, and subject to change.
 
+Some things to do:
+
+1. the function attributes are kind of weird, maybe these should be decorator
+arguments.
+
 Pros:
 
 1. File-based cache which means many functions can run in parallel reading and
 writing, and you are limited only by file io speeds, and disk space.
 
-2. semi-portability. The cachedir could be synced across machines.
+2. semi-portability. The cachedir could be synced across machines, and cachedirs
+can be merged with little risk of conflict.
 
-3. No server.
+3. No server is required. Everything is done at the OS level.
 
 Cons:
 
 1. File-based cache which means if you generate thousands of files, it can be
-slow to delete them. Although it should be fast to access the results, it will
-not be fast to iterate over all the results, e.g. if you want to implement some
-kind of search or reporting.
+slow to delete them. Although it should be fast to access the results since you
+access them directly by path, it will not be fast to iterate over all the
+results, e.g. if you want to implement some kind of search or reporting.
 
-[2023-09-23 Sat] Changed hash signature (breaking change)
+2. No server. You have to roll your own update strategy if you run things on
+multiple machines that should all cache to a common location.
+
+Changelog
+---------
+
+[2023-09-23 Sat] Changed hash signature (breaking change). It is too difficult
+to figure out how to capture global state, and the use of internal variable
+names is not consistent with using the bytecode to be insensitive to unimportant
+variable name changes.
 
 """
 
