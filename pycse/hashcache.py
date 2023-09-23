@@ -2,7 +2,7 @@
 
 I found some features of joblib were unsuitable for how I want to use a cache.
 
-1. The "file" Python things the function is in is used to save the results in
+1. The "file" Python thinks the function is in is used to save the results in
 joblib, which leads to repeated runs if you run the same code in Python,
 notebook or stdin, and means the cache is not portable to other machines, and
 maybe not even in time since temp directories and kernel parameters are
@@ -15,7 +15,8 @@ This library aims to provide a simpler version of what I wish joblib did for me.
 
 Results are cached based on a hash of the function name, argnames, bytecode, arg
 values and kwarg values. I use joblib.hash for this. This means any two
-functions with the same bytecode, even if they have different names,
+functions with the same bytecode, even if they have different names, will cache
+to the same result.
 
 The cache location is set as a function attribute:
 
@@ -39,7 +40,26 @@ Here is a way to delete a cache entry.
 
     if os.path.exists(h): os.unlink(h)
 
-This is alpha, proof of concept code. Test it a lot for your use case.
+This is alpha, proof of concept code. Test it a lot for your use case. The API
+is not stable, and subject to change.
+
+Pros:
+
+1. File-based cache which means many functions can run in parallel reading and
+writing, and you are limited only by file io speeds, and disk space.
+
+2. semi-portability. The cachedir could be synced across machines.
+
+3. No server.
+
+Cons:
+
+1. File-based cache which means if you generate thousands of files, it can be
+slow to delete them. Although it should be fast to access the results, it will
+not be fast to iterate over all the results, e.g. if you want to implement some
+kind of search or reporting.
+
+[2023-09-23 Sat] Changed hash signature (breaking change)
 
 """
 
@@ -52,22 +72,46 @@ import pprint
 import time
 
 
+def get_standardized_args(func, args, kwargs):
+    """Returns a standardized dictionary of kwargs for func(args, kwargs)
+
+    This dictionary includes default values, even if they were not called.
+
+    """
+    sig = inspect.signature(func)
+    standardized_args = sig.bind(*args, **kwargs)
+    standardized_args.apply_defaults()
+    return standardized_args.arguments
+
+
 def get_hash(func, args, kwargs):
-    g = dict(inspect.getmembers(func))["__globals__"]
+    """Get a hash for running FUNC(ARGS, KWARGS).
+
+    This is the most critical feature of hashcache as it provides a key to store
+    and look up results later. You should think carefully before changing this
+    function, it breaks past caches.
+
+    FUNC should be as pure as reasonable. This hash is insensitive to global
+    variables.
+
+    The hash is on the function name, bytecode, and a standardized kwargs
+    including defaults. We use bytecode because it is insensitive to things like
+    whitespace, comments, docstrings, and variable name changes that don't
+    affect results. It is assumed that two functions with the same name and
+    bytecode will evaluate to the same result.
+
+    """
+
+    # We get all the arguments, including defaults, and standardize them for the
+    # hash.
 
     return joblib.hash(
         [
             func.__code__.co_name,  # This is the function name
-            func.__code__.co_varnames,  # names of arguments,
-            func.__code__.co_names,  # these are other things than args, usually
-            # outside vars This usually gets a value. But, it includes things
-            # like print, which are not variables. I don't know all the
-            # variations that might be included, so we just pass on things that
-            # aren't there with None. That is a weakness.
-            [g.get(var, None) for var in func.__code__.co_names],
-            func.__code__.co_code,
-            args,
-            kwargs,
+            func.__code__.co_code,  # this is the function bytecode
+            get_standardized_args(
+                func, args, kwargs
+            ),  # The args used, including defaults
         ],
         hash_name="sha1",
     )
@@ -82,15 +126,6 @@ def hashcache(func):
         Default = ./cache Set hashcache.verbose to True to get more verbosity.
         """
 
-        # Note I used to try getting the source of the function with inspect.
-        # That worked well in notebooks, but not in Python scripts for some
-        # reason. Here I use attributes of the code objects. I include the
-        # function name, variable names, names of other variables, the function
-        # bytecode, and args and kwargs values. I do not know how portable this
-        # is, e.g. to other machines, Python upgrades, etc. The reason I use all
-        # these is to avoid hash conflicts from functions with the same body
-        # (which have the same bytecode) and to make sure external variable
-        # changes trigger new runs.
         hsh = get_hash(func, args, kwargs)
 
         cache = Path(hashcache.cachedir)
@@ -137,16 +172,15 @@ def hashcache(func):
                 )
 
             os.makedirs(hshdir, exist_ok=True)
-            g = dict(inspect.getmembers(func))["__globals__"]
             data = {
                 "output": value,
+                "func": func.__code__.co_name,  # This is the function name
+                "module": func.__module__,
                 "args": args,
-                "arg-names": func.__code__.co_names,
-                "other-names": func.__code__.co_names,
-                "other-values": [
-                    g.get(var, None) for var in func.__code__.co_names
-                ],
                 "kwargs": kwargs,
+                "standardized-kwargs": get_standardized_args(
+                    func, args, kwargs
+                ),
                 "cwd": os.getcwd(),  # Is this a good idea? Could it leak
                 # sensitive information from the path?
                 # should we include other info like
@@ -173,4 +207,4 @@ hashcache.cachedir = "./cache"
 hashcache.dryrun = False
 hashcache.delete = False
 hashcache.verbose = False
-hashcache.version = "0.0.1"
+hashcache.version = "0.0.2"
