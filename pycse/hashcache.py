@@ -243,4 +243,4 @@ def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
 
 
 hashcache.cache = "cache"
-hashcache.version = "0.0.2"
+hashcache.version = "0.0.3"
