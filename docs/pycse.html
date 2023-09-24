@@ -488,6 +488,13 @@ const thebe_selector_output = ".output, .cell_output"
   <a class="reference internal nav-link" href="#module-pycse.hashcache">
    pycse.hashcache
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#changelog">
+     Changelog
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -528,6 +535,13 @@ const thebe_selector_output = ".output, .cell_output"
   <a class="reference internal nav-link" href="#module-pycse.hashcache">
    pycse.hashcache
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#changelog">
+     Changelog
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -849,7 +863,7 @@ version.</p>
 <span id="pycse-hashcache"></span><h2>pycse.hashcache<a class="headerlink" href="#module-pycse.hashcache" title="Permalink to this headline">¶</a></h2>
 <p>hashcache - a decorator for persistent, file/hash-based cache</p>
 <p>I found some features of joblib were unsuitable for how I want to use a cache.</p>
-<p>1. The “file” Python things the function is in is used to save the results in
+<p>1. The “file” Python thinks the function is in is used to save the results in
 joblib, which leads to repeated runs if you run the same code in Python,
 notebook or stdin, and means the cache is not portable to other machines, and
 maybe not even in time since temp directories and kernel parameters are
@@ -859,25 +873,100 @@ like whitespace, docstrings and comments change the hash.</p>
 <p>This library aims to provide a simpler version of what I wish joblib did for me.</p>
 <p>Results are cached based on a hash of the function name, argnames, bytecode, arg
 values and kwarg values. I use joblib.hash for this. This means any two
-functions with the same bytecode, even if they have different names,</p>
+functions with the same bytecode, even if they have different names, will cache
+to the same result.</p>
 <p>The cache location is set as a function attribute:</p>
 <blockquote>
-<div><p>hashcache.cachedir = ‘./cache’</p>
+<div><p>hashcache.cache = ‘./cache’</p>
 </div></blockquote>
-<p>Caveats:</p>
-<p>1. hash-based approaches are fragile. If the function bytecode changes, the hash
-will change. That means the cache may not work across Python versions, or if
-some kind of optimization is used, etc.</p>
-<p>There is no utility for pruning the cache. You can simply delete the directory,
-or create a new one.</p>
-<p>You can use hashcache.dryrun to avoid reading/writing and just return the cache.
-Here is a way to delete a cache entry.</p>
-<blockquote>
-<div><p>hashcache.dryrun = True</p>
-<p>h = f(22)</p>
-<p>if os.path.exists(h): os.unlink(h)</p>
-</div></blockquote>
-<p>This is alpha, proof of concept code. Test it a lot for your use case.</p>
+<p>This is alpha, proof of concept code. Test it a lot for your use case. The API
+is not stable, and subject to change.</p>
+<p>Some things to do:</p>
+<p>1. the function attributes are kind of weird, maybe these should be decorator
+arguments.</p>
+<p>Pros:</p>
+<p>1. File-based cache which means many functions can run in parallel reading and
+writing, and you are limited only by file io speeds, and disk space.</p>
+<p>2. semi-portability. The cache could be synced across machines, and caches
+can be merged with little risk of conflict.</p>
+<ol class="arabic simple" start="3">
+<li><p>No server is required. Everything is done at the OS level.</p></li>
+</ol>
+<p>4. Extendability. You can define your own functions for loading and dumping
+data.</p>
+<p>Cons:</p>
+<p>1. hashes are fragile and not robust. They are fragile with respect to any
+changes in how byte-code is made, or via mutable arguments, etc. The hashes are
+not robust to system level changes like library versions, or global variables.
+The only advantage of hashes is you can compute them.</p>
+<p>2. File-based cache which means if you generate thousands of files, it can be
+slow to delete them. Although it should be fast to access the results since you
+access them directly by path, it will not be fast to iterate over all the
+results, e.g. if you want to implement some kind of search or reporting.</p>
+<p>3. No server. You have to roll your own update strategy if you run things on
+multiple machines that should all cache to a common location.</p>
+<div class="section" id="changelog">
+<h3>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h3>
+<p>[2023-09-23 Sat] Changed hash signature (breaking change). It is too difficult
+to figure out how to capture global state, and the use of internal variable
+names is not consistent with using the bytecode to be insensitive to
+unimportant variable name changes.</p>
+<p>Pulled out some functions for loading and dumping data. This is a precursor to
+enabling other backends like lmdb or sqlite instead of files. You can then
+simply provide new functions for this.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.dump_data">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.dump_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump DATA into HSH.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.get_hash">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">get_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.get_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a hash for running FUNC(ARGS, KWARGS).</p>
+<p>This is the most critical feature of hashcache as it provides a key to store
+and look up results later. You should think carefully before changing this
+function, it breaks past caches.</p>
+<p>FUNC should be as pure as reasonable. This hash is insensitive to global
+variables.</p>
+<p>The hash is on the function name, bytecode, and a standardized kwargs
+including defaults. We use bytecode because it is insensitive to things like
+whitespace, comments, docstrings, and variable name changes that don’t
+affect results. It is assumed that two functions with the same name and
+bytecode will evaluate to the same result.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.get_hashpath">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">get_hashpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.get_hashpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return path to file for HSH.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.get_standardized_args">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">get_standardized_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.get_standardized_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p>
+<p>This dictionary includes default values, even if they were not called.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.hashcache">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">hashcache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader=&lt;function</span> <span class="pre">load_data&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dumper=&lt;function</span> <span class="pre">dump_data&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.hashcache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cache results by hash of the function, arguments and kwargs.</p>
+<p>Set hashcache.cache to the directory you want the cache saved in.
+Default = cache</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.load_data">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data for HSH.</p>
+<p>HSH is a string for the hash associated with the data you want.</p>
+<p>Returns success, data. If it succeeds, success with be True. If the data
+does not exist yet, sucess will be False, and data will be None.</p>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
