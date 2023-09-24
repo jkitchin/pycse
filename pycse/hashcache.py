@@ -166,67 +166,80 @@ def dump_data(hsh, data, verbose):
     return files
 
 
-def hashcache(verbose=False, loader=load_data, dumper=dump_data):
+def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
     """Cache results by hash of the function, arguments and kwargs.
 
     Set hashcache.cache to the directory you want the cache saved in.
     Default = cache
     """
 
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+    def wrapper(func, *args, **kwargs):
 
-            hsh = get_hash(func, args, kwargs)
+        hsh = get_hash(func, args, kwargs)
 
-            # Try getting the data first
-            success, data = loader(hsh, verbose)
+        # Try getting the data first
+        success, data = loader(hsh, verbose)
 
-            if success:
-                return data
+        if success:
+            return data
 
-            # we did not succeed, so we run the function, and cache it
-            # We store some metadata for future analysis.
-            t0 = time.time()
-            value = func(*args, **kwargs)
-            tf = time.time()
+        # we did not succeed, so we run the function, and cache it
+        # We store some metadata for future analysis.
+        t0 = time.time()
+        value = func(*args, **kwargs)
+        tf = time.time()
 
-            # functions with mutable arguments can change the arguments, which
-            # is a problem here. We just warn the user. Nothing else makes
-            # sense, the mutability may be intentional.
-            if not hsh == get_hash(func, args, kwargs):
-                print(
-                    "WARNING something mutated, future"
-                    " calls will not use the cache."
-                )
+        # functions with mutable arguments can change the arguments, which
+        # is a problem here. We just warn the user. Nothing else makes
+        # sense, the mutability may be intentional.
+        if not hsh == get_hash(func, args, kwargs):
+            print(
+                "WARNING something mutated, future"
+                " calls will not use the cache."
+            )
 
-            data = {
-                "output": value,
-                "hash": hsh,
-                "func": func.__code__.co_name,  # This is the function name
-                "module": func.__module__,
-                "args": args,
-                "kwargs": kwargs,
-                "standardized-kwargs": get_standardized_args(
-                    func, args, kwargs
-                ),
-                "version": hashcache.version,
-                "cwd": os.getcwd(),  # Is this a good idea? Could it leak
-                # sensitive information from the path?
-                # should we include other info like
-                # hostname?
-                "user": os.getlogin(),
-                "run-at": t0,
-                "run-at-human": time.asctime(time.localtime(t0)),
-                "elapsed_time": tf - t0,
-            }
+        data = {
+            "output": value,
+            "hash": hsh,
+            "func": func.__code__.co_name,  # This is the function name
+            "module": func.__module__,
+            "args": args,
+            "kwargs": kwargs,
+            "standardized-kwargs": get_standardized_args(func, args, kwargs),
+            "version": hashcache.version,
+            "cwd": os.getcwd(),  # Is this a good idea? Could it leak
+            # sensitive information from the path?
+            # should we include other info like
+            # hostname?
+            "user": os.getlogin(),
+            "run-at": t0,
+            "run-at-human": time.asctime(time.localtime(t0)),
+            "elapsed_time": tf - t0,
+        }
 
-            dumper(hsh, data, verbose)
-            return value
+        dumper(hsh, data, verbose)
+        return value
 
-        return wrapper
+    # This silliness is because I want to have the decorator work with and
+    # without arguments
+    #
+    # @hashcache
+    # def f(...)
+    #
+    # and
+    # @hashcache(verbose=True)
+    # def f(...)
+    #
+    # yea, it feels gross.
+    if fn is not None:
+        return functools.partial(wrapper, fn)
+    else:
 
-    return decorator
+        def decorator(func):
+            newrapper = functools.partial(wrapper, func)
+            return functools.update_wrapper(newrapper, func)
+
+        return decorator
 
 
 hashcache.cache = "cache"
