@@ -198,6 +198,12 @@ def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
                 " calls will not use the cache."
             )
 
+        # Try a bunch of ways to get a username.
+        try:
+            user = os.getlogin()
+        except OSError:
+            user = os.environ.get("USER")
+
         data = {
             "output": value,
             "hash": hsh,
@@ -211,7 +217,7 @@ def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
             # sensitive information from the path?
             # should we include other info like
             # hostname?
-            "user": os.getlogin(),
+            "user": user,
             "run-at": t0,
             "run-at-human": time.asctime(time.localtime(t0)),
             "elapsed_time": tf - t0,
