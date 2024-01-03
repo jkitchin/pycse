@@ -148,11 +148,7 @@ def table(data, name=None, caption=None, attributes=None, none=""):
         if row is None:
             s += ["|-"]
         else:
-            s += [
-                "| "
-                + " | ".join([str(x) if x is not None else none for x in row])
-                + "|"
-            ]
+            s += ["| " + " | ".join([str(x) if x is not None else none for x in row]) + "|"]
 
     print("\n".join(s))
 
@@ -208,11 +204,7 @@ def comment(s):
     if "\n" in str(s):
         print("\n#+begin_comment\n{}\n#+end_comment\n".format(s))
     else:
-        print(
-            textwrap.fill(
-                s, initial_indent="# ", subsequent_indent="# ", width=79
-            )
-        )
+        print(textwrap.fill(s, initial_indent="# ", subsequent_indent="# ", width=79))
 
 
 def fixed_width(s):

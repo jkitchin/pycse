@@ -159,9 +159,7 @@ class Figure:
 class Table:
     """A Table object for org."""
 
-    def __init__(
-        self, data, headers=None, caption=None, name=None, attributes=()
-    ):
+    def __init__(self, data, headers=None, caption=None, name=None, attributes=()):
         """Initialize a table."""
         self.data = data
         self.headers = headers
@@ -212,9 +210,7 @@ try:
     ip = get_ipython()
     ip.display_formatter.formatters["text/org"] = OrgFormatter()
     ytv_f = ip.display_formatter.formatters["text/org"]
-    ytv_f.for_type_by_name(
-        "IPython.lib.display", "YouTubeVideo", lambda V: f"{V.src}"
-    )
+    ytv_f.for_type_by_name("IPython.lib.display", "YouTubeVideo", lambda V: f"{V.src}")
 # get_ipython is not defined for tests I think.
 except NameError:
     pass

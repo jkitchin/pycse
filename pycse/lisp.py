@@ -63,16 +63,9 @@ get_dict(np.int64)["lisp"] = property(lambda f: "{}".format(str(f)))
 
 def lispify(L):
     """Convert a Python object L to a lisp representation."""
-    if (
-        isinstance(L, str)
-        or isinstance(L, float)
-        or isinstance(L, int)
-        or isinstance(L, np.int64)
-    ):
+    if isinstance(L, str) or isinstance(L, float) or isinstance(L, int) or isinstance(L, np.int64):
         return L.lisp
-    elif (
-        isinstance(L, list) or isinstance(L, tuple) or isinstance(L, np.ndarray)
-    ):
+    elif isinstance(L, list) or isinstance(L, tuple) or isinstance(L, np.ndarray):
         s = [element.lisp for element in L]
         return "(" + " ".join(s) + ")"
     elif isinstance(L, dict):

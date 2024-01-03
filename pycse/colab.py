@@ -47,15 +47,9 @@ def gdrive():
 
 def aptupdate():
     """Run apt-get update."""
-    s = subprocess.run(
-        ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    s = subprocess.run(["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if s.returncode != 0:
-        raise Exception(
-            f"apt-get update failed.\n"
-            f"{s.stdout.decode()}\n"
-            f"{s.stderr.decode()}"
-        )
+        raise Exception(f"apt-get update failed.\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}")
 
 
 def aptinstall(apt_pkg):
@@ -68,9 +62,7 @@ def aptinstall(apt_pkg):
     )
     if s.returncode != 0:
         raise Exception(
-            f"{apt_pkg} installation failed.\n"
-            f"{s.stdout.decode()}\n"
-            f"{s.stderr.decode()}"
+            f"{apt_pkg} installation failed.\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}"
         )
 
 
@@ -117,9 +109,7 @@ def notebook_string(fid):
     return ipynb
 
 
-def pdf_from_html(
-    pdf=None, verbose=False, plotly=False, javascript_delay=10000
-):
+def pdf_from_html(pdf=None, verbose=False, plotly=False, javascript_delay=10000):
     """Export the current notebook as a PDF.
 
     pdf is the name of the PDF to export.
@@ -344,18 +334,14 @@ def fid_from_url(url):
         return p
 
     # https://docs.google.com/spreadsheets/d/1qSaBe73Pd8L3jJyOL68klp6yRArW7Nce/edit#gid=1923176268
-    elif (u.netloc == "docs.google.com") and u.path.startswith(
-        "/spreadsheets/d/"
-    ):
+    elif (u.netloc == "docs.google.com") and u.path.startswith("/spreadsheets/d/"):
         p = u.path
         p = p.replace("/spreadsheets/d/", "")
         p = p.replace("/edit", "")
         return p
 
     # https://docs.google.com/presentation/d/1poP1gvWlfeZCR_5FsIzlRPMAYlBUR827wKPjbWGzW9M/edit#slide=id.p
-    elif (u.netloc == "docs.google.com") and u.path.startswith(
-        "/presentation/d/"
-    ):
+    elif (u.netloc == "docs.google.com") and u.path.startswith("/presentation/d/"):
         p = u.path
         p = p.replace("/presentation/d/", "")
         p = p.replace("/edit", "")
@@ -600,11 +586,7 @@ def gdownload(*FILES, **kwargs):
             stderr=subprocess.PIPE,
         )
         if s.returncode != 0:
-            print(
-                f"zip did not fully succeed:\n"
-                f"{s.stdout.decode()}\n"
-                f"{s.stderr.decode()}\n"
-            )
+            print(f"zip did not fully succeed:\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}\n")
         files.download(zipfile)
 
 
@@ -666,9 +648,7 @@ def gsuite(fid_or_url, width=1200, height=1000):
         # Assume we have an fid
         x = (
             drive_service.files()
-            .get(
-                fileId=fid_or_url, supportsAllDrives=True, fields="webViewLink"
-            )
+            .get(fileId=fid_or_url, supportsAllDrives=True, fields="webViewLink")
             .execute()
         )
         url = x.get("webViewLink", "No web link found.")
@@ -679,8 +659,7 @@ def gsuite(fid_or_url, width=1200, height=1000):
     xframeoptions = g.headers.get("X-Frame-Options", "").lower()
     if xframeoptions in ["deny", "sameorigin"]:
         print(
-            f"X-Frame-Option = {xframeoptions}\n"
-            f"Embedding in IFrame is not allowed for {url}."
+            f"X-Frame-Option = {xframeoptions}\n" f"Embedding in IFrame is not allowed for {url}."
         )
         return None
     else:

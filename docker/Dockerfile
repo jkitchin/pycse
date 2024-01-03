@@ -1,7 +1,7 @@
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/
 # Note this takes about 30 minutes to build
 
-FROM jupyter/scipy-notebook:python-3.9
+FROM jupyter/scipy-notebook:python-3.10
 MAINTAINER John Kitchin <jkitchin@andrew.cmu.edu>
 
 # Set the default shell to bash instead of sh so the source commands work
@@ -34,7 +34,8 @@ RUN python -m pip install --upgrade pip \
 	jupyterlab-git jupyter-videochat \
 	jupyterlab-spellchecker \
 	jupyterlab-code-formatter \
-	pydotplus ase \
+        pydotplus ase \
+        parsl \
 	&& jupyter labextension install plotlywidget \
 	&& pip install jupyterlab-link-share \
 	&& jupyter server extension disable nbclassic 

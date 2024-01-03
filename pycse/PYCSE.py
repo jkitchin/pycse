@@ -146,6 +146,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     ub : upper bound for smallest allowed Hessian eigenvalue
     ef : eigenvalue factor for scaling Hessian
 
+    See See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
+
     Returns
     y, yint, pred_se
     y : the predicted values
@@ -158,20 +160,29 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
 
     errs = y - X @ pars
     sse = errs @ errs
-    rmse = sse / n
+    mse = sse / n
 
     gprime = XX
     hat = 2 * X.T @ X  # hessian
     eps = max(ub, ef * np.linalg.eigvals(hat).min())
 
     # Scaled Fisher information
-    I_fisher = rmse * np.linalg.pinv(hat + np.eye(npars) * eps)
+    I_fisher = np.linalg.pinv(hat + np.eye(npars) * eps)
 
-    pred_se = np.diag(gprime @ I_fisher @ gprime.T) ** 0.5
+    pred_se = np.sqrt(mse * np.diag(gprime @ I_fisher @ gprime.T))
     tval = t.ppf(1.0 - alpha / 2.0, dof)
 
     yy = XX @ pars
-    return (yy, np.array([yy + tval * pred_se, yy - tval * pred_se]).T, pred_se)
+    return (
+        yy,
+        np.array(
+            [
+                yy + tval * pred_se * (1 + 1 / n),
+                yy - tval * pred_se * (1 + 1 / n),
+            ]
+        ).T,
+        pred_se,
+    )
 
 
 # * Nonlinear regression
@@ -249,6 +260,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
 
     This function uses numdifftools for the Hessian and Jacobian.
 
+    See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
+
     Returns
     -------
 
@@ -266,18 +279,24 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
     eps = max(ub, ef * np.linalg.eigvals(hessp).min())
 
     sse = loss(*popt)
-    rmse = sse / len(y)
-    I_fisher = rmse * np.linalg.pinv(hessp + np.eye(len(popt)) * eps)
+    n = len(y)
+    mse = sse / n
+    I_fisher = np.linalg.pinv(hessp + np.eye(len(popt)) * eps)
 
     gprime = nd.Jacobian(lambda p: model(xnew, *p))(popt)
 
-    uncerts = np.sqrt(np.diag(gprime @ I_fisher @ gprime.T))
+    sigmas = np.sqrt(mse * np.diag(gprime @ I_fisher @ gprime.T))
     tval = t.ppf(1 - alpha / 2, len(y) - len(popt))
 
     return [
         ypred,
-        np.array([ypred + tval * uncerts, ypred - tval * uncerts]).T,
-        uncerts,
+        np.array(
+            [
+                ypred + tval * sigmas * (1 + 1 / n),
+                ypred - tval * sigmas * (1 + 1 / n),
+            ]
+        ).T,
+        sigmas,
     ]
 
 

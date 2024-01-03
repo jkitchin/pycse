@@ -13,9 +13,7 @@ class OrgFormatter(IPython.core.formatters.BaseFormatter):
     def __call__(self, obj):
         """Call function for the class."""
         try:
-            return tabulate(
-                obj, headers="keys", tablefmt="orgtbl", showindex="always"
-            )
+            return tabulate(obj, headers="keys", tablefmt="orgtbl", showindex="always")
         # I am not sure what exceptions get thrown, or why this is here.
         except:  # noqa: E722
             return None

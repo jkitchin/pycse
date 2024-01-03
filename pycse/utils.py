@@ -77,9 +77,7 @@ def read_gsheet(url, *args, **kwargs):
     The url should be viewable by anyone with the link.
     """
     u = urlparse(url)
-    if not (u.netloc == "docs.google.com") and u.path.startswith(
-        "/spreadsheets/d/"
-    ):
+    if not (u.netloc == "docs.google.com") and u.path.startswith("/spreadsheets/d/"):
         raise Exception(f"{url} does not seem to be for a sheet")
 
     fid = u.path.split("/")[3]
@@ -90,9 +88,6 @@ def read_gsheet(url, *args, **kwargs):
         # default to main sheet
         gid = 0
 
-    purl = (
-        "https://docs.google.com/spreadsheets/d/"
-        f"{fid}/export?format=csv&gid={gid}"
-    )
+    purl = "https://docs.google.com/spreadsheets/d/" f"{fid}/export?format=csv&gid={gid}"
 
     return pd.read_csv(purl, *args, **kwargs)
