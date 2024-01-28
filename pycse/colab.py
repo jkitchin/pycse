@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 from urllib.parse import urlparse
+from socket import gethostname, gethostbyname
 
 from IPython import display
 from IPython.core.magic import register_line_magic
@@ -79,13 +80,11 @@ def aptinstall(apt_pkg):
 # Exporting functions
 ##################################################################
 
-
 def current_notebook():
     """Return current notebook name and file id.
-
-    from kora.drive.
     """
-    d = requests.get("http://172.28.0.2:9000/api/sessions").json()[0]
+    ip = gethostbyname(gethostname())
+    d = requests.get(f"{ip}:9000/api/sessions").json()[0]
     fid = d["path"].split("=")[1]
     fname = d["name"]
     return fname, fid
