@@ -84,8 +84,7 @@ def current_notebook():
     """Return current notebook name and file id.
     """
     ip = gethostbyname(gethostname())
-    url = f"{ip}:9000/api/sessions"
-    print(f'Getting data from {url}')
+    url = f"http://{ip}:9000/api/sessions"
     d = requests.get(url).json()[0]
     fid = d["path"].split("=")[1]
     fname = d["name"]
