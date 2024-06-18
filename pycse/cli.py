@@ -29,6 +29,7 @@ TODO: make this a click app, with cli arguments to update the image? e.g.
 import os
 import uuid
 import numpy as np
+import requests
 import time
 import webbrowser
 import subprocess
@@ -95,6 +96,14 @@ def pycse():
     time.sleep(2)
 
     url = f"http://localhost:{PORT}/lab?token={JUPYTER_TOKEN}"
+
+    # See if we can wait until the url actually returns
+    for i in range(10):
+        if requests.get(url).status_code == 200:
+            break
+        else:
+            time.sleep(1)
+
     webbrowser.open(url)
 
     subprocess.run(["docker", "attach", "pycse"])
