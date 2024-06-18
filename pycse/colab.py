@@ -80,9 +80,9 @@ def aptinstall(apt_pkg):
 # Exporting functions
 ##################################################################
 
+
 def current_notebook():
-    """Return current notebook name and file id.
-    """
+    """Return current notebook name and file id."""
     ip = gethostbyname(gethostname())
     url = f"http://{ip}:9000/api/sessions"
     d = requests.get(url).json()[0]
