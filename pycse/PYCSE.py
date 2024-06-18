@@ -115,9 +115,9 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
         if (dC < 0.0).any():
             warnings.warn(
                 "\n{0}\ndetected a negative number in your"
-                "covariance matrix. Taking the absolute value"
-                "of the diagonal. something is probably wrong"
-                "with your data or model".format(dC)
+                " covariance matrix. Taking the absolute value"
+                " of the diagonal. something is probably wrong"
+                " with your data or model".format(dC)
             )
             dC = np.abs(dC)
 
