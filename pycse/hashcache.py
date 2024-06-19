@@ -311,11 +311,11 @@ class SqlCache(HashCache):
         """
         with self.con:
             cur = self.con.execute("SELECT value FROM cache WHERE hash = ?", (hsh,))
-            (value,) = cur.fetchone()
+            value = cur.fetchone()
         if value is None:
             return False, None
         else:
-            return True, orjson.loads(value)
+            return True, orjson.loads(value[0])["output"]
 
     @staticmethod
     def search(query, *args):
