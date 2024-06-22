@@ -243,6 +243,8 @@ class HashCache:
         """Dump KWARGS to the cache.
         Returns a hash string for future lookup.
 
+        cache is a special kwarg that is not saved
+
         """
         t0 = time.time()
         hsh = joblib.hash(kwargs)
@@ -251,6 +253,12 @@ class HashCache:
             user = os.getlogin()
         except OSError:
             user = os.environ.get("USER")
+
+        if "cache" in kwargs:
+            cache = kwargs["cache"]
+            del kwargs["cache"]
+        else:
+            cache = "cache"
 
         data = {
             "func": "dump",
@@ -264,13 +272,15 @@ class HashCache:
         }
 
         hc = HashCache(lambda x: x)
+        hc.cache = cache
         hc.dump_data(hsh, data)
         return hsh
 
     @staticmethod
-    def load(hsh):
+    def load(hsh, cache="cache"):
         """Load saved variables from HSH."""
         hc = HashCache(lambda x: x)
+        hc.cache = cache
 
         hshpath = hc.get_hashpath(hsh)
         if os.path.exists(hshpath):
