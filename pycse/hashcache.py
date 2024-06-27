@@ -295,6 +295,10 @@ class SqlCache(HashCache):
 
     cache = "cache.sqlite"
 
+    # default is a serializing function for orjson
+    # I guess the signature is default(self, obj)
+    default = None
+
     def __init__(self, function):
         self.function = function
 
@@ -306,7 +310,7 @@ class SqlCache(HashCache):
         DATA must be serializable to json.
 
         """
-        value = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY)
+        value = orjson.dumps(data, default=self.default, option=orjson.OPT_SERIALIZE_NUMPY)
         with self.con:
             self.con.execute("INSERT INTO cache(hash, value) VALUES(?, ?)", (hsh, value))
 
@@ -387,6 +391,8 @@ class JsonCache(HashCache):
     This is compatible with maggma.
     """
 
+    default = None
+
     def __init__(self, function):
         self.function = function
 
@@ -401,7 +407,7 @@ class JsonCache(HashCache):
         os.makedirs(hshpath.parent, exist_ok=True)
 
         with open(hshpath, "wb") as f:
-            f.write(orjson.dumps(data))
+            f.write(orjson.dumps(data, default=self.default, option=orjson.OPT_SERIALIZE_NUMPY))
 
     def load_data(self, hsh):
         hshpath = self.get_hashpath(hsh).with_suffix(".json")
@@ -445,7 +451,7 @@ class JsonCache(HashCache):
 
         os.makedirs(hshpath.parent, exist_ok=True)
         with open(hshpath, "wb") as f:
-            f.write(orjson.dumps(data))
+            f.write(orjson.dumps(data, default=hc.default, option=orjson.OPT_SERIALIZE_NUMPY))
         return hsh
 
     @staticmethod
