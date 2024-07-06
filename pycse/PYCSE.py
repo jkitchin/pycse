@@ -72,7 +72,7 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
 
     alpha : 100*(1 - alpha) confidence level
 
-    ags and kwargs are passed to np.linalg.lstsq
+    args and kwargs are passed to np.linalg.lstsq
 
     Example
     -------
@@ -87,7 +87,7 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
     -------
       [b, bint, se]
       b is a vector of the fitted parameters
-      bint is a 2D array of confidence intervals
+      bint is an array of confidence intervals bint[0] is the lower, bint[1] is the upper level.
       se is an array of standard error for each parameter.
 
     """
@@ -104,13 +104,22 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
         n = len(y)
         k = len(b)
 
-        errors = y - np.dot(A, b)
-        sigma2 = np.sum(errors**2) / (n - k)  # RMSE
+        errors = y - np.dot(A, b)  # this may have many columns
+        sigma2 = np.sum(errors**2, axis=0) / (n - k)  # RMSE
 
         covariance = np.linalg.inv(np.dot(A.T, A))
 
-        C = sigma2 * covariance
-        dC = np.diag(C)
+        # sigma2 is either a number, or (1, noutputs)
+        # covariance is npars x npars
+        # I need to scale C for each column
+        try:
+            C = [covariance * s for s in sigma2]
+            dC = np.array([np.diag(c) for c in C]).T
+        except TypeError:
+            C = covariance * sigma2
+            dC = np.diag(C)
+
+        # The diagonal on each column is related to the standard error
 
         if (dC < 0.0).any():
             warnings.warn(
@@ -126,9 +135,17 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
         sT = t.ppf(1.0 - alpha / 2.0, n - k - 1)  # student T multiplier
         CI = sT * se
 
-        bint = np.array([(beta - ci, beta + ci) for beta, ci in zip(b, CI)])
+        # bint is a little tricky, and depends on the shape of the output.
+        if len(y.shape) == 1:
+            bint = np.array([(b - CI, b + CI)])
+        else:
+            nrows, ncols = y.shape
+            bint = []
+            for i in range(ncols):
+                bint += [[b - CI, b + CI]]
+            bint = np.array(bint)
 
-    return (b, bint, se)
+    return (b, bint.squeeze(), se)
 
 
 def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
@@ -151,7 +168,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     Returns
     y, yint, pred_se
     y : the predicted values
-    yint : an array of predicted confidence intervals
+    yint: confidence interval
+    pred_se: std error on predictions.
     """
 
     n = len(X)
@@ -159,7 +177,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     dof = n - npars
 
     errs = y - X @ pars
-    sse = errs @ errs
+
+    sse = np.sum(errs**2, axis=0)
     mse = sse / n
 
     gprime = XX
@@ -169,20 +188,25 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     # Scaled Fisher information
     I_fisher = np.linalg.pinv(hat + np.eye(npars) * eps)
 
-    pred_se = np.sqrt(mse * np.diag(gprime @ I_fisher @ gprime.T))
+    try:
+        # This happens if mse is iterable
+        pred_se = np.sqrt([_mse * np.diag(gprime @ I_fisher @ gprime.T) for _mse in mse]).T
+        # This happens if mse is a single number
+    except TypeError:
+        pred_se = np.sqrt(mse * np.diag(gprime @ I_fisher @ gprime.T)).T
+
     tval = t.ppf(1.0 - alpha / 2.0, dof)
 
     yy = XX @ pars
-    return (
-        yy,
-        np.array(
-            [
-                yy + tval * pred_se * (1 + 1 / n),
-                yy - tval * pred_se * (1 + 1 / n),
-            ]
-        ).T,
-        pred_se,
+
+    yint = np.array(
+        [
+            yy - tval * pred_se * (1 + 1 / n),
+            yy + tval * pred_se * (1 + 1 / n),
+        ]
     )
+
+    return (yy, yint, tval * pred_se * (1 + 1 / n))
 
 
 # * Nonlinear regression
