@@ -62,8 +62,6 @@ class _Surrogate:
         self.surrogate = 0
         self.func_calls = 0
 
-        print(max_calls, self.max_calls)
-
     def add(self, X):
         """Get data for X, add it and retrain.
         Use this to bypass the logic for using the surrogate.
