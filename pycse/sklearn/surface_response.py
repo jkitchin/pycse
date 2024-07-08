@@ -111,6 +111,11 @@ class SurfaceResponse(Pipeline):
 
         return plt.gcf()
 
+    def _sigfig(self, x, n=3):
+        """Round X to N significant figures."""
+        # Adapted from https://gist.github.com/ttamg/3f65227fd580b3d8dc8ba91e01507280
+        return np.round(x, -int(np.floor(np.log10(np.abs(x)))) + (n - 1))
+
     def summary(self):
         X, y = self.input, self.output
 
@@ -126,11 +131,14 @@ class SurfaceResponse(Pipeline):
 
         nrows, ncols = pars.shape
 
+        mae = [self._sigfig(x) for x in (np.abs(errs).mean())]
+        rmse = [self._sigfig(x) for x in (errs**2).mean()]
+
         s += [f"  score: {self.score(X, y)}"]
         s += [
-            f"  mae = {(np.abs(errs).mean().tolist())}",
+            f"  mae  = {(mae)}",
             "",
-            f"  rmse = {(errs**2).mean().tolist()}",
+            f"  rmse = {rmse}",
             "",
         ]
 
@@ -141,6 +149,7 @@ class SurfaceResponse(Pipeline):
                 data += [
                     [
                         f"{name}_{i}",
+                        pars[j][i],
                         pars_cint[0][j][i],
                         pars_cint[1][j][i],
                         pars_se[j][i],
@@ -150,7 +159,7 @@ class SurfaceResponse(Pipeline):
             s += [
                 tabulate.tabulate(
                     data,
-                    headers=["var", "ci_lower", "ci_upper", "se", "significant"],
+                    headers=["var", "value", "ci_lower", "ci_upper", "se", "significant"],
                     tablefmt="orgtbl",
                 )
             ]
