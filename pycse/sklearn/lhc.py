@@ -147,7 +147,9 @@ class LatinSquare:
 
         table = np.vstack([ns.index.values, ns.values, ns > fc]).T
 
-        return pd.DataFrame(table, columns=[f"{self.y} effect", "F-score", "Significant"])
+        return pd.DataFrame(
+            table, columns=[f"{self.y} effect", f"F-score (fc={fc:1.1f})", "Significant"]
+        )
 
     def predict(self, args):
         """Predict the response for ARGS. ARGS is a list of labels in order
