@@ -10,6 +10,7 @@ elements. There is also a cut function to avoid list slicing syntax. The point
 of these is to delay introducing indexing syntax.
 
 """
+
 import collections.abc
 from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import quad

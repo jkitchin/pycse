@@ -9,6 +9,7 @@ See http://kitchingroup.cheme.cmu.edu/pycse
 Copyright 2020, John Kitchin
 (see accompanying license files for details).
 """
+
 # pylint: disable=invalid-name
 
 import warnings

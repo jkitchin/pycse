@@ -1,4 +1,5 @@
 """Tests for lisp module."""
+
 from pycse.lisp import (
     Symbol,
     Quote,

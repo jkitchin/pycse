@@ -1,4 +1,5 @@
 """Tests for utils module."""
+
 from pycse.utils import feq, fgt, flt, fle, fge, ignore_exception
 
 

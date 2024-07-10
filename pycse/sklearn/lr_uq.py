@@ -1,6 +1,7 @@
 """
 A Linear regressor with uncertainty quantification.
 """
+
 import numpy as np
 from pycse import regress
 from pycse import predict as _predict
