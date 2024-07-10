@@ -60,9 +60,10 @@ class SurfaceResponse(Pipeline):
 
         if model is None:
             self.default = True
+            scaler = MinMaxScaler(feature_range=(-1, 1)).set_output(transform="pandas")
             super().__init__(
                 steps=[
-                    ("minmax", MinMaxScaler(feature_range=(-1, 1))),
+                    ("minmax", scaler),
                     ("poly", PolynomialFeatures(2)),
                     ("surface response", LinearRegressionUQ()),
                 ]
