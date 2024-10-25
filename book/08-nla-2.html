@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Nonlinear algebra" href="07-nla-1.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -620,7 +601,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/30f1a9ae200d2cdc4c033a74b4a2315451a3baf6f88e5149995d0b7cee272f88.png" src="../_images/30f1a9ae200d2cdc4c033a74b4a2315451a3baf6f88e5149995d0b7cee272f88.png" />
+<img alt="../_images/74742e2cc9abdbd05ce6fddb81b26fe4da79bdbdec018f1c8f5af8568439544e.png" src="../_images/74742e2cc9abdbd05ce6fddb81b26fe4da79bdbdec018f1c8f5af8568439544e.png" />
 </div>
 </div>
 <p>We can also use this to plot a polynomial.</p>
@@ -639,7 +620,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9936a95a3228c3b18c476401e29db943acde4b888f24c04629179410406d249c.png" src="../_images/9936a95a3228c3b18c476401e29db943acde4b888f24c04629179410406d249c.png" />
+<img alt="../_images/1f73d6358fc34a168f2d30129d826b4d138c3c25b750d8941f5551066d50c2fa.png" src="../_images/1f73d6358fc34a168f2d30129d826b4d138c3c25b750d8941f5551066d50c2fa.png" />
 </div>
 </div>
 <p>Why is this so convenient?</p>
@@ -721,7 +702,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2368/406724879.py:1: ComplexWarning: Casting complex values to real discards the imaginary part
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2290/406724879.py:1: ComplexWarning: Casting complex values to real discards the imaginary part
   float(R[0])
 </pre></div>
 </div>
@@ -799,7 +780,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2368/174692805.py:3: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2290/174692805.py:3: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   np.trapz(Y, X)
 </pre></div>
 </div>
@@ -836,7 +817,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>130 μs ± 394 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>128 μs ± 762 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 </pre></div>
 </div>
 </div>
@@ -853,7 +834,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6.4 μs ± 17.4 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6.55 μs ± 80.6 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 </pre></div>
 </div>
 </div>
@@ -885,7 +866,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function integrand at 0x7fd8a21c7380&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function integrand at 0x7fde68264720&gt;
 </pre></div>
 </div>
 </div>
@@ -980,7 +961,7 @@ y &amp;=&amp; 8 - x^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cfd3a55c15f58b6dc7388b5cdd9a5de2a3a277010f8a07aecda067e0fcf3dfd0.png" src="../_images/cfd3a55c15f58b6dc7388b5cdd9a5de2a3a277010f8a07aecda067e0fcf3dfd0.png" />
+<img alt="../_images/65dc0e79d9cd189c7fcf40b831599a92473141293394ebdb8df9d567801e374c.png" src="../_images/65dc0e79d9cd189c7fcf40b831599a92473141293394ebdb8df9d567801e374c.png" />
 </div>
 </div>
 <p>You can see that on this domain, there is one place where the two curves intersect near the point (2, 5), which is a solution point. At this point there is one (x, y) pair that is a solution to <em>both</em> equations.</p>
@@ -1033,7 +1014,7 @@ y &amp;=&amp; 8 - x^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/baa658d89c12b9a6874804de33737774032446822a064bec6ff49d28bef5f196.png" src="../_images/baa658d89c12b9a6874804de33737774032446822a064bec6ff49d28bef5f196.png" />
+<img alt="../_images/7bf9ff7ab4a2adc6ea6da5adee7286dbc8b4e08a00e2cefba9da0442ff9532cd.png" src="../_images/7bf9ff7ab4a2adc6ea6da5adee7286dbc8b4e08a00e2cefba9da0442ff9532cd.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1047,7 +1028,7 @@ y &amp;=&amp; 8 - x^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a9d29d143afc1478b34fc5dce21d0d7d8af6bae3cb8c29da2a0280663a38cf6d.png" src="../_images/a9d29d143afc1478b34fc5dce21d0d7d8af6bae3cb8c29da2a0280663a38cf6d.png" />
+<img alt="../_images/fabe8247a5634f76b1953f1a3a67288bd18dd1e6f619d54be53a7aa8a65f9761.png" src="../_images/fabe8247a5634f76b1953f1a3a67288bd18dd1e6f619d54be53a7aa8a65f9761.png" />
 </div>
 </div>
 <p>There is an intersection near <span class="math notranslate nohighlight">\(x_1=0.4\)</span>, and $x_2 = 0.6. We can use that as an initial guess.</p>
@@ -1077,16 +1058,7 @@ y &amp;=&amp; 8 - x^2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Failed at guess [-5.135320274707622, 5.801155693222169].
-The iteration is not making good progress, as measured by the 
-  improvement from the last ten iterations.
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2368/476845304.py:3: RuntimeWarning: overflow encountered in exp
-  z1 = np.exp(-np.exp(-(x1 + x2))) - x2 * (1 + x1**2)
-</pre></div>
-</div>
-<img alt="../_images/d0777370d96b8edc4106ed151674595c9f066e0d6caffdf36a4fb36fe4b5703d.png" src="../_images/d0777370d96b8edc4106ed151674595c9f066e0d6caffdf36a4fb36fe4b5703d.png" />
+<img alt="../_images/3b18461e8e2df59c5c7041a7defb2e1a377d3c84534ecf67e33c47f43cb21932.png" src="../_images/3b18461e8e2df59c5c7041a7defb2e1a377d3c84534ecf67e33c47f43cb21932.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1104,7 +1076,18 @@ The iteration is not making good progress, as measured by the
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([6.16007917e-12, 1.27985616e-11])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Failed at guess [-9.148895353699364, -0.4953756638942264].
+The iteration is not making good progress, as measured by the 
+  improvement from the last ten iterations.
+Failed at guess [-8.097277985981632, -0.42775356981088475].
+The iteration is not making good progress, as measured by the 
+  improvement from the last five Jacobian evaluations.
+Failed at guess [-8.791604156584212, -0.4973670498818028].
+The iteration is not making good progress, as measured by the 
+  improvement from the last five Jacobian evaluations.
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.40769441e-12, 7.13066840e-12])
 </pre></div>
 </div>
 </div>
@@ -1119,7 +1102,7 @@ The iteration is not making good progress, as measured by the
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/726aa73f113a83473a59d51fe4c145d62b872eb49215e5ff1cf3ca8ea5a6f487.png" src="../_images/726aa73f113a83473a59d51fe4c145d62b872eb49215e5ff1cf3ca8ea5a6f487.png" />
+<img alt="../_images/10ad62b66d88efa185f7566eed57872ed375dc3c406e591a46cba12f4ab668bb.png" src="../_images/10ad62b66d88efa185f7566eed57872ed375dc3c406e591a46cba12f4ab668bb.png" />
 </div>
 </div>
 <p>This shows the solution, and that the objective is practically equal to zero at that point.</p>
@@ -1190,7 +1173,8 @@ The iteration is not making good progress, as measured by the
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1254,8 +1238,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

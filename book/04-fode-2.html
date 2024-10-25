@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="First-order differential equations" href="03-fode-1.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -734,7 +715,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4c882170c57edbe19f75eea15d2b78930e473c1428b0eaa0c9444e7eedd340ff.png" src="../_images/4c882170c57edbe19f75eea15d2b78930e473c1428b0eaa0c9444e7eedd340ff.png" />
+<img alt="../_images/b481ad7e47f6544d46c48d62118b0798db8b562acfa3de55a83967fea58d2bd9.png" src="../_images/b481ad7e47f6544d46c48d62118b0798db8b562acfa3de55a83967fea58d2bd9.png" />
 </div>
 </div>
 <p>If you pick a point, the arrows show you which way the solution goes from there. You just follow the arrows to get an approximate solution to this equation. Let’s consider some specific solutions. Suppose we start with the initial condition that <span class="math notranslate nohighlight">\(y(-1) = 0\)</span>. You can trace the arrows to estimate where the solution goes.</p>
@@ -769,7 +750,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0, 0.5, &#39;y&#39;)
 </pre></div>
 </div>
-<img alt="../_images/4ca25257f2913f38ae85d4a95038cebaf45d532e1a32be08ac0b3fcd328a857a.png" src="../_images/4ca25257f2913f38ae85d4a95038cebaf45d532e1a32be08ac0b3fcd328a857a.png" />
+<img alt="../_images/e8198d174499b6d1df3de3d86c01d1707e73d21efb6d58ac59306786efcc1846.png" src="../_images/e8198d174499b6d1df3de3d86c01d1707e73d21efb6d58ac59306786efcc1846.png" />
 </div>
 </div>
 <p>Here are some more examples.</p>
@@ -791,7 +772,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7a2d3ec2aecbb38990f26d5d568e4ae26ebbf5ff69f71e784a0d7ea0620787b6.png" src="../_images/7a2d3ec2aecbb38990f26d5d568e4ae26ebbf5ff69f71e784a0d7ea0620787b6.png" />
+<img alt="../_images/20807fe447ed0c5b69987dd15315cf6f00ba4920dcbf56cc9024e3f7e691414a.png" src="../_images/20807fe447ed0c5b69987dd15315cf6f00ba4920dcbf56cc9024e3f7e691414a.png" />
 </div>
 </div>
 <p>You can see the solution looks different depending on the initial condition, but in each case the solution follows the direction field.</p>
@@ -812,7 +793,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e8aa314b47b56d6047d707f881a7fa79a2376278f871025b873b258c92b05dc5.png" src="../_images/e8aa314b47b56d6047d707f881a7fa79a2376278f871025b873b258c92b05dc5.png" />
+<img alt="../_images/f17064324a77124ec6a518d9976a2583949587d442b0488ca16aa7caff3ebaba.png" src="../_images/f17064324a77124ec6a518d9976a2583949587d442b0488ca16aa7caff3ebaba.png" />
 </div>
 </div>
 </section>
@@ -949,7 +930,7 @@ Net flow into B = 0.0 gal/min
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f66d2a7bd23d952241f13cb70f14341eec26d3af9f58a7499afa25a82e55c6be.png" src="../_images/f66d2a7bd23d952241f13cb70f14341eec26d3af9f58a7499afa25a82e55c6be.png" />
+<img alt="../_images/ae8a0de4d6a2e49aebc3dafca131ebe4d14be7c4b157a696c082cf7059c14bfa.png" src="../_images/ae8a0de4d6a2e49aebc3dafca131ebe4d14be7c4b157a696c082cf7059c14bfa.png" />
 </div>
 </div>
 <p>Another way is to convert the solution to an array where the data we want to plot is in columns. We can achieve this by <em>transposing</em> the array to convert it from 2 rows with 50 columns to 50 rows with 2 columns.</p>
@@ -1025,7 +1006,7 @@ Net flow into B = 0.0 gal/min
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f66d2a7bd23d952241f13cb70f14341eec26d3af9f58a7499afa25a82e55c6be.png" src="../_images/f66d2a7bd23d952241f13cb70f14341eec26d3af9f58a7499afa25a82e55c6be.png" />
+<img alt="../_images/ae8a0de4d6a2e49aebc3dafca131ebe4d14be7c4b157a696c082cf7059c14bfa.png" src="../_images/ae8a0de4d6a2e49aebc3dafca131ebe4d14be7c4b157a696c082cf7059c14bfa.png" />
 </div>
 </div>
 <p>This works because you can plot an array where the values to be plotted are all in columns.</p>
@@ -1089,7 +1070,7 @@ Net flow into B = 0.0 gal/min
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ac097c2a6c4aaf204819d804907750128d617a66d53359627cb7842e30ad6445.png" src="../_images/ac097c2a6c4aaf204819d804907750128d617a66d53359627cb7842e30ad6445.png" />
+<img alt="../_images/42603a1af1d2642db192eb0df565d368ec52ca1d63471e12d22375d35002d718.png" src="../_images/42603a1af1d2642db192eb0df565d368ec52ca1d63471e12d22375d35002d718.png" />
 </div>
 </div>
 <p>This is a classic boom/bust cycle of predator/prey.</p>
@@ -1120,7 +1101,7 @@ Net flow into B = 0.0 gal/min
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c7418030fbdc457831f46f2b2f697082aba6bf810cf31ff06f1e083398379356.png" src="../_images/c7418030fbdc457831f46f2b2f697082aba6bf810cf31ff06f1e083398379356.png" />
+<img alt="../_images/de639807f2abf32c17217c93e4d1e0f2b675184e42f44e4db7808ffcc74cbea9.png" src="../_images/de639807f2abf32c17217c93e4d1e0f2b675184e42f44e4db7808ffcc74cbea9.png" />
 </div>
 </div>
 <p>In this view, we have a <em>limit cycle</em> which just shows the number of rabbits and foxes goes up and down periodically as you travel around the solution curve. Time is parametric in this plot. It starts at t=0 at the initial state, and increases as you go around the cycle.</p>
@@ -1195,7 +1176,8 @@ There are other ode integrators in scipy that have different function signatures
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1260,8 +1242,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

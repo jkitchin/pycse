@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -112,6 +115,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Running pycse" href="running-pycse.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -127,19 +131,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -147,7 +140,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -155,8 +147,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -172,7 +164,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -202,21 +195,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -458,24 +447,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -521,8 +502,40 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.utils.read_gsheet"><code class="docutils literal notranslate"><span class="pre">read_gsheet()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-plotly">pycse.plotly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-hashcache">pycse.hashcache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.plotly">pycse.plotly</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.plotly.myshow"><code class="docutils literal notranslate"><span class="pre">myshow()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.hashcache">pycse.hashcache</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache"><code class="docutils literal notranslate"><span class="pre">HashCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.dump"><code class="docutils literal notranslate"><span class="pre">HashCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.dump_data"><code class="docutils literal notranslate"><span class="pre">HashCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_hash"><code class="docutils literal notranslate"><span class="pre">HashCache.get_hash()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_hashpath"><code class="docutils literal notranslate"><span class="pre">HashCache.get_hashpath()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_standardized_args"><code class="docutils literal notranslate"><span class="pre">HashCache.get_standardized_args()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.load"><code class="docutils literal notranslate"><span class="pre">HashCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.load_data"><code class="docutils literal notranslate"><span class="pre">HashCache.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache"><code class="docutils literal notranslate"><span class="pre">JsonCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.dump"><code class="docutils literal notranslate"><span class="pre">JsonCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.dump_data"><code class="docutils literal notranslate"><span class="pre">JsonCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.load"><code class="docutils literal notranslate"><span class="pre">JsonCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.load_data"><code class="docutils literal notranslate"><span class="pre">JsonCache.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache"><code class="docutils literal notranslate"><span class="pre">SqlCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.dump"><code class="docutils literal notranslate"><span class="pre">SqlCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.dump_data"><code class="docutils literal notranslate"><span class="pre">SqlCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.load"><code class="docutils literal notranslate"><span class="pre">SqlCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.load_data"><code class="docutils literal notranslate"><span class="pre">SqlCache.load_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.search"><code class="docutils literal notranslate"><span class="pre">SqlCache.search()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.hashcache"><code class="docutils literal notranslate"><span class="pre">hashcache()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -831,11 +844,334 @@ The url should be viewable by anyone with the link.</p>
 </dd></dl>
 
 </section>
-<section id="pycse-plotly">
-<h2>pycse.plotly<a class="headerlink" href="#pycse-plotly" title="Link to this heading">#</a></h2>
+<section id="module-pycse.plotly">
+<span id="pycse-plotly"></span><h2>pycse.plotly<a class="headerlink" href="#module-pycse.plotly" title="Link to this heading">#</a></h2>
+<p>Module for using plotly with orgmode.</p>
+<p>This monkey-patches go.Figure.show to provide a png image for org-mode, and an
+html file that is saved that you can click on in org-mode to see the interactive
+version.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.plotly.myshow">
+<span class="sig-prename descclassname"><span class="pre">pycse.plotly.</span></span><span class="sig-name descname"><span class="pre">myshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.plotly.myshow" title="Link to this definition">#</a></dt>
+<dd><p>Make a PNG image to display for plotly.</p>
+</dd></dl>
+
 </section>
-<section id="pycse-hashcache">
-<h2>pycse.hashcache<a class="headerlink" href="#pycse-hashcache" title="Link to this heading">#</a></h2>
+<section id="module-pycse.hashcache">
+<span id="pycse-hashcache"></span><h2>pycse.hashcache<a class="headerlink" href="#module-pycse.hashcache" title="Link to this heading">#</a></h2>
+<p>hashcache - a class decorator for persistent, file/hash-based cache</p>
+<p>I found some features of joblib were unsuitable for how I want to use a cache.</p>
+<p>1. The “file” Python thinks the function is in is used to save the results in
+joblib, which leads to repeated runs if you run the same code in Python,
+notebook or stdin, and means the cache is not portable to other machines, and
+maybe not even in time since temp directories and kernel parameters are
+involved. I could not figure out how to change those in joblib.</p>
+<p>2. joblib uses the function source code in the hash, so inconsequential changes
+like whitespace, docstrings and comments change the hash.</p>
+<p>This library aims to provide a simpler version of what I wish joblib did for me.</p>
+<p>Results are cached based on a hash of the function name, argnames, bytecode, arg
+values and kwarg values. I use joblib.hash for this. This means any two
+functions with the same bytecode, even if they have different names, will cache
+to the same result.</p>
+<p>The cache location is set as a class attribute:</p>
+<blockquote>
+<div><p>HashCache.cache = ‘./cache’</p>
+<p>HashCache - stores joblib.dump pickle strings in files named by hash</p>
+<p>SqlCache - stores orjson serialized data in a sqlite3 database by hash key</p>
+<p>JsonCache - stores orjson serialized data in json files, compatible with maggma</p>
+</div></blockquote>
+<p>This is still alpha, proof of concept code. Test it a lot for your use case. The
+API is not stable, and subject to change.</p>
+<p>Pros:</p>
+<p>1. File-based cache which means many functions can run in parallel reading and
+writing, and you are limited only by file io speeds, and disk space.</p>
+<p>2. semi-portability. The cache could be synced across machines, and caches
+can be merged with little risk of conflict.</p>
+<ol class="arabic simple" start="3">
+<li><p>No server is required. Everything is done at the OS level.</p></li>
+</ol>
+<p>4. Extendability. You can define your own functions for loading and dumping
+data.</p>
+<p>Cons:</p>
+<p>1. hashes are fragile and not robust. They are fragile with respect to any
+changes in how byte-code is made, or via mutable arguments, etc. The hashes are
+not robust to system level changes like library versions, or global variables.
+The only advantage of hashes is you can compute them.</p>
+<p>2. File-based cache which means if you generate thousands of files, it can be
+slow to delete them. Although it should be fast to access the results since you
+access them directly by path, it will not be fast to iterate over all the
+results, e.g. if you want to implement some kind of search or reporting.</p>
+<p>3. No server. You have to roll your own update strategy if you run things on
+multiple machines that should all cache to a common location.</p>
+<section id="changelog">
+<h3>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h3>
+<p>[2023-09-23 Sat] Changed hash signature (breaking change). It is too difficult
+to figure out how to capture global state, and the use of internal variable
+names is not consistent with using the bytecode to be insensitive to
+unimportant variable name changes.</p>
+<p>Pulled out some functions for loading and dumping data. This is a precursor to
+enabling other backends like lmdb or sqlite instead of files. You can then
+simply provide new functions for this.</p>
+<p>[2024-06-18 Tue] Changed from function to class decorator (breaking change).</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">HashCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache" title="Link to this definition">#</a></dt>
+<dd><p>Class decorator to cache using hashes and pickle (via joblib).
+Data is stored in directories named by the hash.</p>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
+<td><p>This is the decorator code that runs around self.function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.dump" title="pycse.hashcache.HashCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
+<td><p>Dump KWARGS to the cache.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.dump_data" title="pycse.hashcache.HashCache.dump_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_data</span></code></a>(hsh, data)</p></td>
+<td><p>Dump DATA into HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.get_hash" title="pycse.hashcache.HashCache.get_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hash</span></code></a>(args, kwargs)</p></td>
+<td><p>Get a hash for running FUNC(ARGS, KWARGS).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.get_hashpath" title="pycse.hashcache.HashCache.get_hashpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hashpath</span></code></a>(hsh)</p></td>
+<td><p>Return path to file for HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.get_standardized_args" title="pycse.hashcache.HashCache.get_standardized_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code></a>(args, kwargs)</p></td>
+<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.load" title="pycse.hashcache.HashCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh[, cache])</p></td>
+<td><p>Load saved variables from HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.load_data" title="pycse.hashcache.HashCache.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data</span></code></a>(hsh)</p></td>
+<td><p>Load data for HSH.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.dump">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.dump" title="Link to this definition">#</a></dt>
+<dd><p>Dump KWARGS to the cache.
+Returns a hash string for future lookup.</p>
+<p>cache is a special kwarg that is not saved</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.dump_data">
+<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.dump_data" title="Link to this definition">#</a></dt>
+<dd><p>Dump DATA into HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.get_hash">
+<span class="sig-name descname"><span class="pre">get_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.get_hash" title="Link to this definition">#</a></dt>
+<dd><p>Get a hash for running FUNC(ARGS, KWARGS).</p>
+<p>This is the most critical feature of hashcache as it provides a key to store
+and look up results later. You should think carefully before changing this
+function, it breaks past caches.</p>
+<p>FUNC should be as pure as reasonable. This hash is insensitive to global
+variables.</p>
+<p>The hash is on the function name, bytecode, and a standardized kwargs
+including defaults. We use bytecode because it is insensitive to things
+like whitespace, comments, docstrings, and variable name changes that
+don’t affect results. It is assumed that two functions with the same
+name and bytecode will evaluate to the same result. However, this makes
+the hash fragile to changes in Python version that affect bytecode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.get_hashpath">
+<span class="sig-name descname"><span class="pre">get_hashpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.get_hashpath" title="Link to this definition">#</a></dt>
+<dd><p>Return path to file for HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.get_standardized_args">
+<span class="sig-name descname"><span class="pre">get_standardized_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.get_standardized_args" title="Link to this definition">#</a></dt>
+<dd><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p>
+<p>This dictionary includes default values, even if they were not called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cache'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.load" title="Link to this definition">#</a></dt>
+<dd><p>Load saved variables from HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.HashCache.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load data for HSH.</p>
+<p>HSH is a string for the hash associated with the data you want.</p>
+<p>Returns success, data. If it succeeds, success with be True. If the data
+does not exist yet, sucess will be False, and data will be None.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pycse.hashcache.JsonCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">JsonCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache" title="Link to this definition">#</a></dt>
+<dd><p>Json-based cache.</p>
+<p>This is compatible with maggma.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>default</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
+<td><p>This is the decorator code that runs around self.function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.dump" title="pycse.hashcache.JsonCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
+<td><p>Dump KWARGS to the cache.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.dump_data" title="pycse.hashcache.JsonCache.dump_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_data</span></code></a>(hsh, data)</p></td>
+<td><p>Dump DATA into HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hash</span></code>(args, kwargs)</p></td>
+<td><p>Get a hash for running FUNC(ARGS, KWARGS).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hashpath</span></code>(hsh)</p></td>
+<td><p>Return path to file for HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code>(args, kwargs)</p></td>
+<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.load" title="pycse.hashcache.JsonCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh)</p></td>
+<td><p>Load data from HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.load_data" title="pycse.hashcache.JsonCache.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data</span></code></a>(hsh)</p></td>
+<td><p>Load data for HSH.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.JsonCache.dump">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.dump" title="Link to this definition">#</a></dt>
+<dd><p>Dump KWARGS to the cache.
+Returns a hash string for future lookup.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.JsonCache.dump_data">
+<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.dump_data" title="Link to this definition">#</a></dt>
+<dd><p>Dump DATA into HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.JsonCache.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.load" title="Link to this definition">#</a></dt>
+<dd><p>Load data from HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.JsonCache.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load data for HSH.</p>
+<p>HSH is a string for the hash associated with the data you want.</p>
+<p>Returns success, data. If it succeeds, success with be True. If the data
+does not exist yet, sucess will be False, and data will be None.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">SqlCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache" title="Link to this definition">#</a></dt>
+<dd><p>Class decorator to cache using orjson and sqlite.
+Data is stored in a sqlite database as json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>default</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
+<td><p>This is the decorator code that runs around self.function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.dump" title="pycse.hashcache.SqlCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
+<td><p>Dump KWARGS to the cache.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.dump_data" title="pycse.hashcache.SqlCache.dump_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_data</span></code></a>(hsh, data)</p></td>
+<td><p>Dump DATA into HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hash</span></code>(args, kwargs)</p></td>
+<td><p>Get a hash for running FUNC(ARGS, KWARGS).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hashpath</span></code>(hsh)</p></td>
+<td><p>Return path to file for HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code>(args, kwargs)</p></td>
+<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.load" title="pycse.hashcache.SqlCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh)</p></td>
+<td><p>Load data from HSH.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.load_data" title="pycse.hashcache.SqlCache.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data</span></code></a>(hsh)</p></td>
+<td><p>Load data for HSH.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.search" title="pycse.hashcache.SqlCache.search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search</span></code></a>(query, *args)</p></td>
+<td><p>Run a sql QUERY with args.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache.dump">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.dump" title="Link to this definition">#</a></dt>
+<dd><p>Dump KWARGS to the cache.
+Returns a hash string for future lookup.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache.dump_data">
+<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.dump_data" title="Link to this definition">#</a></dt>
+<dd><p>Dump DATA into HSH.
+DATA must be serializable to json.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.load" title="Link to this definition">#</a></dt>
+<dd><p>Load data from HSH.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load data for HSH.</p>
+<p>HSH is a string for the hash associated with the data you want.</p>
+<p>Returns success, data. If it succeeds, success with be True. If the data
+does not exist yet, sucess will be False, and data will be None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycse.hashcache.SqlCache.search">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.search" title="Link to this definition">#</a></dt>
+<dd><p>Run a sql QUERY with args.
+args are substituted in ? placeholders in the query.</p>
+<p>This is just a light wrapper on con.execute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycse.hashcache.hashcache">
+<span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">hashcache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.hashcache" title="Link to this definition">#</a></dt>
+<dd><p>Raises an exception if the old hashcache decorator is used.</p>
+</dd></dl>
+
 </section>
 </section>
 
@@ -894,7 +1230,8 @@ The url should be viewable by anyone with the link.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -925,8 +1262,40 @@ The url should be viewable by anyone with the link.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.utils.read_gsheet"><code class="docutils literal notranslate"><span class="pre">read_gsheet()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-plotly">pycse.plotly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse-hashcache">pycse.hashcache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.plotly">pycse.plotly</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.plotly.myshow"><code class="docutils literal notranslate"><span class="pre">myshow()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pycse.hashcache">pycse.hashcache</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache"><code class="docutils literal notranslate"><span class="pre">HashCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.dump"><code class="docutils literal notranslate"><span class="pre">HashCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.dump_data"><code class="docutils literal notranslate"><span class="pre">HashCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_hash"><code class="docutils literal notranslate"><span class="pre">HashCache.get_hash()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_hashpath"><code class="docutils literal notranslate"><span class="pre">HashCache.get_hashpath()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.get_standardized_args"><code class="docutils literal notranslate"><span class="pre">HashCache.get_standardized_args()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.load"><code class="docutils literal notranslate"><span class="pre">HashCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.HashCache.load_data"><code class="docutils literal notranslate"><span class="pre">HashCache.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache"><code class="docutils literal notranslate"><span class="pre">JsonCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.dump"><code class="docutils literal notranslate"><span class="pre">JsonCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.dump_data"><code class="docutils literal notranslate"><span class="pre">JsonCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.load"><code class="docutils literal notranslate"><span class="pre">JsonCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.JsonCache.load_data"><code class="docutils literal notranslate"><span class="pre">JsonCache.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache"><code class="docutils literal notranslate"><span class="pre">SqlCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.dump"><code class="docutils literal notranslate"><span class="pre">SqlCache.dump()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.dump_data"><code class="docutils literal notranslate"><span class="pre">SqlCache.dump_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.load"><code class="docutils literal notranslate"><span class="pre">SqlCache.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.load_data"><code class="docutils literal notranslate"><span class="pre">SqlCache.load_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.SqlCache.search"><code class="docutils literal notranslate"><span class="pre">SqlCache.search()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.hashcache.hashcache"><code class="docutils literal notranslate"><span class="pre">hashcache()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -975,8 +1344,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

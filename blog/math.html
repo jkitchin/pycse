@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Basic python usage" href="basic-python.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -673,12 +654,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000221 seconds
- Backward difference took 0.000202 seconds
- Centered difference took 0.000234 seconds
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000222 seconds
+ Backward difference took 0.000193 seconds
+ Centered difference took 0.000225 seconds
 </pre></div>
 </div>
-<img alt="../_images/e82a955efa2e01fb55f09524ce9405030516d0ae15614c934dfaf2d14380e228.png" src="../_images/e82a955efa2e01fb55f09524ce9405030516d0ae15614c934dfaf2d14380e228.png" />
+<img alt="../_images/daa065af21333742b2bd89b0f58514c67a1d21b3b615884abae321d132a5eae1.png" src="../_images/daa065af21333742b2bd89b0f58514c67a1d21b3b615884abae321d132a5eae1.png" />
 </div>
 </div>
 </section>
@@ -722,7 +703,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ecf8f289b085fe846d589ffb52a11298e04bcd87b3c9ac6c2b456b3707475af2.png" src="../_images/ecf8f289b085fe846d589ffb52a11298e04bcd87b3c9ac6c2b456b3707475af2.png" />
+<img alt="../_images/adf07da361945dbe325acb05afb9c4424e6d66541e4389d831fb59705cc6aa79.png" src="../_images/adf07da361945dbe325acb05afb9c4424e6d66541e4389d831fb59705cc6aa79.png" />
 </div>
 </div>
 </section>
@@ -775,7 +756,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2d7bb8ae04a90859d4b083e426216d64907ddef0e182bcc77a3cb7f48b1f2459.png" src="../_images/2d7bb8ae04a90859d4b083e426216d64907ddef0e182bcc77a3cb7f48b1f2459.png" />
+<img alt="../_images/980b87970dee0fffc63f7c29f70a2c7d63c13daca298ed10b4fec9dc7695ae9d.png" src="../_images/980b87970dee0fffc63f7c29f70a2c7d63c13daca298ed10b4fec9dc7695ae9d.png" />
 </div>
 </div>
 </section>
@@ -813,8 +794,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7738a0cfc980d171207cd6a901fb63569c4662bc255cbe3600550ae1c81e2017.png" src="../_images/7738a0cfc980d171207cd6a901fb63569c4662bc255cbe3600550ae1c81e2017.png" />
-<img alt="../_images/ea47e6bdc20b74f0409972c6d997b1a49f952232e08e1de6adf21896a679cc53.png" src="../_images/ea47e6bdc20b74f0409972c6d997b1a49f952232e08e1de6adf21896a679cc53.png" />
+<img alt="../_images/34c43e784d9706f42e14d90862317194cb9932a719b63f4b106991dc7a043db5.png" src="../_images/34c43e784d9706f42e14d90862317194cb9932a719b63f4b106991dc7a043db5.png" />
+<img alt="../_images/81a41cce6ae8c3cbd543ff4ffedd17bb996db0152d5f5794f4b49d073e9cff54.png" src="../_images/81a41cce6ae8c3cbd543ff4ffedd17bb996db0152d5f5794f4b49d073e9cff54.png" />
 </div>
 </div>
 <p>You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have “resampled” the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error.</p>
@@ -855,8 +836,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/da26d735bbe85b233704b22b589ed320ee30d87041e0b6968233b381de09615e.png" src="../_images/da26d735bbe85b233704b22b589ed320ee30d87041e0b6968233b381de09615e.png" />
-<img alt="../_images/66504d6b93e26b5fc809cf53489029b8149a999dd3795157d08dee0d829d6556.png" src="../_images/66504d6b93e26b5fc809cf53489029b8149a999dd3795157d08dee0d829d6556.png" />
+<img alt="../_images/e3134a0d43833ce3985b50209e94cdea702a618fce58555913ebaf2e93225443.png" src="../_images/e3134a0d43833ce3985b50209e94cdea702a618fce58555913ebaf2e93225443.png" />
+<img alt="../_images/4afb0d0a3d5d5e184ef830b6fa2a39daa04888e1397c64d7416ae2679ebf3ed8.png" src="../_images/4afb0d0a3d5d5e184ef830b6fa2a39daa04888e1397c64d7416ae2679ebf3ed8.png" />
 </div>
 </div>
 <p>Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.</p>
@@ -900,7 +881,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2e2db9dd304f55a007cce2a7c550e8ab30363937e54676777e6f7240ab6a5e95.png" src="../_images/2e2db9dd304f55a007cce2a7c550e8ab30363937e54676777e6f7240ab6a5e95.png" />
+<img alt="../_images/7aca8d36ee6939e2add26c225c0db184541a7bef8e478f056242003ddf27234b.png" src="../_images/7aca8d36ee6939e2add26c225c0db184541a7bef8e478f056242003ddf27234b.png" />
 </div>
 </div>
 </section>
@@ -1011,7 +992,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" src="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" />
+<img alt="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" src="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" />
 </div>
 </div>
 <p>Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.</p>
@@ -1035,7 +1016,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0. 0. 1. 0. 0. 0.]
 </pre></div>
 </div>
-<img alt="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" src="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" />
+<img alt="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" src="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" />
 </div>
 </div>
 <p>A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x &gt;= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.</p>
@@ -1077,7 +1058,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" src="../_images/fc9ceefc99e979f8295d2dbbd46babe82367154dcf2c13dfbd097d77f82b2d1d.png" />
+<img alt="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" src="../_images/00cffb014d59b63fc4159fb43d7875d4d3cbefa432e9dd3c46256b597da446a7.png" />
 </div>
 </div>
 <p>There are many ways to define piecewise functions, and vectorization is not always necessary. The advantages of vectorization are usually notational simplicity and speed; loops in python are usually very slow compared to vectorized functions.</p>
@@ -1132,7 +1113,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bcc8fec0f7f15e94698f3de911996a52882947a424bfd446ba02c59658ecd323.png" src="../_images/bcc8fec0f7f15e94698f3de911996a52882947a424bfd446ba02c59658ecd323.png" />
+<img alt="../_images/ccdff6e48578e41daf014bb7571b033e268fa520328f69e262b7bfa10f0d8137.png" src="../_images/ccdff6e48578e41daf014bb7571b033e268fa520328f69e262b7bfa10f0d8137.png" />
 </div>
 </div>
 <p>You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
@@ -1150,7 +1131,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e99cd3898c1d9947dacc058d8d81091a36eeda206f2eb76b4fe7d1562ca2a0a0.png" src="../_images/e99cd3898c1d9947dacc058d8d81091a36eeda206f2eb76b4fe7d1562ca2a0a0.png" />
+<img alt="../_images/24ab9aae41d2f70e5f6f835b6e2f04153648c6a77c30e80260191089d7fa752c.png" src="../_images/24ab9aae41d2f70e5f6f835b6e2f04153648c6a77c30e80260191089d7fa752c.png" />
 </div>
 </div>
 <p>If we have two functions, <span class="math notranslate nohighlight">\(f_1(x)\)</span> and <span class="math notranslate nohighlight">\(f_2(x)\)</span> we want to smoothly join, we do it like this: <span class="math notranslate nohighlight">\(f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)\)</span>. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.</p>
@@ -1177,7 +1158,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/06e47b6a6a2858e1c0aa86c15e61bd8607ef3e9c057cf8bb3628af747e791e44.png" src="../_images/06e47b6a6a2858e1c0aa86c15e61bd8607ef3e9c057cf8bb3628af747e791e44.png" />
+<img alt="../_images/d9191b442c0c567e0af1f30457712e783838d49db7b75ffaa03ba026554f480f.png" src="../_images/d9191b442c0c567e0af1f30457712e783838d49db7b75ffaa03ba026554f480f.png" />
 </div>
 </div>
 <p>You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.</p>
@@ -1213,7 +1194,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c9c6afdc95ab3dd9bba1e90638bcab12b7548c044a99a3b38a38de762d312dbe.png" src="../_images/c9c6afdc95ab3dd9bba1e90638bcab12b7548c044a99a3b38a38de762d312dbe.png" />
+<img alt="../_images/7a141e262ac0c0bc9727aadb671c942a2a81a0c014aeb73a84fd478303cd7e10.png" src="../_images/7a141e262ac0c0bc9727aadb671c942a2a81a0c014aeb73a84fd478303cd7e10.png" />
 </div>
 </div>
 <p>This is a nice trick to get an analytical function with continuous derivatives for a transition between two constants. You could have the transition occur at a value other than D = 1, as well by changing the argument to the exponential function.</p>
@@ -1280,7 +1261,7 @@ Sigmoid functions</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.25 0.0625
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1978/1388173814.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1922/1388173814.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   i2 = np.trapz(y, x)
 </pre></div>
 </div>
@@ -1304,7 +1285,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c69a755855b6ed6a1995c2d70bca31e035a7266e7b26122c9ebca7e4e25f06eb.png" src="../_images/c69a755855b6ed6a1995c2d70bca31e035a7266e7b26122c9ebca7e4e25f06eb.png" />
+<img alt="../_images/8e0157b87df9db5542d00c049f537927eac7a71078573cec6b9eb6c6f4dd96a6.png" src="../_images/8e0157b87df9db5542d00c049f537927eac7a71078573cec6b9eb6c6f4dd96a6.png" />
 </div>
 </div>
 <p>The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.</p>
@@ -1323,7 +1304,7 @@ Sigmoid functions</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.000408121620243
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1978/1343167527.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1922/1343167527.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(y2, x2))
 </pre></div>
 </div>
@@ -1363,7 +1344,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 2.5312499999999987
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1978/1681875887.py:13: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1922/1681875887.py:13: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(yfine, xfine))
 </pre></div>
 </div>
@@ -1515,7 +1496,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/82462f493900bf50a0c5a128e5419808d5d4a4a78b235262bafb1db5053ae085.png" src="../_images/82462f493900bf50a0c5a128e5419808d5d4a4a78b235262bafb1db5053ae085.png" />
+<img alt="../_images/2503a40bb7f7c38460ba176925144c657531a08fab5a21c1a062e160434be1ef.png" src="../_images/2503a40bb7f7c38460ba176925144c657531a08fab5a21c1a062e160434be1ef.png" />
 </div>
 </div>
 <p>Let us consider the expanded version of the polynomial. We will use sympy to expand the polynomial.</p>
@@ -1628,17 +1609,18 @@ Here is the polynomial evaluated at the calculated roots:
 <span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">These are the known roots</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="c1"># evaluate the polynomial at the known roots</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.9/x64/lib/python3.11/site-packages/numpy/__init__.py:394,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
-<span class="g g-Whitespace">    </span><span class="mi">389</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">390</span>         <span class="sa">f</span><span class="s2">&quot;In the future `np.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` will be defined as the &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">391</span>         <span class="s2">&quot;corresponding NumPy scalar.&quot;</span><span class="p">,</span> <span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">__former_attrs__</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">394</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">__former_attrs__</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">396</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">__expired_attributes__</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">397</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">398</span>         <span class="sa">f</span><span class="s2">&quot;`np.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` was removed in the NumPy 2.0 release. &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">399</span>         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">__expired_attributes__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">400</span>     <span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/numpy/__init__.py:397,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="g g-Whitespace">    </span><span class="mi">392</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">393</span>         <span class="sa">f</span><span class="s2">&quot;In the future `np.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` will be defined as the &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">394</span>         <span class="s2">&quot;corresponding NumPy scalar.&quot;</span><span class="p">,</span> <span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">396</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">__former_attrs__</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">397</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">__former_attrs__</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">399</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">__expired_attributes__</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">400</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">401</span>         <span class="sa">f</span><span class="s2">&quot;`np.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` was removed in the NumPy 2.0 release. &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">402</span>         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">__expired_attributes__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">403</span>         <span class="n">name</span><span class="o">=</span><span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">404</span>     <span class="p">)</span>
 
 <span class="ne">AttributeError</span>: module &#39;numpy&#39; has no attribute &#39;float&#39;.
 <span class="err">`</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="err">`</span> <span class="n">was</span> <span class="n">a</span> <span class="n">deprecated</span> <span class="n">alias</span> <span class="k">for</span> <span class="n">the</span> <span class="n">builtin</span> <span class="err">`</span><span class="nb">float</span><span class="err">`</span><span class="o">.</span> <span class="n">To</span> <span class="n">avoid</span> <span class="n">this</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">existing</span> <span class="n">code</span><span class="p">,</span> <span class="n">use</span> <span class="err">`</span><span class="nb">float</span><span class="err">`</span> <span class="n">by</span> <span class="n">itself</span><span class="o">.</span> <span class="n">Doing</span> <span class="n">this</span> <span class="n">will</span> <span class="ow">not</span> <span class="n">modify</span> <span class="nb">any</span> <span class="n">behavior</span> <span class="ow">and</span> <span class="ow">is</span> <span class="n">safe</span><span class="o">.</span> <span class="n">If</span> <span class="n">you</span> <span class="n">specifically</span> <span class="n">wanted</span> <span class="n">the</span> <span class="n">numpy</span> <span class="n">scalar</span> <span class="nb">type</span><span class="p">,</span> <span class="n">use</span> <span class="err">`</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="err">`</span> <span class="n">here</span><span class="o">.</span>
@@ -1774,7 +1756,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0007152557373046875 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0006816387176513672 sec
 1.9999983517708524
 </pre></div>
 </div>
@@ -1795,7 +1777,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.00022339820861816406 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.00017595291137695312 sec
 1.9999934070923728
 </pre></div>
 </div>
@@ -1814,7 +1796,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 8.916854858398438e-05 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 7.176399230957031e-05 sec
 1.999993407092373
 </pre></div>
 </div>
@@ -1856,7 +1838,7 @@ Integer                       Float                         \delta
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">4.0</span><span class="p">;</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># this is the number of intervals</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.9/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
+<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
 </pre></div>
 </div>
 </div>
@@ -2009,7 +1991,7 @@ Integer                       Float                         \delta
 0.2928932188134519
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1978/1760157840.py:9: DeprecationWarning: `scipy.integrate.romberg` is deprecated as of SciPy 1.12.0and will be removed in SciPy 1.15.0. Please use`scipy.integrate.quad` instead.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1922/1760157840.py:9: DeprecationWarning: `scipy.integrate.romberg` is deprecated as of SciPy 1.12.0and will be removed in SciPy 1.15.0. Please use`scipy.integrate.quad` instead.
   print(romberg(np.sin, a, b))
 </pre></div>
 </div>
@@ -2292,7 +2274,8 @@ True
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -2390,8 +2373,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

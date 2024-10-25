@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="The pycse book" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -761,7 +742,7 @@ Remember this cell. You will use it almost every time you make a plot.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b0b62248a05cdf34fba1a7671badfa43a97a7db8c6ca90ab7f261ad409772d80.png" src="../_images/b0b62248a05cdf34fba1a7671badfa43a97a7db8c6ca90ab7f261ad409772d80.png" />
+<img alt="../_images/60b2168a3a09aaf50d32d3e8964ed43cae1639ed8b84d6210bbfde8196228798.png" src="../_images/60b2168a3a09aaf50d32d3e8964ed43cae1639ed8b84d6210bbfde8196228798.png" />
 </div>
 </div>
 </section>
@@ -793,7 +774,7 @@ Remember this cell. You will use it almost every time you make a plot.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/da094fc6601412b8e827f00d4a6d4e0a201c9d7ddd748a0ae0a07ef5e7fa7910.png" src="../_images/da094fc6601412b8e827f00d4a6d4e0a201c9d7ddd748a0ae0a07ef5e7fa7910.png" />
+<img alt="../_images/6726763ad14ddaf8de56d1f9dfe206ae4b1c22021f5c6fe96b90fb95aa4353ce.png" src="../_images/6726763ad14ddaf8de56d1f9dfe206ae4b1c22021f5c6fe96b90fb95aa4353ce.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -816,7 +797,7 @@ Remember this cell. You will use it almost every time you make a plot.
           906177281,  1325485569,  1443712780,  1963025921, -2063369727,
             6098177,   553716061,   856765187,   588325653,    53813521,
            16973318,  -704760322,  1593690581,  -470014715,   872205571,
-           27328168,       50016,   654364711,  -802750256,    13641472],
+           27328168,       50016,  -312205980, -1520827260,   493093154],
        dtype=int32),
  &#39;alist&#39;: array([0.00000000e+00, 2.25000000e+00, 7.67216743e-04, 2.10783652e-03,
         4.30872995e-03, 7.48622952e-03, 1.17307690e-02, 1.71108947e-02,
@@ -831,7 +812,24 @@ Remember this cell. You will use it almost every time you make a plot.
         4.57198376e-01, 4.55266300e-01, 4.51260786e-01, 4.45169648e-01,
         4.36995911e-01, 4.26757911e-01, 4.14489286e-01, 4.00238834e-01,
         3.84070253e-01, 3.66061764e-01]),
- &#39;blist&#39;: array([2.25000000e+000, 4.50000000e+000, 9.97338022e-313, 2.48273508e-312,
+ &#39;blist&#39;: array([ 2.25000000e+000,  4.50000000e+000,  6.91790925e-310,
+         6.91790971e-310,  6.91790904e-310,  6.91790972e-310,
+         6.91790971e-310,  6.91790972e-310,  6.91790974e-310,
+         6.91790971e-310,  6.91790904e-310,  6.91790904e-310,
+         6.91790974e-310,  6.91790904e-310,  6.91790970e-310,
+         6.91790974e-310,  6.91790904e-310,  6.91790904e-310,
+         6.91790904e-310,  6.91790904e-310,  6.91790904e-310,
+         6.91790901e-310,  6.91790904e-310,  6.91790904e-310,
+         6.91790904e-310,  6.91790937e-310,  0.00000000e+000,
+         0.00000000e+000,  1.20450947e-316,  1.56645200e-305,
+         5.53682373e-317,  1.02379269e-306,  7.68183070e-312,
+         7.26511031e-292,  4.52013802e-316,  2.49208272e-306,
+         9.06092203e-312,  3.12034112e-282,  1.20249327e-306,
+        -7.97181336e-220,  5.30870660e-313,  2.04494675e-277,
+         2.58903303e-312,  5.16310606e-297,  1.07414093e-296,
+         3.47906305e-308,  0.00000000e+000,  2.84351692e-309,
+         8.95494528e-312,  2.10966031e-321]),
+ &#39;rlist&#39;: array([2.05718868e-001, 9.12099070e-001, 9.97338022e-313, 2.48273508e-312,
         2.33419537e-312, 2.41907520e-312, 2.52517499e-312, 2.41907520e-312,
         9.97338022e-313, 2.56761491e-312, 2.44029516e-312, 9.97338022e-313,
         2.56761491e-312, 2.44029516e-312, 9.97338022e-313, 2.56761491e-312,
@@ -843,20 +841,7 @@ Remember this cell. You will use it almost every time you make a plot.
         2.14321575e-312, 2.10077583e-312, 2.01589600e-312, 2.33419537e-312,
         2.01589600e-312, 2.33419537e-312, 2.22809558e-312, 2.14321575e-312,
         2.41907520e-312, 2.33419537e-312, 9.97338022e-313, 2.35541533e-312,
-        2.27053550e-312, 5.37710476e+228]),
- &#39;rlist&#39;: array([2.05718868e-001, 9.12099070e-001, 6.93253789e-310, 6.93253760e-310,
-        6.93253742e-310, 6.93253789e-310, 6.93253760e-310, 6.93253742e-310,
-        6.93253789e-310, 6.93253760e-310, 6.93253742e-310, 6.93253789e-310,
-        6.93253760e-310, 6.93253742e-310, 6.93253789e-310, 6.93253760e-310,
-        6.93253742e-310, 6.93253789e-310, 6.93253760e-310, 6.93253742e-310,
-        6.93253789e-310, 6.93253760e-310, 6.93253742e-310, 6.93253789e-310,
-        6.93253760e-310, 6.93253742e-310, 6.93253789e-310, 6.93253760e-310,
-        6.93253742e-310, 6.93253789e-310, 6.93253760e-310, 6.93253742e-310,
-        6.93253789e-310, 6.93253760e-310, 6.93253742e-310, 6.93253789e-310,
-        6.93253760e-310, 6.93253742e-310, 6.93253789e-310, 6.93253760e-310,
-        6.93253742e-310, 6.93253789e-310, 6.93253760e-310, 6.93253742e-310,
-        6.93253789e-310, 6.93253760e-310, 6.93253742e-310, 6.93253789e-310,
-        6.93253760e-310, 6.93253742e-310]),
+        2.27053550e-312, 6.91770628e-310]),
  &#39;elist&#39;: array([7.86630709e-09, 1.01263339e-14, 0.00000000e+00, 0.00000000e+00,
         0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00,
         0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00,
@@ -882,7 +867,7 @@ Remember this cell. You will use it almost every time you make a plot.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2185/843280888.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2115/843280888.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   (np.trapz(integrand(x1), x1) - I) / I
 </pre></div>
 </div>
@@ -961,7 +946,8 @@ Remember this cell. You will use it almost every time you make a plot.
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1026,8 +1012,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Polynomials in Python" href="08-nla-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -706,7 +687,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cb6daf9eca181f6de520eafc1dad5323124f52a7d5eb40782e301060d6cf8b8b.png" src="../_images/cb6daf9eca181f6de520eafc1dad5323124f52a7d5eb40782e301060d6cf8b8b.png" />
+<img alt="../_images/9c1747838025aef6c6e108434ace98fcb47e21e4f1e2d52ce4e5cd814dd026f6.png" src="../_images/9c1747838025aef6c6e108434ace98fcb47e21e4f1e2d52ce4e5cd814dd026f6.png" />
 </div>
 </div>
 <p>We should check our residuals function. We mostly want to see that it runs, and produces the right shaped output.</p>
@@ -738,7 +719,7 @@ y_L - \beta &amp;=&amp;0
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The solution converged.
 </pre></div>
 </div>
-<img alt="../_images/dae5ce25a27aa9e40f3806b2229e1755b9da44b9fe83ee1e74cba2cd5b9ec68d.png" src="../_images/dae5ce25a27aa9e40f3806b2229e1755b9da44b9fe83ee1e74cba2cd5b9ec68d.png" />
+<img alt="../_images/4e9ab8926e0cc699d332fab87c8393485c4a6ad6e2652688fc75f95a6323a248.png" src="../_images/4e9ab8926e0cc699d332fab87c8393485c4a6ad6e2652688fc75f95a6323a248.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -779,7 +760,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8700d108e681f489df1577e24c1bd862ea39ac55b6ee79ab139e476fd4ebb0c6.png" src="../_images/8700d108e681f489df1577e24c1bd862ea39ac55b6ee79ab139e476fd4ebb0c6.png" />
+<img alt="../_images/5af369dbf52cf7a8618fa0d8889a72f8fcb4360fd65baea1f1dd7a66a98fd322.png" src="../_images/5af369dbf52cf7a8618fa0d8889a72f8fcb4360fd65baea1f1dd7a66a98fd322.png" />
 </div>
 </div>
 <p>This result doesn’t look great at the origin, but remember:</p>
@@ -882,7 +863,7 @@ solve_bvp<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((50,), (50,))
 </pre></div>
 </div>
-<img alt="../_images/5937a4f15ecc476ae85579d1ba6305d49a86c885dcdb7538933d73fe0d4ace5e.png" src="../_images/5937a4f15ecc476ae85579d1ba6305d49a86c885dcdb7538933d73fe0d4ace5e.png" />
+<img alt="../_images/abadd8ad60834b6bbbec997475c897478c7b4e3be2cf1866c62240cc0d84ae8d.png" src="../_images/abadd8ad60834b6bbbec997475c897478c7b4e3be2cf1866c62240cc0d84ae8d.png" />
 </div>
 </div>
 <p>We also need a guess for U2, and in this case we know that <span class="math notranslate nohighlight">\(u2 = u1'\)</span>, so we just use that.</p>
@@ -903,7 +884,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2, 50)
 </pre></div>
 </div>
-<img alt="../_images/1a98bbe977711241a49194c6852a5b7410a6db551d1e330f0d062f976bbc955c.png" src="../_images/1a98bbe977711241a49194c6852a5b7410a6db551d1e330f0d062f976bbc955c.png" />
+<img alt="../_images/b0efe0344560a98dbef356279f290b5dbbb670b5c1b9133bfd07dbc57ead1add.png" src="../_images/b0efe0344560a98dbef356279f290b5dbbb670b5c1b9133bfd07dbc57ead1add.png" />
 </div>
 </div>
 <p>You should <em>always</em> visualize the guess to make sure it does what you want. It is <strong>hard</strong> to make these!</p>
@@ -922,7 +903,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f76a8c91804911e9579d8c1a2b5ff873b9c204ccce46e5752f6993047cd3f62b.png" src="../_images/f76a8c91804911e9579d8c1a2b5ff873b9c204ccce46e5752f6993047cd3f62b.png" />
+<img alt="../_images/4fec74bf21159e7a003c2b354dc35f953719ca258deab28d2178ab509508cdd7.png" src="../_images/4fec74bf21159e7a003c2b354dc35f953719ca258deab28d2178ab509508cdd7.png" />
 </div>
 </div>
 <p>Now, we are ready to solve the BVP.</p>
@@ -942,7 +923,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The algorithm converged to the desired accuracy.
 </pre></div>
 </div>
-<img alt="../_images/20b752d591048727da1fa7d833b602535a309d7ee2a3339d304c5611b8988010.png" src="../_images/20b752d591048727da1fa7d833b602535a309d7ee2a3339d304c5611b8988010.png" />
+<img alt="../_images/7f64e2c26b39f834d8808a7b6d86df234ff835eff2d0a672a6e61ed8562337b4.png" src="../_images/7f64e2c26b39f834d8808a7b6d86df234ff835eff2d0a672a6e61ed8562337b4.png" />
 </div>
 </div>
 <p><strong>exercise</strong> Try using different guesses, e.g. lines, or triangle shapes, etc. What else looks like this shape? Half a cycle of a sin wave? A semi-circle?</p>
@@ -995,7 +976,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/38ab6e4fc7d18a4ad04fd8e9ef8f582c184bb90759fb16a959c9986bda1be8ea.png" src="../_images/38ab6e4fc7d18a4ad04fd8e9ef8f582c184bb90759fb16a959c9986bda1be8ea.png" />
+<img alt="../_images/182490b1fca4e3c0e49c1f3823d5b53f445f4e41c1cc609faca82b868d233518.png" src="../_images/182490b1fca4e3c0e49c1f3823d5b53f445f4e41c1cc609faca82b868d233518.png" />
 </div>
 </div>
 <p>Now we solve the system.</p>
@@ -1028,7 +1009,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/111f6c2981b5ffbd33250e61e82fb720d0b348723a1f76a0136775fddea229c5.png" src="../_images/111f6c2981b5ffbd33250e61e82fb720d0b348723a1f76a0136775fddea229c5.png" />
+<img alt="../_images/7ac33d11ca81ecb0c6780a87bf1b588d959d28acd88da9b5c5307281ba83dd3d.png" src="../_images/7ac33d11ca81ecb0c6780a87bf1b588d959d28acd88da9b5c5307281ba83dd3d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1042,7 +1023,7 @@ solve_bvp<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>50
 </pre></div>
 </div>
-<img alt="../_images/ecf2bf2691ae87ca76cc07d3865ad9c991553ea4e79403e35c52db47e1d1ce99.png" src="../_images/ecf2bf2691ae87ca76cc07d3865ad9c991553ea4e79403e35c52db47e1d1ce99.png" />
+<img alt="../_images/597eda873611232bac9e832389423eabc5ddaa333c9ab85d33666c2e06f12725.png" src="../_images/597eda873611232bac9e832389423eabc5ddaa333c9ab85d33666c2e06f12725.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1076,7 +1057,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.008249311811255714
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2400/1627362779.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2389/1627362779.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(c**2, sol.x))
 </pre></div>
 </div>
@@ -1088,7 +1069,7 @@ solve_bvp<span class="o">?</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">simps</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nb">print</span><span class="p">(</span><span class="n">simps</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.9/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
+<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
 </pre></div>
 </div>
 </div>
@@ -1180,7 +1161,8 @@ solve_bvp<span class="o">?</span>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1244,8 +1226,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

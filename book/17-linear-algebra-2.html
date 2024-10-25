@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Applications of linear algebra" href="16-linear-algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -509,24 +498,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -594,7 +575,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/94979f45a163837a8d61d8abec7c8946c8445bc362ce58a850d0c2926ee1ebd9.png" src="../_images/94979f45a163837a8d61d8abec7c8946c8445bc362ce58a850d0c2926ee1ebd9.png" />
+<img alt="../_images/aaae9da8d7cc49e33bc89b0f8c285e4227a8bb0f8ecb85e40b820ca5ca02b30d.png" src="../_images/aaae9da8d7cc49e33bc89b0f8c285e4227a8bb0f8ecb85e40b820ca5ca02b30d.png" />
 </div>
 </div>
 <p>We would like an equation like <span class="math notranslate nohighlight">\(y(x) = a_2 x^2 + a_1 x + a_0\)</span>. If we write these out for each data point we get:</p>
@@ -656,7 +637,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/75ecea12fd7cc49008910b1f7001227e678ce9eb6654dd7ca4eab6cb34241fda.png" src="../_images/75ecea12fd7cc49008910b1f7001227e678ce9eb6654dd7ca4eab6cb34241fda.png" />
+<img alt="../_images/1b1ad1e47f6be8bb80a2fcc3ce356faed4f70afedbfea40d9a498eab111823c8.png" src="../_images/1b1ad1e47f6be8bb80a2fcc3ce356faed4f70afedbfea40d9a498eab111823c8.png" />
 </div>
 </div>
 <p>What we have done here is fit an N<sup>th</sup> order polynomial to <span class="math notranslate nohighlight">\(N\)</span> data points. There is a possibility that we have overfit this data, and extrapolation is not reliable. However, interpolation by this method may be useful. We will return to this for larger data sets where <span class="math notranslate nohighlight">\(N\)</span> is much larger than the order of the polynomial when we talk about linear regression next week.</p>
@@ -707,7 +688,7 @@ document.write(`
      njev: 1
 </pre></div>
 </div>
-<img alt="../_images/3320417e17bb9d94388c5d2bd083d90c29dc3b86eb5cb7dded81dbb0790681f2.png" src="../_images/3320417e17bb9d94388c5d2bd083d90c29dc3b86eb5cb7dded81dbb0790681f2.png" />
+<img alt="../_images/1d9b391bbc3723d2b87f34aa66aae0d34702d24fbcc25878fd75316b674da161.png" src="../_images/1d9b391bbc3723d2b87f34aa66aae0d34702d24fbcc25878fd75316b674da161.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -721,7 +702,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2601/3098855599.py:5: RuntimeWarning: The iteration is not making good progress, as measured by the 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2582/3098855599.py:5: RuntimeWarning: The iteration is not making good progress, as measured by the 
   improvement from the last ten iterations.
   fsolve(obj, 7)
 </pre></div>
@@ -741,7 +722,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/042636fc8afc51e36797385046aefd10e0d0e60bc2871f54eb6aad210c9dd0de.png" src="../_images/042636fc8afc51e36797385046aefd10e0d0e60bc2871f54eb6aad210c9dd0de.png" />
+<img alt="../_images/64c801b7081ced67d414abc1b8c1d51dbed66955f1783969277311750d3b2374.png" src="../_images/64c801b7081ced67d414abc1b8c1d51dbed66955f1783969277311750d3b2374.png" />
 </div>
 </div>
 <p>With more data points you can also use cubic interpolation, which fits a cubic polynomial between the points, and ensures smoothness and continuity of the derivatives at the endpoints.</p>
@@ -760,7 +741,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/42ad92f8432b9e8a1b154f76e088444a4331d83c44a5ffdbec80ee823bf89536.png" src="../_images/42ad92f8432b9e8a1b154f76e088444a4331d83c44a5ffdbec80ee823bf89536.png" />
+<img alt="../_images/b08b0a28b0f32b061183a1996658f39f87a2543fc223890ee4dda102ab0c7c35.png" src="../_images/b08b0a28b0f32b061183a1996658f39f87a2543fc223890ee4dda102ab0c7c35.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -775,7 +756,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4f1d7d436e7583794320696ee725114d155b62aeba918839f8de5b0ef258e44f.png" src="../_images/4f1d7d436e7583794320696ee725114d155b62aeba918839f8de5b0ef258e44f.png" />
+<img alt="../_images/9a50116f6ebf813554aa1d5072f25963d52eb993a0ab6185e716ab1570fb8fb5.png" src="../_images/9a50116f6ebf813554aa1d5072f25963d52eb993a0ab6185e716ab1570fb8fb5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -789,7 +770,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d3c779f7a94c2a06991233b548ce29680bde1a9765bdbe212255d1bb2882be67.png" src="../_images/d3c779f7a94c2a06991233b548ce29680bde1a9765bdbe212255d1bb2882be67.png" />
+<img alt="../_images/619ca41f2b22daf7a0595449fe79655bbab51c6531f7b71500257bfdb94d32c5.png" src="../_images/619ca41f2b22daf7a0595449fe79655bbab51c6531f7b71500257bfdb94d32c5.png" />
 </div>
 </div>
 <p>Interpolation is a kind of data driven model for developing a mathematical model from data that can be used to predict new values. These models are not based on physics, but they can be used for predicting new values, estimating derivatives, integrals, etc. Of course, you must be careful with extrapolation; all polynomials tend to ± infinity eventually, which is probably not physically relevant in most cases.</p>
@@ -817,9 +798,9 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.006998  , 1.05229805, 0.55603374],
-       [1.05229805, 1.1552348 , 0.69082191],
-       [0.55603374, 0.69082191, 0.86307225]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.92939078, 1.57454791, 1.00724761],
+       [1.57454791, 1.09482388, 0.86354164],
+       [1.00724761, 0.86354164, 1.22512067]])
 </pre></div>
 </div>
 </div>
@@ -834,7 +815,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.76334155, 0.69550009, 0.03373253])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([3.06335627, 1.12569599, 1.36005086])
 </pre></div>
 </div>
 </div>
@@ -846,7 +827,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 1.6583034 , -0.37742974,  0.11946859])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 1.79268034+0.j        , -0.2560121 +0.28073566j,
+       -0.2560121 -0.28073566j])
 </pre></div>
 </div>
 </div>
@@ -860,7 +842,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(3.492574170384824), np.float64(3.492574170384824))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(5.549103124567947), np.float64(5.549103124567947))
 </pre></div>
 </div>
 </div>
@@ -874,7 +856,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(3.4925741703848234)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(5.549103124567944)
 </pre></div>
 </div>
 </div>
@@ -888,7 +870,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(0.06483069921628332), np.float64(0.06483069921628344))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(4.690010097556162), np.float64(4.6900100975561685))
 </pre></div>
 </div>
 </div>
@@ -902,10 +884,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([2.76334155, 0.69550009, 0.03373253]),
- array([[-0.68909527, -0.67872757,  0.25392243],
-        [-0.5738738 ,  0.29713869, -0.7631366 ],
-        [-0.44251167,  0.67159325,  0.59426083]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([3.06335627, 1.12569599, 1.36005086]),
+ array([[-0.56187277, -0.75353105,  0.34130623],
+        [-0.53563826,  0.0169916 , -0.84427658],
+        [-0.63038928,  0.6571927 ,  0.41316718]]))
 </pre></div>
 </div>
 </div>
@@ -919,7 +901,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(1.0), np.float64(0.9999999999999998))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(1.0), np.float64(1.0))
 </pre></div>
 </div>
 </div>
@@ -931,8 +913,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.63380064, -1.11501027, -0.70572824]),
- array([-1.90420559, -1.87555609,  0.7016744 ]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.13456501, -1.48734672, -0.17493459]),
+ array([-1.72121648, -2.30833407,  1.04554259]))
 </pre></div>
 </div>
 </div>
@@ -945,8 +927,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.90420559, -1.58580931, -1.22281088]),
- array([-1.90420559, -1.58580931, -1.22281088]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([-1.72121648, -1.64085083, -1.93110694]),
+ array([-1.72121648, -1.64085083, -1.93110694]))
 </pre></div>
 </div>
 </div>
@@ -958,9 +940,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.float64(0.9999999999999998),
- np.float64(0.9999999999999999),
- np.float64(1.0)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.float64(1.0), np.float64(1.0), np.float64(1.0)]
 </pre></div>
 </div>
 </div>
@@ -1007,10 +987,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0.03373253, 0.69550009, 2.76334155]),
- array([[ 0.25392243, -0.67872757, -0.68909527],
-        [-0.7631366 ,  0.29713869, -0.5738738 ],
-        [ 0.59426083,  0.67159325, -0.44251167]]))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([1.12569599, 1.36005086, 3.06335627]),
+ array([[-0.75353105,  0.34130623, -0.56187277],
+        [ 0.0169916 , -0.84427658, -0.53563826],
+        [ 0.6571927 ,  0.41316718, -0.63038928]]))
 </pre></div>
 </div>
 </div>
@@ -1288,7 +1268,8 @@ True
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1355,8 +1336,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

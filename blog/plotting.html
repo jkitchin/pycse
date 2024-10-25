@@ -16,17 +16,19 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
@@ -34,12 +36,13 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -112,6 +115,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Differential equations" href="differential-equations.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -127,19 +131,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -147,7 +140,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -155,8 +147,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -172,7 +164,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -202,21 +195,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -507,24 +496,16 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -591,7 +572,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d53b1d7c51f848fe995e7d81e979681f49308abbd3079ff120dc340651359abb.png" src="../_images/d53b1d7c51f848fe995e7d81e979681f49308abbd3079ff120dc340651359abb.png" />
+<img alt="../_images/dce8990be20cda5b594a5521aba4500536d381b8147996e6e85fa231f1b15029.png" src="../_images/dce8990be20cda5b594a5521aba4500536d381b8147996e6e85fa231f1b15029.png" />
 </div>
 </div>
 <p>Lets increase the line thickness, change the line color to red, and make the markers red circles with black outlines. I also like figures in presentations to be 6 inches high, and 4 inches wide.</p>
@@ -612,7 +593,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/869486ddaf8db9d1b354b46e15366ad73435a6f38dd270f8a0117e45970e5eaa.png" src="../_images/869486ddaf8db9d1b354b46e15366ad73435a6f38dd270f8a0117e45970e5eaa.png" />
+<img alt="../_images/a83264ab8f134ec241cdd8d9c418c1461b89e98493457ddfb0f41b2882d0d79a.png" src="../_images/a83264ab8f134ec241cdd8d9c418c1461b89e98493457ddfb0f41b2882d0d79a.png" />
 </div>
 </div>
 <section id="setting-all-the-text-properties-in-a-figure">
@@ -853,7 +834,7 @@ document.write(`
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>findfont: Font family &#39;Arial&#39; not found.
 </pre></div>
 </div>
-<img alt="../_images/57c5ed211821913dc33734b34110b63a8568700ec273db4fd93a57272e627d4e.png" src="../_images/57c5ed211821913dc33734b34110b63a8568700ec273db4fd93a57272e627d4e.png" />
+<img alt="../_images/e636335c2a4500068145452ae0a6c59bf2982dc65e9f97073ca1a5de26342f62.png" src="../_images/e636335c2a4500068145452ae0a6c59bf2982dc65e9f97073ca1a5de26342f62.png" />
 </div>
 </div>
 <p>There are many other things you can do!</p>
@@ -879,7 +860,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/577acf98068674a51bbd800ed6f531a442fd1467b5c062318d66f81e6ae554fd.png" src="../_images/577acf98068674a51bbd800ed6f531a442fd1467b5c062318d66f81e6ae554fd.png" />
+<img alt="../_images/f7b13bd246330cf64df99500ea251ac0800a0c69dd0a6bc0b1ed68f83ce9fd18.png" src="../_images/f7b13bd246330cf64df99500ea251ac0800a0c69dd0a6bc0b1ed68f83ce9fd18.png" />
 </div>
 </div>
 <section id="make-two-plots">
@@ -898,8 +879,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a38a7baa5cd2a6ca2f5cdccbe0a9e862ee56911a2b28d71288894b807b72d7db.png" src="../_images/a38a7baa5cd2a6ca2f5cdccbe0a9e862ee56911a2b28d71288894b807b72d7db.png" />
-<img alt="../_images/a7b0e4fffa599e001171221d8d55b8915d39815d05728d65ff76259750518795.png" src="../_images/a7b0e4fffa599e001171221d8d55b8915d39815d05728d65ff76259750518795.png" />
+<img alt="../_images/63c52f007b56dfe279cc85dcce38729bda6aab3f86b53861dab5aad3ed76f933.png" src="../_images/63c52f007b56dfe279cc85dcce38729bda6aab3f86b53861dab5aad3ed76f933.png" />
+<img alt="../_images/c9b1501285dbd1badf262747233850509dedce01c257c4e98d8980313b840a35.png" src="../_images/c9b1501285dbd1badf262747233850509dedce01c257c4e98d8980313b840a35.png" />
 </div>
 </div>
 </section>
@@ -915,7 +896,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/43f2a4fd8e76f4a5500b1df62ad1753fba0f7f69b173161b977ea572ba080900.png" src="../_images/43f2a4fd8e76f4a5500b1df62ad1753fba0f7f69b173161b977ea572ba080900.png" />
+<img alt="../_images/df93e190097b8c89ac8d555f304223c238cca90570dd63d13316f72afe1bdf62.png" src="../_images/df93e190097b8c89ac8d555f304223c238cca90570dd63d13316f72afe1bdf62.png" />
 </div>
 </div>
 </section>
@@ -938,7 +919,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f0d9a44e6f2ac2616e853c713651d3ca238fa8807ed6dd9e27b7e42f6c4a4f4e.png" src="../_images/f0d9a44e6f2ac2616e853c713651d3ca238fa8807ed6dd9e27b7e42f6c4a4f4e.png" />
+<img alt="../_images/5f85f4714d8f690f4e9bdfec61675e728b0d2e6e7b51792a675c239f5b12c623.png" src="../_images/5f85f4714d8f690f4e9bdfec61675e728b0d2e6e7b51792a675c239f5b12c623.png" />
 </div>
 </div>
 </section>
@@ -957,7 +938,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7dc3ce4b1e43ba993585bd5b34d89200a837475c33abb6acbb4727db56c3ab41.png" src="../_images/7dc3ce4b1e43ba993585bd5b34d89200a837475c33abb6acbb4727db56c3ab41.png" />
+<img alt="../_images/91e93daa78f0e483fb14f5e7d68bff1f1af9ab7a2dfe2af0c6cd3dd79727746c.png" src="../_images/91e93daa78f0e483fb14f5e7d68bff1f1af9ab7a2dfe2af0c6cd3dd79727746c.png" />
 </div>
 </div>
 </section>
@@ -1003,7 +984,7 @@ Sometimes it is desirable to make a plot that shows the data you want to present
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8b4430e725371304b770c9d83f074af6c8873c76da54492f11699f37915b9f98.png" src="../_images/8b4430e725371304b770c9d83f074af6c8873c76da54492f11699f37915b9f98.png" />
+<img alt="../_images/d50d43e15ee1f3d46e6ecc3917b8d3cb54e578768a87f5527c898b1ea502e6b0.png" src="../_images/d50d43e15ee1f3d46e6ecc3917b8d3cb54e578768a87f5527c898b1ea502e6b0.png" />
 </div>
 </div>
 </section>
@@ -1025,7 +1006,7 @@ Sometimes it is desirable to make a plot that shows the data you want to present
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;aliceblue&#39;, &#39;antiquewhite&#39;, &#39;aqua&#39;, &#39;aquamarine&#39;, &#39;azure&#39;, &#39;beige&#39;, &#39;bisque&#39;, &#39;black&#39;, &#39;blanchedalmond&#39;, &#39;blue&#39;, &#39;blueviolet&#39;, &#39;brown&#39;, &#39;burlywood&#39;, &#39;cadetblue&#39;, &#39;chartreuse&#39;, &#39;chocolate&#39;, &#39;coral&#39;, &#39;cornflowerblue&#39;, &#39;cornsilk&#39;, &#39;crimson&#39;, &#39;cyan&#39;, &#39;darkblue&#39;, &#39;darkcyan&#39;, &#39;darkgoldenrod&#39;, &#39;darkgray&#39;, &#39;darkgreen&#39;, &#39;darkgrey&#39;, &#39;darkkhaki&#39;, &#39;darkmagenta&#39;, &#39;darkolivegreen&#39;, &#39;darkorange&#39;, &#39;darkorchid&#39;, &#39;darkred&#39;, &#39;darksalmon&#39;, &#39;darkseagreen&#39;, &#39;darkslateblue&#39;, &#39;darkslategray&#39;, &#39;darkslategrey&#39;, &#39;darkturquoise&#39;, &#39;darkviolet&#39;, &#39;deeppink&#39;, &#39;deepskyblue&#39;, &#39;dimgray&#39;, &#39;dimgrey&#39;, &#39;dodgerblue&#39;, &#39;firebrick&#39;, &#39;floralwhite&#39;, &#39;forestgreen&#39;, &#39;fuchsia&#39;, &#39;gainsboro&#39;, &#39;ghostwhite&#39;, &#39;gold&#39;, &#39;goldenrod&#39;, &#39;gray&#39;, &#39;green&#39;, &#39;greenyellow&#39;, &#39;grey&#39;, &#39;honeydew&#39;, &#39;hotpink&#39;, &#39;indianred&#39;, &#39;indigo&#39;, &#39;ivory&#39;, &#39;khaki&#39;, &#39;lavender&#39;, &#39;lavenderblush&#39;, &#39;lawngreen&#39;, &#39;lemonchiffon&#39;, &#39;lightblue&#39;, &#39;lightcoral&#39;, &#39;lightcyan&#39;, &#39;lightgoldenrodyellow&#39;, &#39;lightgray&#39;, &#39;lightgreen&#39;, &#39;lightgrey&#39;, &#39;lightpink&#39;, &#39;lightsalmon&#39;, &#39;lightseagreen&#39;, &#39;lightskyblue&#39;, &#39;lightslategray&#39;, &#39;lightslategrey&#39;, &#39;lightsteelblue&#39;, &#39;lightyellow&#39;, &#39;lime&#39;, &#39;limegreen&#39;, &#39;linen&#39;, &#39;magenta&#39;, &#39;maroon&#39;, &#39;mediumaquamarine&#39;, &#39;mediumblue&#39;, &#39;mediumorchid&#39;, &#39;mediumpurple&#39;, &#39;mediumseagreen&#39;, &#39;mediumslateblue&#39;, &#39;mediumspringgreen&#39;, &#39;mediumturquoise&#39;, &#39;mediumvioletred&#39;, &#39;midnightblue&#39;, &#39;mintcream&#39;, &#39;mistyrose&#39;, &#39;moccasin&#39;, &#39;navajowhite&#39;, &#39;navy&#39;, &#39;oldlace&#39;, &#39;olive&#39;, &#39;olivedrab&#39;, &#39;orange&#39;, &#39;orangered&#39;, &#39;orchid&#39;, &#39;palegoldenrod&#39;, &#39;palegreen&#39;, &#39;paleturquoise&#39;, &#39;palevioletred&#39;, &#39;papayawhip&#39;, &#39;peachpuff&#39;, &#39;peru&#39;, &#39;pink&#39;, &#39;plum&#39;, &#39;powderblue&#39;, &#39;purple&#39;, &#39;rebeccapurple&#39;, &#39;red&#39;, &#39;rosybrown&#39;, &#39;royalblue&#39;, &#39;saddlebrown&#39;, &#39;salmon&#39;, &#39;sandybrown&#39;, &#39;seagreen&#39;, &#39;seashell&#39;, &#39;sienna&#39;, &#39;silver&#39;, &#39;skyblue&#39;, &#39;slateblue&#39;, &#39;slategray&#39;, &#39;slategrey&#39;, &#39;snow&#39;, &#39;springgreen&#39;, &#39;steelblue&#39;, &#39;tan&#39;, &#39;teal&#39;, &#39;thistle&#39;, &#39;tomato&#39;, &#39;turquoise&#39;, &#39;violet&#39;, &#39;wheat&#39;, &#39;white&#39;, &#39;whitesmoke&#39;, &#39;yellow&#39;, &#39;yellowgreen&#39;])
 </pre></div>
 </div>
-<img alt="../_images/8e002cbdbbd8c12c16de21e6e1adaa1111ece0aa8890435cf8e967e5057d0ff0.png" src="../_images/8e002cbdbbd8c12c16de21e6e1adaa1111ece0aa8890435cf8e967e5057d0ff0.png" />
+<img alt="../_images/b7946a2a8f252bb726013ac7e7e328779cb76aedd0e406933a56af318d32b329.png" src="../_images/b7946a2a8f252bb726013ac7e7e328779cb76aedd0e406933a56af318d32b329.png" />
 </div>
 </div>
 </section>
@@ -1045,7 +1026,7 @@ Sometimes it is desirable to make a plot that shows the data you want to present
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9f2335f4052a9fc26af4630cd11583c9e52ae4974c4e1bd177ac00c2d857cdf7.png" src="../_images/9f2335f4052a9fc26af4630cd11583c9e52ae4974c4e1bd177ac00c2d857cdf7.png" />
+<img alt="../_images/a2733c78a05d2654fe29da734333a5fc389a1653fa207cbba4d57a7e103f193c.png" src="../_images/a2733c78a05d2654fe29da734333a5fc389a1653fa207cbba4d57a7e103f193c.png" />
 </div>
 </div>
 <p>Picasso copied the table available at <a class="reference external" href="http://en.wikipedia.org/wiki/List_of_colors%3E">http://en.wikipedia.org/wiki/List_of_colors&gt;</a>and parsed it into a dictionary of hex codes for new colors. That allowed him to specify a list of beautiful blues for his graph. Picasso eventually gave up on python as an artform, and moved on to painting.</p>
@@ -1103,7 +1084,7 @@ Sometimes it is desirable to make a plot that shows the data you want to present
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9f2335f4052a9fc26af4630cd11583c9e52ae4974c4e1bd177ac00c2d857cdf7.png" src="../_images/9f2335f4052a9fc26af4630cd11583c9e52ae4974c4e1bd177ac00c2d857cdf7.png" />
+<img alt="../_images/a2733c78a05d2654fe29da734333a5fc389a1653fa207cbba4d57a7e103f193c.png" src="../_images/a2733c78a05d2654fe29da734333a5fc389a1653fa207cbba4d57a7e103f193c.png" />
 </div>
 </div>
 </section>
@@ -1173,11 +1154,11 @@ Sometimes it is desirable to make a plot that shows the data you want to present
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2062/256016704.py:19: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2003/256016704.py:19: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   area = np.trapz(i[ind], w[ind])
 </pre></div>
 </div>
-<img alt="../_images/4f3db3407e2c9495526935a285836cfe9c309a3171445cdecc37236845b708e5.png" src="../_images/4f3db3407e2c9495526935a285836cfe9c309a3171445cdecc37236845b708e5.png" />
+<img alt="../_images/6800b9fcf25bb211588b6ea7dcf4b160cd4ae9523ef3fc1a307457cf60ccde29.png" src="../_images/6800b9fcf25bb211588b6ea7dcf4b160cd4ae9523ef3fc1a307457cf60ccde29.png" />
 </div>
 </div>
 </section>
@@ -1238,7 +1219,8 @@ Sometimes it is desirable to make a plot that shows the data you want to present
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1310,8 +1292,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>
