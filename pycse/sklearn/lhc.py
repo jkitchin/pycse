@@ -11,10 +11,14 @@ import scipy.stats as stats
 
 
 class LatinSquare:
+    """LatinSquare class."""
+
     seed = 42
 
     def __init__(self, vars=None):
-        """vars is a dictionary: key: values
+        """Initialize the LatinSquare class.
+
+        vars is a dictionary: key: values
         The first entry is used for rows
         The second entry is used for cols
         The third entry is used in the cells.
@@ -25,13 +29,12 @@ class LatinSquare:
         levels for three factors.
 
         """
-
         self.vars = vars
         self.labels = list(vars.keys())
         np.random.seed(self.seed)
 
     def design(self, shuffle=False):
-        """Returns a design matrix as a dataframe.
+        """Return a design matrix as a dataframe.
 
         Each row is an experiment to run. If shuffle is True, it is randomized.
 
@@ -61,13 +64,13 @@ class LatinSquare:
 
     def pivot(self):
         """Show the Pivot table version of the design."""
-
         df = self.design()[self.labels]
         return df.pivot(index=self.labels[0], columns=self.labels[1])
 
     def fit(self, X, y):
-        """X is the experiment design dataframe
+        """Fit the model.
 
+        X is the experiment design dataframe
         y is a pd.Series for the responses.
 
         This signature is for compatibility with the sklearn fit API.
@@ -152,7 +155,9 @@ class LatinSquare:
         )
 
     def predict(self, args):
-        """Predict the response for ARGS. ARGS is a list of labels in order
+        """Predict the response for ARGS.
+
+        ARGS is a list of labels in order
         (row, col, effect). This only works for levels you have already defined,
         i.e. it is not a continuous function.
 
