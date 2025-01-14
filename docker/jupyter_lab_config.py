@@ -368,7 +368,8 @@
 
 ## Whether to enable collaborative mode.
 #  Default: False
-c.LabApp.collaborative = True
+# c.LabApp.collaborative = True
+# c.LabApp.expose_app_in_browser = True
 
 ## Full path of a config file.
 #  See also: JupyterApp.config_file
