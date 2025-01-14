@@ -88,7 +88,7 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
     -------
       [b, bint, se]
       b is a vector of the fitted parameters
-      bint is an array of confidence intervals bint[0] is the lower, bint[1] is the upper level.
+      bint is an array of confidence intervals. The ith row is for the ith parameter.
       se is an array of standard error for each parameter.
 
     """
@@ -137,16 +137,7 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
         CI = sT * se
 
         # bint is a little tricky, and depends on the shape of the output.
-        bint = np.array([(b - CI, b + CI)])
-        # if len(y.shape) == 1:
-        #    bint = np.array([(b - CI, b + CI)])
-        # else:
-        #     nrows, ncols = y.shape
-        #     bint = []
-        #     print(f'bint: {b.shape}, {CI.shape}')
-        #     for i in range(ncols):
-        #         bint += [[b[:, i] - CI[:, i], b[:, i] + CI[:, i]]]
-        #     bint = np.array(bint)
+        bint = np.array([(b - CI, b + CI)]).T
 
     return (b, bint.squeeze(), se)
 
