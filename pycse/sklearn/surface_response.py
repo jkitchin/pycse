@@ -173,18 +173,23 @@ class SurfaceResponse(Pipeline):
                 "",
             ]
 
-            for i in range(ncols):
+            for i in range(ncols):  # these are the outputs
                 data = []
                 s += [f"Output_{i} = {y.columns[i]}"]
                 for j, name in enumerate(features):
+                    # These indexes are confusing.
+                    # i is the ith output
+                    # j is the jth feature
+                    # cint has a shape of (noutputs, nfeatures, 2)
+                    # se has a shape of (nfeatures, noutputs)
                     data += [
                         [
                             f"{name}_{i}",
                             pars[j][i],
-                            pars_cint[0][j][i],
-                            pars_cint[1][j][i],
+                            pars_cint[i][j][0],
+                            pars_cint[i][j][1],
                             pars_se[j][i],
-                            np.sign(pars_cint[0][j][i] * pars_cint[1][j][i]) > 0,
+                            np.sign(pars_cint[i][j][0] * pars_cint[i][j][1]) > 0,
                         ]
                     ]
                 s += [
