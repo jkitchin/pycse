@@ -1,4 +1,4 @@
-"""hashcache - a class decorator for persistent, file/hash-based cache
+"""hashcache - a class decorator for persistent, file/hash-based cache.
 
 I found some features of joblib were unsuitable for how I want to use a cache.
 
@@ -91,16 +91,26 @@ import time
 
 
 def hashcache(*args, **kwargs):
-    """Raises an exception if the old hashcache decorator is used."""
+    """Raise an exception if the old hashcache decorator is used."""
     raise Exception(
-        "The hashcache function decorator is deprecated." " Please use the class decorator instead."
+        """The hashcache function decorator is deprecated.
+        Please use the class decorator instead.
+
+        For example:
+
+        from pycse.hashcache import HashCache
+
+        @HashCache
+        def f(x):
+            return x
+        """
     )
 
 
 class HashCache:
     """Class decorator to cache using hashes and pickle (via joblib).
-    Data is stored in directories named by the hash.
 
+    Data is stored in directories named by the hash.
     """
 
     # cache is the name of the directory to store results in
@@ -109,10 +119,11 @@ class HashCache:
     verbose = False
 
     def __init__(self, function):
+        """Decorate the function."""
         self.function = function
 
     def get_standardized_args(self, args, kwargs):
-        """Returns a standardized dictionary of kwargs for func(args, kwargs)
+        """Return a standardized dictionary of kwargs for func(args, kwargs).
 
         This dictionary includes default values, even if they were not called.
 
@@ -125,9 +136,9 @@ class HashCache:
     def get_hash(self, args, kwargs):
         """Get a hash for running FUNC(ARGS, KWARGS).
 
-        This is the most critical feature of hashcache as it provides a key to store
-        and look up results later. You should think carefully before changing this
-        function, it breaks past caches.
+        This is the most critical feature of hashcache as it provides a key to
+        store and look up results later. You should think carefully before
+        changing this function, it breaks past caches.
 
         FUNC should be as pure as reasonable. This hash is insensitive to global
         variables.
@@ -144,7 +155,8 @@ class HashCache:
             [
                 self.function.__code__.co_name,  # This is the function name
                 self.function.__code__.co_code,  # this is the function bytecode
-                self.get_standardized_args(args, kwargs),  # The args used, including defaults
+                # The args used, including defaults
+                self.get_standardized_args(args, kwargs),
             ],
             hash_name="sha1",
         )
@@ -190,8 +202,7 @@ class HashCache:
         return files
 
     def __call__(self, *args, **kwargs):
-        """This is the decorator code that runs around self.function."""
-
+        """Code to run around self.function."""
         hsh = self.get_hash(args, kwargs)
 
         # Try getting the data first
@@ -241,6 +252,7 @@ class HashCache:
     @staticmethod
     def dump(**kwargs):
         """Dump KWARGS to the cache.
+
         Returns a hash string for future lookup.
 
         cache is a special kwarg that is not saved
@@ -289,6 +301,7 @@ class HashCache:
 
 class SqlCache(HashCache):
     """Class decorator to cache using orjson and sqlite.
+
     Data is stored in a sqlite database as json.
 
     """
@@ -300,6 +313,7 @@ class SqlCache(HashCache):
     default = None
 
     def __init__(self, function):
+        """Initialize the class."""
         self.function = function
 
         self.con = sqlite3.connect(self.cache)
@@ -307,6 +321,7 @@ class SqlCache(HashCache):
 
     def dump_data(self, hsh, data):
         """Dump DATA into HSH.
+
         DATA must be serializable to json.
 
         """
@@ -334,6 +349,7 @@ class SqlCache(HashCache):
     @staticmethod
     def search(query, *args):
         """Run a sql QUERY with args.
+
         args are substituted in ? placeholders in the query.
 
         This is just a light wrapper on con.execute.
@@ -346,6 +362,7 @@ class SqlCache(HashCache):
     @staticmethod
     def dump(**kwargs):
         """Dump KWARGS to the cache.
+
         Returns a hash string for future lookup.
         """
         t0 = time.time()
@@ -377,7 +394,6 @@ class SqlCache(HashCache):
     @staticmethod
     def load(hsh):
         """Load data from HSH."""
-
         hc = SqlCache(lambda x: x)
         with hc.con:
             cur = hc.con.execute("SELECT value FROM cache WHERE hash = ?", (hsh,))
@@ -394,6 +410,7 @@ class JsonCache(HashCache):
     default = None
 
     def __init__(self, function):
+        """Initialize the class."""
         self.function = function
 
         if not os.path.exists(self.cache / Path("Filestore.json")):
@@ -410,6 +427,7 @@ class JsonCache(HashCache):
             f.write(orjson.dumps(data, default=self.default, option=orjson.OPT_SERIALIZE_NUMPY))
 
     def load_data(self, hsh):
+        """Load data from hsh."""
         hshpath = self.get_hashpath(hsh).with_suffix(".json")
         if os.path.exists(hshpath):
             with open(hshpath, "rb") as f:
@@ -425,6 +443,7 @@ class JsonCache(HashCache):
     @staticmethod
     def dump(**kwargs):
         """Dump KWARGS to the cache.
+
         Returns a hash string for future lookup.
         """
         t0 = time.time()
@@ -457,7 +476,6 @@ class JsonCache(HashCache):
     @staticmethod
     def load(hsh):
         """Load data from HSH."""
-
         hc = JsonCache(lambda x: x)
         hshpath = hc.get_hashpath(hsh).with_suffix(".json")
         if os.path.exists(hshpath):
