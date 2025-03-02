@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Systems of first-order differential equations" href="04-fode-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -609,7 +623,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5ed49e3a91a8ee7b28545584b1231c861cb8fbc8afb6b4a67fac0bd116991783.png" src="../_images/5ed49e3a91a8ee7b28545584b1231c861cb8fbc8afb6b4a67fac0bd116991783.png" />
+<img alt="../_images/59fa7a267982792b6f1fafae8fe49118af0e7f0209ce56fc09eb679427e4228f.png" src="../_images/59fa7a267982792b6f1fafae8fe49118af0e7f0209ce56fc09eb679427e4228f.png" />
 </div>
 </div>
 <p>You can see that the solution appears oscillatory. Let’s be more quantitative than what it <em>looks</em> like. An alternative way to visualize this solution is called the phase portrait where we plot the two state variables (x, v) against each other. We include the starting point for visualization.</p>
@@ -624,7 +638,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b99394949b7d6cce02b1595331f235020a5a2e5ed70addd4ff79b5fe36d8c545.png" src="../_images/b99394949b7d6cce02b1595331f235020a5a2e5ed70addd4ff79b5fe36d8c545.png" />
+<img alt="../_images/0be503981b5108d0e4e63afe6fb192fc1bd8fee4f5ec628be8350db37e450597.png" src="../_images/0be503981b5108d0e4e63afe6fb192fc1bd8fee4f5ec628be8350db37e450597.png" />
 </div>
 </div>
 <p>So, evidently it is not exactly periodic in the beginning, but seems to take some time to settle down into a periodic rhythm. That seems to be the case, because if it didn’t we would expect to see a continued spiral in or out of this limit cycle. Another way we can assess this quantitatively is to look at the peak positions in our solution. We return to an event type of solution. We seek an event where the derivative <span class="math notranslate nohighlight">\(dx/dt=0\)</span>, and it is a maximum, which means <span class="math notranslate nohighlight">\(x'\)</span> starts positive, becomes zero, and then is negative. Note this is appropriate for this problem, where there is only one, periodic maximum. For other problems, you might need a different approach.</p>
@@ -689,7 +703,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7cc7a490e7024c9f1aed10af0523ac1d326b2db05f932d81463d15ccca6616ba.png" src="../_images/7cc7a490e7024c9f1aed10af0523ac1d326b2db05f932d81463d15ccca6616ba.png" />
+<img alt="../_images/e88ff5b1cb458ea2b791aa1d715bb79b403d48cadc691c420cc3d7ba0752c3c8.png" src="../_images/e88ff5b1cb458ea2b791aa1d715bb79b403d48cadc691c420cc3d7ba0752c3c8.png" />
 </div>
 </div>
 <p>That looks good, the red dots appear at the maxima, and they are periodic, so now we can see how x<sub>max</sub> varies with time.</p>
@@ -702,7 +716,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/93799407c52b12526464cb384c021ecf860e2a44ca6eb8551c4fe5eb6c8bd426.png" src="../_images/93799407c52b12526464cb384c021ecf860e2a44ca6eb8551c4fe5eb6c8bd426.png" />
+<img alt="../_images/81889d52bc0236fcf50bd8de53400b6aa17878f3ec5766079da158a68f406771.png" src="../_images/81889d52bc0236fcf50bd8de53400b6aa17878f3ec5766079da158a68f406771.png" />
 </div>
 </div>
 <p>You can see that after about 5 cycles, xmax is practically constant. We can also see that the period (the time between maxima) is converging to a constant. We cannot say much about what happens at longer times. You could integrate longer if it is important to know that. This is a limitation of numerical methods though. To <em>prove</em> that it will be constant, you need to do some analytical math that would show the period and x<sub>max</sub> go to a constant.</p>
@@ -715,7 +729,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/769f390316486053b748dfd73090725afbc4c78109d031882fe1533a34d10d4b.png" src="../_images/769f390316486053b748dfd73090725afbc4c78109d031882fe1533a34d10d4b.png" />
+<img alt="../_images/853c62a75f9f02564209f100e90af963bb05986e8fa2ae3d2d52822a3858e6a7.png" src="../_images/853c62a75f9f02564209f100e90af963bb05986e8fa2ae3d2d52822a3858e6a7.png" />
 </div>
 </div>
 <p>If we seek the steady state, oscillatory behavior of this system, we should discard the solutions in at least the first 4 cycles, since the maxima and periods are still changing.</p>
@@ -746,7 +760,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0e4487da91e7adf6ca367fbed169235498092233f44cb108ca3eb8b75956f3fd.png" src="../_images/0e4487da91e7adf6ca367fbed169235498092233f44cb108ca3eb8b75956f3fd.png" />
+<img alt="../_images/28f586c19c65be908b093eb9a02aa3ec7d924e598c1a0e36a0e2645449cc4566.png" src="../_images/28f586c19c65be908b093eb9a02aa3ec7d924e598c1a0e36a0e2645449cc4566.png" />
 </div>
 </div>
 <p>Here you see about 6 more cycles. The period of these events is practically constant.</p>
@@ -775,7 +789,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/06ebb0b8a840866998398c0aef96796449e0208cb25a17c6f78ac082067f6ce4.png" src="../_images/06ebb0b8a840866998398c0aef96796449e0208cb25a17c6f78ac082067f6ce4.png" />
+<img alt="../_images/158a3a9c52f746097aa41d758374b672b3d02737ac55b490fe4356b11d5cb609.png" src="../_images/158a3a9c52f746097aa41d758374b672b3d02737ac55b490fe4356b11d5cb609.png" />
 </div>
 </div>
 <p>This limit cycle shows the oscillatory behavior. You can see here that each cycle repeats on top of itself.</p>
@@ -893,7 +907,7 @@ For mu=0.1, steady period after 0 iterations
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For mu=0.01, steady period after 0 iterations
 </pre></div>
 </div>
-<img alt="../_images/e33009718d21ecc82cd9e58627acf2b3a8062307903b44914083da47265546f6.png" src="../_images/e33009718d21ecc82cd9e58627acf2b3a8062307903b44914083da47265546f6.png" />
+<img alt="../_images/779f7d968a2be8cedcf76633e3198ab63e3327b86531c4933c4b55449bd2e693.png" src="../_images/779f7d968a2be8cedcf76633e3198ab63e3327b86531c4933c4b55449bd2e693.png" />
 </div>
 </div>
 </section>
@@ -960,8 +974,7 @@ For mu=0.1, steady period after 0 iterations
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1021,8 +1034,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Basic python usage" href="basic-python.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -659,12 +673,12 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000213 seconds
- Backward difference took 0.000220 seconds
- Centered difference took 0.000222 seconds
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000218 seconds
+ Backward difference took 0.000197 seconds
+ Centered difference took 0.000226 seconds
 </pre></div>
 </div>
-<img alt="../_images/8cc70831a8bf95013c7ce2ca65ee454a771f257377ce61208ec2ab183e2d79d1.png" src="../_images/8cc70831a8bf95013c7ce2ca65ee454a771f257377ce61208ec2ab183e2d79d1.png" />
+<img alt="../_images/ef1ded2dbf55ec3cad0bc09a090a139f64bd3ac57427c3b8d2d1aec62a84836f.png" src="../_images/ef1ded2dbf55ec3cad0bc09a090a139f64bd3ac57427c3b8d2d1aec62a84836f.png" />
 </div>
 </div>
 </section>
@@ -708,7 +722,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6b95293b95e6ac82a9948ccae698553d1e99a7776c895f5951a92eb2ca89dbd1.png" src="../_images/6b95293b95e6ac82a9948ccae698553d1e99a7776c895f5951a92eb2ca89dbd1.png" />
+<img alt="../_images/dcc29a7188b0622d9b8280005894c51ca5d9f6547917ffe8c8547d3a2d6446a3.png" src="../_images/dcc29a7188b0622d9b8280005894c51ca5d9f6547917ffe8c8547d3a2d6446a3.png" />
 </div>
 </div>
 </section>
@@ -761,7 +775,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4472d5ccf50a75efa86f81a9fd250e26c46d1dd7d237a83abe2ead9b9ede845c.png" src="../_images/4472d5ccf50a75efa86f81a9fd250e26c46d1dd7d237a83abe2ead9b9ede845c.png" />
+<img alt="../_images/8a86d9b03174db5be7972a2dcd74effee5b06da11c13ee18a462ed2a14ad0f11.png" src="../_images/8a86d9b03174db5be7972a2dcd74effee5b06da11c13ee18a462ed2a14ad0f11.png" />
 </div>
 </div>
 </section>
@@ -799,8 +813,8 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/861f4f4490419e04313ed59f2df5488fcb5e7aeedc5bb795ea5e3f903750c707.png" src="../_images/861f4f4490419e04313ed59f2df5488fcb5e7aeedc5bb795ea5e3f903750c707.png" />
-<img alt="../_images/94c27a34f2ca97f97960b601d754aac37c6355f0393b31f8834502082b9e58a7.png" src="../_images/94c27a34f2ca97f97960b601d754aac37c6355f0393b31f8834502082b9e58a7.png" />
+<img alt="../_images/876312d9b89ad882af7d0ea842ddbda8a99b1f04ecfbaf32d1891d315a1881b1.png" src="../_images/876312d9b89ad882af7d0ea842ddbda8a99b1f04ecfbaf32d1891d315a1881b1.png" />
+<img alt="../_images/4ac1874e470a6c3a0555dd8871a5d4ca5c59a119953a38dce113fbc3b313081b.png" src="../_images/4ac1874e470a6c3a0555dd8871a5d4ca5c59a119953a38dce113fbc3b313081b.png" />
 </div>
 </div>
 <p>You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have “resampled” the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error.</p>
@@ -841,8 +855,8 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/60c2b9e338fe7c09a423f73692050c8bb2904b592e6cbf7d0764012ba6d21234.png" src="../_images/60c2b9e338fe7c09a423f73692050c8bb2904b592e6cbf7d0764012ba6d21234.png" />
-<img alt="../_images/d50f3dc708ca9d946c6132fb9d8173724ad49d40e9dd40e3cf57b8309a77f67c.png" src="../_images/d50f3dc708ca9d946c6132fb9d8173724ad49d40e9dd40e3cf57b8309a77f67c.png" />
+<img alt="../_images/ac3edbeb6a65bd80e4147fbdea3db6aa5ba5780b515ce9d611a3adc0ab9c4802.png" src="../_images/ac3edbeb6a65bd80e4147fbdea3db6aa5ba5780b515ce9d611a3adc0ab9c4802.png" />
+<img alt="../_images/63762d3f2748a1b11ab5f351db4cc80c34e11a875d24e57e5ba5f85ee754a6e9.png" src="../_images/63762d3f2748a1b11ab5f351db4cc80c34e11a875d24e57e5ba5f85ee754a6e9.png" />
 </div>
 </div>
 <p>Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.</p>
@@ -886,7 +900,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/df99a47f4318c94404e153abbb191caffc4ae545b7d51b26ad0f24b028aa3c45.png" src="../_images/df99a47f4318c94404e153abbb191caffc4ae545b7d51b26ad0f24b028aa3c45.png" />
+<img alt="../_images/80f675c16fd6bbf81e5a19d8ef740f0c8340c8517c35e52373d53408499d91e4.png" src="../_images/80f675c16fd6bbf81e5a19d8ef740f0c8340c8517c35e52373d53408499d91e4.png" />
 </div>
 </div>
 </section>
@@ -997,7 +1011,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" src="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" />
+<img alt="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" src="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" />
 </div>
 </div>
 <p>Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.</p>
@@ -1021,7 +1035,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0. 0. 1. 0. 0. 0.]
 </pre></div>
 </div>
-<img alt="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" src="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" />
+<img alt="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" src="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" />
 </div>
 </div>
 <p>A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x &gt;= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.</p>
@@ -1063,7 +1077,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" src="../_images/4591f0b19ab26fb3cfb0f9336e005c19e114a62f4cdc29e764dbde3e1cf86164.png" />
+<img alt="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" src="../_images/48d80552860311dbe5c0dba2d178e85012d0f66a88ed60ae9a51b956354c0842.png" />
 </div>
 </div>
 <p>There are many ways to define piecewise functions, and vectorization is not always necessary. The advantages of vectorization are usually notational simplicity and speed; loops in python are usually very slow compared to vectorized functions.</p>
@@ -1118,7 +1132,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9f975f638fb489dee1edb3c318c9decd75bc60f6719e4a8e6283a57adcba4be2.png" src="../_images/9f975f638fb489dee1edb3c318c9decd75bc60f6719e4a8e6283a57adcba4be2.png" />
+<img alt="../_images/92abae4ce9155ee247bbfd2e0a561566baf64502338315af59195f58f29ac82e.png" src="../_images/92abae4ce9155ee247bbfd2e0a561566baf64502338315af59195f58f29ac82e.png" />
 </div>
 </div>
 <p>You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
@@ -1136,7 +1150,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/87142ad9dffddb47be7f92beb9e03cd331eccc2a0a1f4da805718db8cf445ffb.png" src="../_images/87142ad9dffddb47be7f92beb9e03cd331eccc2a0a1f4da805718db8cf445ffb.png" />
+<img alt="../_images/f6760f6db78f99bd95fc6cde4116f06df1e36ea3f31412540f2e684e6eaa097e.png" src="../_images/f6760f6db78f99bd95fc6cde4116f06df1e36ea3f31412540f2e684e6eaa097e.png" />
 </div>
 </div>
 <p>If we have two functions, <span class="math notranslate nohighlight">\(f_1(x)\)</span> and <span class="math notranslate nohighlight">\(f_2(x)\)</span> we want to smoothly join, we do it like this: <span class="math notranslate nohighlight">\(f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)\)</span>. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.</p>
@@ -1163,7 +1177,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7ab3a86d4099e2c705de2568ecf43ee41f52070dcdb149a02adf85c68fdd26eb.png" src="../_images/7ab3a86d4099e2c705de2568ecf43ee41f52070dcdb149a02adf85c68fdd26eb.png" />
+<img alt="../_images/a5946c391b31cc80f1315b85938e480477b0cc5a22ba01f9b859e2104e8067c7.png" src="../_images/a5946c391b31cc80f1315b85938e480477b0cc5a22ba01f9b859e2104e8067c7.png" />
 </div>
 </div>
 <p>You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.</p>
@@ -1199,7 +1213,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5be692ba667db26a238439d6e7b50e19c6bd2923d65c741401f9fa1765e3793a.png" src="../_images/5be692ba667db26a238439d6e7b50e19c6bd2923d65c741401f9fa1765e3793a.png" />
+<img alt="../_images/1308a9005ec0db5e1a06b590b7f3ff2ce35923173f474fa458dcdf7fcb5eb92d.png" src="../_images/1308a9005ec0db5e1a06b590b7f3ff2ce35923173f474fa458dcdf7fcb5eb92d.png" />
 </div>
 </div>
 <p>This is a nice trick to get an analytical function with continuous derivatives for a transition between two constants. You could have the transition occur at a value other than D = 1, as well by changing the argument to the exponential function.</p>
@@ -1266,7 +1280,7 @@ Sigmoid functions</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.25 0.0625
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2091/1388173814.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2066/1388173814.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   i2 = np.trapz(y, x)
 </pre></div>
 </div>
@@ -1290,7 +1304,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a5e54a6dc75fdf60c344c8fd1fedde38a5ef6ba5f4b0d75b310c9aa2d402361b.png" src="../_images/a5e54a6dc75fdf60c344c8fd1fedde38a5ef6ba5f4b0d75b310c9aa2d402361b.png" />
+<img alt="../_images/8a5a059d5d31048d415d0e38e5563d9fd0d1729033a84d157d6c08e40c5f50a1.png" src="../_images/8a5a059d5d31048d415d0e38e5563d9fd0d1729033a84d157d6c08e40c5f50a1.png" />
 </div>
 </div>
 <p>The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.</p>
@@ -1309,7 +1323,7 @@ Sigmoid functions</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.000408121620243
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2091/1343167527.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2066/1343167527.py:6: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(y2, x2))
 </pre></div>
 </div>
@@ -1349,7 +1363,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 2.5312499999999987
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2091/1681875887.py:13: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2066/1681875887.py:13: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(yfine, xfine))
 </pre></div>
 </div>
@@ -1501,7 +1515,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/837adb8bdab96bffcdb3bb5d5b99a14441a867b66c4595fd58c57db0a55bec7d.png" src="../_images/837adb8bdab96bffcdb3bb5d5b99a14441a867b66c4595fd58c57db0a55bec7d.png" />
+<img alt="../_images/118dcbf2f5f19806494d219b7f43b7db6d72478f7596c98b467d3a34bcf942e8.png" src="../_images/118dcbf2f5f19806494d219b7f43b7db6d72478f7596c98b467d3a34bcf942e8.png" />
 </div>
 </div>
 <p>Let us consider the expanded version of the polynomial. We will use sympy to expand the polynomial.</p>
@@ -1761,7 +1775,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0007026195526123047 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0007112026214599609 sec
 1.9999983517708524
 </pre></div>
 </div>
@@ -1782,7 +1796,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0002567768096923828 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.00020360946655273438 sec
 1.9999934070923728
 </pre></div>
 </div>
@@ -1801,7 +1815,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 8.034706115722656e-05 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 7.414817810058594e-05 sec
 1.999993407092373
 </pre></div>
 </div>
@@ -2282,8 +2296,7 @@ True
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -2381,8 +2394,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

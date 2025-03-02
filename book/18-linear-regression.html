@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Interpolation" href="17-linear-algebra-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -675,7 +689,7 @@ or in Python as</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d1bc2e60d2b76d0a9769da8e6e95eddea2e0b0c8cd3d5b7688ce329c9d9f7672.png" src="../_images/d1bc2e60d2b76d0a9769da8e6e95eddea2e0b0c8cd3d5b7688ce329c9d9f7672.png" />
+<img alt="../_images/21cf1275af6839a4df5a06c91672a96194d5d7f5424a3951e57729665723b666.png" src="../_images/21cf1275af6839a4df5a06c91672a96194d5d7f5424a3951e57729665723b666.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -691,7 +705,7 @@ or in Python as</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e837f093c1b857076c595d4a391d05370877cc886ad965080d28a344d42f9e90.png" src="../_images/e837f093c1b857076c595d4a391d05370877cc886ad965080d28a344d42f9e90.png" />
+<img alt="../_images/2edd4cf58a0a6ac95a26b1230098b9f5dda342697d013403ed0d7e8d1013a26a.png" src="../_images/2edd4cf58a0a6ac95a26b1230098b9f5dda342697d013403ed0d7e8d1013a26a.png" />
 </div>
 </div>
 <p>We previously claimed that solving this equation was equivalent to minimizing the summed squared errors. Here we demonstrate that is consistent with our observation for the first parameter.</p>
@@ -717,7 +731,7 @@ or in Python as</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/65b899b67ba184ea015302ef28b02cf9487f1c1ab8be228de111d952dabbee36.png" src="../_images/65b899b67ba184ea015302ef28b02cf9487f1c1ab8be228de111d952dabbee36.png" />
+<img alt="../_images/f47a3d375f747e8d7410147f21765c2f2ba521888a1b6e0d83b1e75f2ae63a11.png" src="../_images/f47a3d375f747e8d7410147f21765c2f2ba521888a1b6e0d83b1e75f2ae63a11.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -871,7 +885,7 @@ or in Python as</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/92b0ca8c6a5df6a497bfbcffc12af512e0fb0f93fd744a8518fca426d7d93a0a.png" src="../_images/92b0ca8c6a5df6a497bfbcffc12af512e0fb0f93fd744a8518fca426d7d93a0a.png" />
+<img alt="../_images/31fd33334cb348cf3da763e5131b47910dbe5b14014c252cdc4c9eacfe001a17.png" src="../_images/31fd33334cb348cf3da763e5131b47910dbe5b14014c252cdc4c9eacfe001a17.png" />
 </div>
 </div>
 <p>It is almost certainly not reasonable for the concentration of A to start increasing again after about 350 time units.</p>
@@ -895,7 +909,7 @@ or in Python as</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dcf85afe9101aa53541299a31783771069d89f8fb0ba9627d2fe5cf4ff72f38d.png" src="../_images/dcf85afe9101aa53541299a31783771069d89f8fb0ba9627d2fe5cf4ff72f38d.png" />
+<img alt="../_images/f86ad31dac6a9021c32b1218f86e052bbafe64191cf778fe0d95a83a3cf52825.png" src="../_images/f86ad31dac6a9021c32b1218f86e052bbafe64191cf778fe0d95a83a3cf52825.png" />
 </div>
 </div>
 <p>Our goal is to fit a linear regression model to this data. We want to avoid underfitting and overfitting. If we just fit polynomials to this data, we find some undesirable behavior. Let’s look at fits up to a 12<sup>th</sup> order polynomials.</p>
@@ -926,7 +940,7 @@ or in Python as</p>
 12   0.01   -0.21    2.83  -22.43   114.61  -395.70   940.66  -1541.20   1715.97  -1258.64   574.27  -144.86   15.53
 </pre></div>
 </div>
-<img alt="../_images/20a01cca1bb3723169794decc7c74cf8d6db01fa634fc8978308fe5e4cd7f176.png" src="../_images/20a01cca1bb3723169794decc7c74cf8d6db01fa634fc8978308fe5e4cd7f176.png" />
+<img alt="../_images/fe8a56739a94c29f7b7ff874a1f778e631c5b37f8c7e612abc914e0ac25423de.png" src="../_images/fe8a56739a94c29f7b7ff874a1f778e631c5b37f8c7e612abc914e0ac25423de.png" />
 </div>
 </div>
 <p>The most undesirable behavior is that the coefficients grow large, which puts a lot of weight in places we might not want. This also leads to <em>wiggles</em> in the fit, which are probably not reasonable. The solution to this issue is called <em>regularization</em>, which means we add a penalty to our objective function that serves to reduce the magnitude of the parameters. There are several approaches to regularization. In <em>ridge regression</em> we add an L<sub>2</sub> penalty to the parameters, i.e. the sum of the parameters squared. In <em>LASSO</em> regression we add an L<sub>1</sub> penalty to the parameters, i.e. the sum of the absolute values of the parameters.</p>
@@ -1027,7 +1041,7 @@ and</p>
     10     0.11    0.08    0.04   -0.01   -0.06   -0.11   -0.17   -0.22   -0.25   -0.22   -0.06
 </pre></div>
 </div>
-<img alt="../_images/c542563a98b5580629a1ead3a0ce4272c3a79211b9e538e490ca3e7ac1eb7bd1.png" src="../_images/c542563a98b5580629a1ead3a0ce4272c3a79211b9e538e490ca3e7ac1eb7bd1.png" />
+<img alt="../_images/406ee54ddea117bcc7f698536e75874fad6222b8e9d62e516c0ef4fe2244c257.png" src="../_images/406ee54ddea117bcc7f698536e75874fad6222b8e9d62e516c0ef4fe2244c257.png" />
 </div>
 </div>
 <p>One way people have evaluated a reasonable value of λ is to look at how the coefficients vary with λ using a <em>ridge plot</em>. In this plot, you look for a range that balances the large swings associated with regular unconstrained regression and the damping caused by large values of λ. Here a value of <span class="math notranslate nohighlight">\(10^{-6} \le \lambda \le 10^{-8}\)</span> would be considered reasonable.</p>
@@ -1048,7 +1062,7 @@ and</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fff54ad7bd938247614343545b31424915e5e3465decc41d7d3d32526d4f59f7.png" src="../_images/fff54ad7bd938247614343545b31424915e5e3465decc41d7d3d32526d4f59f7.png" />
+<img alt="../_images/5114709c537c6c1f9734deade98781cd0e9f480bc3fd8a9eda7f6ee1154ad8e8.png" src="../_images/5114709c537c6c1f9734deade98781cd0e9f480bc3fd8a9eda7f6ee1154ad8e8.png" />
 </div>
 </div>
 </section>
@@ -1093,7 +1107,7 @@ and</p>
      0.      110.263   -56.924     9.691]
 </pre></div>
 </div>
-<img alt="../_images/982d3acee32134669bd357c431b58f646d857a13dff340b70a9dca1c0ac7199b.png" src="../_images/982d3acee32134669bd357c431b58f646d857a13dff340b70a9dca1c0ac7199b.png" />
+<img alt="../_images/3612ca513114e29256565dc512aff46273ffd56c11bec153c790d9a59ac53d41.png" src="../_images/3612ca513114e29256565dc512aff46273ffd56c11bec153c790d9a59ac53d41.png" />
 </div>
 </div>
 <p>Now, we can explore the effect of λ more thoroughly.</p>
@@ -1120,19 +1134,17 @@ and</p>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   1e-05     61.73  -141.65   -10.16   185.71    15.95  -167.23   -92.45   304.52  -212.15    60.31    -5.36
+ 0.00032      0.09    -0.01    -0.00    -0.16    -0.62     0.80     2.16     0.79    -4.96    -0.51     1.66
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 0.00032      0.09    -0.01    -0.00    -0.16    -0.62     0.80     2.16     0.79    -4.96    -0.51     1.66
-    0.01     -0.19    -0.00    -0.00    -0.00     1.02     0.39     0.00    -0.00    -1.75    -2.08     1.85
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    0.32      0.28     0.29     0.00     0.00    -0.00    -0.00     0.00    -0.00    -1.99    -0.00     0.60
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    0.01     -0.19    -0.00    -0.00    -0.00     1.02     0.39     0.00    -0.00    -1.75    -2.08     1.85
+    0.32      0.28     0.29     0.00     0.00    -0.00    -0.00     0.00    -0.00    -1.99    -0.00     0.60
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      10     -0.00    -0.00    -0.00    -0.00    -0.00    -0.00     0.00     0.00    -0.75    -0.00    -0.00
 </pre></div>
 </div>
-<img alt="../_images/b0a1b720904a23f981b18532b828f170f1fd54baaec9d44049ea9021c9b9a467.png" src="../_images/b0a1b720904a23f981b18532b828f170f1fd54baaec9d44049ea9021c9b9a467.png" />
+<img alt="../_images/6e0d314271fc873900339f50c512c55e0ed3f47f8dded195c1ae14d10224172d.png" src="../_images/6e0d314271fc873900339f50c512c55e0ed3f47f8dded195c1ae14d10224172d.png" />
 </div>
 </div>
 <p>You can see that by increasing λ we are making more and more of the parameters go to zero; in other words the functions they correspond to are not part of the model any longer. This is called sparsifying the model. It reduces over-fitting by reducing the model complexity. Finding the most suitable value for λ requires some sophisticated programming and analysis, and it is an important topic in machine learning and data science.</p>
@@ -1207,8 +1219,7 @@ and</p>
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1274,8 +1285,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

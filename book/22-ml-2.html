@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Introduction to machine learning" href="21-machine-learning.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -633,7 +647,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c5203b0f85c65010b2580a21752c9d067682d4bda52a94768b35095fe78bdeae.png" src="../_images/c5203b0f85c65010b2580a21752c9d067682d4bda52a94768b35095fe78bdeae.png" />
+<img alt="../_images/3bed2862ed3fdaa5e5b328c25ab71483b3daa3bcd9e1e772569b13ffa044fadf.png" src="../_images/3bed2862ed3fdaa5e5b328c25ab71483b3daa3bcd9e1e772569b13ffa044fadf.png" />
 </div>
 </div>
 <section id="tanh">
@@ -649,7 +663,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/764afaf09de90fb3b71935aa37d96c9652bad9f827088da24f229d27eed6eab7.png" src="../_images/764afaf09de90fb3b71935aa37d96c9652bad9f827088da24f229d27eed6eab7.png" />
+<img alt="../_images/20a322615ceac0c8646b5e88d904eb24f3c43802bc70acf5ab82c7f6fb2e8bf2.png" src="../_images/20a322615ceac0c8646b5e88d904eb24f3c43802bc70acf5ab82c7f6fb2e8bf2.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -723,11 +737,11 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2847/3195273444.py:2: RuntimeWarning: invalid value encountered in power
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2767/3195273444.py:2: RuntimeWarning: invalid value encountered in power
   Y2 = X2**(1/3)
 </pre></div>
 </div>
-<img alt="../_images/dc95ce95dc78069ba8ad688089ba914df9786708606f9fb79b4099cf91ebde64.png" src="../_images/dc95ce95dc78069ba8ad688089ba914df9786708606f9fb79b4099cf91ebde64.png" />
+<img alt="../_images/c8e31920cc3d5da390f33e2dd6e9e1237796ec88a1052d98db263146668024a3.png" src="../_images/c8e31920cc3d5da390f33e2dd6e9e1237796ec88a1052d98db263146668024a3.png" />
 </div>
 </div>
 <p>For large enough <span class="math notranslate nohighlight">\(x\)</span>, all of the <code class="docutils literal notranslate"><span class="pre">tanh</span></code> functions saturate at <span class="math notranslate nohighlight">\(y=1\)</span>. So, the neural network also saturates at a constant value for large <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -746,7 +760,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5bf497829d5c812b3fb0277b85214ba159bd9a73cb17fac8c10010567e506315.png" src="../_images/5bf497829d5c812b3fb0277b85214ba159bd9a73cb17fac8c10010567e506315.png" />
+<img alt="../_images/e2638156fb27a347a0c7e8ac14cbd701e587eb605176d589439a0a8e7bd140e6.png" src="../_images/e2638156fb27a347a0c7e8ac14cbd701e587eb605176d589439a0a8e7bd140e6.png" />
 </div>
 </div>
 <p>This is popular because if is very fast to compute, and the derivatives are constant. For positive <span class="math notranslate nohighlight">\(x\)</span> there is no saturation. For negative <span class="math notranslate nohighlight">\(x\)</span>, however, the neuron is “dead”.</p>
@@ -808,7 +822,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/aa2c35fca10aacdf3bd1ff74bc6a3b8eff08670a908e9db173ff7c8d0c7986a8.png" src="../_images/aa2c35fca10aacdf3bd1ff74bc6a3b8eff08670a908e9db173ff7c8d0c7986a8.png" />
+<img alt="../_images/cab09f50aecaabfb26b3cc8cc72a15ea9e316b4e1133e3b5ea66df16ee0deab6.png" src="../_images/cab09f50aecaabfb26b3cc8cc72a15ea9e316b4e1133e3b5ea66df16ee0deab6.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -852,7 +866,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9aaac4fc459e704bac4bb34f7a1bf6202e832190f4f8caa378b4a302d9054319.png" src="../_images/9aaac4fc459e704bac4bb34f7a1bf6202e832190f4f8caa378b4a302d9054319.png" />
+<img alt="../_images/fbfec8069b334534ab614cc8bbd44a9e79528b6799e5248e4cedd8cf2256827a.png" src="../_images/fbfec8069b334534ab614cc8bbd44a9e79528b6799e5248e4cedd8cf2256827a.png" />
 </div>
 </div>
 <p>Notes this extrapolates linearly on the right, and is constant on the left. These are properties of the Relu.</p>
@@ -871,7 +885,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0f4f647504a144f59066bb95f0c7e52016ed2fdd2477a7d7de35ef1028a93558.png" src="../_images/0f4f647504a144f59066bb95f0c7e52016ed2fdd2477a7d7de35ef1028a93558.png" />
+<img alt="../_images/5b41851cbd986d2e6f567c98b9585f15a81e1613458776d3a2d73e6187b9f1c3.png" src="../_images/5b41851cbd986d2e6f567c98b9585f15a81e1613458776d3a2d73e6187b9f1c3.png" />
 </div>
 </div>
 <p>Now we fit the data.</p>
@@ -933,7 +947,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f5c51d8468c5e386f1b9735ceb389b2f7394450695531b5c7e1a9b3cb6bf865c.png" src="../_images/f5c51d8468c5e386f1b9735ceb389b2f7394450695531b5c7e1a9b3cb6bf865c.png" />
+<img alt="../_images/31f87d5341df3de778f25f3bc68b213fcae69108ac088b2a1f92e7d43e962dca.png" src="../_images/31f87d5341df3de778f25f3bc68b213fcae69108ac088b2a1f92e7d43e962dca.png" />
 </div>
 </div>
 <p>Note we have piecewise linear fits here.</p>
@@ -952,11 +966,11 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2847/185718913.py:2: RuntimeWarning: invalid value encountered in power
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2767/185718913.py:2: RuntimeWarning: invalid value encountered in power
   Y2 = X2**(1/3)
 </pre></div>
 </div>
-<img alt="../_images/9b2fc9e8f95dd3465184cb2407552a5a8b1f7fa29ca93cb560bab211111e0acf.png" src="../_images/9b2fc9e8f95dd3465184cb2407552a5a8b1f7fa29ca93cb560bab211111e0acf.png" />
+<img alt="../_images/0bf0bacf4e32723d5dc85c0e042402c15f0f8094b9f6ba41993dc0b52ab03257.png" src="../_images/0bf0bacf4e32723d5dc85c0e042402c15f0f8094b9f6ba41993dc0b52ab03257.png" />
 </div>
 </div>
 <p>Notes this extrapolates to zero when you are far from the data. It fits reasonably in the region trained. “If your function is nonlinear enough, somewhere the nonlinearity matches your data.” (Z. Ulissi).</p>
@@ -1019,11 +1033,11 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2847/504277165.py:2: RuntimeWarning: invalid value encountered in power
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2767/504277165.py:2: RuntimeWarning: invalid value encountered in power
   Y2 = X2**(1/3)
 </pre></div>
 </div>
-<img alt="../_images/481e09bb5e1eb8ba8ad196098c50cdafb559105ac7a34b3bc1793ee90fd3883a.png" src="../_images/481e09bb5e1eb8ba8ad196098c50cdafb559105ac7a34b3bc1793ee90fd3883a.png" />
+<img alt="../_images/a34cbd217d560aa47da711b42cdb995c7fc264472ca83ffc20283a05ffba3355.png" src="../_images/a34cbd217d560aa47da711b42cdb995c7fc264472ca83ffc20283a05ffba3355.png" />
 </div>
 </div>
 <p><strong>Exercise</strong> how many neurons do you need to get a better fit for sin as the activation function.</p>
@@ -1099,9 +1113,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([42, 20, 34,  4, 49, 32, 25,  1, 10, 22, 29,  2,  5, 38, 11, 26, 40,
-       18, 43, 48, 14, 15, 23, 12, 46,  0, 16,  6, 33, 36, 45, 41, 17, 19,
-        9, 27, 44, 24, 31, 30,  7,  8, 13, 47, 35, 39, 21, 37, 28,  3])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 1, 43, 18, 26, 10, 15, 36, 34, 14, 44, 35, 48,  0, 31,  5,  9, 39,
+       28, 37, 49, 27,  7, 24, 41, 32, 45,  2,  6, 22, 42, 16, 23, 20,  4,
+       25, 46, 40, 47, 21, 30, 33, 11, 13, 17, 19,  3, 12,  8, 29, 38])
 </pre></div>
 </div>
 </div>
@@ -1133,7 +1147,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>40 10
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 7,  8, 13, 47, 35, 39, 21, 37, 28,  3])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([33, 11, 13, 17, 19,  3, 12,  8, 29, 38])
 </pre></div>
 </div>
 </div>
@@ -1153,7 +1167,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a9762ed127e6dd136eedcc2217051cca361a161faceffc08e504553c6f2105e5.png" src="../_images/a9762ed127e6dd136eedcc2217051cca361a161faceffc08e504553c6f2105e5.png" />
+<img alt="../_images/4956a3213c2ae2ac13708ccf97216dbc54857b96676463e35511edf5d44e6ceb.png" src="../_images/4956a3213c2ae2ac13708ccf97216dbc54857b96676463e35511edf5d44e6ceb.png" />
 </div>
 </div>
 <p>Now, we train on the train data.</p>
@@ -1184,13 +1198,13 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.022698487569555302
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.023570777381918002
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010697665245766633
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010489171962371473
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 200: 2.370834341104188e-05
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 200: 2.8486153228022818e-05
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance reached, stopping
@@ -1213,7 +1227,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/283b5b0435a80783ff2a6bd81364ea1399b8f27c79f3bfde3e025a616f42b2bc.png" src="../_images/283b5b0435a80783ff2a6bd81364ea1399b8f27c79f3bfde3e025a616f42b2bc.png" />
+<img alt="../_images/640b7996a59aaafe44bdfdfeca041c4710c202ec3f87442953f356aed95c2a1f.png" src="../_images/640b7996a59aaafe44bdfdfeca041c4710c202ec3f87442953f356aed95c2a1f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1227,8 +1241,8 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RMSE train = 0.144
-RMSE test = 0.155
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RMSE train = 0.134
+RMSE test = 0.192
 </pre></div>
 </div>
 </div>
@@ -1297,8 +1311,7 @@ RMSE test = 0.155
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1364,8 +1377,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Nth order differential equations" href="05-nth-odes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -590,7 +604,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6cc757b14108c5384f5b8ea57049c686bf4e489af2d17806f5404455f292df4b.png" src="../_images/6cc757b14108c5384f5b8ea57049c686bf4e489af2d17806f5404455f292df4b.png" />
+<img alt="../_images/30ad0187951abbd88f9a7e610e654a262ef5fec646b206e7924a410c89c91428.png" src="../_images/30ad0187951abbd88f9a7e610e654a262ef5fec646b206e7924a410c89c91428.png" />
 </div>
 </div>
 <p>In contrast, <span class="math notranslate nohighlight">\(sin(x) = 0.5\)</span> will have an infinite number of solutions, everywhere the function intersects the x-axis.</p>
@@ -609,7 +623,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d20e23322c3c219bce9e6c6f82d65d482ce270ccea62a20b912082ec50f51495.png" src="../_images/d20e23322c3c219bce9e6c6f82d65d482ce270ccea62a20b912082ec50f51495.png" />
+<img alt="../_images/4e284ca88f2a27dba5b212048f23c49ea3c03b710be42ae93ed9da02fadb5e5d.png" src="../_images/4e284ca88f2a27dba5b212048f23c49ea3c03b710be42ae93ed9da02fadb5e5d.png" />
 </div>
 </div>
 <p>Finally, <span class="math notranslate nohighlight">\(sin(x) = x - 1\)</span> has only one solution.</p>
@@ -626,7 +640,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/81c441f0276a253df1426c098df6a353dc70a86317c3351fba177f701846a657.png" src="../_images/81c441f0276a253df1426c098df6a353dc70a86317c3351fba177f701846a657.png" />
+<img alt="../_images/aed048e94f7fb0698d812556e9c0679a2c5d5ca2a819fe34f632e8e5fd580858.png" src="../_images/aed048e94f7fb0698d812556e9c0679a2c5d5ca2a819fe34f632e8e5fd580858.png" />
 </div>
 </div>
 <p>The equation <span class="math notranslate nohighlight">\(e^{-0.5 x} \sin(x) = 0.5\)</span>, evidently has two solutions, but other versions of this equation might have 0, 1, multiple or infinite solutions.</p>
@@ -646,7 +660,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a2f74b26aba37f150b2469a5d2c56720a7af95cc4bc1eae3a46e23ec33a7d0d4.png" src="../_images/a2f74b26aba37f150b2469a5d2c56720a7af95cc4bc1eae3a46e23ec33a7d0d4.png" />
+<img alt="../_images/50a706996b6360cd6d4e572a799ef155277c146d1de74136a2a349a3330bb336.png" src="../_images/50a706996b6360cd6d4e572a799ef155277c146d1de74136a2a349a3330bb336.png" />
 </div>
 </div>
 <p><strong>exercise</strong> modify the equation to see 0, 1, many or infinite solutions.</p>
@@ -769,7 +783,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f26f6846b87d327564e7077c7dbdff8faeb99c36af1f7cf52e8a989f11945dd0.png" src="../_images/f26f6846b87d327564e7077c7dbdff8faeb99c36af1f7cf52e8a989f11945dd0.png" />
+<img alt="../_images/d253c6f2be32dd7ba004f40617026437be94fbc1df1f62c2e77f103a3946142b.png" src="../_images/d253c6f2be32dd7ba004f40617026437be94fbc1df1f62c2e77f103a3946142b.png" />
 </div>
 </div>
 <p>It seems obvious there is a root near -1.7. But if you use a guess around x=0, the algorithm simply oscillates back and forth and never converges. Let’s see:</p>
@@ -828,7 +842,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2436/2127341723.py:1: DeprecationWarning: scipy.misc is deprecated and will be removed in 2.0.0
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2415/2127341723.py:1: DeprecationWarning: scipy.misc is deprecated and will be removed in 2.0.0
   from scipy.misc import derivative
 </pre></div>
 </div>
@@ -1016,7 +1030,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 0.69
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2436/1619064557.py:9: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2415/1619064557.py:9: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   print(f&#39;{float(ans):1.2f}&#39;)
 </pre></div>
 </div>
@@ -1180,7 +1194,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c2e6374cec8632c1e98ad6eeafd6f8624ffa60564256318a41a4f8069d339e76.png" src="../_images/c2e6374cec8632c1e98ad6eeafd6f8624ffa60564256318a41a4f8069d339e76.png" />
+<img alt="../_images/9602e92164c839affc373fb79de8e0f203d38c28161e3212c2ff0b9a225c5b8a.png" src="../_images/9602e92164c839affc373fb79de8e0f203d38c28161e3212c2ff0b9a225c5b8a.png" />
 </div>
 </div>
 <p>You can see there is one answer in this range, near a flow rate of 1.0 mol/min. We use that as an initial guess for fsolve:</p>
@@ -1246,11 +1260,11 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2436/2335501430.py:17: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2415/2335501430.py:17: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   fa_exit[i] = ans
 </pre></div>
 </div>
-<img alt="../_images/2d0c2d15f7401352622771eacaa33b33194cfe3a97b6d5a2a6d890bc013eb5fd.png" src="../_images/2d0c2d15f7401352622771eacaa33b33194cfe3a97b6d5a2a6d890bc013eb5fd.png" />
+<img alt="../_images/09753eec7046b3a3ee6f27eecbd7cbd18f21a7f4f03204ae480db8e073b7da14.png" src="../_images/09753eec7046b3a3ee6f27eecbd7cbd18f21a7f4f03204ae480db8e073b7da14.png" />
 </div>
 </div>
 <p>You can see here that any rate constant above about 0.5 1/min leads to near complete conversion, so heating above the temperature required for this would be wasteful.</p>
@@ -1321,8 +1335,7 @@ commentsRunWhenDOMLoaded(addUtterances);
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1389,8 +1402,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

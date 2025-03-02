@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="The PYCSE blog" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -901,7 +915,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/78283adf78ff6eafae91229c9f4b69d1d74fd737b832f468442caf72605fecdc.png" src="../_images/78283adf78ff6eafae91229c9f4b69d1d74fd737b832f468442caf72605fecdc.png" />
+<img alt="../_images/32283b393d435a43b99e75d3fb513bd336a378839237bf5ce4e96e26d94cefec.png" src="../_images/32283b393d435a43b99e75d3fb513bd336a378839237bf5ce4e96e26d94cefec.png" />
 </div>
 </div>
 </section>
@@ -1028,7 +1042,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8ada08fb3cf0afe885c3540ffd1027e2be23c77cc8c127c68fcf62e8f789c825.png" src="../_images/8ada08fb3cf0afe885c3540ffd1027e2be23c77cc8c127c68fcf62e8f789c825.png" />
+<img alt="../_images/99d11d530681927fe2b2468a648c6e2925c416628a5e8db74ad03cf32a1e33b5.png" src="../_images/99d11d530681927fe2b2468a648c6e2925c416628a5e8db74ad03cf32a1e33b5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1042,7 +1056,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8b3d8304ea1fcda9775436cc2c1f5697645ac0704e186575a6b02a5ca2f3e1ab.png" src="../_images/8b3d8304ea1fcda9775436cc2c1f5697645ac0704e186575a6b02a5ca2f3e1ab.png" />
+<img alt="../_images/f2a5245e20b0b8c2ade94bb2460146de688aa39ea3c0b411fa6cb4b70cdedff9.png" src="../_images/f2a5245e20b0b8c2ade94bb2460146de688aa39ea3c0b411fa6cb4b70cdedff9.png" />
 </div>
 </div>
 <p>In that example we wrap the matplotlib plotting commands in a function, which we can call the way we want to, with arbitrary optional arguments. In this example, you cannot pass keyword arguments that are illegal to the plot command or you will get an error.</p>
@@ -1082,7 +1096,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7ff3a0945940&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7f395b1472e0&gt;
 4
 </pre></div>
 </div>
@@ -1098,7 +1112,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7ff3eb7fc680&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7f395b146a20&gt;
 5
 </pre></div>
 </div>
@@ -1115,7 +1129,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7ff3a0945800&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7f395b147100&gt;
 5
 5
 </pre></div>
@@ -1136,7 +1150,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7ff3a0945760&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;function &lt;lambda&gt; at 0x7f395b0f1b20&gt;
 1
 3
 6
@@ -1312,7 +1326,7 @@ color = blue
  [4 5 6]]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1963/3002503601.py:4: DeprecationWarning: `row_stack` alias is deprecated. Use `np.vstack` directly.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1938/3002503601.py:4: DeprecationWarning: `row_stack` alias is deprecated. Use `np.vstack` directly.
   print(np.row_stack([a, b]))
 </pre></div>
 </div>
@@ -1495,7 +1509,7 @@ color = blue
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ec946221d9f1dd0fe209344be4d3932c77f33564d954a27a7e057013ada7053f.png" src="../_images/ec946221d9f1dd0fe209344be4d3932c77f33564d954a27a7e057013ada7053f.png" />
+<img alt="../_images/994196e6bd75fcefde151041fd293d104f6bb4a98bb04733f9af346c71f215e7.png" src="../_images/994196e6bd75fcefde151041fd293d104f6bb4a98bb04733f9af346c71f215e7.png" />
 </div>
 </div>
 <p>This figure illustrates graphically what the numbers above show. The function crosses zero at approximately <span class="math notranslate nohighlight">\(x = 1.5\)</span>. To get a more precise value, we must actually solve the function numerically. We use the function func:scipy.optimize.fsolve to do that. More precisely, we want to solve the equation <span class="math notranslate nohighlight">\(f(x) = \cos(x) = 0\)</span>. We create a function that defines that equation, and then use func:scipy.optimize.fsolve to solve it.</p>
@@ -1765,7 +1779,7 @@ dict_values([&#39;benzene&#39;, 6.9056, 1211.0])
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-1.7950016288086892
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1963/518394352.py:3: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1938/518394352.py:3: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz( x[x &gt; 2], y[x &gt; 2]))
 </pre></div>
 </div>
@@ -1862,17 +1876,17 @@ dict_values([&#39;benzene&#39;, 6.9056, 1211.0])
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[[0.23416219 0.88416386 0.27684486]
-  [0.86272608 0.73307851 0.48755183]
-  [0.29455324 0.96805943 0.73456433]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[[0.88644952 0.80665112 0.64749259]
+  [0.23735102 0.01659895 0.20337657]
+  [0.16180202 0.43389711 0.40003665]]
 
- [[0.04085059 0.10379563 0.4692312 ]
-  [0.19142754 0.09196675 0.28671212]
-  [0.30440625 0.49468716 0.09355976]]
+ [[0.47841557 0.88052468 0.37285736]
+  [0.66060687 0.6600049  0.76546386]
+  [0.73156622 0.74398101 0.64481179]]
 
- [[0.97427225 0.467584   0.94477043]
-  [0.35131539 0.86877544 0.93545121]
-  [0.53010692 0.56940815 0.36549705]]]
+ [[0.2842173  0.1159301  0.73436077]
+  [0.0138341  0.9079546  0.3879154 ]
+  [0.4240154  0.36499494 0.93424425]]]
 </pre></div>
 </div>
 </div>
@@ -1886,11 +1900,11 @@ dict_values([&#39;benzene&#39;, 6.9056, 1211.0])
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.23416219 0.86272608 0.29455324]
- [0.04085059 0.19142754 0.30440625]
- [0.97427225 0.35131539 0.53010692]]
-[0.23416219 0.04085059 0.97427225]
-[0.4692312  0.28671212 0.09355976]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.88644952 0.23735102 0.16180202]
+ [0.47841557 0.66060687 0.73156622]
+ [0.2842173  0.0138341  0.4240154 ]]
+[0.88644952 0.47841557 0.2842173 ]
+[0.37285736 0.76546386 0.64481179]
 </pre></div>
 </div>
 </div>
@@ -2235,8 +2249,7 @@ representing: class A, a=3, b=4
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -2325,8 +2338,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

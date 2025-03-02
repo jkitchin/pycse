@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Topics in machine learning" href="22-ml-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -621,7 +635,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8a8c82be1611773ac2a05a4d655809e0f547eeae218bc0284831375daef8e029.png" src="../_images/8a8c82be1611773ac2a05a4d655809e0f547eeae218bc0284831375daef8e029.png" />
+<img alt="../_images/2eeaeadec0250fdff8775fb2333f8538104b7d64b61f07b0700ebaf04154e0e2.png" src="../_images/2eeaeadec0250fdff8775fb2333f8538104b7d64b61f07b0700ebaf04154e0e2.png" />
 </div>
 </div>
 <p>So, what we need is a convenient way to compute the covariance between the points we know, and the points we want to estimate. To keep things simple for now, we consider a small data set. We need to be able to compute the distance from each known <span class="math notranslate nohighlight">\(x_i\)</span> to each known <span class="math notranslate nohighlight">\(x_j\)</span>. Numpy array broadcasting makes this simple. We <em>expand</em> each array, and then take the difference.</p>
@@ -766,7 +780,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.75532729, 0.76545918])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.76412623, 0.77383452])
 </pre></div>
 </div>
 </div>
@@ -782,7 +796,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/22e661cb5fbc031ae820a815e2a991d6d47de9fa391141985e6b2573de341ebc.png" src="../_images/22e661cb5fbc031ae820a815e2a991d6d47de9fa391141985e6b2573de341ebc.png" />
+<img alt="../_images/4adb2a149ecaf97dbde41c3c9e438bfeeeb85f3b3f43c3b1743141ec5fd0270f.png" src="../_images/4adb2a149ecaf97dbde41c3c9e438bfeeeb85f3b3f43c3b1743141ec5fd0270f.png" />
 </div>
 </div>
 <p>That is not bad, but clearly not great. With a <span class="math notranslate nohighlight">\(\lambda=0.15\)</span>, only one data point is contributing to the estimate, the other points have only small contributions because they are far from points we are estimating. This is a feature of the <em>assumption</em> we made about the covariance with <span class="math notranslate nohighlight">\(\lambda\)</span>. This means we do not have enough data to make a very good estimate. We can see this if we try this with a much more dense data set.</p>
@@ -816,7 +830,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Known data step size is 0.05
 </pre></div>
 </div>
-<img alt="../_images/ff0d94c4b740fe93e226dc7bbe2720b2a22acf1e46bf64f2461c8c0e44881378.png" src="../_images/ff0d94c4b740fe93e226dc7bbe2720b2a22acf1e46bf64f2461c8c0e44881378.png" />
+<img alt="../_images/e66aa419813b26b619a19a815be8f07fc892f0a79a3d26ed79bd26a9d0192fc8.png" src="../_images/e66aa419813b26b619a19a815be8f07fc892f0a79a3d26ed79bd26a9d0192fc8.png" />
 </div>
 </div>
 <p>Now you can see that we do very well in estimating the values. The length scale here might even be considered too short, since it is evident we are fitting trends in the noise.</p>
@@ -847,7 +861,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Known data step size is 0.05
 </pre></div>
 </div>
-<img alt="../_images/6452df2e60ce374eee3f0f71d83c4ebcf5b55c882d364b32af652576d5307792.png" src="../_images/6452df2e60ce374eee3f0f71d83c4ebcf5b55c882d364b32af652576d5307792.png" />
+<img alt="../_images/63f7172a75074eb36497c11b96d44b67d7328d194e90e4b1a6f75b746c587510.png" src="../_images/63f7172a75074eb36497c11b96d44b67d7328d194e90e4b1a6f75b746c587510.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -911,7 +925,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5b602902c975fdeb958cf8cd9a63e9918c4ae7f87e57dd8217afc62ffc3092b3.png" src="../_images/5b602902c975fdeb958cf8cd9a63e9918c4ae7f87e57dd8217afc62ffc3092b3.png" />
+<img alt="../_images/0bdbd1b1685f80563ff7a65838d00a70e1f669ba063835bcaa381802d14b92e4.png" src="../_images/0bdbd1b1685f80563ff7a65838d00a70e1f669ba063835bcaa381802d14b92e4.png" />
 </div>
 </div>
 </section>
@@ -936,7 +950,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8058d5e0ff8fafc45d0d92e048f3c08dbdce8af636420747710c5eff70cb0ba0.png" src="../_images/8058d5e0ff8fafc45d0d92e048f3c08dbdce8af636420747710c5eff70cb0ba0.png" />
+<img alt="../_images/4622dded73e8ae2abb5b950bf231be775c344abeb19a3374dd649542a0d49dc1.png" src="../_images/4622dded73e8ae2abb5b950bf231be775c344abeb19a3374dd649542a0d49dc1.png" />
 </div>
 </div>
 </section>
@@ -977,10 +991,10 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.07092124])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.07202859])
 </pre></div>
 </div>
-<img alt="../_images/affa281486ddac8cb46566e10af1d8b35d410976f06d7bcd8e88b374759706d5.png" src="../_images/affa281486ddac8cb46566e10af1d8b35d410976f06d7bcd8e88b374759706d5.png" />
+<img alt="../_images/ffbdaeb845ffdf82b130bdcdbcab3ec69c442b474312dfb2821f1e82d918ce21.png" src="../_images/ffbdaeb845ffdf82b130bdcdbcab3ec69c442b474312dfb2821f1e82d918ce21.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1015,10 +1029,10 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.22235907, 0.19033892])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.21593309, 0.20685339])
 </pre></div>
 </div>
-<img alt="../_images/da21d6e8061e9d3cd6efd4932076ca60d01feb17df1f331310cdbd8e0b98dea4.png" src="../_images/da21d6e8061e9d3cd6efd4932076ca60d01feb17df1f331310cdbd8e0b98dea4.png" />
+<img alt="../_images/280b8d02fdbf2af0d10d0a1e1cef60e393cf1ea39c32b6705b3ceab0dad50b1f.png" src="../_images/280b8d02fdbf2af0d10d0a1e1cef60e393cf1ea39c32b6705b3ceab0dad50b1f.png" />
 </div>
 </div>
 <p>Note that we still see some wiggles in the fit, indicating some minor degree of overfitting with the optimal hyperparameters. That is happening because we fit to all the data, and do not use any to estimate how good our fits are. You can use train/test data splits for GPR for this purpose as well, but it is out of the scope of the lecture today.</p>
@@ -1053,7 +1067,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e867fb7c0144d1f63aaa871da2c2f7fbb981d93afce957a82f83db7e8c5ff992.png" src="../_images/e867fb7c0144d1f63aaa871da2c2f7fbb981d93afce957a82f83db7e8c5ff992.png" />
+<img alt="../_images/ff4a3ebfbd40aa065e290871b28d976b8d528e63c6baac4c927a015f18ab34ad.png" src="../_images/ff4a3ebfbd40aa065e290871b28d976b8d528e63c6baac4c927a015f18ab34ad.png" />
 </div>
 </div>
 <p>As before, we setup a log likelihood function and maximize it to get estimates for the parameters.</p>
@@ -1076,15 +1090,15 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
   success: True
    status: 0
-      fun: 7.503323122875251
-        x: [ 1.778e-06  6.396e-01 -1.505e+00]
-      nit: 27
-      jac: [-5.364e-07  2.503e-06  9.537e-06]
- hess_inv: [[ 5.709e+00 -2.771e-03  8.825e-04]
-            [-2.771e-03  2.637e-02  1.620e-02]
-            [ 8.825e-04  1.620e-02  5.131e-02]]
-     nfev: 136
-     njev: 34
+      fun: 7.66951167361014
+        x: [ 5.365e-06  6.180e-01 -1.577e+00]
+      nit: 28
+      jac: [-2.086e-06  3.099e-06 -7.749e-06]
+ hess_inv: [[ 6.413e+00  1.073e-02  3.231e-02]
+            [ 1.073e-02  2.358e-02  2.034e-02]
+            [ 3.231e-02  2.034e-02  6.851e-02]]
+     nfev: 148
+     njev: 37
 </pre></div>
 </div>
 </div>
@@ -1112,7 +1126,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8be2f83ab070501427752a2949840b3da1b9be22eea8a0bec1c85d5a8b411534.png" src="../_images/8be2f83ab070501427752a2949840b3da1b9be22eea8a0bec1c85d5a8b411534.png" />
+<img alt="../_images/01e10b39fa817dbec375d21c74f22117032d9a55d1d29081a4815c1b63a7fffc.png" src="../_images/01e10b39fa817dbec375d21c74f22117032d9a55d1d29081a4815c1b63a7fffc.png" />
 </div>
 </div>
 <p>Note that now, we get linear extrapolation, because we are using a linear kernel. Note also that the hyperparameters do not mean anything in particular to us. They do not include the slope or intercept. We can work those out pretty easily though. The intercept is just a prediction at <span class="math notranslate nohighlight">\(x=0\)</span>:</p>
@@ -1125,7 +1139,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.99522024])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([3.03316419])
 </pre></div>
 </div>
 </div>
@@ -1138,7 +1152,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.9902715674097804)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.9230902632889657)
 </pre></div>
 </div>
 </div>
@@ -1172,7 +1186,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9e580ced74895ce21f779effcc304b118f627c7ebf5cbfb765da5d7878d43bac.png" src="../_images/9e580ced74895ce21f779effcc304b118f627c7ebf5cbfb765da5d7878d43bac.png" />
+<img alt="../_images/9620d7887c9bffa6c062d20fe602079d364b8452797817bb5392d60eec779f30.png" src="../_images/9620d7887c9bffa6c062d20fe602079d364b8452797817bb5392d60eec779f30.png" />
 </div>
 </div>
 </section>
@@ -1190,7 +1204,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5361c249bae6cbcfceb3d28de64c230baa77aaf77b55d75627c8688a35ef2eb5.png" src="../_images/5361c249bae6cbcfceb3d28de64c230baa77aaf77b55d75627c8688a35ef2eb5.png" />
+<img alt="../_images/07e58f77a88dc78e85d5f56f2df6a79f4c3223c35e0df9d5ae622ff323df13b1.png" src="../_images/07e58f77a88dc78e85d5f56f2df6a79f4c3223c35e0df9d5ae622ff323df13b1.png" />
 </div>
 </div>
 <p>This looks like a sin wave superimposed on a line. A periodic kernel is defined as</p>
@@ -1215,19 +1229,19 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
   success: True
    status: 0
-      fun: 35.44343982382542
-        x: [ 9.526e-01 -4.886e-08  1.312e+00  1.099e+00  1.009e+00
-            -2.232e-04]
-      nit: 17
-      jac: [-1.431e-06 -4.768e-07  0.000e+00 -9.537e-07  0.000e+00
-             0.000e+00]
- hess_inv: [[ 1.894e-02 -1.696e-04 ...  1.535e-04 -2.141e-04]
-            [-1.696e-04  7.960e-02 ...  1.938e-04  1.455e-03]
+      fun: 20.932710739101903
+        x: [ 3.084e-07  3.730e-01 -1.567e+00  6.480e-01  9.301e-01
+            -3.442e-01]
+      nit: 43
+      jac: [-7.153e-07  4.530e-06 -7.153e-06 -3.815e-06 -4.768e-07
+            -1.431e-06]
+ hess_inv: [[ 1.124e-01  1.509e-02 ...  2.877e-03  5.255e-03]
+            [ 1.509e-02  5.658e-03 ...  6.535e-04  4.201e-04]
             ...
-            [ 1.535e-04  1.938e-04 ...  3.289e-02  1.779e-01]
-            [-2.141e-04  1.455e-03 ...  1.779e-01  9.672e-01]]
-     nfev: 154
-     njev: 22
+            [ 2.877e-03  6.535e-04 ...  2.668e-04  3.222e-04]
+            [ 5.255e-03  4.201e-04 ...  3.222e-04  7.628e-03]]
+     nfev: 420
+     njev: 60
 </pre></div>
 </div>
 </div>
@@ -1254,7 +1268,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e4409cba69d5069efdefebe94e065ac6851a62a7cc377f82686611405b305331.png" src="../_images/e4409cba69d5069efdefebe94e065ac6851a62a7cc377f82686611405b305331.png" />
+<img alt="../_images/6bd55d777830df1da84079d71c4073698321c8761fd3454a02b6e9abfacd5123.png" src="../_images/6bd55d777830df1da84079d71c4073698321c8761fd3454a02b6e9abfacd5123.png" />
 </div>
 </div>
 <p>Note that we get oscillatory + linear extrapolation behavior!</p>
@@ -1337,8 +1351,7 @@ commentsRunWhenDOMLoaded(addUtterances);
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1416,8 +1429,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

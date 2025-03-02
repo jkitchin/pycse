@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Linear algebra" href="linear-algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -613,7 +627,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c426534000a008e9e917431b8d6fffbeb25f4cc314069e5624a0ca1243f03033.png" src="../_images/c426534000a008e9e917431b8d6fffbeb25f4cc314069e5624a0ca1243f03033.png" />
+<img alt="../_images/938d754c4be14a0709b0ef89d25c087c5b8f3b227525c98a9d6f8f6afaeb1cce.png" src="../_images/938d754c4be14a0709b0ef89d25c087c5b8f3b227525c98a9d6f8f6afaeb1cce.png" />
 </div>
 </div>
 <p>Now let us solve the equation. It looks like an answer is near C=500.</p>
@@ -680,7 +694,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/96529930912ae70ed330ee0e009e3473890344e202d857a6eba93a6f09a4ab4a.png" src="../_images/96529930912ae70ed330ee0e009e3473890344e202d857a6eba93a6f09a4ab4a.png" />
+<img alt="../_images/c81f5945a510819d1637b29ebf363bd50bce6886b28ca49f0df51c67341b94b2.png" src="../_images/c81f5945a510819d1637b29ebf363bd50bce6886b28ca49f0df51c67341b94b2.png" />
 </div>
 </div>
 <p>Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.</p>
@@ -751,15 +765,15 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2119/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2096/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last ten iterations.
   y1, = fsolve(tmp, x0)
-/tmp/ipykernel_2119/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
+/tmp/ipykernel_2096/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last five Jacobian evaluations.
   y1, = fsolve(tmp, x0)
 </pre></div>
 </div>
-<img alt="../_images/dc6726c9a1c795aa8a75ba9075c222bc95b47bba583876cb93d0b97e1d92920c.png" src="../_images/dc6726c9a1c795aa8a75ba9075c222bc95b47bba583876cb93d0b97e1d92920c.png" />
+<img alt="../_images/de9f77a6e859e7618f52a733adfd2828de31da4ec9b97dc3b7e1a97a72040717.png" src="../_images/de9f77a6e859e7618f52a733adfd2828de31da4ec9b97dc3b7e1a97a72040717.png" />
 </div>
 </div>
 <p>You can see there is a solution near x = -1, y = 0, because both functions equal zero there. We can even use that guess with fsolve. It is disappointly easy! But, keep in mind that in 3 or more dimensions, you cannot perform this visualization, and another method could be required.</p>
@@ -884,7 +898,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5864c7da2d8984941940944285424b2419945c0583e523e4b26dc97ea8acdb7e.png" src="../_images/5864c7da2d8984941940944285424b2419945c0583e523e4b26dc97ea8acdb7e.png" />
+<img alt="../_images/754c4e7909ca17afa87462c06b3d6e3c8239bff748b4846421815b7866ecc3b2.png" src="../_images/754c4e7909ca17afa87462c06b3d6e3c8239bff748b4846421815b7866ecc3b2.png" />
 </div>
 </div>
 <p>We found one solution at x=2. What about the other solution? To get that we have to introduce <span class="math notranslate nohighlight">\(\lambda\)</span> into the equations in another way. We could try: <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 + \lambda(-5x + 6)\)</span>, but this leads to an ODE that is singular at the initial starting point. Another approach is <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 + 6 + \lambda(-5x)\)</span>, but now the solution at <span class="math notranslate nohighlight">\(\lambda=0\)</span> is imaginary, and we do not have a way to integrate that! What we can do instead is add and subtract a number like this: <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 - 4 + \lambda(-5x + 6 + 4)\)</span>. Now at <span class="math notranslate nohighlight">\(\lambda=0\)</span>, we have a simple equation with roots at <span class="math notranslate nohighlight">\(\pm 2\)</span>, and we already know that <span class="math notranslate nohighlight">\(x=2\)</span> is a solution. So, we create our ODE on <span class="math notranslate nohighlight">\(dx/d\lambda\)</span> with initial condition <span class="math notranslate nohighlight">\(x(0) = -2\)</span>.</p>
@@ -908,7 +922,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d50b4bec98496ea0867a1105f78586b7b2302eb154ad72c8910ae92bfda0fa6f.png" src="../_images/d50b4bec98496ea0867a1105f78586b7b2302eb154ad72c8910ae92bfda0fa6f.png" />
+<img alt="../_images/b32e52924a6298a685d8ceea1ca7c3ccebdc971ae392e26c1fe5abb7134a282b.png" src="../_images/b32e52924a6298a685d8ceea1ca7c3ccebdc971ae392e26c1fe5abb7134a282b.png" />
 </div>
 </div>
 <p>Now we have the other solution. Note if you choose the other root, <span class="math notranslate nohighlight">\(x=2\)</span>, you find that 2 is a root, and learn nothing new. You could choose other values to add, e.g., if you chose to add and subtract 16, then you would find that one starting point leads to one root, and the other starting point leads to the other root. This method does not solve all problems associated with nonlinear root solving, namely, how many roots are there, and which one is “best” or physically reasonable? But it does give a way to solve an equation where you have no idea what an initial guess should be. You can see, however, that just like you can get different answers from different initial guesses, here you can get different answers by setting up the equations differently.</p>
@@ -948,7 +962,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/69ea5b3e431ef28f6e7e64d613e487625229e953cc4b42825d86a5979c9251d1.png" src="../_images/69ea5b3e431ef28f6e7e64d613e487625229e953cc4b42825d86a5979c9251d1.png" />
+<img alt="../_images/285d26510b4f253620239115e0b8085247c6f153272178ef50a551fbec2c8fb1.png" src="../_images/285d26510b4f253620239115e0b8085247c6f153272178ef50a551fbec2c8fb1.png" />
 </div>
 </div>
 <p>Now we consider several approaches to counting the number of roots in this interval. Visually it is pretty easy, you just look for where the function crosses zero. Computationally, it is tricker.</p>
@@ -1032,7 +1046,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e5e7c2dca1212b557a0cd4e08c2e1adc3b0cfa5fc37eaab9c6423c4e4ff6c6b5.png" src="../_images/e5e7c2dca1212b557a0cd4e08c2e1adc3b0cfa5fc37eaab9c6423c4e4ff6c6b5.png" />
+<img alt="../_images/bc581e51bffa66be823a8336eef17ebbae54af7d20597d1397938ca40b3c17d6.png" src="../_images/bc581e51bffa66be823a8336eef17ebbae54af7d20597d1397938ca40b3c17d6.png" />
 </div>
 </div>
 <p>You can see there are many roots to this equation, and we want to be sure we get the n<sup>th</sup> root. This function is pretty well behaved, so if you make a good guess about the solution you will get an answer, but if you make a bad guess, you may get the wrong root. We examine next a way to do it without guessing the solution. What we want is the solution to <span class="math notranslate nohighlight">\(f(x) = 0\)</span>, but we want all the solutions in a given interval. We derive a new equation, <span class="math notranslate nohighlight">\(f'(x) = 0\)</span>, with initial condition <span class="math notranslate nohighlight">\(f(0) = f0\)</span>, and integrate the ODE with an event function that identifies all zeros of <span class="math notranslate nohighlight">\(f\)</span> for us. The derivative of our function is <span class="math notranslate nohighlight">\(df/dx = d/dx(x J_1(x)) - Bi J'_0(x)\)</span>. It is known (<a class="reference external" href="http://www.markrobrien.com/besselfunct.pdf">http://www.markrobrien.com/besselfunct.pdf</a>) that <span class="math notranslate nohighlight">\(d/dx(x J_1(x)) = x J_0(x)\)</span>, and <span class="math notranslate nohighlight">\(J'_0(x) = -J_1(x)\)</span>. All we have to do now is set up the problem and run it.</p>
@@ -1072,7 +1086,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0cf352f595d32f3080272b6d999a57615acd160d5a99fc6888207b9cbd751364.png" src="../_images/0cf352f595d32f3080272b6d999a57615acd160d5a99fc6888207b9cbd751364.png" />
+<img alt="../_images/ce64fa9034594b7a2fc61ab62b67a3d16d5b2d7047fc5eb6c235dc0760363ad6.png" src="../_images/ce64fa9034594b7a2fc61ab62b67a3d16d5b2d7047fc5eb6c235dc0760363ad6.png" />
 </div>
 </div>
 <p>You can work this out once, and then you have all the roots in the interval and you can select the one you want.</p>
@@ -1173,8 +1187,7 @@ y &amp;=&amp; 8 - x^2
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1246,8 +1259,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

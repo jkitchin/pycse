@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Optimization" href="optimization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -632,7 +646,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/06a5b4ed1ecf91d8e895fd7e36649070ca7f16f71f4724d85ffe00de2a0f52bb.png" src="../_images/06a5b4ed1ecf91d8e895fd7e36649070ca7f16f71f4724d85ffe00de2a0f52bb.png" />
+<img alt="../_images/a086814a112f8e0373c2b703c996f7a5814be69241fe499dab58a26cda30d1a0.png" src="../_images/a086814a112f8e0373c2b703c996f7a5814be69241fe499dab58a26cda30d1a0.png" />
 </div>
 </div>
 <p>The numerical and analytical solutions agree.</p>
@@ -705,7 +719,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c091ee2cc12fac22b24208443a7c76677ce78c96291725769b133abd000122b4.png" src="../_images/c091ee2cc12fac22b24208443a7c76677ce78c96291725769b133abd000122b4.png" />
+<img alt="../_images/e6cd8e67d9c25008ba2df2a62e7c5c4ac832153727d2f3b668160937a771dd1c.png" src="../_images/e6cd8e67d9c25008ba2df2a62e7c5c4ac832153727d2f3b668160937a771dd1c.png" />
 </div>
 </div>
 </section>
@@ -753,7 +767,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/15111698680e02f2fe18231bf1fc46b61168a5bd0b74bfa7c6b67877c2d613a9.png" src="../_images/15111698680e02f2fe18231bf1fc46b61168a5bd0b74bfa7c6b67877c2d613a9.png" />
+<img alt="../_images/5fe4a2256dff984b640e0c1945f40858c1d1dfdd7e63ff32065835e7614bf417.png" src="../_images/5fe4a2256dff984b640e0c1945f40858c1d1dfdd7e63ff32065835e7614bf417.png" />
 </div>
 </div>
 <p>You can see the discontinuity in the salt concentration at 10 minutes due to the discontinous change in the entering salt concentration.</p>
@@ -811,7 +825,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 At t=2.46  Ca = 1.000
 </pre></div>
 </div>
-<img alt="../_images/40d86b8e6db24e15b5d0e04b824b2186f62800fcb5d56169060bc96b19dcd567.png" src="../_images/40d86b8e6db24e15b5d0e04b824b2186f62800fcb5d56169060bc96b19dcd567.png" />
+<img alt="../_images/b2803ca598c22a3bf05aa9fb88947eba1702207b58549cfe289a4445541ef550.png" src="../_images/b2803ca598c22a3bf05aa9fb88947eba1702207b58549cfe289a4445541ef550.png" />
 </div>
 </div>
 <p>This particular solution works for this example, probably because it is well behaved. It is “downhill” to the desired solution. It is not obvious this would work for every example, and it is certainly possible the algorithm could go “backward” in time. A better approach might be to integrate forward until you detect a sign change in your event function, and then refine it in a separate loop.</p>
@@ -919,7 +933,7 @@ x = -1.9999999623352622, event = -1.4051260155411128e-15, f = -1.405126015541112
 x = 1.999999886950595, event = -1.1102230246251565e-15, f = -1.1102230246251565e-15
 </pre></div>
 </div>
-<img alt="../_images/ddf322f07cffb36adfa0bdc0ca3440b532e36ca8a5168e889163d1d889668353.png" src="../_images/ddf322f07cffb36adfa0bdc0ca3440b532e36ca8a5168e889163d1d889668353.png" />
+<img alt="../_images/fe947c43561be1da3ef73c5069d60f9a0f3edd730844578d8d4ab7f278d5612c.png" src="../_images/fe947c43561be1da3ef73c5069d60f9a0f3edd730844578d8d4ab7f278d5612c.png" />
 </div>
 </div>
 <p>That was a lot of programming to do something like find the roots of the function! Today I would use solve_ivp for this.</p>
@@ -956,7 +970,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/da0b94e84ae72a2f48e297c0bf3eabaebcc89f2e772dd59c76b79bd2650d2727.png" src="../_images/da0b94e84ae72a2f48e297c0bf3eabaebcc89f2e772dd59c76b79bd2650d2727.png" />
+<img alt="../_images/2701128c3062886b54e5445a174d18d73b25ba48bbedfddda07bd0037b73c734.png" src="../_images/2701128c3062886b54e5445a174d18d73b25ba48bbedfddda07bd0037b73c734.png" />
 </div>
 </div>
 <p>You can see the solution is near two seconds. Now we create an interpolating function to evaluate the solution. We will plot the interpolating function on a finer grid to make sure it seems reasonable.</p>
@@ -977,7 +991,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/66de3a411847dcf8635a6974e8fa3a95b39f715b5c4497938294fb3cdfb9bcfa.png" src="../_images/66de3a411847dcf8635a6974e8fa3a95b39f715b5c4497938294fb3cdfb9bcfa.png" />
+<img alt="../_images/80178d4a37fa7b2958cbfcde7c94dfcfa09756433763503610aba3f6ff156784.png" src="../_images/80178d4a37fa7b2958cbfcde7c94dfcfa09756433763503610aba3f6ff156784.png" />
 </div>
 </div>
 <p>that looks pretty reasonable. Now we solve the problem.</p>
@@ -1031,8 +1045,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 <span class="g g-Whitespace">    </span><span class="mi">162</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;maxfev&#39;</span><span class="p">:</span> <span class="n">maxfev</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">168</span>            <span class="s1">&#39;diag&#39;</span><span class="p">:</span> <span class="n">diag</span><span class="p">}</span>
 <span class="ne">--&gt; </span><span class="mi">170</span> <span class="n">res</span> <span class="o">=</span> <span class="n">_root_hybr</span><span class="p">(</span><span class="n">_wrapped_func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fprime</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
@@ -1145,7 +1158,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a3f8a63a9f659df66461bd338330b4b732ee914b4d8e36d5e761b7b6c89e8ec6.png" src="../_images/a3f8a63a9f659df66461bd338330b4b732ee914b4d8e36d5e761b7b6c89e8ec6.png" />
+<img alt="../_images/8ac3be86323402cf14564d64babd08c8c96790e2e99c74854333714ae804e41b.png" src="../_images/8ac3be86323402cf14564d64babd08c8c96790e2e99c74854333714ae804e41b.png" />
 </div>
 </div>
 <p>we want an equation for dPdV, which we will integrate we use symbolic math to do the derivative for us.</p>
@@ -1188,7 +1201,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/19388da0b55d57957bf6e048b22be90660af677579c3dbe752d64db131ea39e3.png" src="../_images/19388da0b55d57957bf6e048b22be90660af677579c3dbe752d64db131ea39e3.png" />
+<img alt="../_images/71fec0800aac55334e4368bfdabd1f381202ba45c98d13aca31588d11fe6bf63.png" src="../_images/71fec0800aac55334e4368bfdabd1f381202ba45c98d13aca31588d11fe6bf63.png" />
 </div>
 </div>
 <p>You can see there is disagreement between the analytical solution and numerical solution. The origin of this problem is accuracy at the initial condition, where the derivative is extremely large.</p>
@@ -1222,7 +1235,7 @@ The analytical solution to an ODE is a function, which can be solved to get a pa
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/95a22796dcecbdabe70b427dc365a2eb2c270f6091a3c24fc30477e2767da170.png" src="../_images/95a22796dcecbdabe70b427dc365a2eb2c270f6091a3c24fc30477e2767da170.png" />
+<img alt="../_images/f4e9998042531e200436e30fd4424ec5ec9421b1354a56d44c0a0c9c4603196d.png" src="../_images/f4e9998042531e200436e30fd4424ec5ec9421b1354a56d44c0a0c9c4603196d.png" />
 </div>
 </div>
 <p>The problem here was the derivative value varied by four orders of magnitude over the integration range, so the default tolerances were insufficient to accurately estimate the numerical derivatives over that range. Tightening the tolerances helped resolve that problem. Another approach might be to split the integration up into different regions. For instance, if instead of starting at Vr = 0.34, which is very close to a sigularity in the van der waal equation at Vr = 1/3, if you start at Vr = 0.5, the solution integrates just fine with the standard tolerances.</p>
@@ -1268,7 +1281,7 @@ At t=0.5 Ca = 0.74 mol/L
 At t=0.5 Ca = 0.70 mol/L
 </pre></div>
 </div>
-<img alt="../_images/f78fb27f0aed79abb76a6614eaa2cf6df268b828f9f512c933eaf161984d73db.png" src="../_images/f78fb27f0aed79abb76a6614eaa2cf6df268b828f9f512c933eaf161984d73db.png" />
+<img alt="../_images/e2f306901298c6f7b2c07f60248ef4522da5c419855b54643d0a3bd8f567dddd.png" src="../_images/e2f306901298c6f7b2c07f60248ef4522da5c419855b54643d0a3bd8f567dddd.png" />
 </div>
 </div>
 <p>You can see there are some variations in the concentration at t = 0.5. You could over or underestimate the concentration if you have the wrong estimate of <span class="math notranslate nohighlight">\(k\)</span>! You have to use some judgement here to decide how long to run the reaction to ensure a target goal is met.</p>
@@ -1305,7 +1318,7 @@ At t=0.5 Ca = 0.70 mol/L
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9968b66015bb66d9afeac08e78dba0f98f36d49c7b44f0d4ff78a6343ebecd1e.png" src="../_images/9968b66015bb66d9afeac08e78dba0f98f36d49c7b44f0d4ff78a6343ebecd1e.png" />
+<img alt="../_images/8bfd6c9b8f2d28e798244fc40e9adc0cc8954a2bc91943b58555b457a795b8ec.png" src="../_images/8bfd6c9b8f2d28e798244fc40e9adc0cc8954a2bc91943b58555b457a795b8ec.png" />
 </div>
 </div>
 <p>I do not think this is a very elegant way to pass parameters around compared to the previous methods, but it nicely illustrates that there is more than one way to do it. And who knows, maybe it will be useful in some other context one day!</p>
@@ -1344,7 +1357,7 @@ At t=0.5 Ca = 0.70 mol/L
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ee3c3b21578a7ca4d1cb1dca123d7b2f69f209172c3bc3e7028faa465abd012c.png" src="../_images/ee3c3b21578a7ca4d1cb1dca123d7b2f69f209172c3bc3e7028faa465abd012c.png" />
+<img alt="../_images/de8212027732f5efde0fe1450e88ae070786e49958ce97a57e28b7e53a99cb10.png" src="../_images/de8212027732f5efde0fe1450e88ae070786e49958ce97a57e28b7e53a99cb10.png" />
 </div>
 </div>
 <p>You can see the solution changes dramatically for different values of mu. The point here is not to understand why, but to show an easy way to study a parameterize ode with a nested function. Nested functions can be a great way to “share” variables between functions especially for ODE solving, and nonlinear algebra solving, or any other application where you need a lot of parameters defined in one function in another function.</p>
@@ -1398,8 +1411,8 @@ At t=0.5 Ca = 0.70 mol/L
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6dcadfb19938afa82c0fc8a90d65997bda5bddaed7a24544cab34088da75b56f.png" src="../_images/6dcadfb19938afa82c0fc8a90d65997bda5bddaed7a24544cab34088da75b56f.png" />
-<img alt="../_images/5410966d52a78c1c0f687aa6d366eb2f1381eeee27bb9d376043a466e3d3e8da.png" src="../_images/5410966d52a78c1c0f687aa6d366eb2f1381eeee27bb9d376043a466e3d3e8da.png" />
+<img alt="../_images/9a0feb27b9ddd02a247394ca4fa597c6a5fc6fc336b24bd1d1e4ae83f34d6e9c.png" src="../_images/9a0feb27b9ddd02a247394ca4fa597c6a5fc6fc336b24bd1d1e4ae83f34d6e9c.png" />
+<img alt="../_images/4ce71d14423bf9e01d5ff562f05885915baed56c21c763eade201c3b0ae7d6f4.png" src="../_images/4ce71d14423bf9e01d5ff562f05885915baed56c21c763eade201c3b0ae7d6f4.png" />
 </div>
 </div>
 <p>Here is the phase portrait. You can see that a limit cycle is approached, indicating periodicity in the solution.</p>
@@ -1446,7 +1459,7 @@ At t=0.5 Ca = 0.70 mol/L
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dc2808f3ef86ab340fc162a9323639a7077bc9b023e72c9368464fbc1dfb5259.png" src="../_images/dc2808f3ef86ab340fc162a9323639a7077bc9b023e72c9368464fbc1dfb5259.png" />
+<img alt="../_images/d951bf54604c89de90f674649efddec032f356cad2e20c81fe9c99938c0700f1.png" src="../_images/d951bf54604c89de90f674649efddec032f356cad2e20c81fe9c99938c0700f1.png" />
 </div>
 </div>
 <p>You can see the numerical and analytical solutions overlap, indicating they are at least visually the same.</p>
@@ -1501,7 +1514,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/87754088e675aa13025afd813fdace449748ee3593bcbf7808c1726d7a172153.png" src="../_images/87754088e675aa13025afd813fdace449748ee3593bcbf7808c1726d7a172153.png" />
+<img alt="../_images/6ab1decf96420b6b2858f10b36f253ceb50681cb6f49c3d7a6fafaf8b8a6ea65.png" src="../_images/6ab1decf96420b6b2858f10b36f253ceb50681cb6f49c3d7a6fafaf8b8a6ea65.png" />
 </div>
 </div>
 <p>Let us plot a few solutions on the vector field. We will consider the solutions where y1(0)=0, and values of y2(0) = [0 0.5 1 1.5 2 2.5], in otherwords we start the pendulum at an angle of zero, with some angular velocity.</p>
@@ -1524,7 +1537,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8096eb1361b89a46802fe968410cfc89d6d31a5d14f33bf889af0dfdce10a0cf.png" src="../_images/8096eb1361b89a46802fe968410cfc89d6d31a5d14f33bf889af0dfdce10a0cf.png" />
+<img alt="../_images/7ecb15cf3cc400ef960e20a070821971683bfb692500cc0d3ebb08d80faa9601.png" src="../_images/7ecb15cf3cc400ef960e20a070821971683bfb692500cc0d3ebb08d80faa9601.png" />
 </div>
 </div>
 <p>What do these figures mean? For starting points near the origin, and small velocities, the pendulum goes into a stable limit cycle. For others, the trajectory appears to fly off into y1 space. Recall that y1 is an angle that has values from <span class="math notranslate nohighlight">\(-\pi\)</span> to <span class="math notranslate nohighlight">\(\pi\)</span>. The y1 data in this case is not wrapped around to be in this range.</p>
@@ -1604,11 +1617,11 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2015/2289625004.py:4: DeprecationWarning: `row_stack` alias is deprecated. Use `np.vstack` directly.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_1990/2289625004.py:4: DeprecationWarning: `row_stack` alias is deprecated. Use `np.vstack` directly.
   T = np.row_stack([t, t])
 </pre></div>
 </div>
-<img alt="../_images/6ca3ba3ea7ed945d99affeee6ed74a7f65f97af3d8e7db56d1fbf4b7a3889a72.png" src="../_images/6ca3ba3ea7ed945d99affeee6ed74a7f65f97af3d8e7db56d1fbf4b7a3889a72.png" />
+<img alt="../_images/de6f04c9c5a00459c5f25ed933175898232f70d7ab21ebf3ecb45743fb025e68.png" src="../_images/de6f04c9c5a00459c5f25ed933175898232f70d7ab21ebf3ecb45743fb025e68.png" />
 </div>
 </div>
 </section>
@@ -1672,7 +1685,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a3e197e8cead758104726069bf4f4694fe457694b12ebcc0e551d5e5bc746add.png" src="../_images/a3e197e8cead758104726069bf4f4694fe457694b12ebcc0e551d5e5bc746add.png" />
+<img alt="../_images/78b0bc8f6f99e9b3185f15f597c7d8a5ea0bb8916557994212ace4bc2ffe2952.png" src="../_images/78b0bc8f6f99e9b3185f15f597c7d8a5ea0bb8916557994212ace4bc2ffe2952.png" />
 </div>
 </div>
 <p>Here we have undershot the boundary condition. Let us try a larger guess.</p>
@@ -1696,7 +1709,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/eba4fbb787ec157ead3a405a8d2782174ec060e035c6c7377931d205cf03c272.png" src="../_images/eba4fbb787ec157ead3a405a8d2782174ec060e035c6c7377931d205cf03c272.png" />
+<img alt="../_images/d4d8d88819f84e1cac961c57caa382d5fb8c33b3509188033efb2988389bd829.png" src="../_images/d4d8d88819f84e1cac961c57caa382d5fb8c33b3509188033efb2988389bd829.png" />
 </div>
 </div>
 <p>Now we have clearly overshot. Let us now make a function that will iterate for us to find the right value.</p>
@@ -1750,8 +1763,7 @@ An undamped pendulum with no driving force is described by</p>
 <span class="g g-Whitespace">    </span><span class="mi">162</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;maxfev&#39;</span><span class="p">:</span> <span class="n">maxfev</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">168</span>            <span class="s1">&#39;diag&#39;</span><span class="p">:</span> <span class="n">diag</span><span class="p">}</span>
 <span class="ne">--&gt; </span><span class="mi">170</span> <span class="n">res</span> <span class="o">=</span> <span class="n">_root_hybr</span><span class="p">(</span><span class="n">_wrapped_func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fprime</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
@@ -1909,7 +1921,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5deddd6fa0a8994328ece51e9ee06c5b678035f5c0ffb58cb3e62919fc5ec2d8.png" src="../_images/5deddd6fa0a8994328ece51e9ee06c5b678035f5c0ffb58cb3e62919fc5ec2d8.png" />
+<img alt="../_images/731794ff59535660567c5661a0617c2085b7a8864661ed5d82a0f78db0f35929.png" src="../_images/731794ff59535660567c5661a0617c2085b7a8864661ed5d82a0f78db0f35929.png" />
 </div>
 </div>
 <p>You can see excellent agreement here between the numerical and analytical solution.</p>
@@ -1988,7 +2000,7 @@ An undamped pendulum with no driving force is described by</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b9aca98a5952c1acc8bc080fe90555b1562030581e569b6092f8788c542976bb.png" src="../_images/b9aca98a5952c1acc8bc080fe90555b1562030581e569b6092f8788c542976bb.png" />
+<img alt="../_images/2745225375d5dda9bd978981504a4aa8ca6ad14ffc50e6c85bd75313fe87add2.png" src="../_images/2745225375d5dda9bd978981504a4aa8ca6ad14ffc50e6c85bd75313fe87add2.png" />
 </div>
 </div>
 </section>
@@ -2051,7 +2063,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7ef7621666d8b4f787f67b2057776eca02d81c138129c52cf5e90a98b00c6d95.png" src="../_images/7ef7621666d8b4f787f67b2057776eca02d81c138129c52cf5e90a98b00c6d95.png" />
+<img alt="../_images/10bc7791d1904414dae897d16e80f64bbf0d1a8be5af749f98eb9eabf188f92d.png" src="../_images/10bc7791d1904414dae897d16e80f64bbf0d1a8be5af749f98eb9eabf188f92d.png" />
 </div>
 </div>
 </section>
@@ -2120,7 +2132,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/df86553f59369de81db3cb623ab5ebec6cda4e2e624d687e6ba5218e79a0fd60.png" src="../_images/df86553f59369de81db3cb623ab5ebec6cda4e2e624d687e6ba5218e79a0fd60.png" />
+<img alt="../_images/548f7c26e19b79120e525cf52cc052c7b2fc02c4ab335b06525dc4699bb7fe06.png" src="../_images/548f7c26e19b79120e525cf52cc052c7b2fc02c4ab335b06525dc4699bb7fe06.png" />
 </div>
 </div>
 <p>After approximately one space time, the steady state solution is reached at the exit. For completeness, we also examine the steady state solution.</p>
@@ -2136,7 +2148,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/51272a1de7860880f96ec2bbfa5acfca5164aa76335da626d4d8d9d5754d7ba5.png" src="../_images/51272a1de7860880f96ec2bbfa5acfca5164aa76335da626d4d8d9d5754d7ba5.png" />
+<img alt="../_images/05d4ef0da1199667dcff9d0e9bc40050d6abe2fbac0a5b51c421f66887899910.png" src="../_images/05d4ef0da1199667dcff9d0e9bc40050d6abe2fbac0a5b51c421f66887899910.png" />
 </div>
 </div>
 <p>There is some minor disagreement between the final transient solution and the steady state solution. That is due to the approximation in discretizing the reactor volume. In this example we used 100 nodes. You get better agreement with a larger number of nodes, say 200 or more. Of course, it takes slightly longer to compute then, since the number of coupled odes is equal to the number of nodes.</p>
@@ -2224,7 +2236,7 @@ y_L - \beta &amp;=&amp;0
 <span class="ne">ValueError</span>: unknown file extension: .mp4
 </pre></div>
 </div>
-<img alt="../_images/b35e097de975c396e75ac7e9c082b34b2cf8b4d988441d495303443fd7b507e2.png" src="../_images/b35e097de975c396e75ac7e9c082b34b2cf8b4d988441d495303443fd7b507e2.png" />
+<img alt="../_images/f00a06517cd8f1cbb4997f25ac77e9b383697ab6a236b4f8cba23eb7623d20a5.png" src="../_images/f00a06517cd8f1cbb4997f25ac77e9b383697ab6a236b4f8cba23eb7623d20a5.png" />
 </div>
 </div>
 <p>You can see from the animation that after about 10 time units, the solution is not changing further, suggesting steady state has been reached.</p>
@@ -2285,7 +2297,7 @@ adapated from <a class="reference external" href="http://msemac.redwoods.edu/~da
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/46389c52dfde6be2cae3638eca7e67a2c5f3095b408a6bbf6005bb62d19f7328.png" src="../_images/46389c52dfde6be2cae3638eca7e67a2c5f3095b408a6bbf6005bb62d19f7328.png" />
+<img alt="../_images/97c40bf4c5e1050b22896ba128061208d7e2bef6f9acc1d4175d7a3a14ac1650.png" src="../_images/97c40bf4c5e1050b22896ba128061208d7e2bef6f9acc1d4175d7a3a14ac1650.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2304,7 +2316,7 @@ adapated from <a class="reference external" href="http://msemac.redwoods.edu/~da
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/785039d53e337a320ab3d0bf073bfcc68658c6c2102218cc77579be77a1dcaca.png" src="../_images/785039d53e337a320ab3d0bf073bfcc68658c6c2102218cc77579be77a1dcaca.png" />
+<img alt="../_images/9b91aacbe0fbf79f08b9d20784c66ea06f7002384dc6a69e3d8567b9d1eedc6f.png" src="../_images/9b91aacbe0fbf79f08b9d20784c66ea06f7002384dc6a69e3d8567b9d1eedc6f.png" />
 </div>
 </div>
 <p>This version of the graphical solution is not that easy to read, although with some study you can see the solution evolves from the initial condition which is flat, to the steady state solution which is a linear temperature ramp.</p>
@@ -2387,8 +2399,8 @@ adapated from <a class="reference external" href="http://msemac.redwoods.edu/~da
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.36136136136136143
 </pre></div>
 </div>
-<img alt="../_images/7f09972283bfeaae93a85810e3d023eeec2f0ccdc4067199e28b2236425f2995.png" src="../_images/7f09972283bfeaae93a85810e3d023eeec2f0ccdc4067199e28b2236425f2995.png" />
-<img alt="../_images/a98a60ca9ff2257c8ba6fccc8de1522551fbc348a32d6bb736869aa44ecd772f.png" src="../_images/a98a60ca9ff2257c8ba6fccc8de1522551fbc348a32d6bb736869aa44ecd772f.png" />
+<img alt="../_images/fa508f95d8a894bf84b6b445d76bb6d63c8158dd4de6744b6caa3736cbfb5823.png" src="../_images/fa508f95d8a894bf84b6b445d76bb6d63c8158dd4de6744b6caa3736cbfb5823.png" />
+<img alt="../_images/ed617597c1ed1f75a94da7ee04dc004d0d86a714a2fe610231cc9d381b89ce8d.png" src="../_images/ed617597c1ed1f75a94da7ee04dc004d0d86a714a2fe610231cc9d381b89ce8d.png" />
 </div>
 </div>
 <p>The solution is somewhat sensitive to the choices of time step and spatial discretization. If you make the time step too big, the method is not stable, and large oscillations may occur.</p>
@@ -2451,8 +2463,7 @@ adapated from <a class="reference external" href="http://msemac.redwoods.edu/~da
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -2547,8 +2558,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

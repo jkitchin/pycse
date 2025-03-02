@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Integration in Python" href="02-integration-1.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -617,8 +631,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([0., 0., 0., 0.]),
  array([1., 1., 1., 1.]),
- array([ 4.67440757e-310,  0.00000000e+000, -1.73706525e+078,
-        -2.93719377e-229]))
+ array([4.63658512e-310, 0.00000000e+000, 1.68464922e-303, 4.16820721e+241]))
 </pre></div>
 </div>
 </div>
@@ -731,7 +744,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/464078433813cdbea2111a3c8f5bc5fda70237afe9229acf8bcb92f0a719e185.png" src="../_images/464078433813cdbea2111a3c8f5bc5fda70237afe9229acf8bcb92f0a719e185.png" />
+<img alt="../_images/ae6c99af75ffbd675c76bc5eb0ef65a3a25cd1b9c60726881ba28ea50e5e9b39.png" src="../_images/ae6c99af75ffbd675c76bc5eb0ef65a3a25cd1b9c60726881ba28ea50e5e9b39.png" />
 </div>
 </div>
 <p>We should ask, how can we tell this is correct? We can confirm the initial values, which we know are correct.</p>
@@ -762,10 +775,10 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fcf1630bcd0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f0ca416a8d0&gt;
 </pre></div>
 </div>
-<img alt="../_images/8d13ab555010b6014e8381843f333186f31c255228025c829c5aba0fd32d3393.png" src="../_images/8d13ab555010b6014e8381843f333186f31c255228025c829c5aba0fd32d3393.png" />
+<img alt="../_images/29d8078071d96c5aeb53c227295ebd932a0ff70463c9ebd25c7853e643c25c7c.png" src="../_images/29d8078071d96c5aeb53c227295ebd932a0ff70463c9ebd25c7853e643c25c7c.png" />
 </div>
 </div>
 <p>Here you see good agreement over most of the range. The end-points are always less accurate because the derivatives there are approximated by a less accurate formula. We interpret the sum of this evidence to mean our solution to the ODE is good over this range of x values.</p>
@@ -917,7 +930,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cf44478224d72690a0c143fa2eff93f8860ea713cac4b1dd3be6a5fdc640be41.png" src="../_images/cf44478224d72690a0c143fa2eff93f8860ea713cac4b1dd3be6a5fdc640be41.png" />
+<img alt="../_images/34650c124d1d17bddfa465287d7520492414ee84ad96c2832d3a60493c05e854.png" src="../_images/34650c124d1d17bddfa465287d7520492414ee84ad96c2832d3a60493c05e854.png" />
 </div>
 </div>
 <p>This solution does not look that good until you increase the number of points (i.e. decrease the value of <span class="math notranslate nohighlight">\(h\)</span>, significantly). It is known the error decreases only linearly with <span class="math notranslate nohighlight">\(h\)</span>.</p>
@@ -965,7 +978,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/31a9b40f8095b0b025a49d9c7ae29f2a29b54a09f25e51d2837437733f7c5abe.png" src="../_images/31a9b40f8095b0b025a49d9c7ae29f2a29b54a09f25e51d2837437733f7c5abe.png" />
+<img alt="../_images/62709610568797e33ff47da9a65ca19d081ec7b729d90676da59a27e3b618ee4.png" src="../_images/62709610568797e33ff47da9a65ca19d081ec7b729d90676da59a27e3b618ee4.png" />
 </div>
 </div>
 <p>Note you can get a much more accurate solution with a larger <span class="math notranslate nohighlight">\(h\)</span> with this method.</p>
@@ -1062,7 +1075,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c1cc3c5ac2194c03a5f0499407f1be86e3610d3b17a73bbdb06a3b7c26afb03a.png" src="../_images/c1cc3c5ac2194c03a5f0499407f1be86e3610d3b17a73bbdb06a3b7c26afb03a.png" />
+<img alt="../_images/f98ed663e2d802f407d32a74dcdf7bde4be36603cbf6cfc0156a08974f108836.png" src="../_images/f98ed663e2d802f407d32a74dcdf7bde4be36603cbf6cfc0156a08974f108836.png" />
 </div>
 </div>
 <p>That doesn’t looks so great since there are only four data points. By default, the algorithm only uses as many points as it needs to achieve a specified tolerance. We can specify that we want the solution evaluated at other points using the optional <code class="docutils literal notranslate"><span class="pre">t_eval</span></code> keyword arg.</p>
@@ -1101,10 +1114,10 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fcf1853ec10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f0ca41be590&gt;
 </pre></div>
 </div>
-<img alt="../_images/6de6d328d56a5d87065d95c8d31edc00fc978d6f24506a4c729679019860c477.png" src="../_images/6de6d328d56a5d87065d95c8d31edc00fc978d6f24506a4c729679019860c477.png" />
+<img alt="../_images/b02808cab2d98cbb1951344a389475c71057f9d6e376e6a404c0e1137c9bcfd0.png" src="../_images/b02808cab2d98cbb1951344a389475c71057f9d6e376e6a404c0e1137c9bcfd0.png" />
 </div>
 </div>
 <p>So far, <code class="docutils literal notranslate"><span class="pre">solve_ivp</span></code> solves the issues with item 1 (we did not have to code the algorithm), and items 2 and 3 (it uses an adaptive step and converges to a tolerance for us). It will also help us solve for the inverse problem, i.e. for what value of <span class="math notranslate nohighlight">\(x\)</span> is <span class="math notranslate nohighlight">\(y=4\)</span>?</p>
@@ -1259,8 +1272,7 @@ After the loop new_arr = [0.   0.25 1.   2.25 4.  ]
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1330,8 +1342,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

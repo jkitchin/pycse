@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Introduction to optimization" href="10-min-max.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -579,7 +593,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db6d9c7c2dedd913c981a8fc79bbbe64926d33de2f845638f2bf521513e7168f.png" src="../_images/db6d9c7c2dedd913c981a8fc79bbbe64926d33de2f845638f2bf521513e7168f.png" />
+<img alt="../_images/1b9dcbdcba07abb83ee86b9f3a987767382198f8cccaa8cca3023d4a20a25d00.png" src="../_images/1b9dcbdcba07abb83ee86b9f3a987767382198f8cccaa8cca3023d4a20a25d00.png" />
 </div>
 </div>
 <p>In Materials Science we often want to fit an equation of state to this data. We will use this equation:</p>
@@ -732,7 +746,7 @@ commentsRunWhenDOMLoaded(addUtterances);
      njev: 35
 </pre></div>
 </div>
-<img alt="../_images/3d6492b075159b014a1b75e558cda2e303877145e6778c6f9c4157986026b91b.png" src="../_images/3d6492b075159b014a1b75e558cda2e303877145e6778c6f9c4157986026b91b.png" />
+<img alt="../_images/37647ea0ec3de318c9f41cceb44c0d290f16ae1045dca6504208c1871d1ed778.png" src="../_images/37647ea0ec3de318c9f41cceb44c0d290f16ae1045dca6504208c1871d1ed778.png" />
 </div>
 </div>
 <p>That looks pretty good. We should ask ourselves, how do we know we got a minimum? We should see that the objective function is really at a minimum <em>for each of the parameters</em>. Here, we show that it is a minimum for the first parameter.</p>
@@ -752,7 +766,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5a0c2f2287f7ca4c77656dc08709755765c70f6a29931ca9aaf572ea41c1c1bc.png" src="../_images/5a0c2f2287f7ca4c77656dc08709755765c70f6a29931ca9aaf572ea41c1c1bc.png" />
+<img alt="../_images/e985d3ba09e7a7fca455784f571b55fd18b2d43a6093e46a5fb954c0664b45f3.png" src="../_images/e985d3ba09e7a7fca455784f571b55fd18b2d43a6093e46a5fb954c0664b45f3.png" />
 </div>
 </div>
 <p>You can see visually that the error goes up on each side of the parameter estimate.</p>
@@ -772,7 +786,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2538/2127341723.py:1: DeprecationWarning: scipy.misc is deprecated and will be removed in 2.0.0
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2516/2127341723.py:1: DeprecationWarning: scipy.misc is deprecated and will be removed in 2.0.0
   from scipy.misc import derivative
 </pre></div>
 </div>
@@ -896,7 +910,7 @@ We are 95% confident the next measurement will be between 16.093 and 16.107
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dadc73cf3097c91609bfef0f1d99834baf595e457b95e09f00a2fa875ef38b14.png" src="../_images/dadc73cf3097c91609bfef0f1d99834baf595e457b95e09f00a2fa875ef38b14.png" />
+<img alt="../_images/13010714ab5f6c622eee4c8b8cf0935c7fd8ac867f63c225a2b6c60548480e8c.png" src="../_images/13010714ab5f6c622eee4c8b8cf0935c7fd8ac867f63c225a2b6c60548480e8c.png" />
 </div>
 </div>
 <p>What should we use for an initial guess? At <span class="math notranslate nohighlight">\(x=0\)</span>, <span class="math notranslate nohighlight">\(y = 0\)</span>, which isn’t that helpful. At large <span class="math notranslate nohighlight">\(x\)</span>, we have <span class="math notranslate nohighlight">\(y=a\)</span>. From the data, we can guess that <span class="math notranslate nohighlight">\(a \approx 1.2\)</span>. For small x, we have <span class="math notranslate nohighlight">\(y = a/b x\)</span>. So, if we estimate the slope, we can estimate b. We arrive at these guesses by thoughtful inspection of the data, and the model that we use to fit it.</p>
@@ -965,7 +979,7 @@ We are 95% confident the next measurement will be between 16.093 and 16.107
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/46b18501cc0f8c6953bcf9eca42fbf13ef0786485b409c8a0427faaea451951e.png" src="../_images/46b18501cc0f8c6953bcf9eca42fbf13ef0786485b409c8a0427faaea451951e.png" />
+<img alt="../_images/1b6dd3f172e5de2779baa3f4df674005310fefcabd70e9c83b11909b2ad4f394.png" src="../_images/1b6dd3f172e5de2779baa3f4df674005310fefcabd70e9c83b11909b2ad4f394.png" />
 </div>
 </div>
 <p><strong>exercise</strong> Try different initial guesses and find one that does not look this good.</p>
@@ -1098,7 +1112,7 @@ p1: 0.026 [0.024  0.029]
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3205427042624864)
 </pre></div>
 </div>
-<img alt="../_images/c42961d1fc7dfbe1caa66f11d335afb77234a83037c9c1c6d9dcf101ceca76ec.png" src="../_images/c42961d1fc7dfbe1caa66f11d335afb77234a83037c9c1c6d9dcf101ceca76ec.png" />
+<img alt="../_images/0f2b301370f8d38367af6a0eb41516d6aebb913d7bec5a7c0eef623408ea3630.png" src="../_images/0f2b301370f8d38367af6a0eb41516d6aebb913d7bec5a7c0eef623408ea3630.png" />
 </div>
 </div>
 <p>We estimate the model plateaus at about y=1.32, but what is an appropriate estimate of the error in this? There are uncertainties in the model parameters, so there must be uncertainty in the predictions. To estimate this, we first look at how to generate a distribution of random numbers with a normal distribution around some mean with some standard error.</p>
@@ -1113,7 +1127,7 @@ p1: 0.026 [0.024  0.029]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0c0935f8702903814946278f3c36d82bcbfed85064bf84d07c1df4ef934ae709.png" src="../_images/0c0935f8702903814946278f3c36d82bcbfed85064bf84d07c1df4ef934ae709.png" />
+<img alt="../_images/012c906ca6e7809f6ea13f594a3be07f3daccdf85462c5781ce49786b378611d.png" src="../_images/012c906ca6e7809f6ea13f594a3be07f3daccdf85462c5781ce49786b378611d.png" />
 </div>
 </div>
 <p>So the idea is we can generate a distribution of the parameters</p>
@@ -1129,12 +1143,12 @@ p1: 0.026 [0.024  0.029]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(1.3205235320857176),
- np.float64(0.009774498578453826),
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(np.float64(1.3202247456170262),
+ np.float64(0.009588700441582823),
  np.float64(0.0010279048949675936))
 </pre></div>
 </div>
-<img alt="../_images/c591e3a94d4d4f34917a3ee24b7699ca3cb547549b2ee7ffd24fbc80ba87a6cb.png" src="../_images/c591e3a94d4d4f34917a3ee24b7699ca3cb547549b2ee7ffd24fbc80ba87a6cb.png" />
+<img alt="../_images/388c31217584d0c9482648166263c7d5967df0fb2fd5092a13e44348f1b0d91d.png" src="../_images/388c31217584d0c9482648166263c7d5967df0fb2fd5092a13e44348f1b0d91d.png" />
 </div>
 </div>
 <p>Well, in 20/20 hindsight, we might have guessed the uncertainty in the asymptote would be just like the uncertainty in the <span class="math notranslate nohighlight">\(a\)</span> parameter. In this case, it is appropriate to use three significant figures given the uncertainty on the answer. A useful guideline is that the 95% confidence interval is about ± 2 σ. At ± 1 σ you only have about a 60% confidence interval.</p>
@@ -1145,7 +1159,7 @@ p1: 0.026 [0.024  0.029]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>At x=5, y=1.321 +- 0.020 at about the 95% confidence level.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>At x=5, y=1.320 +- 0.019 at about the 95% confidence level.
 </pre></div>
 </div>
 </div>
@@ -1220,8 +1234,7 @@ p1: 0.026 [0.024  0.029]
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -1286,8 +1299,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

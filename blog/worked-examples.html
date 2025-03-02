@@ -16,33 +16,30 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -117,7 +114,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Programming" href="programming.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -133,8 +129,19 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -142,6 +149,7 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -149,8 +157,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -166,8 +174,7 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -197,17 +204,21 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -286,14 +297,9 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -503,16 +509,24 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -673,8 +687,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">188</span><span class="sd"> </span>
+<span class="sd">   (...)    188 </span>
 <span class="g g-Whitespace">    </span><span class="mi">189</span><span class="sd"> &quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
@@ -851,14 +864,14 @@ commentsRunWhenDOMLoaded(addUtterances);
 <span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 <span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/IPython/core/interactiveshell.py:324,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">317</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
-<span class="g g-Whitespace">    </span><span class="mi">318</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">319</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">320</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">321</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">322</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">324</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/IPython/core/interactiveshell.py:325,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">318</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
+<span class="g g-Whitespace">    </span><span class="mi">319</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">320</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">322</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">323</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">325</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../../data/gc-data-21.txt&#39;
 </pre></div>
@@ -1147,7 +1160,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/06fdc632d6aa7420adcdc0295f92648e27823bd0aef987fa3d1bdbb056a26b45.png" src="../_images/06fdc632d6aa7420adcdc0295f92648e27823bd0aef987fa3d1bdbb056a26b45.png" />
+<img alt="../_images/2bd15c11b3f447d176609e0f20d2311faa064ac597f99e1ec8ab1aae5393ea42.png" src="../_images/2bd15c11b3f447d176609e0f20d2311faa064ac597f99e1ec8ab1aae5393ea42.png" />
 </div>
 </div>
 <section id="summary">
@@ -1418,7 +1431,7 @@ C2H6       1.632e-07
 True
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/1892264215.py:6: RuntimeWarning: invalid value encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/1892264215.py:6: RuntimeWarning: invalid value encountered in log
   G = np.sum(nj * (Gjo / R / T + np.log(nj / Enj)))
 </pre></div>
 </div>
@@ -1534,13 +1547,13 @@ True
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
   diffg += R * T * x1 * np.log(x2 * P / P0)
-/tmp/ipykernel_2260/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+/tmp/ipykernel_2239/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
   diffg += R * T * x1 * np.log(x2 * P / P0)
 </pre></div>
 </div>
-<img alt="../_images/2829bc5491323eb080dec72fae9cc3ebc4729245f2af24d0e75af920427cc1ea.png" src="../_images/2829bc5491323eb080dec72fae9cc3ebc4729245f2af24d0e75af920427cc1ea.png" />
+<img alt="../_images/467a92ba485e4799f908863418a59defcbb089792ed33fa7afd5beab0db9c822.png" src="../_images/467a92ba485e4799f908863418a59defcbb089792ed33fa7afd5beab0db9c822.png" />
 </div>
 </div>
 <p>Now we simply minimize our Gwigglewiggle function. Based on the figure above, the miminum is near 0.45.</p>
@@ -1562,13 +1575,13 @@ True
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.46959618248998036
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/2870202885.py:20: RuntimeWarning: divide by zero encountered in log
   diffg += R * T * x1 * np.log(x2 * P / P0)
-/tmp/ipykernel_2260/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
+/tmp/ipykernel_2239/2870202885.py:20: RuntimeWarning: invalid value encountered in multiply
   diffg += R * T * x1 * np.log(x2 * P / P0)
 </pre></div>
 </div>
-<img alt="../_images/ada7484091e0e3bed1842a831ae8ad0920f2e480c06a552480d8271f59a57c81.png" src="../_images/ada7484091e0e3bed1842a831ae8ad0920f2e480c06a552480d8271f59a57c81.png" />
+<img alt="../_images/fa0d936a5eb4e85110c6f8d3d8a510f6a27610654eef5c478310d73dbe2983fa.png" src="../_images/fa0d936a5eb4e85110c6f8d3d8a510f6a27610654eef5c478310d73dbe2983fa.png" />
 </div>
 </div>
 <p>To compute equilibrium mole fractions we do this:</p>
@@ -1795,7 +1808,7 @@ deltaG = -28.62
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/87896066ebcc819fd9065a5c12555c6e440c2122b3d41d4cad86e13a27963776.png" src="../_images/87896066ebcc819fd9065a5c12555c6e440c2122b3d41d4cad86e13a27963776.png" />
+<img alt="../_images/4509dfee8f4e307bba5de061c45b7125e29a979151f0b7a46f25e053fe25bb23.png" src="../_images/4509dfee8f4e307bba5de061c45b7125e29a979151f0b7a46f25e053fe25bb23.png" />
 </div>
 </div>
 <p>Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.</p>
@@ -1817,7 +1830,7 @@ deltaG = -28.62
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/94ec7e2efd8ecc8d835535f3ac13fb8dff203985ce3f7044ff64aa1ec925304f.png" src="../_images/94ec7e2efd8ecc8d835535f3ac13fb8dff203985ce3f7044ff64aa1ec925304f.png" />
+<img alt="../_images/289525f6e9fd90d383805855d8e6a0c07eaad39f50214a5ebca0593833d396f5.png" src="../_images/289525f6e9fd90d383805855d8e6a0c07eaad39f50214a5ebca0593833d396f5.png" />
 </div>
 </div>
 </section>
@@ -2005,9 +2018,9 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 -2.5594238377522345
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/1928982228.py:17: RuntimeWarning: invalid value encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/1928982228.py:17: RuntimeWarning: invalid value encountered in log
   d * np.log(P) + yI * d * np.log(yI) +
-/tmp/ipykernel_2260/1928982228.py:18: RuntimeWarning: invalid value encountered in log
+/tmp/ipykernel_2239/1928982228.py:18: RuntimeWarning: invalid value encountered in log
   yB * d * np.log(yB) + yP1 * d * np.log(yP1) + yP2 * d * np.log(yP2))
 </pre></div>
 </div>
@@ -2061,7 +2074,7 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dc472b516c1e84849ba8e260ed0c5a5c5c3925e350b49178de9db0d7d5f0377a.png" src="../_images/dc472b516c1e84849ba8e260ed0c5a5c5c3925e350b49178de9db0d7d5f0377a.png" />
+<img alt="../_images/6021b0078646086498010e8f10dd4f8935aa7959ce01e2b449ce671f54a0d8a2.png" src="../_images/6021b0078646086498010e8f10dd4f8935aa7959ce01e2b449ce671f54a0d8a2.png" />
 </div>
 </div>
 <p>You can see we found the minimum. We can compute the mole fractions pretty easily.</p>
@@ -2359,13 +2372,13 @@ Ni        +50.00%
 0.5630033628012618
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/4291268947.py:40: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/4291268947.py:40: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   eta_numerical = (np.trapz(k * Ca * 4 * np.pi * (r**2), r)
-/tmp/ipykernel_2260/4291268947.py:41: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+/tmp/ipykernel_2239/4291268947.py:41: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   / np.trapz(k * CAs * 4 * np.pi * (r**2), r))
 </pre></div>
 </div>
-<img alt="../_images/a875f51d47b906542dd3a726e12733e323fef48de2f9076b93e0c3db4b25ab00.png" src="../_images/a875f51d47b906542dd3a726e12733e323fef48de2f9076b93e0c3db4b25ab00.png" />
+<img alt="../_images/d112bd31d5a5d8466b18374a640cadede9d60569d17835793aaf7f6b416ba27d.png" src="../_images/d112bd31d5a5d8466b18374a640cadede9d60569d17835793aaf7f6b416ba27d.png" />
 </div>
 </div>
 <p>You can see the concentration of A inside the particle is significantly lower than outside the particle. That is because it is reacting away faster than it can diffuse into the particle. Hence, the overall reaction rate in the particle is lower than it would be without the diffusion limit.</p>
@@ -2444,7 +2457,7 @@ A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length 
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The minimum pipe diameter is 0.0389653369530596 m
 </pre></div>
 </div>
-<img alt="../_images/48343c5e60eb2db1cc56912069c346e466361fd74968b2c1895846bae3ee5583.png" src="../_images/48343c5e60eb2db1cc56912069c346e466361fd74968b2c1895846bae3ee5583.png" />
+<img alt="../_images/7bf4146f56fbefe410ffc06011c63e279b9f1e0b34f06de0f9d2e63223372321.png" src="../_images/7bf4146f56fbefe410ffc06011c63e279b9f1e0b34f06de0f9d2e63223372321.png" />
 </div>
 </div>
 <p>Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.</p>
@@ -2535,8 +2548,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">188</span><span class="sd"> </span>
+<span class="sd">   (...)    188 </span>
 <span class="g g-Whitespace">    </span><span class="mi">189</span><span class="sd"> &quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
@@ -2717,8 +2729,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">188</span><span class="sd"> </span>
+<span class="sd">   (...)    188 </span>
 <span class="g g-Whitespace">    </span><span class="mi">189</span><span class="sd"> &quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
@@ -2765,7 +2776,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/27f03fd36c4312cafb7b8baa127bae5e876dd5c6f34b6fb9158b0b08d8c13e08.png" src="../_images/27f03fd36c4312cafb7b8baa127bae5e876dd5c6f34b6fb9158b0b08d8c13e08.png" />
+<img alt="../_images/9c71fcf401aa87104a60b8faa809c8899f833ad072952759b9be8c5000a7daec.png" src="../_images/9c71fcf401aa87104a60b8faa809c8899f833ad072952759b9be8c5000a7daec.png" />
 </div>
 </div>
 <p>The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection. Let us draw a line on the figure at y = 0.65.</p>
@@ -2782,7 +2793,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/98d6b41a94a9ca842d4bcc04ac26698f25ea46c332b743b0efed77df526ea43b.png" src="../_images/98d6b41a94a9ca842d4bcc04ac26698f25ea46c332b743b0efed77df526ea43b.png" />
+<img alt="../_images/4c3c53b55c3fa5077fa1bbab2e812b4a307dff51fb5c52f9de9e7f9e26c523cc.png" src="../_images/4c3c53b55c3fa5077fa1bbab2e812b4a307dff51fb5c52f9de9e7f9e26c523cc.png" />
 </div>
 </div>
 <p>To find the areas, we need to know where the intersection of the vdW eqn with the horizontal line. This is the same as asking what are the roots of the vdW equation at that Pr. We need all three intersections so we can integrate from the first root to the middle root, and then the middle root to the third root. We take advantage of the polynomial nature of the vdW equation, which allows us to use the roots command to get all the roots at once. The polynomial is <span class="math notranslate nohighlight">\(V_R^3 - \frac{1}{3}(1+8 T_R/P_R) + 3/P_R - 1/P_R = 0\)</span>. We use the coefficients t0 get the roots like this.</p>
@@ -2801,7 +2812,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.60286812 1.09743234 2.32534056]
 </pre></div>
 </div>
-<img alt="../_images/86cf1e3d54aca6202f3875c5fd8315ff882233f6f387d5aa83278cc70a83c209.png" src="../_images/86cf1e3d54aca6202f3875c5fd8315ff882233f6f387d5aa83278cc70a83c209.png" />
+<img alt="../_images/c003bb230c3c96aec452bcbce3ae3125dd83cbc797a11512ea3c22d637d2e01a.png" src="../_images/c003bb230c3c96aec452bcbce3ae3125dd83cbc797a11512ea3c22d637d2e01a.png" />
 </div>
 </div>
 <section id="compute-areas">
@@ -2869,8 +2880,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">162</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;maxfev&#39;</span><span class="p">:</span> <span class="n">maxfev</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">167</span>            <span class="s1">&#39;factor&#39;</span><span class="p">:</span> <span class="n">factor</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">168</span>            <span class="s1">&#39;diag&#39;</span><span class="p">:</span> <span class="n">diag</span><span class="p">}</span>
 <span class="ne">--&gt; </span><span class="mi">170</span> <span class="n">res</span> <span class="o">=</span> <span class="n">_root_hybr</span><span class="p">(</span><span class="n">_wrapped_func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">fprime</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
@@ -2909,8 +2919,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">165</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">166</span><span class="sd"> Return the roots of a polynomial with coefficients given in p.</span>
 <span class="g g-Whitespace">    </span><span class="mi">167</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">218</span><span class="sd"> </span>
+<span class="sd">   (...)    218 </span>
 <span class="g g-Whitespace">    </span><span class="mi">219</span><span class="sd"> &quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">220</span> <span class="c1"># If input is scalar, this makes it an array</span>
 <span class="ne">--&gt; </span><span class="mi">221</span> <span class="n">p</span> <span class="o">=</span> <span class="n">atleast_1d</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -2921,8 +2930,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">     </span><span class="mi">23</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">     </span><span class="mi">24</span><span class="sd"> Convert inputs to arrays with at least one dimension.</span>
 <span class="g g-Whitespace">     </span><span class="mi">25</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">     </span><span class="mi">60</span><span class="sd"> </span>
+<span class="sd">   (...)     60 </span>
 <span class="g g-Whitespace">     </span><span class="mi">61</span><span class="sd"> &quot;&quot;&quot;</span>
 <span class="g g-Whitespace">     </span><span class="mi">62</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
 <span class="ne">---&gt; </span><span class="mi">63</span>     <span class="n">result</span> <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">arys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -2969,7 +2977,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="ne">NameError</span>: name &#39;y_eq&#39; is not defined
 </pre></div>
 </div>
-<img alt="../_images/2468c2eeb85218e2c618f19a30a6ad2a27b0e9e015385d7d394e8d50c5fa0846.png" src="../_images/2468c2eeb85218e2c618f19a30a6ad2a27b0e9e015385d7d394e8d50c5fa0846.png" />
+<img alt="../_images/eb11d772efadd2ae7002f4f714d833c0408984080754ba000cf978b3a1d111b4.png" src="../_images/eb11d772efadd2ae7002f4f714d833c0408984080754ba000cf978b3a1d111b4.png" />
 </div>
 </div>
 </section>
@@ -3024,7 +3032,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f934fe7ada1e9eb9254aaf5e859c27149c06e1e0dd9069c6e0709606d18ae1db.png" src="../_images/f934fe7ada1e9eb9254aaf5e859c27149c06e1e0dd9069c6e0709606d18ae1db.png" />
+<img alt="../_images/ff76a91d0397ece437d766f112e69903cb1b5c4a06964750df1308bb62a3cadf.png" src="../_images/ff76a91d0397ece437d766f112e69903cb1b5c4a06964750df1308bb62a3cadf.png" />
 </div>
 </div>
 <p>That is it. The main difference between this and Matlab is the order of arguments in odeint is different, and the ode function has differently ordered arguments.</p>
@@ -3158,7 +3166,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/385d5f7ebe2e717d35a71636584a69f22211885c6090eb36bdfbff38594f01eb.png" src="../_images/385d5f7ebe2e717d35a71636584a69f22211885c6090eb36bdfbff38594f01eb.png" />
+<img alt="../_images/bb64e2347bcab924fb1a89b382a190ef9e521774b30a7b9014c2b434446d5158.png" src="../_images/bb64e2347bcab924fb1a89b382a190ef9e521774b30a7b9014c2b434446d5158.png" />
 </div>
 </div>
 <p>You can read off of this figure to find the time required to achieve a particular conversion.</p>
@@ -3205,7 +3213,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/264c1f26ac7f184b2804f8d0b1e7fe1f3e2c18727f3c5e66f60fa6c04663e487.png" src="../_images/264c1f26ac7f184b2804f8d0b1e7fe1f3e2c18727f3c5e66f60fa6c04663e487.png" />
+<img alt="../_images/43905aeba625edbda23465981f8ae92e36f737d6e53cc244eadae81f5410eae7.png" src="../_images/43905aeba625edbda23465981f8ae92e36f737d6e53cc244eadae81f5410eae7.png" />
 </div>
 </div>
 <p>See Fogler, 4th edition. page 193.</p>
@@ -3576,7 +3584,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/27edd637c21a125c77fbfcb50c37d6af0eec1aef1673cc198cb9b28125d960e5.png" src="../_images/27edd637c21a125c77fbfcb50c37d6af0eec1aef1673cc198cb9b28125d960e5.png" />
+<img alt="../_images/f2ba3eef9c24c1d71bed46be13e8c944793176d03e5ea41b8ace0428aef121c5.png" src="../_images/f2ba3eef9c24c1d71bed46be13e8c944793176d03e5ea41b8ace0428aef121c5.png" />
 </div>
 </div>
 <p>In this example, the boundary is complicated, and not described by a simple function. We will check for intersections of the line from the arbitrary point to the reference point with each segment defining the boundary. If there is an intersection in the boundary, we count that as a crossing. We choose the origin (0, 0) in this case for the reference point. For an arbitrary point (x1, y1), the equation of the line is therefore (provided x1 !=0):</p>
@@ -3689,13 +3697,13 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2260/339476128.py:64: RuntimeWarning: invalid value encountered in scalar divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2239/339476128.py:64: RuntimeWarning: invalid value encountered in scalar divide
   m1 = y1 / x1
-/tmp/ipykernel_2260/339476128.py:64: RuntimeWarning: divide by zero encountered in scalar divide
+/tmp/ipykernel_2239/339476128.py:64: RuntimeWarning: divide by zero encountered in scalar divide
   m1 = y1 / x1
 </pre></div>
 </div>
-<img alt="../_images/3837a75daea72fbc94eba664173f6ae5899d3c63edc46488a408c8dd050f82bd.png" src="../_images/3837a75daea72fbc94eba664173f6ae5899d3c63edc46488a408c8dd050f82bd.png" />
+<img alt="../_images/33d150cdc593d8501ba72fb784afc471455b077993c79e1b4567ca075069dd2a.png" src="../_images/33d150cdc593d8501ba72fb784afc471455b077993c79e1b4567ca075069dd2a.png" />
 </div>
 </div>
 <p>If you look carefully, there are two blue points in the red region, which means there is some edge case we do not capture in our function. Kudos to the person who figures it out.
@@ -3759,8 +3767,7 @@ Update: It was pointed out that the points intersect a point on the line.</p>
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -3893,8 +3900,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
