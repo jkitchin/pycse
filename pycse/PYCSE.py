@@ -293,7 +293,6 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
     yint : prediction interval at alpha confidence interval
     se : standard error of prediction
     """
-
     ypred = model(xnew, *popt)
 
     hessp = nd.Hessian(lambda p: loss(*p))(popt)
@@ -314,8 +313,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
         ypred,
         np.array(
             [
-                ypred + tval * sigmas * (1 + 1 / n),
-                ypred - tval * sigmas * (1 + 1 / n),
+                ypred + tval * sigmas,
+                ypred - tval * sigmas,
             ]
         ).T,
         sigmas,
