@@ -310,8 +310,9 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
         ypred,
         np.array(
             [
-                ypred + tval * sigmas,
-                ypred - tval * sigmas,
+                # https://online.stat.psu.edu/stat501/lesson/7/7.2
+                ypred + tval * (sigmas**2 + mse) ** 0.5,
+                ypred - tval * (sigmas**2 + mse) ** 0.5,
             ]
         ).T,
         sigmas,
