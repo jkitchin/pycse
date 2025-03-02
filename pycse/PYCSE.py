@@ -352,7 +352,6 @@ def bic(x, y, model, popt):
 
     https://en.wikipedia.org/wiki/Bayesian_information_criterion#Gaussian_special_case
     """
-
     n = len(y)
     k = len(popt)
     rss = np.sum((model(x, *popt) - y) ** 2)
@@ -373,7 +372,6 @@ def lbic(X, y, popt):
     -------
     BIC : float
     """
-
     n = len(y)
     k = len(popt)
     rss = np.sum((X @ popt - y) ** 2)
@@ -384,6 +382,9 @@ def lbic(X, y, popt):
 # * ivp
 def ivp(f, tspan, y0, *args, **kwargs):
     """Solve an ODE initial value problem.
+
+    This provides some convenience defaults that I think are better than
+    solve_ivp.
 
     Parameters
     ----------
