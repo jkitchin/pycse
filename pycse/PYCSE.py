@@ -157,7 +157,7 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     ub : upper bound for smallest allowed Hessian eigenvalue
     ef : eigenvalue factor for scaling Hessian
 
-    See See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
+    See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
 
     Returns
     y, yint, pred_se
@@ -165,7 +165,6 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     yint: confidence interval
     pred_se: std error on predictions.
     """
-
     n = len(X)
     npars = len(pars)
     dof = n - npars
@@ -200,8 +199,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
 
     yint = np.array(
         [
-            yy - tval * pred_se * (1 + 1 / n),
-            yy + tval * pred_se * (1 + 1 / n),
+            yy - tval * pred_se * (1 + 1 / n) ** 0.5,
+            yy + tval * pred_se * (1 + 1 / n) ** 0.5,
         ]
     )
 
