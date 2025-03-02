@@ -282,11 +282,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
 
     This function uses numdifftools for the Hessian and Jacobian.
 
-    See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
-
     Returns
     -------
-
     y, yint, se
 
     y : predicted values
