@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "pycse"
+version = "2.3.0"
+description = "python computations in science and engineering"
+readme = {file = "README.org", content-type = "text/plain"}
+authors = [{ name = "John Kitchin", email = "jkitchin@andrew.cmu.edu" }]
+license="GPL-3.0-or-later"
+requires-python = ">=3.12"
+dependencies = ["numpy",
+"scipy",
+"matplotlib",
+"numdifftools",
+"pandas",
+"joblib",
+"requests",
+"orjson",
+"flake8-pyproject"]
+
+[project.scripts]
+pycse = "pycse.cli:pycse"
+pycse_mcp = "pycse.mcp:main"
+
+[tool.flake8]
+max-line-length = 80
+per-file-ignores = [
+  "src/pycse/__init__.py:F401, F403, E402",
+  "src/pycse/tests/test_*:D103",
+  "src/pycse/cli.py:E722",
+  "docker/jupyter_nbconvert_config.py:F821",
+]
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+  "invalid-name",
+  "too-few-public-methods",
+  "keyword-arg-before-vararg",
+  "unused-argument",
+]
+
+[tool.pytest.ini_options]
+# add src/ to PYTHONPATH
+pythonpath = ["src"]
+# where your tests live
+testpaths  = ["src/pycse/tests"]
+
+# (shell-command "uv build")
+# (shell-command "uv publish")

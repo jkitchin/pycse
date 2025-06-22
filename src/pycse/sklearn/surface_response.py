@@ -75,7 +75,7 @@ class SurfaceResponse(Pipeline):
     def design(self, shuffle=True):
         """Creates a design dataframe.
 
-        shuffle: Boolean, if true shuffle the results.
+        shuffle: Boolean, if True shuffle the results.
 
         Returns
         -------
@@ -115,6 +115,10 @@ class SurfaceResponse(Pipeline):
         data : list or array of results. Each row should correspond to the same
         row in the input.
 
+        Returns
+        -------
+        The dataframe containing the outputs.
+
         """
         index = self.input.index
         df = pd.DataFrame(data, index=index, columns=self.outputs)
@@ -122,10 +126,12 @@ class SurfaceResponse(Pipeline):
         return self.output
 
     def fit(self, X=None, y=None):
+        """Fit the model to the data."""
         X, y = self.input, self.output
         return super().fit(X, y)
 
     def score(self, X=None, y=None):
+        """Compute the R2 score."""
         X, y = self.input, self.output
         return super().score(X, y)
 
@@ -138,6 +144,7 @@ class SurfaceResponse(Pipeline):
 
         plt.xlabel("True Value")
         plt.ylabel("Predicted Value")
+        plt.title(f"R2 = {self.score:1.3f}")
 
         return plt.gcf()
 
@@ -147,6 +154,17 @@ class SurfaceResponse(Pipeline):
         return np.round(x, -int(np.floor(np.log10(np.abs(x)))) + (n - 1))
 
     def summary(self):
+        """Return a summary string of the model.
+
+        This includes overall metrics like R2, MAE, RMSE, and for each feature
+        the parameter, confidence interval, standard error, and significance. If
+        significance is 0, the parameter is not significant; it means the
+        confidence interval contains 0. If it is 1 than it is signficant.
+
+        Returns
+        -------
+        the summary string.
+        """
         X, y = self.input, self.output
 
         s = [f"{len(X)} data points"]
@@ -172,6 +190,11 @@ class SurfaceResponse(Pipeline):
                 f"  rmse = {rmse}",
                 "",
             ]
+
+            # this seems to be some corner case where the dimensions are not
+            # right for ncols=1.
+            if ncols == 1:
+                pars_cint = [pars_cint]
 
             for i in range(ncols):  # these are the outputs
                 data = []
