@@ -12,13 +12,16 @@ import os
 import json
 from mcp.server.fastmcp import FastMCP, Image
 from typing import Tuple, List, Union
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 import pandas as pd
 import pycse
 import pkgutil
 import importlib
 import inspect
 import io
+
+from pycse.sklearn.lhc import LatinSquare
+from pycse.sklearn.surface_response import SurfaceResponse
 
 import matplotlib
 
@@ -36,14 +39,15 @@ class Factor(BaseModel):
 
 
 class LatinSquareSpec(BaseModel):
-    """Complete specification for a Latin square design."""
+    """Complete specification for a Latin square design.
+    It is a list of the factors and their levels."""
 
     factors: List[Factor] = Field(..., description="List of experimental factors")
 
 
 # this is a clunky way to save state between calls. It is not persistent, and
 # probably can be broken without trying too hard. e.g. using it multiple times,
-# or mixing lhc and sr.
+# or mixing lhc and sr. Another day I should look into using a class.
 STATE = {}
 
 
@@ -70,8 +74,6 @@ def design_lhc(inputs: LatinSquareSpec):
     factors = inputs.factors
 
     d = {factor.name: factor.levels for factor in factors}
-
-    from pycse.sklearn.lhc import LatinSquare
 
     ls = LatinSquare(d)
     STATE["ls"] = ls
@@ -108,8 +110,8 @@ class LatinSquareResults(BaseModel):
 def analyze_lhc(lsr: LatinSquareResults):
     """Analyze the LatinSquare results.
 
-    The results have to be provided in a way that a list of (experiment #, result)
-    can be parsed by the LLM.
+    The results have to be provided in a way that looks like a list of
+    (experiment #, result) can be parsed by the LLM.
 
     Returns an analysis of variance (ANOVA).
 
@@ -192,8 +194,6 @@ def design_sr(
     """
     global STATE
 
-    from pycse.sklearn.surface_response import SurfaceResponse
-
     b = [list(b.minmax) for b in bounds.bounds]
     sr = SurfaceResponse(inputs=inputs.inputs, outputs=outputs.outputs, bounds=b)
 
@@ -226,17 +226,11 @@ class SurfaceResponseResults(BaseModel):
     results: List[SurfaceResponseResult] = Field(..., description="List of results")
 
 
-class AnalyzeSRResponse(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    message: str
-    plot: Image
-
-
 @mcp.tool()
 def analyze_sr(data: SurfaceResponseResults):
     """Analyze the surface response results.
 
-    Returns a table of ANOVA results and a parity plot.
+    Returns a table of ANOVA results.
     """
     global STATE
     results = [[d.result] for d in data.results]
