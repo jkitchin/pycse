@@ -4,6 +4,28 @@ This monkey-patches go.Figure.show to provide a png image for org-mode, and an
 html file that is saved that you can click on in org-mode to see the interactive
 version.
 
+Example:
+
+    import pycse.plotly
+    import plotly.graph_objects as go
+
+    # Sample data
+    x = [0, 1, 2, 3, 4]
+    y = [0, 1, 4, 9, 16]
+
+    # Create a figure
+    fig = go.Figure(
+        data=go.Scatter(x=x, y=y, mode='lines+markers', name='y = x^2'),
+        layout=go.Layout(
+            title='Simple Line Plot',
+            xaxis_title='x',
+            yaxis_title='y',
+        )
+    )
+
+    # Show the plot
+    fig.show()
+
 """
 
 import os
