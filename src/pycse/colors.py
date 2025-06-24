@@ -1,4 +1,27 @@
-"""This module provides a dictionary of rgb values with keys of color names."""
+"""This module provides a dictionary of rgb values with keys of color names in lower case.
+
+Example usage:
+
+> import matplotlib.pyplot as plt
+> from pycse.colors import rgb
+
+> plt.plot([1, 2, 4, 8], c=rgb['mountain meadow'])
+
+I am not sure where this list came from. There is related information at
+https://en.wikipedia.org/wiki/List_of_colors_(alphabetical)
+
+This could be deprecated, there are other good color libraries available now.
+
+> import matplotlib.colors as mcolors
+> mcolors.CSS4_COLORS.keys()
+
+Seaborn provides a lot of colors:
+> import seaborn as sns
+> sns.xkcd_rgb.keys()
+> sns.crayons.keys()
+
+webcolors: https://webcolors.readthedocs.io/en/latest/
+"""
 
 color_table = """Aero	#7CB9E8	49%	73%	91%	206°	70%	70%	47%	91%
 Aero blue	#C9FFE5	79%	100%	90%	151°	100%	89%	21%	100%
