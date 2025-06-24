@@ -4,13 +4,14 @@ Pycse is compatible with Python 3.6+.
 
 """
 
-__version__ = "2.2.1"
+__version__ = "2.3.5"
 
 # * Setup inline images for IPython
 # Make inline figures the default
 
 from .PYCSE import (
     polyfit,
+    polyval,
     regress,
     predict,
     nlinfit,
