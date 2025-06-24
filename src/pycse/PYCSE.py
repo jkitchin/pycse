@@ -6,7 +6,7 @@
 
 See http://kitchingroup.cheme.cmu.edu/pycse
 
-Copyright 2020, John Kitchin
+Copyright 2025, John Kitchin
 (see accompanying license files for details).
 """
 
@@ -49,6 +49,37 @@ def polyfit(x, y, deg, alpha=0.05, *args, **kwargs):
     # to the degree since there are N + 1 columns for a polynomial of order N
     X = np.vander(x, deg + 1)
     return regress(X, y, alpha, *args, **kwargs)
+
+
+def polyval(p, x, X, y, alpha=0.05, ub=1e-5, ef=1.05):
+    """Evaluate the polynomial p at x with prediction intervals.
+
+    Parameters
+    ----------
+    p: parameters from pycse.polyfit
+    x: array_like, shape (M,)
+      x-coordinates to evaluate the polynomial at.
+    X: array_like, shape (N,)
+      the original x-data that p was fitted from.
+    y: array-like, shape (N,)
+      the original y-data that p was fitted from.
+
+        alpha : confidence level, 95% = 0.05
+    ub : upper bound for smallest allowed Hessian eigenvalue
+    ef : eigenvalue factor for scaling Hessian
+
+    Returns
+    -------
+    y, yint, pred_se
+    y : the predicted values
+    yint: confidence interval
+    """
+    deg = len(p) - 1
+    _x = np.vander(x, deg + 1)  # to predict at
+
+    _X = np.vander(X, deg + 1)  # original data
+
+    return predict(_X, y, p, _x, alpha, ub, ef)
 
 
 def regress(A, y, alpha=0.05, *args, **kwargs):
