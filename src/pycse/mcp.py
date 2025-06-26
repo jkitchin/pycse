@@ -40,7 +40,10 @@ class Factor(BaseModel):
 
 class LatinSquareSpec(BaseModel):
     """Complete specification for a Latin square design.
-    It is a list of the factors and their levels."""
+
+    It is a list of the factors and their levels.
+
+    """
 
     factors: List[Factor] = Field(..., description="List of experimental factors")
 
@@ -60,11 +63,7 @@ def design_lhc(inputs: LatinSquareSpec):
     For example, you might specify:
 
     Create a Latin square where Red is 0, 0.5, 1, Green is 0.0, 0.5, 1, and Blue
-    is [0, 0.5, 1].
-
-    That should map to:
-
-    inputs = [("Red", (0, 0.5, 1)), ("Green", (0.0, 0.5, 1)), ("Blue", [0, 0.5, 1])]
+    is [0, 0.5, 1] and we measure 515nm at the output.
 
     This function returns the experiments that you should do.
     """
@@ -134,48 +133,27 @@ def analyze_lhc(lsr: LatinSquareResults):
     return ls.anova()
 
 
-@mcp.tool()
-def pycse_help():
-    """Get help about pycse functions.
-
-    This returns a dictionary of function names and docstrings.
-    """
-    func_dict = {}
-    for finder, modname, ispkg in pkgutil.walk_packages(
-        pycse.__path__, prefix=pycse.__name__ + "."
-    ):
-        try:
-            module = importlib.import_module(modname)
-        except Exception:
-            # skip modules that error on import
-            continue
-
-        for name, obj in inspect.getmembers(module, inspect.isfunction):
-            # only include functions actually defined in pycse
-            if obj.__module__.startswith("pycse"):
-                qualname = f"{obj.__module__}.{obj.__name__}"
-                func_dict[qualname] = inspect.getdoc(obj) or ""
-
-    s = ""
-    for fq, doc in func_dict.items():
-        s += f"{fq}:\n    {doc.splitlines()[0] if doc else '<no doc>'}\n"
-
-    return s
-
-
 class SurfaceResponseInputs(BaseModel):
+    """Class to represent the list of inputs for the surface response model."""
+
     inputs: List[str] = Field(..., description="List of input names")
 
 
 class SurfaceResponseOutputs(BaseModel):
+    """Class to represent the names of the output variables in the surface response model."""
+
     outputs: List[str] = Field(..., description="List of output names")
 
 
 class SurfaceResponseBound(BaseModel):
+    """Class to represent the bounds of a variable."""
+
     minmax: Tuple[float, float] = Field(..., description="Bounds (min, max) for one variable")
 
 
 class SurfaceResponseBounds(BaseModel):
+    """Class to represent all the bounds of the all the variables."""
+
     bounds: List[SurfaceResponseBound] = Field(..., description="List of bounds")
 
 
@@ -241,7 +219,7 @@ def analyze_sr(data: SurfaceResponseResults):
 
 
 @mcp.tool()
-def parity():
+def sr_parity():
     """Return a parity plot as an image.
     You must run the analyze_sr tool before this one.
     """
@@ -252,6 +230,41 @@ def parity():
     buf.seek(0)
     png_bytes = buf.getvalue()
     return Image(data=png_bytes, format="png")
+
+
+@mcp.tool()
+def pycse_help():
+    """Get help about pycse functions.
+
+    This returns a dictionary of function names and docstrings.
+    """
+    func_dict = {}
+    for finder, modname, ispkg in pkgutil.walk_packages(
+        pycse.__path__, prefix=pycse.__name__ + "."
+    ):
+        # This module seems to hang the function
+        if "sandbox" in modname:
+            continue
+        try:
+            print(finder, modname)
+            module = importlib.import_module(modname)
+        except Exception:
+            # skip modules that error on import
+            continue
+
+        for name, obj in inspect.getmembers(module, inspect.isfunction):
+            # only include functions actually defined in pycse
+            print(name)
+            if obj.__module__.startswith("pycse"):
+                qualname = f"{obj.__module__}.{obj.__name__}"
+                func_dict[qualname] = inspect.getdoc(obj) or ""
+
+    s = """The following list of functions are available. They are formatted
+    as function : docstring"""
+    for fq, doc in func_dict.items():
+        s += f"{fq} : {doc if doc else '<no doc>'}\n\n"
+
+    return s
 
 
 # Run / install / uninstall the server
