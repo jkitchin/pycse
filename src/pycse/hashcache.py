@@ -81,7 +81,6 @@ simply provide new functions for this.
 
 import inspect
 import joblib
-import orjson
 import os
 from pathlib import Path
 import pprint
@@ -325,6 +324,8 @@ class SqlCache(HashCache):
         DATA must be serializable to json.
 
         """
+        import orjson
+
         value = orjson.dumps(data, default=self.default, option=orjson.OPT_SERIALIZE_NUMPY)
         with self.con:
             self.con.execute("INSERT INTO cache(hash, value) VALUES(?, ?)", (hsh, value))
@@ -338,6 +339,8 @@ class SqlCache(HashCache):
         does not exist yet, sucess will be False, and data will be None.
 
         """
+        import orjson
+
         with self.con:
             cur = self.con.execute("SELECT value FROM cache WHERE hash = ?", (hsh,))
             value = cur.fetchone()
@@ -394,6 +397,8 @@ class SqlCache(HashCache):
     @staticmethod
     def load(hsh):
         """Load data from HSH."""
+        import orjson
+
         hc = SqlCache(lambda x: x)
         with hc.con:
             cur = hc.con.execute("SELECT value FROM cache WHERE hash = ?", (hsh,))
@@ -411,6 +416,8 @@ class JsonCache(HashCache):
 
     def __init__(self, function):
         """Initialize the class."""
+        import orjson
+
         self.function = function
 
         if not os.path.exists(self.cache / Path("Filestore.json")):
@@ -420,6 +427,8 @@ class JsonCache(HashCache):
 
     def dump_data(self, hsh, data):
         """Dump DATA into HSH."""
+        import orjson
+
         hshpath = self.get_hashpath(hsh).with_suffix(".json")
         os.makedirs(hshpath.parent, exist_ok=True)
 
@@ -428,6 +437,8 @@ class JsonCache(HashCache):
 
     def load_data(self, hsh):
         """Load data from hsh."""
+        import orjson
+
         hshpath = self.get_hashpath(hsh).with_suffix(".json")
         if os.path.exists(hshpath):
             with open(hshpath, "rb") as f:
@@ -446,6 +457,8 @@ class JsonCache(HashCache):
 
         Returns a hash string for future lookup.
         """
+        import orjson
+
         t0 = time.time()
         hsh = joblib.hash(kwargs)
 
@@ -476,6 +489,8 @@ class JsonCache(HashCache):
     @staticmethod
     def load(hsh):
         """Load data from HSH."""
+        import orjson
+
         hc = JsonCache(lambda x: x)
         hshpath = hc.get_hashpath(hsh).with_suffix(".json")
         if os.path.exists(hshpath):
