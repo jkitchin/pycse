@@ -144,7 +144,7 @@ class SurfaceResponse(Pipeline):
 
         plt.xlabel("True Value")
         plt.ylabel("Predicted Value")
-        plt.title(f"R2 = {self.score:1.3f}")
+        plt.title(f"R2 = {self.score():1.3f}")
 
         return plt.gcf()
 
