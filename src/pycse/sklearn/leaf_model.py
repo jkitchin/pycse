@@ -153,7 +153,7 @@ class LeafModelRegressor(DecisionTreeRegressor):
                 self.leaf_stats_[leaf]["residual_std"] = np.std(residuals)
             except Exception as e:
                 warnings.warn(
-                    f"Failed to fit leaf model for leaf {leaf}: {e}. " "Using mean prediction.",
+                    f"Failed to fit leaf model for leaf {leaf}: {e}. Using mean prediction.",
                     UserWarning,
                 )
                 # Fallback: store mean as a simple predictor
