@@ -162,6 +162,9 @@ class DPOSE(BaseEstimator, RegressorMixin):
         self.layers = layers
         self.n_ensemble = layers[-1]
         self.key = jax.random.PRNGKey(seed)
+        # Handle activation=None by defaulting to ReLU
+        if activation is None:
+            activation = nn.relu
         self.nn = _NN(layers, activation)
         self.loss_type = loss_type
         self.min_sigma = min_sigma

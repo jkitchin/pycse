@@ -73,15 +73,22 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
 
     def _feat(self, X):
         """Return neural network features for X."""
+        import warnings
+
         weights = self.nn.coefs_
         biases = self.nn.intercepts_
 
-        # Get the output of last hidden layer
-        feat = X @ weights[0] + biases[0]
-        ACTIVATIONS[self.nn.activation](feat)  # works in place
-        for i in range(1, len(weights) - 1):
-            feat = feat @ weights[i] + biases[i]
-            ACTIVATIONS[self.nn.activation](feat)
+        # Suppress numerical warnings during feature extraction
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+
+            # Get the output of last hidden layer
+            feat = X @ weights[0] + biases[0]
+            ACTIVATIONS[self.nn.activation](feat)  # works in place
+            for i in range(1, len(weights) - 1):
+                feat = feat @ weights[i] + biases[i]
+                ACTIVATIONS[self.nn.activation](feat)
+
         return feat
 
     def fit(self, X, y, val_X=None, val_y=None):
@@ -99,11 +106,17 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         Returns:
             self: Fitted model
         """
-        # Stage 1: Fit neural network
-        self.nn.fit(X, y)
+        import warnings
 
-        # Stage 2: Bayesian linear regression on features
-        self.br.fit(self._feat(X), y)
+        # Suppress numerical warnings during training
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+
+            # Stage 1: Fit neural network
+            self.nn.fit(X, y)
+
+            # Stage 2: Bayesian linear regression on features
+            self.br.fit(self._feat(X), y)
 
         # Stage 3: Post-hoc calibration if validation data provided
         if val_X is not None and val_y is not None:
@@ -163,7 +176,12 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
             predictions: Mean predictions, shape (n_samples,)
             uncertainties: Standard deviation (if return_std=True), shape (n_samples,)
         """
-        result = self.br.predict(self._feat(X), return_std=return_std)
+        import warnings
+
+        # Suppress numerical warnings during prediction
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            result = self.br.predict(self._feat(X), return_std=return_std)
 
         if return_std:
             y_pred, y_std = result
@@ -237,6 +255,12 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
 
         # 3. Data points (front)
         ax.plot(X_plot, y, "b.", label="data", alpha=0.7, markersize=8, zorder=4)
+
+        # Set y-axis limits: ±20% of data range
+        y_data_min = np.min(y)
+        y_data_max = np.max(y)
+        y_range = y_data_max - y_data_min
+        ax.set_ylim(y_data_min - 0.2 * y_range, y_data_max + 0.2 * y_range)
 
         ax.set_xlabel("X")
         ax.set_ylabel("y")

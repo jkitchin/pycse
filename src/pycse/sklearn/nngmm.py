@@ -83,15 +83,22 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         Returns:
             Features from last hidden layer, shape (n_samples, hidden_size)
         """
+        import warnings
+
         weights = self.nn.coefs_
         biases = self.nn.intercepts_
 
-        # Get the output of last hidden layer
-        feat = X @ weights[0] + biases[0]
-        ACTIVATIONS[self.nn.activation](feat)  # works in place
-        for i in range(1, len(weights) - 1):
-            feat = feat @ weights[i] + biases[i]
-            ACTIVATIONS[self.nn.activation](feat)
+        # Suppress numerical warnings during feature extraction
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+
+            # Get the output of last hidden layer
+            feat = X @ weights[0] + biases[0]
+            ACTIVATIONS[self.nn.activation](feat)  # works in place
+            for i in range(1, len(weights) - 1):
+                feat = feat @ weights[i] + biases[i]
+                ACTIVATIONS[self.nn.activation](feat)
+
         return feat
 
     def fit(self, X, y, val_X=None, val_y=None):
@@ -109,17 +116,24 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         Returns:
             self: Fitted model
         """
-        # Initial fit of neural network
-        self.nn.fit(X, y)
+        import warnings
 
-        # Create GMM from features and targets
-        self.gmm = GMM(n_components=self.n_components)
-        features = self._feat(X)
-        self.gmm.from_samples(np.hstack([features, y[:, None]]))
+        # Suppress ALL numerical warnings during training
+        # (including from sklearn and scipy internals)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-        # Post-hoc calibration on validation set
-        if val_X is not None and val_y is not None:
-            self._calibrate(val_X, val_y)
+            # Initial fit of neural network
+            self.nn.fit(X, y)
+
+            # Create GMM from features and targets
+            self.gmm = GMM(n_components=self.n_components)
+            features = self._feat(X)
+            self.gmm.from_samples(np.hstack([features, y[:, None]]))
+
+            # Post-hoc calibration on validation set
+            if val_X is not None and val_y is not None:
+                self._calibrate(val_X, val_y)
 
         return self
 
@@ -135,7 +149,8 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         """
         # Get predictions and uncertainties
         y_pred, y_std = self.predict(X, return_std=True)
-        errors = y - y_pred
+        # Flatten to avoid broadcasting issues (y_pred is 2D, y is 1D)
+        errors = np.asarray(y).ravel() - y_pred.ravel()
 
         # Check for collapsed uncertainties
         mean_std = np.mean(y_std)
@@ -179,29 +194,35 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             y_pred: Predicted values, shape (n_samples,)
             y_std: Standard deviations (if return_std=True), shape (n_samples,)
         """
-        # Get features from neural network
-        feat = self._feat(X)
+        import warnings
 
-        # GMM prediction indices (input dimensions)
-        inds = np.arange(0, feat.shape[1])
+        # Suppress ALL numerical warnings during prediction
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-        # Predict mean
-        y = self.gmm.predict(inds, feat)
+            # Get features from neural network
+            feat = self._feat(X)
 
-        if return_std:
-            se = []
-            for f in feat:
-                # Condition GMM on the features
-                g = self.gmm.condition(np.arange(len(f)), f)
-                # Sample from conditional distribution
-                samples = g.sample(self.n_samples)
-                # Compute standard deviation
-                se.append(np.std(samples))
+            # GMM prediction indices (input dimensions)
+            inds = np.arange(0, feat.shape[1])
 
-            # Apply calibration factor
-            return y, self.calibration_factor * np.array(se)
-        else:
-            return y
+            # Predict mean
+            y = self.gmm.predict(inds, feat)
+
+            if return_std:
+                se = []
+                for f in feat:
+                    # Condition GMM on the features
+                    g = self.gmm.condition(np.arange(len(f)), f)
+                    # Sample from conditional distribution
+                    samples = g.sample(self.n_samples)
+                    # Compute standard deviation
+                    se.append(np.std(samples))
+
+                # Apply calibration factor
+                return y, self.calibration_factor * np.array(se)
+            else:
+                return y
 
     def report(self):
         """Print model diagnostics and configuration."""
@@ -236,6 +257,10 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         # Get predictions
         y_pred, y_std = self.predict(X, return_std=True)
 
+        # Flatten predictions to 1D (GMM returns 2D arrays)
+        y_pred = y_pred.ravel()
+        y_std = y_std.ravel()
+
         # Handle multi-dimensional input (use first feature)
         if X.ndim > 1 and X.shape[1] > 1:
             X_plot = X[:, 0]
@@ -265,6 +290,12 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
 
         # Plot data points
         ax.scatter(X_plot, y, alpha=0.5, s=30, color="blue", label="Data", zorder=4)
+
+        # Set y-axis limits: ±20% of data range
+        y_data_min = np.min(y)
+        y_data_max = np.max(y)
+        y_range = y_data_max - y_data_min
+        ax.set_ylim(y_data_min - 0.2 * y_range, y_data_max + 0.2 * y_range)
 
         ax.set_xlabel("X" if X.ndim == 1 else "X[0]", fontsize=12)
         ax.set_ylabel("y", fontsize=12)
