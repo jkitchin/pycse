@@ -1,7 +1,7 @@
 """A supervisor decorator to rerun functions if they can be fixed.
 
 Functions can work but fail, or fail by raising exceptions. If you can examine
-the ouput of a function and algorithmically propose a new set of arguments to
+the output of a function and algorithmically propose a new set of arguments to
 fix it, then supervisor can help you automate this. The idea is to write check
 and exception functions for this, and then decorate your function to use them.
 
@@ -18,6 +18,12 @@ the end, I am not sure it is less heavyweight than custodian.
 
 import functools
 import inspect
+
+
+class TooManyErrorsException(Exception):
+    """Raised when max_errors is reached during supervised execution."""
+
+    pass
 
 
 def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
@@ -45,11 +51,12 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
 
             while run and (nerrors < max_errors):
                 try:
-                    result = func(*run[0], **run[1])
+                    args, kwargs = run
+                    result = func(*args, **kwargs)
+                    run = None  # Reset, will be set if checker proposes a fix
                     for checker in check_funcs:
                         # run is None if everything checks out
                         # or run is (args, kwargs) if it needs to be run again
-                        args, kwargs = run
                         run = checker(args, kwargs, result)
                         if run:
                             if verbose:
@@ -69,7 +76,7 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
                     # in run
                 except Exception as e:
                     if not exception_funcs:
-                        raise (e)  # no fixer funcs defined, so we re-raise
+                        raise e  # no fixer funcs defined, so we re-raise
 
                     for exc in exception_funcs:
                         run = exc(run[0], run[1], e)
@@ -82,14 +89,14 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
 
                     if run is None:
                         # no new thing to try, reraise
-                        raise (e)
+                        raise e
 
                     # if run is not None, this goes back to the while loop with
                     # new params in run
 
             # after the loop, we should raise if we got too many errors
             if nerrors == max_errors:
-                raise Exception("Too many errors found")
+                raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
 
         return wrapper
 
@@ -105,13 +112,18 @@ def check_result(func):
     # This code defines a wrapper for a callable class, or a function. It feels
     # weird, but I could not find a way to inspect the func to see if it is a
     # class method any other way. inspect.ismethod did not work here.
-    if func.__name__ == "__call__":
+    # Check if this is a callable instance (has __call__ but isn't a function)
+    is_callable_instance = (
+        hasattr(func, "__call__") and not inspect.isfunction(func) and not inspect.ismethod(func)
+    )
 
-        def wrapper(self, arguments, result):
+    if is_callable_instance:
+
+        def wrapper(arguments, result):
             if isinstance(result, Exception):
                 return None
             else:
-                return func(self, arguments, result)
+                return func(arguments, result)
 
     else:
 
@@ -126,11 +138,17 @@ def check_result(func):
 
 def check_exception(func):
     """Decorator for functions to fix exceptions."""
-    if func.__name__ == "__call__":
+    is_callable_instance = (
+        hasattr(func, "__call__") and not inspect.isfunction(func) and not inspect.ismethod(func)
+    )
 
-        def wrapper(self, arguments, result):
+    if is_callable_instance:
+
+        def wrapper(arguments, result):
             if isinstance(result, Exception):
-                return func(self, arguments, result)
+                return func(arguments, result)
+            else:
+                return None
 
     else:
 
@@ -174,9 +192,10 @@ def manager(checkers=(), max_errors=5, verbose=False):
             while runargs and (nerrors < max_errors):
                 try:
                     result = func(**runargs)
+                    rerun_args = None
                     for checker in checkers:
-                        # run is None if everything checks out
-                        # or run is (args, kwargs) if it needs to be run again
+                        # rerun_args is None if everything checks out
+                        # or rerun_args contains new args if it needs to be run again
                         rerun_args = checker(runargs, result)
                         if rerun_args:
                             runargs = rerun_args
@@ -189,14 +208,15 @@ def manager(checkers=(), max_errors=5, verbose=False):
                             # to choose what to fix if there is more than one
                             # error
                             break
-                    # After all the checks, run is None if they all passed, that
-                    # means we should return
+                    # After all the checks, rerun_args is None if they all passed,
+                    # that means we should return
                     if not checkers or rerun_args is None:
                         return result
                     # Now should be returning to the while loop with new params
-                    # in run
+                    # in runargs
 
                 except Exception as e:
+                    rerun_args = None
                     for checker in checkers:
                         rerun_args = checker(runargs, e)
                         if rerun_args:
@@ -210,14 +230,14 @@ def manager(checkers=(), max_errors=5, verbose=False):
                     if rerun_args is None:
                         # no new arguments to rerun with were found
                         # so nothing can be fixed.
-                        raise (e)
+                        raise e
 
                     # if runargs is not None, this goes back to the while loop
-                    # with new params in run
+                    # with new params in runargs
 
             # after the loop, we should raise if we got too many errors
             if nerrors == max_errors:
-                raise Exception("Too many errors found")
+                raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
 
         return wrapper
 
