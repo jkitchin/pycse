@@ -98,9 +98,9 @@ def assert_confidence_interval_valid(ci, point_estimate):
     """
     lower, upper = ci
     assert lower < upper, f"CI lower ({lower}) >= upper ({upper})"
-    assert (
-        lower <= point_estimate <= upper
-    ), f"Point estimate {point_estimate} not in CI [{lower}, {upper}]"
+    assert lower <= point_estimate <= upper, (
+        f"Point estimate {point_estimate} not in CI [{lower}, {upper}]"
+    )
 
 
 def assert_positive(arr):
