@@ -2,17 +2,45 @@ name: Run pycse tests
 
 on:
   push:
-
+  pull_request:
 
 jobs:
-  build:
-    name: pytest
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  test:
+    name: Test with Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12", "3.13"]
+
     steps:
-      - uses: actions/checkout@v3
-      - run: |
-          pip install numpy scipy matplotlib pandas IPython ipykernel nbconvert python-coveralls pytest pytest-cov coverage numdifftools joblib orjson pycse
-          pytest src
-          coverage run -m pytest src
-          coverage report -m --include=src/pycse/*
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install package with dependencies
+        run: |
+          uv pip install --system -e ".[test]"
+
+      - name: Run tests with pytest
+        run: |
+          pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
