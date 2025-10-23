@@ -27,7 +27,6 @@ import io
 
 from pycse.sklearn.lhc import LatinSquare
 from pycse.sklearn.surface_response import SurfaceResponse
-from pycse.sklearn.dpose import DPOSE
 
 import matplotlib
 
@@ -74,6 +73,7 @@ def design_lhc(inputs: LatinSquareSpec) -> List[Dict[str, Any]]:
     This function returns the experiments that you should do as a pandas DataFrame.
     """
     # I think this is a little clunky for saving state
+    global STATE
 
     factors = inputs.factors
 
@@ -120,6 +120,7 @@ def analyze_lhc(lsr: LatinSquareResults) -> List[Dict[str, Any]]:
     Returns an analysis of variance (ANOVA).
 
     """
+    global STATE
 
     df = pd.DataFrame(
         [(result.experiment, result.result) for result in lsr.results],
@@ -166,9 +167,7 @@ class SurfaceResponseBounds(BaseModel):
 
 @mcp.tool()
 def design_sr(
-    inputs: SurfaceResponseInputs,
-    outputs: SurfaceResponseOutputs,
-    bounds: SurfaceResponseBounds,
+    inputs: SurfaceResponseInputs, outputs: SurfaceResponseOutputs, bounds: SurfaceResponseBounds
 ) -> List[Dict[str, Any]]:
     """Design a surface response design of experiments.
 
@@ -179,6 +178,7 @@ def design_sr(
 
 
     """
+    global STATE
 
     b = [list(b.minmax) for b in bounds.bounds]
     sr = SurfaceResponse(inputs=inputs.inputs, outputs=outputs.outputs, bounds=b)
@@ -218,6 +218,7 @@ def analyze_sr(data: SurfaceResponseResults) -> str:
 
     Returns a table of ANOVA results.
     """
+    global STATE
     results = [[d.result] for d in data.results]
 
     STATE["sr"].set_output(results)
@@ -231,6 +232,7 @@ def sr_parity() -> Image:
 
     You must run the analyze_sr tool before this one.
     """
+    global STATE
     fig = STATE["sr"].parity()
     buf = io.BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight")
@@ -294,7 +296,7 @@ def pycse_help() -> str:
 
 
 @mcp.tool()
-def get_pydoc_help(func: str) -> str:
+def pydoc(func: str) -> str:
     """Use pydoc to get help documentation on func.
 
     Args:
@@ -385,7 +387,7 @@ def get_function_source(qualified_name: str) -> Tuple[str, Optional[str]]:
         # Navigate through nested attributes if needed
         # Handle cases like 'numpy.linalg.solve' where we need to go deeper
         current_obj = module
-        for part in parts[len(module_path.split(".")) : -1]:  # noqa:E203
+        for part in parts[len(module_path.split(".")) : -1]:
             if hasattr(current_obj, part):
                 current_obj = getattr(current_obj, part)
             else:
@@ -449,7 +451,7 @@ def get_function_info(qualified_name: str) -> Tuple[Optional[dict], Optional[str
 
         # Navigate to the function
         current_obj = module
-        for part in parts[len(module_path.split(".")) : -1]:  # noqa:E203
+        for part in parts[len(module_path.split(".")) : -1]:
             if hasattr(current_obj, part):
                 current_obj = getattr(current_obj, part)
             else:
@@ -579,8 +581,7 @@ def search_with_apropos(
                     if not matches(search_text):
                         continue
 
-                    attr_desc = attr_doc.split(".")[0] if attr_doc else "No description"
-                    desc = f"{full_name}: {attr_desc}".strip()
+                    desc = f"{full_name}: {attr_doc.split('.')[0] if attr_doc else 'No description'}".strip()
 
                     if callable(attr):
                         if isinstance(attr, type):
@@ -605,137 +606,6 @@ def search_with_apropos(
         results.methods = None
 
     return results
-
-
-# * DPOSE - Direct Propagation of Shallow Ensembles
-
-
-class DPOSESpec(BaseModel):
-    """Specification for a DPOSE model."""
-
-    layers: Tuple[int, int, int] = Field(
-        ..., description="Network architecture: (input_dim, hidden_dim, n_ensemble)"
-    )
-    loss_type: str = Field(default="crps", description="Loss type: 'crps', 'nll', or 'mse'")
-    activation: str = Field(
-        default="tanh", description="Activation function: 'tanh', 'relu', 'softplus', 'elu'"
-    )
-    optimizer: str = Field(
-        default="bfgs", description="Optimizer: 'bfgs', 'lbfgs', 'adam', 'sgd', 'muon'"
-    )
-    maxiter: int = Field(default=500, description="Maximum training iterations")
-    seed: int = Field(default=42, description="Random seed for reproducibility")
-
-
-@mcp.tool()
-def dpose_info() -> str:
-    """Get information about DPOSE and usage examples.
-
-    Returns:
-        str: Information about DPOSE, its features, and example usage
-    """
-    info = """
-DPOSE (Direct Propagation of Shallow Ensembles)
-================================================
-
-A neural network ensemble method for uncertainty quantification.
-
-Key Features:
-- Per-sample uncertainty estimates (heteroscedastic)
-- Shallow ensemble architecture (only last layer differs)
-- CRPS or NLL loss for calibrated uncertainties
-- Uncertainty propagation through transformations
-- Handles gaps and extrapolation
-
-Architecture:
-- Input layer: matches data dimension
-- Hidden layer: typically 15-50 units
-- Ensemble: typically 32 members
-
-Example Workflow:
-1. Prepare data: X_train (2D), y_train (1D)
-2. Train model: use fit() or create via Python
-3. Get predictions: predict() returns mean
-4. Get uncertainty: predict() with return_std=True
-
-Recommended Settings:
-- layers: (n_features, 50, 32) for robust fitting
-- loss_type: 'crps' (default, robust)
-- activation: 'tanh' (smooth functions)
-- optimizer: 'bfgs' (default, fast for small data)
-- maxiter: 500 (adjust based on convergence)
-
-Reference:
-Kellner, M., & Ceriotti, M. (2024). Uncertainty quantification
-by direct propagation of shallow ensembles.
-Machine Learning: Science and Technology, 5(3), 035006.
-"""
-    return info
-
-
-@mcp.tool()
-def dpose_example_code() -> str:
-    """Get example Python code for using DPOSE.
-
-    Returns:
-        str: Complete example code showing how to use DPOSE
-    """
-    # This uses DPOSE to ensure it's not an unused import
-    example = f"""
-# Example: Using DPOSE for Uncertainty Quantification
-# ====================================================
-
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from pycse.sklearn.dpose import {DPOSE.__name__}
-
-# 1. Generate example data with heteroscedastic noise
-np.random.seed(42)
-x = np.linspace(0, 1, 200)[:, None]
-noise = 0.01 + 0.15 * x.ravel()  # Increasing noise
-y = 2 * x.ravel() + noise * np.random.randn(200)
-
-# 2. Split data
-x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.2, random_state=42
-)
-
-# 3. Create and train DPOSE model with StandardScaler
-model = Pipeline([
-    ('scaler', StandardScaler()),
-    ('dpose', DPOSE(
-        layers=(1, 50, 32),  # (input, hidden, ensemble)
-        loss_type='crps',    # CRPS loss (recommended)
-        activation='tanh',   # Tanh activation
-        maxiter=500,         # Training iterations
-        seed=42
-    ))
-])
-
-# 4. Fit the model
-model.fit(x_train, y_train)
-
-# 5. Make predictions with uncertainty
-x_test_scaled = model.named_steps['scaler'].transform(x_test)
-y_pred, y_std = model.named_steps['dpose'].predict(
-    x_test_scaled,
-    return_std=True
-)
-
-# 6. Evaluate
-mae = np.abs(y_test - model.predict(x_test)).mean()
-print(f"MAE: {{mae:.6f}}")
-print(f"Uncertainty range: [{{y_std.min():.4f}}, {{y_std.max():.4f}}]")
-
-# 7. For uncertainty propagation through transformations
-ensemble = model.named_steps['dpose'].predict_ensemble(x_test_scaled)
-z_ensemble = np.exp(ensemble)  # Apply transformation
-z_mean = z_ensemble.mean(axis=1)
-z_std = z_ensemble.std(axis=1)
-"""
-    return example
 
 
 # * Run / install / uninstall the server
