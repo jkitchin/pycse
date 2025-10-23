@@ -102,8 +102,8 @@ class TestToLisp:
         with pytest.raises(TypeError, match="Cannot convert"):
             to_lisp(object())
 
-    def test_object_with_lisp_property(self):
-        """Test that objects with .lisp property use it."""
+    def test_custom_lisp_objects(self):
+        """Test that custom Lisp objects convert correctly with to_lisp()."""
         sym = Symbol("lambda")
         assert to_lisp(sym) == "lambda"
 
@@ -114,9 +114,9 @@ class TestLWrapper:
 
     def test_l_wrapper_basic(self):
         """Test L wrapper basic functionality."""
-        assert L([1, 2, 3]).lisp == "(1 2 3)"
-        assert L("hello").lisp == '"hello"'
-        assert L(42).lisp == "42"
+        assert str(L([1, 2, 3])) == "(1 2 3)"
+        assert str(L("hello")) == '"hello"'
+        assert str(L(42)) == "42"
 
     def test_l_wrapper_str(self):
         """Test L wrapper __str__ method."""
@@ -128,11 +128,17 @@ class TestLWrapper:
 
     def test_l_wrapper_dict(self):
         """Test L wrapper with dictionary."""
-        assert L({"a": 6}).lisp == "(:a 6)"
+        assert str(L({"a": 6})) == "(:a 6)"
 
     def test_l_wrapper_nested(self):
         """Test L wrapper with nested structures."""
-        assert L([[1, 2], [3, 4]]).lisp == "((1 2) (3 4))"
+        assert str(L([[1, 2], [3, 4]])) == "((1 2) (3 4))"
+
+    def test_l_wrapper_add(self):
+        """Test L wrapper __add__ method for concatenation."""
+        assert L([1, 2]) + Symbol("x") == "(1 2) x"
+        assert L([1, 2]) + L([3, 4]) == "(1 2) (3 4)"
+        assert L("test") + Symbol("foo") == '"test" foo'
 
 
 # Tests for Symbol class
@@ -141,9 +147,9 @@ class TestSymbol:
 
     def test_symbol_basic(self):
         """Test Symbol basic functionality."""
-        assert Symbol("lambda").lisp == "lambda"
-        assert Symbol("defun").lisp == "defun"
-        assert Symbol("setf").lisp == "setf"
+        assert str(Symbol("lambda")) == "lambda"
+        assert str(Symbol("defun")) == "defun"
+        assert str(Symbol("setf")) == "setf"
 
     def test_symbol_str(self):
         """Test Symbol __str__ method."""
@@ -170,12 +176,12 @@ class TestQuote:
 
     def test_quote_string(self):
         """Test Quote with string."""
-        assert Quote("symbol").lisp == "'symbol"
-        assert Quote("setf").lisp == "'setf"
+        assert str(Quote("symbol")) == "'symbol"
+        assert str(Quote("setf")) == "'setf"
 
     def test_quote_list(self):
         """Test Quote with list."""
-        assert Quote([1, 2, 3]).lisp == "'(1 2 3)"
+        assert str(Quote([1, 2, 3])) == "'(1 2 3)"
 
     def test_quote_str(self):
         """Test Quote __str__ method."""
@@ -192,12 +198,12 @@ class TestSharpQuote:
 
     def test_sharpquote_string(self):
         """Test SharpQuote with string."""
-        assert SharpQuote("lambda").lisp == "#'lambda"
-        assert SharpQuote("setf").lisp == "#'setf"
+        assert str(SharpQuote("lambda")) == "#'lambda"
+        assert str(SharpQuote("setf")) == "#'setf"
 
     def test_sharpquote_list(self):
         """Test SharpQuote with list."""
-        assert SharpQuote([1, 2]).lisp == "#'(1 2)"
+        assert str(SharpQuote([1, 2])) == "#'(1 2)"
 
     def test_sharpquote_str(self):
         """Test SharpQuote __str__ method."""
@@ -214,9 +220,9 @@ class TestCons:
 
     def test_cons_basic(self):
         """Test Cons basic functionality."""
-        assert Cons("a", "b").lisp == '("a" . "b")'
-        assert Cons(1, 2).lisp == "(1 . 2)"
-        assert Cons("a", 3).lisp == '("a" . 3)'
+        assert str(Cons("a", "b")) == '("a" . "b")'
+        assert str(Cons(1, 2)) == "(1 . 2)"
+        assert str(Cons("a", 3)) == '("a" . 3)'
 
     def test_cons_str(self):
         """Test Cons __str__ method."""
@@ -228,7 +234,7 @@ class TestCons:
 
     def test_cons_nested(self):
         """Test Cons with nested structures."""
-        assert Cons([1, 2], [3, 4]).lisp == "((1 2) . (3 4))"
+        assert str(Cons([1, 2], [3, 4])) == "((1 2) . (3 4))"
 
 
 # Tests for Alist class
@@ -237,10 +243,10 @@ class TestAlist:
 
     def test_alist_basic(self):
         """Test Alist basic functionality."""
-        result = Alist(["A", 2, "B", 5]).lisp
+        result = str(Alist(["A", 2, "B", 5]))
         assert result == '(("A" . 2) ("B" . 5))'
 
-        result = Alist(["a", 1, "b", 2]).lisp
+        result = str(Alist(["a", 1, "b", 2]))
         assert result == '(("a" . 1) ("b" . 2))'
 
     def test_alist_str(self):
@@ -259,7 +265,7 @@ class TestAlist:
 
     def test_alist_empty(self):
         """Test Alist with empty list."""
-        assert Alist([]).lisp == "()"
+        assert str(Alist([])) == "()"
 
 
 # Tests for Vector class
@@ -268,12 +274,12 @@ class TestVector:
 
     def test_vector_basic(self):
         """Test Vector basic functionality."""
-        assert Vector([1, 2, 3]).lisp == "[1 2 3]"
-        assert Vector(["a", 1, 3]).lisp == '["a" 1 3]'
+        assert str(Vector([1, 2, 3])) == "[1 2 3]"
+        assert str(Vector(["a", 1, 3])) == '["a" 1 3]'
 
     def test_vector_empty(self):
         """Test Vector with empty list."""
-        assert Vector([]).lisp == "[]"
+        assert str(Vector([])) == "[]"
 
     def test_vector_str(self):
         """Test Vector __str__ method."""
@@ -285,7 +291,7 @@ class TestVector:
 
     def test_vector_mixed_types(self):
         """Test Vector with mixed types."""
-        assert Vector([1, "a", 3.14]).lisp == '[1 "a" 3.14]'
+        assert str(Vector([1, "a", 3.14])) == '[1 "a" 3.14]'
 
 
 # Tests for Backquote class
@@ -294,8 +300,8 @@ class TestBackquote:
 
     def test_backquote_basic(self):
         """Test Backquote basic functionality."""
-        assert Backquote([1, 2, 3]).lisp == "`(1 2 3)"
-        assert Backquote([Symbol("a"), 1]).lisp == "`(a 1)"
+        assert str(Backquote([1, 2, 3])) == "`(1 2 3)"
+        assert str(Backquote([Symbol("a"), 1])) == "`(a 1)"
 
     def test_backquote_str(self):
         """Test Backquote __str__ method."""
@@ -312,8 +318,8 @@ class TestComma:
 
     def test_comma_basic(self):
         """Test Comma basic functionality."""
-        assert Comma(Symbol("x")).lisp == ",x"
-        assert Comma(Symbol("setf")).lisp == ",setf"
+        assert str(Comma(Symbol("x"))) == ",x"
+        assert str(Comma(Symbol("setf"))) == ",setf"
 
     def test_comma_str(self):
         """Test Comma __str__ method."""
@@ -331,8 +337,8 @@ class TestSplice:
 
     def test_splice_basic(self):
         """Test Splice basic functionality."""
-        assert Splice([1, 2, 3]).lisp == ",@(1 2 3)"
-        assert Splice([1, 3]).lisp == ",@(1 3)"
+        assert str(Splice([1, 2, 3])) == ",@(1 2 3)"
+        assert str(Splice([1, 3])) == ",@(1 3)"
 
     def test_splice_str(self):
         """Test Splice __str__ method."""
@@ -349,12 +355,12 @@ class TestComment:
 
     def test_comment_basic(self):
         """Test Comment basic functionality."""
-        assert Comment("This is a comment").lisp == "; This is a comment"
-        assert Comment("test").lisp == "; test"
+        assert str(Comment("This is a comment")) == "; This is a comment"
+        assert str(Comment("test")) == "; test"
 
     def test_comment_with_symbol(self):
         """Test Comment with Symbol."""
-        assert Comment(Symbol("test")).lisp == "; test"
+        assert str(Comment(Symbol("test"))) == "; test"
 
     def test_comment_str(self):
         """Test Comment __str__ method."""
@@ -383,7 +389,7 @@ class TestIntegration:
 
     def test_quoted_list(self):
         """Test quoted list."""
-        assert Quote([1, 2, 3]).lisp == "'(1 2 3)"
+        assert str(Quote([1, 2, 3])) == "'(1 2 3)"
 
     def test_backquoted_with_comma(self):
         """Test backquote with comma (unquote)."""
@@ -402,10 +408,30 @@ class TestIntegration:
 
     def test_l_wrapper_with_symbols(self):
         """Test L wrapper with Symbol objects."""
-        result = L([Symbol("lambda"), [Symbol("x")], Symbol("x")]).lisp
+        result = str(L([Symbol("lambda"), [Symbol("x")], Symbol("x")]))
         assert result == "(lambda (x) x)"
 
     def test_mixed_wrapper_and_helpers(self):
         """Test mixing L wrapper with helper classes."""
-        result = L([Quote("symbol"), Vector([1, 2, 3])]).lisp
+        result = str(L([Quote("symbol"), Vector([1, 2, 3])]))
         assert result == "('symbol [1 2 3])"
+
+    def test_add_operations(self):
+        """Test __add__() method across different Lisp classes."""
+        # Test Symbol + Symbol
+        assert Symbol("defun") + Symbol("square") == "defun square"
+
+        # Test Quote + other
+        assert Quote("x") + Symbol("y") == "'x y"
+
+        # Test Cons + other
+        assert Cons("a", "b") + Cons("c", "d") == '("a" . "b") ("c" . "d")'
+
+        # Test Vector + other
+        assert Vector([1, 2]) + Vector([3, 4]) == "[1 2] [3 4]"
+
+        # Test L + Symbol
+        assert L([Symbol("x")]) + Symbol("y") == "(x) y"
+
+        # Test building complex expressions with explicit concatenation
+        assert Symbol("defun") + L([Symbol("x"), Symbol("y")]) == "defun (x y)"
