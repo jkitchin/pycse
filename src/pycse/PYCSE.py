@@ -393,8 +393,8 @@ def nlpredict(X, y, model, popt, xnew, loss=None, alpha=0.05, ub=1e-5, ef=1.05):
         np.array(
             [
                 # https://online.stat.psu.edu/stat501/lesson/7/7.2
-                ypred + tval * (sigmas**2 + mse) ** 0.5,
-                ypred - tval * (sigmas**2 + mse) ** 0.5,
+                ypred - tval * (sigmas**2 + mse) ** 0.5,  # lower bound
+                ypred + tval * (sigmas**2 + mse) ** 0.5,  # upper bound
             ]
         ).T,
         sigmas,

@@ -38,7 +38,7 @@ pars, pint, se_regress = regress(X, y, alpha=0.05)
 # Compare with scipy.stats.linregress
 slope, intercept, r_value, p_value, se_slope_scipy = stats.linregress(x, y)
 
-print(f"\nParameter estimates:")
+print("\nParameter estimates:")
 print(f"  regress() slope:     {pars[1]:.6f} ± {se_regress[1]:.6f}")
 print(f"  scipy slope:         {slope:.6f} ± {se_slope_scipy:.6f}")
 print(f"  Match: {np.allclose(se_regress[1], se_slope_scipy)}")
@@ -52,7 +52,7 @@ tval_correct = stats.t.ppf(1.0 - 0.05 / 2.0, dof_correct)
 CI_width = pint[1][1] - pint[1][0]
 CI_width_expected = 2 * tval_correct * se_regress[1]
 
-print(f"\nConfidence interval check:")
+print("\nConfidence interval check:")
 print(f"  CI width (slope):    {CI_width:.6f}")
 print(f"  Expected (n-k DOF):  {CI_width_expected:.6f}")
 print(f"  Match: {np.allclose(CI_width, CI_width_expected)}")
@@ -119,18 +119,18 @@ total_se_manual = np.sqrt(total_var_manual)
 tval = stats.t.ppf(1.0 - 0.05 / 2.0, dof)
 interval_width_manual = 2 * tval * total_se_manual
 
-print(f"\nNoise variance (σ²):")
+print("\nNoise variance (σ²):")
 print(f"  Manual: {mse_manual:.6f}")
 
-print(f"\nParameter uncertainty:")
+print("\nParameter uncertainty:")
 print(f"  Manual SE(Xβ̂): {param_se_manual:.6f}")
 
-print(f"\nTotal prediction SE:")
+print("\nTotal prediction SE:")
 print(f"  Manual sqrt(σ² + SE(Xβ̂)²): {total_se_manual:.6f}")
 print(f"  predict() returns:          {pred_se_pred[0]:.6f}")
 print(f"  Match: {np.allclose(total_se_manual, pred_se_pred[0])}")
 
-print(f"\nInterval width:")
+print("\nInterval width:")
 print(f"  Manual:    {interval_width_manual:.6f}")
 print(f"  predict(): {yint_pred[1, 0] - yint_pred[0, 0]:.6f}")
 print(f"  Match: {np.allclose(interval_width_manual, yint_pred[1, 0] - yint_pred[0, 0])}")
@@ -171,7 +171,7 @@ print(f"\nParameter SE at x = {x_test}:")
 print(f"  From regress() covariance: {param_se_from_regress:.6f}")
 print(f"  From predict() (extracted): {param_se_from_predict:.6f}")
 print(f"  Match: {np.allclose(param_se_from_regress, param_se_from_predict)}")
-print(f"\n✓ predict() now uses same covariance as regress(): σ² × (X'X)⁻¹")
+print("\n✓ predict() now uses same covariance as regress(): σ² × (X'X)⁻¹")
 
 # ============================================================================
 # TEST 5: Coverage simulation
@@ -206,14 +206,14 @@ for _ in range(n_trials):
 coverage = coverage_count / n_trials
 
 print(f"\nEmpirical coverage at x = {x_test}:")
-print(f"  Nominal:   95.0%")
+print("  Nominal:   95.0%")
 print(f"  Empirical: {coverage * 100:.1f}%")
-print(f"  Expected range: [93%, 97%] (for 1000 trials)")
+print("  Expected range: [93%, 97%] (for 1000 trials)")
 
 if 0.93 <= coverage <= 0.97:
-    print(f"  ✓ Coverage is within expected range")
+    print("  ✓ Coverage is within expected range")
 else:
-    print(f"  ⚠ Coverage is outside expected range")
+    print("  ⚠ Coverage is outside expected range")
 
 # ============================================================================
 # SUMMARY

@@ -22,7 +22,7 @@ dependencies = ["numpy",
 "requests",
 "orjson",
 "pyDOE3",
-"flake8-pyproject",
+"ruff",
 "jax>=0.4.0",
 "jaxlib>=0.4.0",
 "jaxopt>=0.8.0",
@@ -43,33 +43,53 @@ test = [
   "coverage>=7.0",
 ]
 
-[tool.flake8]
-max-line-length = 80
-per-file-ignores = [
-  "src/pycse/__init__.py:F401, F403, E402",
-  "src/pycse/tests/test_*:D103",
-  "src/pycse/cli.py:E722",
-  "src/pycse/mcp.py:E501",
-  "src/pycse/sklearn/dpose.py:E501",
-  "src/pycse/sklearn/nnbr.py:E501",
-  "src/pycse/sklearn/nngmm.py:E501",
-  "src/pycse/sklearn/examples/*.py:E501, F541, F401, E402",
-  "docker/jupyter_nbconvert_config.py:F821",
-]
+[tool.ruff]
+line-length = 80
+target-version = "py312"
 
-[tool.pylint.'MESSAGES CONTROL']
-disable = [
-  "invalid-name",
-  "too-few-public-methods",
-  "keyword-arg-before-vararg",
-  "unused-argument",
-]
+[tool.ruff.lint]
+# Enable pycodestyle (E, W) and Pyflakes (F) - matching flake8 defaults
+select = ["E", "F", "W"]
+ignore = ["E501"]  # Ignore line-too-long
+
+[tool.ruff.lint.per-file-ignores]
+"src/pycse/__init__.py" = ["F401", "F403", "E402"]
+"src/pycse/cli.py" = ["E722"]
+"src/pycse/sklearn/examples/*.py" = ["F541", "F401", "E402"]
+"docker/jupyter_nbconvert_config.py" = ["F821"]
 
 [tool.pytest.ini_options]
 # add src/ to PYTHONPATH
 pythonpath = ["src"]
 # where your tests live
 testpaths  = ["src/pycse/tests"]
+
+[tool.coverage.run]
+source = ["src/pycse"]
+omit = [
+    "*/tests/*",
+    "*/examples/*",
+    "*/__init__.py",
+    "*/lisp.py",  # Module is broken, tests disabled
+]
+
+[tool.coverage.report]
+# Exclude lines from coverage
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if typing.TYPE_CHECKING:",
+]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"
 
 # (shell-command "uv build")
 # (shell-command "uv publish")
