@@ -34,6 +34,15 @@ jobs:
         run: |
           uv pip install --system -e ".[test]"
 
+      - name: Run ruff format check
+        run: |
+          uv pip install --system ruff
+          ruff format --check --line-length 100 src/pycse
+
+      - name: Run ruff linter
+        run: |
+          ruff check --line-length 100 src/pycse
+
       - name: Run tests with pytest
         run: |
           pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml
