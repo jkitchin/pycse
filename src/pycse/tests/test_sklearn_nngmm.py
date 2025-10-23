@@ -479,9 +479,9 @@ class TestNNGMMComparison:
 
         # Due to sampling, uncertainties might vary
         # But should be in same order of magnitude
-        assert np.allclose(
-            np.mean(y_std1), np.mean(y_std2), rtol=0.5
-        ), "Uncertainty estimates should be reasonably consistent"
+        assert np.allclose(np.mean(y_std1), np.mean(y_std2), rtol=0.5), (
+            "Uncertainty estimates should be reasonably consistent"
+        )
 
 
 @pytest.mark.slow
