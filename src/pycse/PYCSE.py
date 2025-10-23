@@ -164,7 +164,10 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
 
         se = np.sqrt(dC)  # standard error
 
-        sT = t.ppf(1.0 - alpha / 2.0, n - k - 1)  # student T multiplier
+        # CORRECTED: Use n - k degrees of freedom (not n - k - 1)
+        # For linear regression with n observations and k parameters,
+        # the residual has exactly n - k degrees of freedom.
+        sT = t.ppf(1.0 - alpha / 2.0, n - k)  # student T multiplier
         CI = sT * se
 
         # bint is a little tricky, and depends on the shape of the output.
@@ -203,39 +206,58 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     errs = y - X @ pars
 
     sse = np.sum(errs**2, axis=0)
-    mse = sse / n
+
+    # CORRECTED: Use unbiased variance estimator with correct DOF
+    # mse represents σ², the noise variance
+    mse = sse / dof  # Was: sse / n
 
     gprime = XX
-    hat = 2 * X.T @ X  # hessian
+
+    # CORRECTED: Removed factor of 2 for covariance calculation
+    # Even though np.linalg.lstsq minimizes SSE (with Hessian H = 2X'X),
+    # the Fisher Information is I = H / (2σ²) = 2X'X / (2σ²) = X'X / σ²
+    # Therefore: Cov(β) = I⁻¹ = σ² × (X'X)⁻¹ (factor of 2 cancels)
+    # This matches what regress() correctly uses (line 142)
+    hat = X.T @ X  # Was: 2 * X.T @ X
     eps = max(ub, ef * np.linalg.eigvals(hat).min())
 
-    # Scaled Fisher information
+    # Parameter covariance matrix
     I_fisher = np.linalg.pinv(hat + np.eye(npars) * eps)
+
+    # CORRECTED: Compute parameter uncertainty and total prediction uncertainty separately
+    # Parameter uncertainty: SE(X̂β) = sqrt(σ² × x'(X'X)⁻¹x)
+    # Total prediction uncertainty: SE(ŷ - y_new) = sqrt(σ² + SE(X̂β)²)
+    # The old formula used (1 + 1/n)^0.5 approximation, which only holds at the sample mean
 
     try:
         # This happens if mse is iterable
-        pred_se = np.sqrt([_mse * np.diag(gprime @ I_fisher @ gprime.T) for _mse in mse]).T
-        # This happens if mse is a single number
+        param_se = np.sqrt([_mse * np.diag(gprime @ I_fisher @ gprime.T) for _mse in mse]).T
+        # Total prediction SE: sqrt(noise_variance + parameter_variance)
+        total_se = np.sqrt([_mse + _param_se**2 for _mse, _param_se in zip(mse, param_se.T)]).T
     except TypeError:
+        # This happens if mse is a single number
         # you need at least 1d to get a diagonal. This line is needed because
         # there is a case where there is one prediction where this product leads
         # to a scalar quantity and we need to upgrade it to 1d to avoid an
         # error.
         gig = np.atleast_1d(gprime @ I_fisher @ gprime.T)
-        pred_se = np.sqrt(mse * np.diag(gig)).T
+        param_se = np.sqrt(mse * np.diag(gig)).T
+        # Total prediction SE includes both noise and parameter uncertainty
+        total_se = np.sqrt(mse + param_se**2)
 
     tval = t.ppf(1.0 - alpha / 2.0, dof)
 
     yy = XX @ pars
 
+    # Prediction intervals using total uncertainty
     yint = np.array(
         [
-            yy - tval * pred_se * (1 + 1 / n) ** 0.5,
-            yy + tval * pred_se * (1 + 1 / n) ** 0.5,
+            yy - tval * total_se,
+            yy + tval * total_se,
         ]
     )
 
-    return (yy, yint, tval * pred_se * (1 + 1 / n))
+    return (yy, yint, total_se)
 
 
 # * Nonlinear regression
@@ -298,29 +320,57 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     return (pars, np.array(pint), np.array(SE))
 
 
-def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
+def nlpredict(X, y, model, popt, xnew, loss=None, alpha=0.05, ub=1e-5, ef=1.05):
     """Prediction error for a nonlinear fit.
 
     Parameters
     ----------
-    model : model function with signature model(x, ...)
-    loss : loss function the model was fitted with loss(...)
-    popt : the optimized paramters
-    xnew : x-values to predict at
-    alpha : confidence level, 95% = 0.05
-    ub : upper bound for smallest allowed Hessian eigenvalue
-    ef : eigenvalue factor for scaling Hessian
+    X : array-like
+        Independent variable data used for fitting
+    y : array-like
+        Dependent variable data used for fitting
+    model : callable
+        Model function with signature model(x, ...)
+    popt : array-like
+        Optimized parameters from fitting (e.g., from curve_fit or nlinfit)
+    xnew : array-like
+        x-values to predict at
+    loss : callable, optional
+        Loss function that was minimized during fitting, with signature loss(*params).
+        If None (default), assumes scipy.optimize.curve_fit was used and automatically
+        constructs the correct loss function: loss = 0.5 * sum((y - model(X, *p))**2).
+        This is the ½SSE convention used by scipy's least_squares optimizer.
+        If you used a different optimizer or loss function, provide it explicitly.
+    alpha : float, optional
+        Confidence level (default: 0.05 for 95% confidence intervals)
+    ub : float, optional
+        Upper bound for smallest allowed Hessian eigenvalue (default: 1e-5)
+    ef : float, optional
+        Eigenvalue factor for scaling Hessian (default: 1.05)
 
     This function uses numdifftools for the Hessian and Jacobian.
 
     Returns
     -------
-    y, yint, se
+    y : array
+        Predicted values at xnew
+    yint : array
+        Prediction intervals at alpha confidence level, shape (n, 2)
+    se : array
+        Standard error of predictions
 
-    y : predicted values
-    yint : prediction interval at alpha confidence interval
-    se : standard error of prediction
+    Notes
+    -----
+    The default loss function (½SSE) matches the convention used by scipy.optimize.curve_fit,
+    which internally minimizes 0.5 * sum(residuals**2). If you provide a custom loss function,
+    ensure it uses the same convention as your fitting procedure.
     """
+    # If no loss function provided, assume curve_fit was used (½SSE convention)
+    if loss is None:
+
+        def loss(*p):
+            return 0.5 * np.sum((y - model(X, *p)) ** 2)
+
     ypred = model(xnew, *popt)
 
     hessp = nd.Hessian(lambda p: loss(*p))(popt)
@@ -329,7 +379,8 @@ def nlpredict(X, y, model, loss, popt, xnew, alpha=0.05, ub=1e-5, ef=1.05):
 
     sse = loss(*popt)
     n = len(y)
-    mse = sse / n
+    p = len(popt)
+    mse = sse / (n - p)  # Use unbiased estimator
     I_fisher = np.linalg.pinv(hessp + np.eye(len(popt)) * eps)
 
     gprime = nd.Jacobian(lambda p: model(xnew, *p))(popt)
