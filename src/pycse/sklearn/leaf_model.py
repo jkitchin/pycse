@@ -305,9 +305,13 @@ class LeafModelRegressor(DecisionTreeRegressor):
         params : dict
             Parameter names mapped to their values.
         """
-        params = super().get_params(deep=deep)
+        # Get parent class params (DecisionTreeRegressor)
+        params = super().get_params(deep=False)
+
+        # Add leaf_model param
         params["leaf_model"] = self.leaf_model
 
+        # If deep, add nested leaf_model params
         if deep and hasattr(self.leaf_model, "get_params"):
             leaf_params = self.leaf_model.get_params(deep=True)
             for key, val in leaf_params.items():
