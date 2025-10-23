@@ -1,244 +1,299 @@
 """Library to convert Python data structures to lisp data structures.
 
-This module adds a lisp property to the basic Python types which returns a
-string of the data type in Lisp.
+This module provides a lightweight wrapper and helper classes to convert
+Python objects to Lisp representations.
 
+Transformations:
+    string     -> "string"
+    int, float -> number
+    [1, 2, 3]  -> (1 2 3)
+    (1, 2, 3)  -> (1 2 3)
+    {"a": 6}   -> (:a 6)  p-list
 
-The module also provides some classes to help with more sophisticated data
-structures like alists, cons cells
+Helper classes:
+    Symbol("lambda")     -> lambda
+    Cons(a, b)           -> (a . b)
+    Alist(["A" 2 "B" 5]) -> (("A" . 2) ("B" 5))
+    Quote("symbol")      -> 'symbol
+    Quote([1, 2, 3])     -> '(1 2 3)
+    SharpQuote("symbol") -> #'symbol
+    Vector([1, 2, 3])    -> [1 2 3]
 
-Here are the transformations:
+Usage:
+    from pycse.lisp import L, Symbol, Quote
 
-string     -> "string"
-int, float -> number
-[1, 2, 3]  -> (1 2 3)
-(1, 2, 3)  -> (1 2 3)
-{"a": 6}   -> (:a 6)  p-list
+    # Using the wrapper for .lisp attribute
+    L([1, 2, 3]).lisp        # "(1 2 3)"
+    L({"a": 6}).lisp         # "(:a 6)"
+    print(L([1, 2, 3]))      # "(1 2 3)"
 
-Symbol("lambda")     -> lambda
-Cons(a, b)           -> (a . b)
-Alist(["A" 2 "B" 5]) -> (("A" . 2) ("B" 5))
-Quote("symbol")      -> 'symbol
-Quote([1, 2, 3])     -> '(1 2 3)
-SharpQuote("symbol") -> #'symbol
-Vector([1, 2, 3])    -> [1 2 3]
-
-You should be able to nest these to make complex programs. If you use custom
-data structures/classes, they need to have a lisp property defined.
+    # Using helper classes
+    Symbol("lambda").lisp    # "lambda"
+    Quote("symbol").lisp     # "'symbol"
 
 http://kitchingroup.cheme.cmu.edu/blog/2015/05/16/Python-data-structures-to-lisp/
-
 """
 
-import ctypes as c
 import numpy as np
 
 
-class PyObject_HEAD(c.Structure):
-    """I am not sure what this is."""
+def to_lisp(obj):
+    """Convert a Python object to a Lisp representation string.
 
-    _fields_ = [
-        ("HEAD", c.c_ubyte * (object.__basicsize__ - c.sizeof(c.c_void_p))),
-        ("ob_type", c.c_void_p),
-    ]
+    Args:
+        obj: Python object to convert (str, int, float, list, tuple, dict, etc.)
 
+    Returns:
+        str: Lisp representation of the object
 
-_get_dict = c.pythonapi._PyObject_GetDictPtr
-_get_dict.restype = c.POINTER(c.py_object)
-_get_dict.argtypes = [c.py_object]
+    Raises:
+        TypeError: If object cannot be converted to Lisp
+    """
+    # Handle objects with .lisp property (custom classes)
+    if hasattr(obj, "lisp"):
+        return obj.lisp
 
+    # Handle basic types
+    if isinstance(obj, str):
+        return f'"{obj}"'
+    elif isinstance(obj, bool):
+        # Handle bool before int (bool is subclass of int)
+        return "t" if obj else "nil"
+    elif isinstance(obj, (int, float, np.integer, np.floating)):
+        return str(obj)
 
-def get_dict(obj):
-    """Get the dictionary for object."""
-    return _get_dict(obj).contents.value
+    # Handle collections
+    elif isinstance(obj, (list, tuple, np.ndarray)):
+        if len(obj) == 0:
+            return "()"
+        elements = [to_lisp(item) for item in obj]
+        return "(" + " ".join(elements) + ")"
 
+    # Handle dictionaries as property lists
+    elif isinstance(obj, dict):
+        if len(obj) == 0:
+            return "()"
+        items = [f":{key} {to_lisp(value)}" for key, value in obj.items()]
+        return "(" + " ".join(items) + ")"
 
-# This is how we convert simple types to lisp. Strings go in quotes, and numbers
-# basically self-evaluate. These never contain other types.
-get_dict(str)["lisp"] = property(lambda s: '"{}"'.format(str(s)))
-get_dict(float)["lisp"] = property(lambda f: "{}".format(str(f)))
-get_dict(int)["lisp"] = property(lambda f: "{}".format(str(f)))
-get_dict(np.int64)["lisp"] = property(lambda f: "{}".format(str(f)))
+    # Handle None
+    elif obj is None:
+        return "nil"
 
-
-def lispify(L):
-    """Convert a Python object L to a lisp representation."""
-    if isinstance(L, str) or isinstance(L, float) or isinstance(L, int) or isinstance(L, np.int64):
-        return L.lisp
-    elif isinstance(L, list) or isinstance(L, tuple) or isinstance(L, np.ndarray):
-        s = [element.lisp for element in L]
-        return "(" + " ".join(s) + ")"
-    elif isinstance(L, dict):
-        s = [":{0} {1}".format(key, val.lisp) for key, val in L.items()]
-        return "(" + " ".join(s) + ")"
     else:
-        raise Exception(f"Cannot lispify {L}")
+        raise TypeError(f"Cannot convert {type(obj).__name__} to Lisp: {obj}")
 
 
-get_dict(list)["lisp"] = property(lispify)
-get_dict(tuple)["lisp"] = property(lispify)
-get_dict(dict)["lisp"] = property(lispify)
-get_dict(np.ndarray)["lisp"] = property(lispify)
+class L:
+    """Lightweight wrapper that provides .lisp attribute for any Python object.
+
+    Usage:
+        L([1, 2, 3]).lisp        # "(1 2 3)"
+        L({"a": 6}).lisp         # "(:a 6)"
+        print(L([1, 2, 3]))      # "(1 2 3)"
+    """
+
+    __slots__ = ("_obj",)
+
+    def __init__(self, obj):
+        """Initialize wrapper with a Python object."""
+        self._obj = obj
+
+    @property
+    def lisp(self):
+        """Return Lisp representation of wrapped object."""
+        return to_lisp(self._obj)
+
+    def __str__(self):
+        """Return Lisp representation as string."""
+        return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"L({self._obj!r})"
 
 
-# Some tools for generating lisp code
+# Helper classes for generating Lisp code
 
 
 class Symbol:
-    """A lisp symbol.
+    """A Lisp symbol.
 
-    This is used to print strings that do not have double quotes.
+    Symbols are used to print strings without double quotes.
+
+    Usage:
+        Symbol("lambda").lisp    # "lambda"
+        Symbol("defun").lisp     # "defun"
     """
 
     def __init__(self, sym):
         """Initialize a Symbol."""
-        assert isinstance(sym, str)
+        if not isinstance(sym, str):
+            raise TypeError(f"Symbol must be a string, not {type(sym).__name__}")
         self.sym = sym
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
+        """Return Lisp representation of symbol."""
         return self.sym
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Symbol({self.sym!r})"
 
 
 class Quote:
-    """Used to quote a symbol or form."""
+    """Quote a symbol or form.
 
-    def __init__(self, sym):
-        """Initialize a quote."""
-        self.sym = sym
+    Usage:
+        Quote("symbol").lisp        # "'symbol"
+        Quote([1, 2, 3]).lisp       # "'(1 2 3)"
+    """
+
+    def __init__(self, form):
+        """Initialize a Quote."""
+        self.form = form
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        if isinstance(self.sym, str):
-            s = self.sym
+        """Return Lisp representation with quote prefix."""
+        if isinstance(self.form, str):
+            return f"'{self.form}"
         else:
-            # This is a list/vector
-            s = self.sym.lisp
-        return "'{}".format(s)
+            return f"'{to_lisp(self.form)}"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Quote({self.form!r})"
 
 
 class SharpQuote:
-    """Used to SharpQuote a symbol or form."""
+    """Function quote (#') a symbol or form.
 
-    def __init__(self, sym):
-        """Initicale a sharpquote."""
-        self.sym = sym
+    Usage:
+        SharpQuote("lambda").lisp   # "#'lambda"
+    """
+
+    def __init__(self, form):
+        """Initialize a SharpQuote."""
+        self.form = form
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        if isinstance(self.sym, str):
-            s = self.sym
+        """Return Lisp representation with #' prefix."""
+        if isinstance(self.form, str):
+            return f"#'{self.form}"
         else:
-            s = self.sym.lisp
-        return "#'{}".format(s)
+            return f"#'{to_lisp(self.form)}"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"SharpQuote({self.form!r})"
 
 
 class Cons:
-    """A cons cell."""
+    """A cons cell (dotted pair).
+
+    Usage:
+        Cons("a", "b").lisp         # "(a . b)"
+        Cons(1, 2).lisp             # "(1 . 2)"
+    """
 
     def __init__(self, car, cdr):
-        """Initialize a Cons cell."""
+        """Initialize a Cons cell with car and cdr."""
         self.car = car
         self.cdr = cdr
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        return "({} . {})".format(self.car.lisp, self.cdr.lisp)
+        """Return Lisp representation as dotted pair."""
+        return f"({to_lisp(self.car)} . {to_lisp(self.cdr)})"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Cons({self.car!r}, {self.cdr!r})"
 
 
 class Alist:
-    """A lisp association list."""
+    """A Lisp association list.
+
+    Usage:
+        Alist(["A", 2, "B", 5]).lisp    # '(("A" . 2) ("B" . 5))'
+    """
 
     def __init__(self, lst):
-        """Initialize an alist."""
+        """Initialize an alist from a flat list [key1, val1, key2, val2, ...]."""
+        if len(lst) % 2 != 0:
+            raise ValueError("Alist requires an even number of elements")
         self.list = lst
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
+        """Return Lisp representation as association list."""
         keys = self.list[0::2]
         vals = self.list[1::2]
-        alist = [Cons(key, val) for key, val in zip(keys, vals)]
-        return alist.lisp
+        pairs = [Cons(key, val) for key, val in zip(keys, vals)]
+        return to_lisp(pairs)
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Alist({self.list!r})"
 
 
 class Vector:
-    """A lisp vector."""
+    """A Lisp vector.
+
+    Usage:
+        Vector([1, 2, 3]).lisp      # "[1 2 3]"
+    """
 
     def __init__(self, lst):
-        """Initialize a vector."""
+        """Initialize a vector from a list."""
         self.list = lst
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        return "[{}]".format(" ".join([x.lisp for x in self.list]))
+        """Return Lisp representation as vector."""
+        if len(self.list) == 0:
+            return "[]"
+        elements = [to_lisp(x) for x in self.list]
+        return "[" + " ".join(elements) + "]"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
 
-
-class Comma:
-    """The comma operator."""
-
-    def __init__(self, form):
-        """Initialize a comma operator."""
-        self.form = form
-
-    @property
-    def lisp(self):
-        """Return lisp representation of self."""
-        return ",{}".format(self.form.lisp)
-
-    def __str__(self):
-        """Return string respresentation."""
-        return self.lisp
-
-
-class Splice:
-    """A Splice object."""
-
-    def __init__(self, form):
-        """Initialize a splice."""
-        self.form = form
-
-    @property
-    def lisp(self):
-        """Return lisp representation of self."""
-        return ",@{}".format(self.form.lisp)
-
-    def __str__(self):
-        """Return string respresentation."""
-        return self.lisp
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Vector({self.list!r})"
 
 
 class Backquote:
-    """A Backquoted item."""
+    """A backquoted form.
+
+    Usage:
+        Backquote([1, 2, 3]).lisp   # "`(1 2 3)"
+    """
 
     def __init__(self, form):
         """Initialize a backquote."""
@@ -246,26 +301,88 @@ class Backquote:
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        return "`{}".format(self.form.lisp)
+        """Return Lisp representation with backquote prefix."""
+        return f"`{to_lisp(self.form)}"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
 
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Backquote({self.form!r})"
 
-class Comment:
-    """A commented item in lisp."""
 
-    def __init__(self, s):
-        """Initialize a Comment with s."""
-        self.s = s
+class Comma:
+    """The comma (unquote) operator.
+
+    Usage:
+        Comma(Symbol("x")).lisp     # ",x"
+    """
+
+    def __init__(self, form):
+        """Initialize a comma operator."""
+        self.form = form
 
     @property
     def lisp(self):
-        """Return lisp representation of self."""
-        return "; {}".format(self.s.lisp)
+        """Return Lisp representation with comma prefix."""
+        return f",{to_lisp(self.form)}"
 
     def __str__(self):
-        """Return string respresentation."""
+        """Return string representation."""
         return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Comma({self.form!r})"
+
+
+class Splice:
+    """The splice (,@) operator.
+
+    Usage:
+        Splice([1, 2, 3]).lisp      # ",@(1 2 3)"
+    """
+
+    def __init__(self, form):
+        """Initialize a splice operator."""
+        self.form = form
+
+    @property
+    def lisp(self):
+        """Return Lisp representation with ,@ prefix."""
+        return f",@{to_lisp(self.form)}"
+
+    def __str__(self):
+        """Return string representation."""
+        return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Splice({self.form!r})"
+
+
+class Comment:
+    """A comment in Lisp.
+
+    Usage:
+        Comment("This is a comment").lisp   # "; This is a comment"
+    """
+
+    def __init__(self, text):
+        """Initialize a comment with text."""
+        self.text = text
+
+    @property
+    def lisp(self):
+        """Return Lisp representation as comment."""
+        return f"; {to_lisp(self.text) if not isinstance(self.text, str) else self.text}"
+
+    def __str__(self):
+        """Return string representation."""
+        return self.lisp
+
+    def __repr__(self):
+        """Return readable representation."""
+        return f"Comment({self.text!r})"
