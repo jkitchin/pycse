@@ -50,7 +50,7 @@ def aptupdate():
     """Run apt-get update."""
     s = subprocess.run(["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if s.returncode != 0:
-        raise Exception(f"apt-get update failed.\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}")
+        raise Exception(f"apt-get update failed.\n{s.stdout.decode()}\n{s.stderr.decode()}")
 
 
 def aptinstall(apt_pkg):
@@ -62,9 +62,7 @@ def aptinstall(apt_pkg):
         stderr=subprocess.PIPE,
     )
     if s.returncode != 0:
-        raise Exception(
-            f"{apt_pkg} installation failed.\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}"
-        )
+        raise Exception(f"{apt_pkg} installation failed.\n{s.stdout.decode()}\n{s.stderr.decode()}")
 
 
 # @register_line_magic
@@ -421,9 +419,8 @@ def get_path(fid_or_url):
     dirs = [x["name"]]  # start with the document name
 
     while x.get("parents", None):
-
         if len(x["parents"]) > 1:
-            print(f'Warning, multiple parents found {x["parents"]}')
+            print(f"Warning, multiple parents found {x['parents']}")
 
         x = (
             drive_service.files()
@@ -586,7 +583,7 @@ def gdownload(*FILES, **kwargs):
             stderr=subprocess.PIPE,
         )
         if s.returncode != 0:
-            print(f"zip did not fully succeed:\n" f"{s.stdout.decode()}\n" f"{s.stderr.decode()}\n")
+            print(f"zip did not fully succeed:\n{s.stdout.decode()}\n{s.stderr.decode()}\n")
         files.download(zipfile)
 
 
@@ -659,9 +656,7 @@ def gsuite(fid_or_url, width=1200, height=1000):
     g = requests.get(url)
     xframeoptions = g.headers.get("X-Frame-Options", "").lower()
     if xframeoptions in ["deny", "sameorigin"]:
-        print(
-            f"X-Frame-Option = {xframeoptions}\n" f"Embedding in IFrame is not allowed for {url}."
-        )
+        print(f"X-Frame-Option = {xframeoptions}\nEmbedding in IFrame is not allowed for {url}.")
         return None
     else:
         return IFrame(url, width, height)

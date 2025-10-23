@@ -98,7 +98,6 @@ class LeafModelRegressor(DecisionTreeRegressor):
         errors = np.zeros(X.shape[0])
 
         for leaf in set(pleaves):
-
             model = self.leaf_models[leaf]
 
             ind = pleaves == leaf

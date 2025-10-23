@@ -89,6 +89,6 @@ def read_gsheet(url, *args, **kwargs):
         # default to main sheet
         gid = 0
 
-    purl = "https://docs.google.com/spreadsheets/d/" f"{fid}/export?format=csv&gid={gid}"
+    purl = f"https://docs.google.com/spreadsheets/d/{fid}/export?format=csv&gid={gid}"
 
     return pd.read_csv(purl, *args, **kwargs)

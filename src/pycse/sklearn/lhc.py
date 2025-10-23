@@ -132,15 +132,18 @@ class LatinSquare:
 
         # These are variances in each factor
         S2 = (
-            df[
-                [
-                    f"{self.labels[0]}_effect",
-                    f"{self.labels[1]}_effect",
-                    f"{self.labels[2]}_effect",
-                    "residuals",
+            (
+                df[
+                    [
+                        f"{self.labels[0]}_effect",
+                        f"{self.labels[1]}_effect",
+                        f"{self.labels[2]}_effect",
+                        "residuals",
+                    ]
                 ]
-            ]
-        ).var(ddof=0) * ddof
+            ).var(ddof=0)
+            * ddof
+        )
 
         # I think this is like an F-score
         ns = S2 / S2.loc["residuals"]

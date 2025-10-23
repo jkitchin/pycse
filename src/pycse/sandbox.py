@@ -32,17 +32,13 @@ if err:
     s += """
 #+STDERR:
 {0}
-""".format(
-        err
-    )
+""".format(err)
 
 if exc:
     s += """
 #+EXCEPTIONS:
 {0}
-""".format(
-        exc
-    )
+""".format(exc)
 
 # print final result to stdout
 print(s)

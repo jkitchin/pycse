@@ -779,8 +779,7 @@ def main():
             f.write(json.dumps(cfg, indent=4))
 
         print(
-            f"\n\nInstalled litdb. Here is your current {cfgfile}."
-            " Please restart Claude Desktop."
+            f"\n\nInstalled litdb. Here is your current {cfgfile}. Please restart Claude Desktop."
         )
         print(json.dumps(cfg, indent=4))
 

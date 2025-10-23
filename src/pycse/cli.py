@@ -41,7 +41,7 @@ def pycse():
     """CLI to launch a Docker image with Jupyter lab in the CWD.
     This assumes you have a working Docker installation."""
     if shutil.which("docker") is None:
-        raise Exception("docker was not found." " Please install it from https://www.docker.com/")
+        raise Exception("docker was not found. Please install it from https://www.docker.com/")
 
     # Check setup and get image if needed
     try:
@@ -55,11 +55,11 @@ def pycse():
     # Check if the container is already running
     p = subprocess.run(["docker", "ps", "--format", '"{{.Names}}"'], capture_output=True)
     if "pycse" in p.stdout.decode("utf-8"):
-        ans = input("There is already a pycse container running." "Do you want to kill it? (y/n)")
+        ans = input("There is already a pycse container running.Do you want to kill it? (y/n)")
         if ans.lower() == "y":
             subprocess.run("docker rm -f pycse".split())
         else:
-            print("There can only be one pycse container running at a time." "Connecting to it.")
+            print("There can only be one pycse container running at a time.Connecting to it.")
 
             # this outputs something like 0.0.0.0:8987
             p = subprocess.run("docker port pycse 8888".split(), capture_output=True)

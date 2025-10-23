@@ -220,7 +220,7 @@ class HashCache:
         # is a problem here. We just warn the user. Nothing else makes
         # sense, the mutability may be intentional.
         if not hsh == self.get_hash(args, kwargs):
-            print("WARNING something mutated, future" " calls will not use the cache.")
+            print("WARNING something mutated, future calls will not use the cache.")
 
         # Try a bunch of ways to get a username.
         try:

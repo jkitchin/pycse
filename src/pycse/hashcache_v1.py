@@ -172,7 +172,6 @@ def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
     """
 
     def wrapper(func, *args, **kwargs):
-
         hsh = get_hash(func, args, kwargs)
 
         # Try getting the data first
@@ -191,7 +190,7 @@ def hashcache(fn=None, *, verbose=False, loader=load_data, dumper=dump_data):
         # is a problem here. We just warn the user. Nothing else makes
         # sense, the mutability may be intentional.
         if not hsh == get_hash(func, args, kwargs):
-            print("WARNING something mutated, future" " calls will not use the cache.")
+            print("WARNING something mutated, future calls will not use the cache.")
 
         # Try a bunch of ways to get a username.
         try:

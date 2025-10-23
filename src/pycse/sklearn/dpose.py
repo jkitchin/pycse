@@ -93,7 +93,6 @@ class _NN(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-
         # Hidden layers (skip first element which is input dimension)
         for i in self.layers[1:-1]:
             x = nn.Dense(i, kernel_init=xavier_uniform())(x)
