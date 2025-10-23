@@ -6,6 +6,9 @@ import tempfile
 import shutil
 from unittest.mock import patch, MagicMock
 
+# Skip all tests in this module if plotly is not installed
+plotly = pytest.importorskip("plotly", reason="plotly not installed")
+
 
 class TestPlotlyModule:
     """Tests for pycse.plotly module."""
