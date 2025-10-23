@@ -16,6 +16,12 @@ from sklearn.exceptions import NotFittedError
 import dill
 
 
+class MaxCallsExceededException(Exception):
+    """Raised when maximum number of function calls is exceeded."""
+
+    pass
+
+
 class _Surrogate:
     def __init__(self, func, model, tol=1, max_calls=-1, verbose=False):
         """Initialize a Surrogate function.
@@ -66,8 +72,8 @@ class _Surrogate:
         """Get data for X, add it and retrain.
         Use this to bypass the logic for using the surrogate.
         """
-        if (self.max_calls > 0) and (self.func_calls + 1) > self.max_calls:
-            raise Exception("Max func calls {self.max_calls} will be exceeded.")
+        if (self.max_calls >= 0) and (self.func_calls + 1) > self.max_calls:
+            raise MaxCallsExceededException(f"Max func calls ({self.max_calls}) will be exceeded")
 
         y = self.func(X)
         self.func_calls += 1
@@ -91,7 +97,11 @@ class _Surrogate:
         Returns:
         True if the actual errors are less than the tolerance.
         """
+        if (self.max_calls >= 0) and (self.func_calls + 1) > self.max_calls:
+            raise MaxCallsExceededException(f"Max func calls ({self.max_calls}) will be exceeded")
+
         y = self.func(X)
+        self.func_calls += 1
         yp, ypse = self.model.predict(X, return_std=True)
 
         errs = y - yp
@@ -109,10 +119,7 @@ class _Surrogate:
             errs < tol = {np.abs(errs) < self.tol}
             """
             )
-        if (np.max(ypse) < self.tol) and (np.max(np.abs(errs)) < self.tol):
-            return True
-        else:
-            return False
+        return (np.max(ypse) < self.tol) and (np.max(np.abs(errs)) < self.tol)
 
     def __call__(self, X):
         """Try to use the surrogate to predict X. if the predicted error is
@@ -133,15 +140,22 @@ class _Surrogate:
                         "running true function and returning function values and retraining",
                     )
 
-                if (self.max_calls > 0) and (self.func_calls + 1) > self.max_calls:
-                    raise Exception(f"Max func calls ({self.max_calls}) will be exceeded.")
+                if (self.max_calls >= 0) and (self.func_calls + 1) > self.max_calls:
+                    raise MaxCallsExceededException(
+                        f"Max func calls ({self.max_calls}) will be exceeded"
+                    )
                 # Get the true value(s)
                 y = self.func(X)
                 self.func_calls += 1
 
                 # add it to the data. For now we add all the points
-                self.xtrain = np.concatenate([self.xtrain, X], axis=0)
-                self.ytrain = np.concatenate([self.ytrain, y])
+                if self.xtrain is not None:
+                    self.xtrain = np.concatenate([self.xtrain, X], axis=0)
+                    self.ytrain = np.concatenate([self.ytrain, y])
+                else:
+                    # First data point
+                    self.xtrain = X
+                    self.ytrain = y
 
                 self.model.fit(self.xtrain, self.ytrain)
                 self.ntrain += 1
