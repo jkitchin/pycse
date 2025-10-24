@@ -148,15 +148,12 @@ class LatinSquare:
         if len(set(level_counts)) > 1:
             factor_info = [f"{k}: {len(v)} levels" for k, v in vars.items()]
             raise ValueError(
-                "All factors must have the same number of levels. "
-                f"Got: {', '.join(factor_info)}"
+                f"All factors must have the same number of levels. Got: {', '.join(factor_info)}"
             )
 
         # Check minimum level count
         if level_counts[0] < 2:
-            raise ValueError(
-                f"Each factor must have at least 2 levels, got {level_counts[0]}"
-            )
+            raise ValueError(f"Each factor must have at least 2 levels, got {level_counts[0]}")
 
         self.vars = vars
         self.labels = list(vars.keys())
@@ -287,21 +284,18 @@ class LatinSquare:
         if not isinstance(y, pd.Series):
             raise TypeError(f"y must be a pandas Series, got {type(y).__name__}")
 
-        if not hasattr(y, 'name') or y.name is None:
+        if not hasattr(y, "name") or y.name is None:
             raise AttributeError("y must have a name attribute (use pd.Series(..., name='...'))")
 
         # Check all required columns present
         missing_cols = set(self.labels) - set(X.columns)
         if missing_cols:
             raise ValueError(
-                f"X is missing required columns: {missing_cols}. "
-                f"Expected columns: {self.labels}"
+                f"X is missing required columns: {missing_cols}. Expected columns: {self.labels}"
             )
 
         if len(X) != len(y):
-            raise ValueError(
-                f"X and y must have the same length. Got X: {len(X)}, y: {len(y)}"
-            )
+            raise ValueError(f"X and y must have the same length. Got X: {len(X)}, y: {len(y)}")
 
         # Combine design and response
         df = pd.concat([X, y], axis=1)
@@ -376,10 +370,9 @@ class LatinSquare:
         to the residual variance. Effects with F > F_critical are
         considered statistically significant.
         """
-        if not hasattr(self, 'results'):
+        if not hasattr(self, "results"):
             raise AttributeError(
-                "Must call fit() before anova(). "
-                "The model needs to be fitted to data first."
+                "Must call fit() before anova(). The model needs to be fitted to data first."
             )
 
         df = self.results
@@ -411,15 +404,10 @@ class LatinSquare:
         fc = stats.f.ppf(0.95, dof[0], dof[-1])
 
         # Build ANOVA table
-        table = np.vstack([
-            f_scores.index.values,
-            f_scores.values,
-            f_scores > fc
-        ]).T
+        table = np.vstack([f_scores.index.values, f_scores.values, f_scores > fc]).T
 
         return pd.DataFrame(
-            table,
-            columns=[f"{self.y} effect", f"F-score (fc={fc:1.1f})", "Significant"]
+            table, columns=[f"{self.y} effect", f"F-score (fc={fc:1.1f})", "Significant"]
         )
 
     def predict(self, args):
@@ -457,10 +445,9 @@ class LatinSquare:
         This method only works for interpolation (factor levels seen during
         fitting). It does not extrapolate to new levels.
         """
-        if not hasattr(self, 'effects'):
+        if not hasattr(self, "effects"):
             raise AttributeError(
-                "Must call fit() before predict(). "
-                "The model needs to be fitted to data first."
+                "Must call fit() before predict(). The model needs to be fitted to data first."
             )
 
         if len(args) != 3:
@@ -493,10 +480,10 @@ class LatinSquare:
         """Return detailed string representation."""
         n_factors = len(self.labels)
         n_levels = len(self.vars[self.labels[0]])
-        n_expts = n_levels ** 2
+        n_expts = n_levels**2
 
         fitted_str = ""
-        if hasattr(self, 'results'):
+        if hasattr(self, "results"):
             fitted_str = f", fitted with {len(self.results)} observations"
 
         return (
@@ -510,7 +497,7 @@ class LatinSquare:
         factor_str = ", ".join([f"'{label}'" for label in self.labels])
 
         status = "not fitted"
-        if hasattr(self, 'results'):
+        if hasattr(self, "results"):
             status = f"fitted ({len(self.results)} obs)"
 
         return (
