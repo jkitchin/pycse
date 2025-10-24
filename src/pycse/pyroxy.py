@@ -97,6 +97,9 @@ class _Surrogate:
         Returns:
         True if the actual errors are less than the tolerance.
         """
+        # Ensure X is 2D for sklearn compatibility
+        X = np.atleast_2d(X)
+
         if (self.max_calls >= 0) and (self.func_calls + 1) > self.max_calls:
             raise MaxCallsExceededException(f"Max func calls ({self.max_calls}) will be exceeded")
 
@@ -126,6 +129,9 @@ class _Surrogate:
         larger than self.tol, use the true function and retrain the surrogate.
 
         """
+        # Ensure X is 2D for sklearn compatibility
+        X = np.atleast_2d(X)
+
         try:
             pf, se = self.model.predict(X, return_std=True)
 
