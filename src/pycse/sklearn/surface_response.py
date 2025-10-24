@@ -346,6 +346,12 @@ class SurfaceResponse(Pipeline):
 
         s = [f"{len(X)} data points"]
         yp = self.predict(X)
+        # Ensure yp has the same shape as y for proper subtraction
+        if yp.ndim == 1:
+            yp = yp.reshape(-1, 1)
+        # Convert yp to DataFrame to match y's structure for proper pandas operations
+        if hasattr(y, "columns"):
+            yp = pd.DataFrame(yp, columns=y.columns, index=y.index)
         errs = y - yp
 
         if self.default:
