@@ -599,20 +599,25 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">jacobian</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">F</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">r</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)])</span>
 
+
 <span class="n">drdt</span> <span class="o">=</span> <span class="n">jacobian</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">F</span><span class="p">(</span><span class="n">r</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">@</span> <span class="n">drdt</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
+
 <span class="n">I</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The integral is </span><span class="si">{</span><span class="n">I</span><span class="si">:</span><span class="s1">1.4f</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The integral is </span><span class="si">{</span><span class="n">I</span><span class="si">:</span><span class="s2">1.4f</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -639,8 +644,9 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[</span><span class="n">integrand</span><span class="p">(</span><span class="n">_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">_t</span> <span class="ow">in</span> <span class="n">t</span><span class="p">])</span>
-<span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">([</span><span class="n">integrand</span><span class="p">(</span><span class="n">_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">_t</span> <span class="ow">in</span> <span class="n">t</span><span class="p">],</span> <span class="n">t</span><span class="p">)</span> <span class="c1"># Just a numerical confirmation of our answer</span>
+<span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">([</span><span class="n">integrand</span><span class="p">(</span><span class="n">_t</span><span class="p">)</span> <span class="k">for</span> <span class="n">_t</span> <span class="ow">in</span> <span class="n">t</span><span class="p">],</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># Just a numerical confirmation of our answer</span>
 </pre></div>
 </div>
 </div>
@@ -661,16 +667,18 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">eq</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span> <span class="o">-</span> <span class="mi">3</span>
 
-<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> 
-               <span class="n">constraints</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">eq</span><span class="p">})</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">eq</span><span class="p">})</span>
 <span class="n">sol</span>
 </pre></div>
 </div>
@@ -700,10 +708,12 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autograd.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">F</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
-    <span class="s1">&#39;Augmented Lagrange function&#39;</span>
+    <span class="s2">&quot;Augmented Lagrange function&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">_lambda</span> <span class="o">=</span> <span class="n">L</span>
     <span class="k">return</span> <span class="n">objective</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span> <span class="o">-</span> <span class="n">_lambda</span> <span class="o">*</span> <span class="n">eq</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
 
 <span class="c1"># Gradients of the Lagrange function</span>
 <span class="n">dfdL</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -725,9 +735,11 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
     <span class="n">dFdx</span><span class="p">,</span> <span class="n">dFdy</span><span class="p">,</span> <span class="n">dFdz</span><span class="p">,</span> <span class="n">dFdlam</span> <span class="o">=</span> <span class="n">dfdL</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dFdx</span><span class="p">,</span> <span class="n">dFdy</span><span class="p">,</span> <span class="n">dFdz</span><span class="p">,</span> <span class="n">eq</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])]</span>
 
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
+
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">_lam</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The answer is at </span><span class="si">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The answer is at </span><span class="si">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -754,6 +766,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">hessian</span>
+
 <span class="n">h</span> <span class="o">=</span> <span class="n">hessian</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">h</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]))</span>
 </pre></div>
@@ -810,19 +823,20 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">4</span>
 
+
 <span class="n">df1dx</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">df1dy</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">dydx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">df1dx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">df1dy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-             <span class="p">[</span><span class="n">dydx</span><span class="p">(</span><span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="n">dydx</span><span class="p">(</span><span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)]))</span>
 
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="o">-</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="p">[</span><span class="n">dydx</span><span class="p">(</span><span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)],</span> <span class="s1">&#39;b.&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;ro&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="p">[</span><span class="n">dydx</span><span class="p">(</span><span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_xr</span><span class="p">,</span> <span class="n">_yr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">)],</span> <span class="s2">&quot;b.&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -830,7 +844,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
-<img alt="../_images/b0a85daabdb4a38780e65e93429ab784d8163d62bcf16bc7c0a44161088a08ec.png" src="../_images/b0a85daabdb4a38780e65e93429ab784d8163d62bcf16bc7c0a44161088a08ec.png" />
+<img alt="../_images/9edd0ff18d915575b79db425faca95b32c5688ff953be978f2362babf4eee5b6.png" src="../_images/9edd0ff18d915575b79db425faca95b32c5688ff953be978f2362babf4eee5b6.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -838,6 +852,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f_1</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">4</span>
+
 
 <span class="n">j</span> <span class="o">=</span> <span class="n">jacobian</span><span class="p">(</span><span class="n">f_1</span><span class="p">)</span>
 <span class="n">j</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])),</span> <span class="n">dydx</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
@@ -858,8 +873,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
     <span class="k">return</span> <span class="o">-</span><span class="n">df1dx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">df1dy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 
-<span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">dydx</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">xr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">yr</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">dydx</span><span class="p">(</span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -893,6 +907,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 
 <span class="n">Tr</span> <span class="o">=</span> <span class="mf">1.1</span>  <span class="c1"># Constant for this example</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">Tr</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">R</span> <span class="o">*</span> <span class="n">Tr</span> <span class="o">*</span> <span class="n">Tc</span> <span class="o">/</span> <span class="p">(</span><span class="n">V</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">a</span> <span class="o">/</span> <span class="n">V</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Pr</span> <span class="o">*</span> <span class="n">Pc</span>
 </pre></div>
@@ -907,6 +922,7 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <span class="n">dfdPr</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># derivative of f with respect to arg at index=1: Pr</span>
 <span class="n">dfdV</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># derivative of f with respect to arg at index=0: V</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">dVdPr</span><span class="p">(</span><span class="n">Pr</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">dfdPr</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">Tr</span><span class="p">)</span> <span class="o">/</span> <span class="n">dfdV</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">Tr</span><span class="p">)</span>  <span class="c1"># Tr is a constant in here</span>
 </pre></div>
@@ -917,8 +933,9 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
-                         <span class="c1"># Pr, V</span>
-<span class="n">V0</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">))</span>
+
+<span class="c1"># Pr, V</span>
+<span class="p">(</span><span class="n">V0</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">))</span>
 <span class="n">V0</span>
 </pre></div>
 </div>
@@ -949,8 +966,8 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <span class="n">Z</span> <span class="o">=</span> <span class="n">Pr</span> <span class="o">*</span> <span class="n">Pc</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">Tr</span> <span class="o">*</span> <span class="n">Tc</span><span class="p">)</span>  <span class="c1"># Compressibility Z(P_r)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Pr</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$P_r$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$P_r$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>
 </pre></div>
@@ -958,9 +975,6 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The solver successfully reached the end of the integration interval.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <img alt="../_images/43992146b9bc67736bc3139a12d4e40e2904e936c04d190e7d521e016b21067a.png" src="../_images/43992146b9bc67736bc3139a12d4e40e2904e936c04d190e7d521e016b21067a.png" />
@@ -977,17 +991,20 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <p>We use autograd to get it for us.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">E0</span><span class="p">,</span> <span class="n">B0</span><span class="p">,</span> <span class="n">BP</span><span class="p">,</span> <span class="n">V0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">56.466</span><span class="p">,</span>   <span class="mf">0.49</span><span class="p">,</span>    <span class="mf">4.753</span><span class="p">,</span>  <span class="mf">16.573</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">E0</span><span class="p">,</span> <span class="n">B0</span><span class="p">,</span> <span class="n">BP</span><span class="p">,</span> <span class="n">V0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">56.466</span><span class="p">,</span> <span class="mf">0.49</span><span class="p">,</span> <span class="mf">4.753</span><span class="p">,</span> <span class="mf">16.573</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">Murnaghan</span><span class="p">(</span><span class="n">vol</span><span class="p">):</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">E0</span> <span class="o">+</span> <span class="n">B0</span> <span class="o">*</span> <span class="n">vol</span> <span class="o">/</span> <span class="n">BP</span> <span class="o">*</span> <span class="p">(((</span><span class="n">V0</span> <span class="o">/</span> <span class="n">vol</span><span class="p">)</span><span class="o">**</span><span class="n">BP</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">B0</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">E0</span> <span class="o">+</span> <span class="n">B0</span> <span class="o">*</span> <span class="n">vol</span> <span class="o">/</span> <span class="n">BP</span> <span class="o">*</span> <span class="p">(((</span><span class="n">V0</span> <span class="o">/</span> <span class="n">vol</span><span class="p">)</span> <span class="o">**</span> <span class="n">BP</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">B0</span> <span class="o">/</span> <span class="p">(</span><span class="n">BP</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">E</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">P</span><span class="p">(</span><span class="n">vol</span><span class="p">):</span>
     <span class="n">dEdV</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">Murnaghan</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">dEdV</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span> <span class="o">*</span> <span class="mf">160.21773</span>  <span class="c1"># in Gpa</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">P</span><span class="p">(</span><span class="n">V0</span><span class="p">))</span> <span class="c1"># Pressure at the minimum in energy is zero</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">P</span><span class="p">(</span><span class="n">V0</span><span class="p">))</span>  <span class="c1"># Pressure at the minimum in energy is zero</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">P</span><span class="p">(</span><span class="mf">0.99</span> <span class="o">*</span> <span class="n">V0</span><span class="p">))</span>  <span class="c1"># Compressed</span>
 </pre></div>
 </div>
@@ -1012,8 +1029,10 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 
 <span class="n">A0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">A</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k_1</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">A0</span> <span class="o">/</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="n">k_1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">k1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="n">k_1</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">k_1</span><span class="p">)</span>
+
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1024,8 +1043,8 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">A</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k_1</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1049,8 +1068,8 @@ Sometimes, it might be desirable to go back to basics though, especially if you 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dAdk_1</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;$S_</span><span class="si">{k1}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="s1">&#39;$S_{k\_1}$&#39;</span><span class="p">]);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;$S_</span><span class="si">{k1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="s2">&quot;$S_{k\_1}$&quot;</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>

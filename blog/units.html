@@ -588,12 +588,15 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
+
 <span class="n">CA0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">CA</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">CA</span> <span class="o">-</span> <span class="n">CA0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
 
 <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
@@ -628,18 +631,22 @@ document.write(`
 <span class="n">CA</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">CA</span> <span class="o">-</span> <span class="n">CA0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">t0</span><span class="p">):</span>
-    <span class="s1">&#39;wrapped fsolve command to work with units&#39;</span>
+    <span class="s2">&quot;wrapped fsolve command to work with units&quot;</span>
     <span class="n">tU</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>  <span class="c1"># units on initial guess, normalized</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-        <span class="s1">&#39;t will be unitless, so we add unit to it. t * tU has units.&#39;</span>
+        <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">tU</span><span class="p">))</span>
 
-    <span class="n">sol</span><span class="p">,</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">sol</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
+
 
 <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
@@ -668,12 +675,13 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span> <span class="k">as</span> <span class="n">_fsolve</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">t0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;wrapped fsolve command to work with units. We get the units on</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapped fsolve command to work with units. We get the units on</span>
 <span class="sd">    the function argument, then wrap the function so we can add units</span>
 <span class="sd">    to the argument and return floats. Finally we call the original</span>
 <span class="sd">    fsolve from scipy. Note: this does not support all of the options</span>
-<span class="sd">    to fsolve.&#39;&#39;&#39;</span>
+<span class="sd">    to fsolve.&quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">tU</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t0</span><span class="p">]</span>  <span class="c1"># units on initial guess, normalized</span>
@@ -681,9 +689,9 @@ document.write(`
         <span class="n">tU</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-        <span class="s1">&#39;t will be unitless, so we add unit to it. t * tU has units.&#39;</span>
+        <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="n">T</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">tU</span>
 
@@ -694,32 +702,35 @@ document.write(`
 
     <span class="n">sol</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
+
 
 <span class="c1">### Problem 1</span>
 <span class="n">CA0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">CA</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">CA</span> <span class="o">-</span> <span class="n">CA0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 
 
 <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
-<span class="n">sol1</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sol1 = &#39;</span><span class="p">,</span><span class="n">sol1</span><span class="p">)</span>
+<span class="p">(</span><span class="n">sol1</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sol1 = &quot;</span><span class="p">,</span> <span class="n">sol1</span><span class="p">)</span>
+
 
 <span class="c1">### Problem 2</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">func2</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">X</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">25</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
 
-<span class="n">Xguess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="p">,</span> <span class="mf">5.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="p">]</span>
+
+<span class="n">Xguess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.2</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="p">,</span> <span class="mf">5.2</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="p">]</span>
 <span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func2</span><span class="p">,</span> <span class="n">Xguess</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s2a = </span><span class="si">{0}</span><span class="se">\n</span><span class="s1">s2b = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;s2a = </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">s2b = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -744,14 +755,25 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span> <span class="k">as</span> <span class="n">_fsolve</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span>
-           <span class="n">fprime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">col_deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-           <span class="n">xtol</span><span class="o">=</span><span class="mf">1.49012e-08</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-           <span class="n">epsfcn</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">diag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;wrapped fsolve command to work with units. We get the units on</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fsolve</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">(),</span>
+    <span class="n">fprime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_output</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">col_deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">xtol</span><span class="o">=</span><span class="mf">1.49012e-08</span><span class="p">,</span>
+    <span class="n">maxfev</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">band</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">epsfcn</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">factor</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">diag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapped fsolve command to work with units. We get the units on</span>
 <span class="sd">    the function argument, then wrap the function so we can add units</span>
 <span class="sd">    to the argument and return floats. Finally we call the original</span>
-<span class="sd">    fsolve from scipy. &#39;&#39;&#39;</span>
+<span class="sd">    fsolve from scipy.&quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">tU</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t0</span><span class="p">]</span>  <span class="c1"># units on initial guess, normalized</span>
@@ -759,9 +781,9 @@ document.write(`
         <span class="n">tU</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="s1">&#39;t will be unitless, so we add unit to it. t * tU has units.&#39;</span>
+        <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="n">T</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">tU</span>
 
@@ -770,59 +792,74 @@ document.write(`
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
 
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-           <span class="n">fprime</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span> <span class="n">col_deriv</span><span class="p">,</span>
-           <span class="n">xtol</span><span class="p">,</span> <span class="n">maxfev</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span>
-           <span class="n">epsfcn</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">diag</span><span class="p">)</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span>
+        <span class="n">wrapped_func</span><span class="p">,</span>
+        <span class="n">t0</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">,</span>
+        <span class="n">fprime</span><span class="p">,</span>
+        <span class="n">full_output</span><span class="p">,</span>
+        <span class="n">col_deriv</span><span class="p">,</span>
+        <span class="n">xtol</span><span class="p">,</span>
+        <span class="n">maxfev</span><span class="p">,</span>
+        <span class="n">band</span><span class="p">,</span>
+        <span class="n">epsfcn</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">,</span>
+        <span class="n">diag</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">ier</span><span class="p">,</span> <span class="n">mesg</span> <span class="o">=</span> <span class="n">sol</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">tU</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">ier</span><span class="p">,</span> <span class="n">mesg</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span><span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span> <span class="o">*</span> <span class="n">x2</span> <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">tU</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
         <span class="k">return</span> <span class="n">x</span>
+
 
 <span class="c1">### Problem 1</span>
 <span class="n">CA0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">CA</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">CA</span> <span class="o">-</span> <span class="n">CA0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 
 
 <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
-<span class="n">sol1</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sol1 = &#39;</span><span class="p">,</span><span class="n">sol1</span><span class="p">)</span>
+<span class="p">(</span><span class="n">sol1</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sol1 = &quot;</span><span class="p">,</span> <span class="n">sol1</span><span class="p">)</span>
+
 
 <span class="c1">### Problem 2</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">func2</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">X</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">25</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
 
-<span class="n">Xguess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="p">,</span> <span class="mf">5.2</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="p">]</span>
+
+<span class="n">Xguess</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.2</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="p">,</span> <span class="mf">5.2</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">J</span><span class="p">]</span>
 <span class="n">sol</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">ier</span><span class="p">,</span> <span class="n">mesg</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func2</span><span class="p">,</span> <span class="n">Xguess</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span> <span class="o">=</span> <span class="n">sol</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s2a = </span><span class="si">{0}</span><span class="se">\n</span><span class="s1">s2b = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;s2a = </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">s2b = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2a</span><span class="p">,</span> <span class="n">s2b</span><span class="p">))</span>
+
 
 <span class="c1">### Problem 3 - with an arg</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">func3</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">arg</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">arg</span><span class="o">**</span><span class="mi">2</span>
+
 
 <span class="n">Xguess</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span>
-<span class="n">arg</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span>
+<span class="n">arg</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kg</span>
 
-<span class="n">sol3</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func3</span><span class="p">,</span> <span class="n">Xguess</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">arg</span><span class="p">,))</span>
+<span class="p">(</span><span class="n">sol3</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func3</span><span class="p">,</span> <span class="n">Xguess</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">arg</span><span class="p">,))</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sol3 = &#39;</span><span class="p">,</span> <span class="n">sol3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sol3 = &quot;</span><span class="p">,</span> <span class="n">sol3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -877,8 +914,10 @@ document.write(`
 <span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 <span class="n">Ca0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">dCadt</span><span class="p">(</span><span class="n">Ca</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">Ca</span>
+
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
@@ -913,33 +952,49 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span> <span class="k">as</span> <span class="n">_odeint</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">odeint</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span>
-           <span class="n">Dfun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">col_deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-           <span class="n">ml</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-           <span class="n">tcrit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">hmax</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">hmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-           <span class="n">ixpr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mxstep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mxhnil</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mxordn</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-           <span class="n">mxords</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">printmessg</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 
+<span class="k">def</span><span class="w"> </span><span class="nf">odeint</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">y0</span><span class="p">,</span>
+    <span class="n">t</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">(),</span>
+    <span class="n">Dfun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">col_deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">full_output</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">ml</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tcrit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">h0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">hmax</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">hmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">ixpr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">mxstep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">mxhnil</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">mxordn</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">mxords</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">printmessg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">Y0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="c1"># put units on T if they are on the original t</span>
         <span class="c1"># check for units so we don&#39;t put them on twice</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">):</span>
             <span class="n">T</span> <span class="o">=</span> <span class="n">T</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">units</span>
         <span class="c1"># now for the dependent variable units. Y0 may be a scalar or</span>
         <span class="c1"># a list or an array. we want to check each element of y0 for</span>
         <span class="c1"># units, and add them to the corresponding element of Y0 if we</span>
         <span class="c1"># need to.</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">uY0</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Y0</span><span class="p">]</span> <span class="c1"># a list copy of contents of Y0</span>
+            <span class="n">uY0</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Y0</span><span class="p">]</span>  <span class="c1"># a list copy of contents of Y0</span>
             <span class="c1"># this works if y0 is an iterable, eg. a list or array</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y0</span><span class="p">):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uY0</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s1">&#39;units&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
-
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uY0</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">):</span>
                     <span class="n">uY0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">uY0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">yi</span><span class="o">.</span><span class="n">units</span>
 
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="c1"># we have a scalar</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Y0</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Y0</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">):</span>
                 <span class="n">uY0</span> <span class="o">=</span> <span class="n">Y0</span> <span class="o">*</span> <span class="n">y0</span><span class="o">.</span><span class="n">units</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">uY0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -950,50 +1005,86 @@ document.write(`
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
-        <span class="n">y</span><span class="p">,</span> <span class="n">infodict</span> <span class="o">=</span> <span class="n">_odeint</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                              <span class="n">Dfun</span><span class="p">,</span> <span class="n">col_deriv</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span>
-                              <span class="n">ml</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span>
-                              <span class="n">tcrit</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">hmin</span><span class="p">,</span>
-                              <span class="n">ixpr</span><span class="p">,</span> <span class="n">mxstep</span><span class="p">,</span> <span class="n">mxhnil</span><span class="p">,</span> <span class="n">mxordn</span><span class="p">,</span>
-                              <span class="n">mxords</span><span class="p">,</span> <span class="n">printmessg</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">infodict</span> <span class="o">=</span> <span class="n">_odeint</span><span class="p">(</span>
+            <span class="n">wrapped_func</span><span class="p">,</span>
+            <span class="n">y0</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">Dfun</span><span class="p">,</span>
+            <span class="n">col_deriv</span><span class="p">,</span>
+            <span class="n">full_output</span><span class="p">,</span>
+            <span class="n">ml</span><span class="p">,</span>
+            <span class="n">mu</span><span class="p">,</span>
+            <span class="n">rtol</span><span class="p">,</span>
+            <span class="n">atol</span><span class="p">,</span>
+            <span class="n">tcrit</span><span class="p">,</span>
+            <span class="n">h0</span><span class="p">,</span>
+            <span class="n">hmax</span><span class="p">,</span>
+            <span class="n">hmin</span><span class="p">,</span>
+            <span class="n">ixpr</span><span class="p">,</span>
+            <span class="n">mxstep</span><span class="p">,</span>
+            <span class="n">mxhnil</span><span class="p">,</span>
+            <span class="n">mxordn</span><span class="p">,</span>
+            <span class="n">mxords</span><span class="p">,</span>
+            <span class="n">printmessg</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">_odeint</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
-                    <span class="n">Dfun</span><span class="p">,</span> <span class="n">col_deriv</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span>
-                    <span class="n">ml</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span>
-                    <span class="n">tcrit</span><span class="p">,</span> <span class="n">h0</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">hmin</span><span class="p">,</span>
-                    <span class="n">ixpr</span><span class="p">,</span> <span class="n">mxstep</span><span class="p">,</span> <span class="n">mxhnil</span><span class="p">,</span> <span class="n">mxordn</span><span class="p">,</span>
-                    <span class="n">mxords</span><span class="p">,</span> <span class="n">printmessg</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">_odeint</span><span class="p">(</span>
+            <span class="n">wrapped_func</span><span class="p">,</span>
+            <span class="n">y0</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">Dfun</span><span class="p">,</span>
+            <span class="n">col_deriv</span><span class="p">,</span>
+            <span class="n">full_output</span><span class="p">,</span>
+            <span class="n">ml</span><span class="p">,</span>
+            <span class="n">mu</span><span class="p">,</span>
+            <span class="n">rtol</span><span class="p">,</span>
+            <span class="n">atol</span><span class="p">,</span>
+            <span class="n">tcrit</span><span class="p">,</span>
+            <span class="n">h0</span><span class="p">,</span>
+            <span class="n">hmax</span><span class="p">,</span>
+            <span class="n">hmin</span><span class="p">,</span>
+            <span class="n">ixpr</span><span class="p">,</span>
+            <span class="n">mxstep</span><span class="p">,</span>
+            <span class="n">mxhnil</span><span class="p">,</span>
+            <span class="n">mxordn</span><span class="p">,</span>
+            <span class="n">mxords</span><span class="p">,</span>
+            <span class="n">printmessg</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># now we need to put units onto the solution units should be the</span>
     <span class="c1"># same as y0. We cannot put mixed units in an array, so, we return a list</span>
-    <span class="n">m</span><span class="p">,</span><span class="n">n</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># y is an ndarray, so it has a shape</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># more than one equation, we need a list</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># y is an ndarray, so it has a shape</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># more than one equation, we need a list</span>
         <span class="n">uY</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y0</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s1">&#39;units&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">):</span>
-                <span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">yi</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">):</span>
+                <span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">yi</span><span class="o">.</span><span class="n">units</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">uY</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">uY</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y0</span><span class="o">.</span><span class="n">units</span>
 
     <span class="n">y</span> <span class="o">=</span> <span class="n">uY</span>
 
-
     <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">infodict</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">y</span>
+
 
 <span class="c1">##################################################################</span>
 <span class="c1"># test a single ODE</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 <span class="n">Ca0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">L</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">dCadt</span><span class="p">(</span><span class="n">Ca</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">Ca</span>
+
 
 <span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 <span class="n">sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dCadt</span><span class="p">,</span> <span class="n">Ca0</span><span class="p">,</span> <span class="n">tspan</span><span class="p">)</span>
@@ -1001,43 +1092,45 @@ document.write(`
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tspan</span><span class="p">,</span> <span class="n">sol</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$C_A$ (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$C_A$ (</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">))</span>
 
 <span class="c1">##################################################################</span>
 <span class="c1"># test coupled ODEs</span>
-<span class="n">lbmol</span> <span class="o">=</span> <span class="mf">453.59237</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">mol</span>
+<span class="n">lbmol</span> <span class="o">=</span> <span class="mf">453.59237</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mol</span>
 
 <span class="n">kprime</span> <span class="o">=</span> <span class="mf">0.0266</span> <span class="o">*</span> <span class="n">lbmol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">hr</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">lb</span>
 <span class="n">Fa0</span> <span class="o">=</span> <span class="mf">1.08</span> <span class="o">*</span> <span class="n">lbmol</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">hr</span>
 <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.0166</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">lb</span>
 <span class="n">epsilon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.15</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">dFdW</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">alpha0</span><span class="p">):</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">F</span>
-    <span class="n">dXdW</span> <span class="o">=</span> <span class="n">kprime</span> <span class="o">/</span> <span class="n">Fa0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
-    <span class="n">dydW</span> <span class="o">=</span> <span class="o">-</span> <span class="n">alpha0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">dXdW</span> <span class="o">=</span> <span class="n">kprime</span> <span class="o">/</span> <span class="n">Fa0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="n">dydW</span> <span class="o">=</span> <span class="o">-</span><span class="n">alpha0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dXdW</span><span class="p">,</span> <span class="n">dydW</span><span class="p">]</span>
+
 
 <span class="n">X0</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless</span>
 <span class="n">y0</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># initial conditions</span>
-<span class="n">F0</span> <span class="o">=</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span> <span class="c1"># one without units, one with units, both are dimensionless</span>
+<span class="n">F0</span> <span class="o">=</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span>  <span class="c1"># one without units, one with units, both are dimensionless</span>
 
-<span class="n">wspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">lb</span>
+<span class="n">wspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">lb</span>
 
 <span class="n">sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dFdW</span><span class="p">,</span> <span class="n">F0</span><span class="p">,</span> <span class="n">wspan</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">alpha</span><span class="p">,))</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">sol</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test 2&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test 2&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wspan</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">wspan</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;$P/P_0$&#39;</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Catalyst weight (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wspan</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">));</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;$P/P_0$&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Catalyst weight (</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wspan</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">latex</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
@@ -1065,10 +1158,10 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
-<span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="c1"># characteristic length</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>  <span class="c1"># characteristic length</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">L</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">L</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">L</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">L</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1078,7 +1171,7 @@ document.write(`
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="c1"># characteristic length</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>  <span class="c1"># characteristic length</span>
 
 <span class="ne">ModuleNotFoundError</span>: No module named &#39;quantities&#39;
 </pre></div>
@@ -1104,16 +1197,18 @@ document.write(`
 <span class="c1"># let tau = t * k</span>
 <span class="c1"># so t = tau / k</span>
 
-<span class="n">X</span> <span class="o">=</span> <span class="n">CA</span> <span class="o">/</span> <span class="n">CA0</span> <span class="c1"># desired exit dimensionless concentration</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">CA</span> <span class="o">/</span> <span class="n">CA0</span>  <span class="c1"># desired exit dimensionless concentration</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">tau</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">X</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tau</span><span class="p">)</span>
 
+
 <span class="n">tauguess</span> <span class="o">=</span> <span class="mi">2</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">tauguess</span><span class="p">))</span> <span class="c1"># confirm we have a dimensionless function</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">tauguess</span><span class="p">))</span>  <span class="c1"># confirm we have a dimensionless function</span>
 
-<span class="n">tau_sol</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tauguess</span><span class="p">)</span>
+<span class="p">(</span><span class="n">tau_sol</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tauguess</span><span class="p">)</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">tau_sol</span> <span class="o">/</span> <span class="n">k</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 </pre></div>
@@ -1150,6 +1245,7 @@ document.write(`
 <span class="k">def</span><span class="w"> </span><span class="nf">dXdtau</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">X</span>
 
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
 
@@ -1159,7 +1255,7 @@ document.write(`
 <span class="n">X0</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">X_sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dXdtau</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">tauspan</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ca at t = </span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">X_sol</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ca0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ca at t = </span><span class="si">{0}</span><span class="s2"> = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tspan</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">X_sol</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ca0</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>

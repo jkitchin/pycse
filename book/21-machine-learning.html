@@ -584,6 +584,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">jacobian</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">least_squares</span>
+
 least_squares<span class="o">?</span>
 </pre></div>
 </div>
@@ -594,12 +595,13 @@ least_squares<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some generated data</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">Y</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -612,9 +614,12 @@ least_squares<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="p">):</span>
     <span class="n">b1</span><span class="p">,</span> <span class="n">w10</span><span class="p">,</span> <span class="n">w00</span><span class="p">,</span> <span class="n">b00</span><span class="p">,</span> <span class="n">w11</span><span class="p">,</span> <span class="n">w01</span><span class="p">,</span> <span class="n">b01</span><span class="p">,</span> <span class="n">w12</span><span class="p">,</span> <span class="n">w02</span><span class="p">,</span> <span class="n">b02</span> <span class="o">=</span> <span class="n">pars</span>
-    <span class="n">pred</span> <span class="o">=</span> <span class="p">(</span><span class="n">b1</span> <span class="o">+</span> <span class="n">w10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w00</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b00</span><span class="p">)</span>
-               <span class="o">+</span> <span class="n">w11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w01</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b01</span><span class="p">)</span>
-               <span class="o">+</span> <span class="n">w12</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w02</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b02</span><span class="p">))</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">b1</span>
+        <span class="o">+</span> <span class="n">w10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w00</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b00</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">w11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w01</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b01</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">w12</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">w02</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b02</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">pred</span>
 
 
@@ -655,22 +660,22 @@ least_squares<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     message: The maximum number of function evaluations is exceeded.
      success: False
       status: 0
-         fun: [-4.025e-05  4.981e-04 ...  8.608e-04  1.221e-03]
-           x: [-7.835e+01 -1.528e+01 -5.473e+01 -2.422e+00  3.490e+01
-                5.108e-01  2.197e+00  2.948e+01  5.331e+00  2.801e+00]
-        cost: 1.3761740777863649e-05
-         jac: [[-1.000e+00  9.844e-01 ...  0.000e+00 -4.318e-01]
-               [-1.000e+00  9.983e-01 ... -7.099e-03 -3.479e-01]
+         fun: [-3.078e-05  5.045e-04 ...  8.615e-04  1.221e-03]
+           x: [-9.640e+01 -1.881e+01 -5.471e+01 -2.527e+00  4.275e+01
+                5.096e-01  2.299e+00  3.614e+01  5.331e+00  2.904e+00]
+        cost: 1.3717297620557908e-05
+         jac: [[-1.000e+00  9.873e-01 ...  0.000e+00 -4.320e-01]
+               [-1.000e+00  9.986e-01 ... -7.101e-03 -3.479e-01]
                ...
-               [-1.000e+00  1.000e+00 ... -1.243e-05 -1.268e-05]
-               [-1.000e+00  1.000e+00 ... -1.020e-05 -1.021e-05]]
-        grad: [ 2.868e-04 -2.866e-04 -1.343e-08 -6.921e-06  2.819e-04
-                1.078e-04  3.376e-04  2.864e-04  1.443e-06  2.141e-05]
-  optimality: 0.0003376053218611024
+               [-1.000e+00  1.000e+00 ... -1.243e-05 -1.281e-05]
+               [-1.000e+00  1.000e+00 ... -1.011e-05 -1.002e-05]]
+        grad: [ 9.603e-05 -9.597e-05 -4.471e-09 -2.074e-06  9.470e-05
+                3.640e-05  1.130e-04  9.593e-05  4.853e-07  6.958e-06]
+  optimality: 0.00011300708996586726
  active_mask: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00
                 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00]
         nfev: 1000
-        njev: 825
+        njev: 816
 </pre></div>
 </div>
 </div>
@@ -683,7 +688,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3761740777863649e-05)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3717297620557908e-05)
 </pre></div>
 </div>
 </div>
@@ -706,17 +711,21 @@ least_squares<span class="o">?</span>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">hessian</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">sse</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">resid</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">resid</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+
 <span class="n">H</span> <span class="o">=</span> <span class="n">hessian</span><span class="p">(</span><span class="n">sse</span><span class="p">)</span>
 <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">pars</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([5.31110685e+02, 1.23030476e+01, 6.25416790e-01, 1.62626397e-01,
-       2.18807328e-02, 8.45888385e-05, 2.16753282e-07, 8.97852279e-09,
-       2.80641645e-08, 4.27017427e-07])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([5.32392256e+02, 1.23552754e+01, 6.26958120e-01, 1.62800024e-01,
+       2.21548307e-02, 8.80643018e-05, 4.36379508e-07, 4.82371154e-08,
+       1.92324198e-09, 5.93418781e-09])
 </pre></div>
 </div>
 </div>
@@ -729,7 +738,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(2.868820641135359e-32)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(3.1469759028169525e-34)
 </pre></div>
 </div>
 </div>
@@ -738,15 +747,15 @@ least_squares<span class="o">?</span>
 <p>Finally, we can graphically show that this model works ok.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;fit&#39;</span><span class="p">]);</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;fit&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4af1758d0272494707dcaaedb86ce304ead66720f94edf5f89dcc9c6a5603cff.png" src="../_images/4af1758d0272494707dcaaedb86ce304ead66720f94edf5f89dcc9c6a5603cff.png" />
+<img alt="../_images/9fa7dfabba1a3e8f39da564d735c7242d9737bc5bf1e48b3e16b84f67c53b73e.png" src="../_images/9fa7dfabba1a3e8f39da564d735c7242d9737bc5bf1e48b3e16b84f67c53b73e.png" />
 </div>
 </div>
 <p>Evidently, we just have not reached the required tolerances for least_squares to claim success.</p>
@@ -759,9 +768,9 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-78.3538942 , -15.27528532, -54.7268745 ,  -2.42167161,
-        34.90449711,   0.51075853,   2.19651024,  29.48226588,
-         5.33125211,   2.80123363])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-96.40084537, -18.81395941, -54.70530606,  -2.5266677 ,
+        42.75192355,   0.50957848,   2.29868807,  36.14361614,
+         5.33121107,   2.90355631])
 </pre></div>
 </div>
 </div>
@@ -773,9 +782,9 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-78.3538942 , -15.27528532, -54.7268745 ,  -2.42167161,
-        34.90449711,   0.51075853,   2.19651024,  29.48226588,
-         5.33125211,   2.80123363])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-96.40084537, -18.81395941, -54.70530606,  -2.5266677 ,
+        42.75192355,   0.50957848,   2.29868807,  36.14361614,
+         5.33121107,   2.90355631])
 </pre></div>
 </div>
 </div>
@@ -785,17 +794,17 @@ least_squares<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">EX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">EY</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">EX</span><span class="p">,</span> <span class="o">*</span><span class="n">pars</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-<span class="n">DY</span> <span class="o">=</span> <span class="n">EX</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">DY</span> <span class="o">=</span> <span class="n">EX</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">EX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">EX</span><span class="p">,</span> <span class="n">EY</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Real function&#39;</span><span class="p">,</span> <span class="s1">&#39;Model&#39;</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">EX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">,</span> <span class="n">EX</span><span class="p">,</span> <span class="n">EY</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;Real function&quot;</span><span class="p">,</span> <span class="s2">&quot;Model&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9114ec0bdd177ec1fe08eea9fd47f081e15f79a04b667eb69766ae02e955cefd.png" src="../_images/9114ec0bdd177ec1fe08eea9fd47f081e15f79a04b667eb69766ae02e955cefd.png" />
+<img alt="../_images/48f7b756a9851d85c987ef7a02514416dff1cb3171ba6d43647e81b11c2468c4.png" src="../_images/48f7b756a9851d85c987ef7a02514416dff1cb3171ba6d43647e81b11c2468c4.png" />
 </div>
 </div>
 <p>You can see that this model saturates for large <span class="math notranslate nohighlight">\(x\)</span>. That might be anticipated from knowledge of the tanh function, it also saturates at large values of <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -803,8 +812,8 @@ least_squares<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">tx</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -870,11 +879,16 @@ y = [w10, w11, w12] @ np.tanh([w01 * x + b01]) + b1
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autograd.numpy.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npr</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">init_random_params</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="p">,</span> <span class="n">rs</span><span class="o">=</span><span class="n">npr</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a list of (weights, biases) tuples, one for each layer.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[(</span><span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span>   <span class="c1"># weight matrix</span>
-             <span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>           <span class="c1"># bias vector</span>
-            <span class="k">for</span> <span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">layer_sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="p">(</span>
+            <span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span>  <span class="c1"># weight matrix</span>
+            <span class="n">rs</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">outsize</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span>
+        <span class="p">)</span>  <span class="c1"># bias vector</span>
+        <span class="k">for</span> <span class="n">insize</span><span class="p">,</span> <span class="n">outsize</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">layer_sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -885,7 +899,7 @@ y = [w10, w11, w12] @ np.tanh([w01 * x + b01]) + b1
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">init_random_params</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
     <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">wb</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;w</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">, b</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;w</span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">, b</span><span class="si">{0}</span><span class="s2">: </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
@@ -924,12 +938,11 @@ w1: (3, 1), b1: (1,)
 <span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">500</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_EPOCHS</span><span class="p">):</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective</span><span class="p">),</span> <span class="n">params</span><span class="p">,</span>
-                  <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">adam</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">objective</span><span class="p">),</span> <span class="n">params</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># print every 100th step</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">objective</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">objective</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">objective</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2e-5</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Tolerance reached at epoch </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">, stopping&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tolerance reached at epoch </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, stopping&quot;</span><span class="p">)</span>
         <span class="k">break</span>
 </pre></div>
 </div>
@@ -951,7 +964,7 @@ w1: (3, 1), b1: (1,)
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
     <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">wb</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;w</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">, b</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;w</span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">, b</span><span class="si">{0}</span><span class="s2">: </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">pars</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># from least_squares</span>
 </pre></div>
 </div>
@@ -961,8 +974,8 @@ w1: (3, 1), b1: (1,)
 w1: [[ 0.71056124]
  [ 0.43417877]
  [-0.41392594]], b1: [-0.30634356]
-[-78.3538942  -15.27528532 -54.7268745   -2.42167161  34.90449711
-   0.51075853   2.19651024  29.48226588   5.33125211   2.80123363]
+[-96.40084537 -18.81395941 -54.70530606  -2.5266677   42.75192355
+   0.50957848   2.29868807  36.14361614   5.33121107   2.90355631]
 </pre></div>
 </div>
 </div>
@@ -972,14 +985,14 @@ w1: [[ 0.71056124]
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Y2</span> <span class="o">=</span> <span class="n">X2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">Z2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">X2</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;analytical&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;NN&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">X2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

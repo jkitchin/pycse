@@ -643,9 +643,9 @@ y_L - \beta &amp;=&amp;0
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">residuals</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
     <span class="s2">&quot;When we have the right values of y, this function will be zero.&quot;</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># we need a zero for each node</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># we need a zero for each node</span>
 
-    <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">alpha</span> <span class="c1"># this is the boundary value y(alpha) = 0</span>
+    <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">alpha</span>  <span class="c1"># this is the boundary value y(alpha) = 0</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># This is not actually used</span>
@@ -658,7 +658,7 @@ y_L - \beta &amp;=&amp;0
         <span class="c1"># y&#39;&#39; + 3 * y * y&#39; = 0</span>
         <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">YPP</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">YP</span>
 
-    <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta</span> <span class="c1"># y(beta) = 0</span>
+    <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta</span>  <span class="c1"># y(beta) = 0</span>
 
     <span class="k">return</span> <span class="n">res</span>
 </pre></div>
@@ -729,8 +729,8 @@ y_L - \beta &amp;=&amp;0
 <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -773,8 +773,8 @@ y_L - \beta &amp;=&amp;0
 <span class="n">ypp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">yp</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ypp</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">*</span> <span class="n">yp</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;residuals&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;residuals&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -852,9 +852,11 @@ solve_bvp<span class="o">?</span>
 <p>We don’t know what the maximum velocity is, so we make a guess, say 0.5. Then, we get the parameters, and apply them to an array of y values.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d</span><span class="p">],</span>  <span class="c1"># x-points</span>
-                  <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>    <span class="c1"># y-points</span>
-                  <span class="mi">2</span><span class="p">)</span>              <span class="c1"># polynomial order</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d</span><span class="p">],</span>  <span class="c1"># x-points</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># y-points</span>
+    <span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># polynomial order</span>
 <span class="n">pars</span>  <span class="c1"># parabola coefficients for U1</span>
 </pre></div>
 </div>
@@ -872,8 +874,8 @@ solve_bvp<span class="o">?</span>
 
 <span class="n">U1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;U1&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
 <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">U1</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -891,7 +893,7 @@ solve_bvp<span class="o">?</span>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">du1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyder</span><span class="p">(</span><span class="n">pars</span><span class="p">)</span>
 <span class="n">U2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">du1</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U2</span><span class="p">)</span>
-<span class="c1">#U2 = np.gradient(U1, Y, edge_order=2)</span>
+<span class="c1"># U2 = np.gradient(U1, Y, edge_order=2)</span>
 
 <span class="c1"># Combine the two rows into one initial guess for U</span>
 <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">U1</span><span class="p">,</span> <span class="n">U2</span><span class="p">])</span>
@@ -910,14 +912,15 @@ solve_bvp<span class="o">?</span>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;u1&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;u1&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;u1&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;u1&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>  <span class="c1"># makes graphs share the x-axis, and adds a second y-axis</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;u2&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;u2&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;u2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;u2&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -933,8 +936,8 @@ solve_bvp<span class="o">?</span>
 <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_bvp</span><span class="p">(</span><span class="n">bvp</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;U&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -964,11 +967,13 @@ solve_bvp<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Phi</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Constant given for the problem</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">bvp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
     <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">C</span>  <span class="c1"># these are two rows for all the values of x</span>
     <span class="n">dc1dx</span> <span class="o">=</span> <span class="n">c2</span>
     <span class="n">dc2dx</span> <span class="o">=</span> <span class="n">Phi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">c1</span><span class="o">**</span><span class="mi">2</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dc1dx</span><span class="p">,</span> <span class="n">dc2dx</span><span class="p">]</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">bc</span><span class="p">(</span><span class="n">Ca</span><span class="p">,</span> <span class="n">Cb</span><span class="p">):</span>
     <span class="n">c1a</span><span class="p">,</span> <span class="n">c2a</span> <span class="o">=</span> <span class="n">Ca</span>
@@ -976,8 +981,10 @@ solve_bvp<span class="o">?</span>
 
     <span class="c1"># Now, evaluate the derivatives at the first boundary condition</span>
     <span class="n">c1prime</span><span class="p">,</span> <span class="n">c2prime</span> <span class="o">=</span> <span class="n">bvp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">c1a</span><span class="p">,</span> <span class="n">c2a</span><span class="p">])</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">c1prime</span><span class="p">,</span>  <span class="c1"># will all equal zero. Alternatively use c2a</span>
-            <span class="n">c1b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># c1(b) = 1</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">c1prime</span><span class="p">,</span>  <span class="c1"># will all equal zero. Alternatively use c2a</span>
+        <span class="n">c1b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">]</span>  <span class="c1"># c1(b) = 1</span>
 </pre></div>
 </div>
 </div>
@@ -987,7 +994,7 @@ solve_bvp<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="n">C1</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="mi">1200</span><span class="c1">#np.ones(X.shape)</span>
+<span class="n">C1</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="mi">1200</span>  <span class="c1"># np.ones(X.shape)</span>
 <span class="n">C2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">C1</span><span class="p">);</span>
@@ -1020,8 +1027,8 @@ solve_bvp<span class="o">?</span>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]);</span>
 </pre></div>
@@ -1068,6 +1075,7 @@ solve_bvp<span class="o">?</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simps</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="n">simps</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -1076,7 +1084,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.008249311811255714
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2782/1627362779.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2732/1011323283.py:2: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
   print(np.trapz(c**2, sol.x))
 </pre></div>
 </div>
@@ -1086,7 +1094,7 @@ solve_bvp<span class="o">?</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simps</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nb">print</span><span class="p">(</span><span class="n">simps</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="n">simps</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 
 <span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
 </pre></div>
@@ -1098,9 +1106,11 @@ solve_bvp<span class="o">?</span>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">c1</span><span class="o">**</span><span class="mi">2</span>
+
 
 <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>

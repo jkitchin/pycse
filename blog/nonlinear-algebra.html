@@ -608,8 +608,9 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="n">nu</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="n">s</span>
 <span class="n">k</span> <span class="o">=</span> <span class="mf">0.23</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="n">mol</span> <span class="o">/</span> <span class="n">s</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">Ca</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">V</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">*</span> <span class="p">(</span><span class="n">Cao</span> <span class="o">-</span> <span class="n">Ca</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Ca</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">V</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">*</span> <span class="p">(</span><span class="n">Cao</span> <span class="o">-</span> <span class="n">Ca</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Ca</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -621,7 +622,7 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;C (mol/m^3)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;C (mol/m^3)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]);</span>
 </pre></div>
 </div>
@@ -636,7 +637,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
 
 <span class="n">cguess</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">c</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cguess</span><span class="p">)</span>
+<span class="p">(</span><span class="n">c</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cguess</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">mol</span> <span class="o">/</span> <span class="n">L</span><span class="p">))</span>
@@ -670,12 +671,15 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="n">nu</span> <span class="o">=</span> <span class="mf">10.0</span>
 <span class="n">Fao</span> <span class="o">=</span> <span class="mf">1.0</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">integrand</span><span class="p">(</span><span class="n">Fa</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Fa</span> <span class="o">/</span> <span class="n">nu</span><span class="p">)</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">Fa</span><span class="p">):</span>
-    <span class="n">integral</span><span class="p">,</span><span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">Fao</span><span class="p">,</span> <span class="n">Fa</span><span class="p">)</span>
+    <span class="n">integral</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="n">Fao</span><span class="p">,</span> <span class="n">Fa</span><span class="p">)</span>
     <span class="k">return</span> <span class="mf">100.0</span> <span class="o">-</span> <span class="n">integral</span>
+
 
 <span class="n">vfunc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 </pre></div>
@@ -689,7 +693,7 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">vfunc</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Molar flow rate&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Molar flow rate&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -701,8 +705,8 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Fa_guess</span> <span class="o">=</span> <span class="mf">0.1</span>
-<span class="n">Fa_exit</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">vfunc</span><span class="p">,</span> <span class="n">Fa_guess</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The exit concentration is </span><span class="si">{0:1.2f}</span><span class="s1"> mol/L&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Fa_exit</span> <span class="o">/</span> <span class="n">nu</span><span class="p">))</span>
+<span class="p">(</span><span class="n">Fa_exit</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">vfunc</span><span class="p">,</span> <span class="n">Fa_guess</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The exit concentration is </span><span class="si">{0:1.2f}</span><span class="s2"> mol/L&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Fa_exit</span> <span class="o">/</span> <span class="n">nu</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -732,45 +736,54 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">8</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
 
 <span class="nd">@np</span><span class="o">.</span><span class="n">vectorize</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x0</span> <span class="o">=</span> <span class="mf">0.0</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">tmp</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">y1</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="n">y1</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">y1</span>
+
 
 <span class="nd">@np</span><span class="o">.</span><span class="n">vectorize</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x0</span> <span class="o">=</span> <span class="mf">0.0</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">tmp</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">y1</span><span class="p">,</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="n">y1</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">y1</span>
 
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="p">,</span> <span class="n">gy</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;fy&#39;</span><span class="p">,</span> <span class="s1">&#39;gy&#39;</span><span class="p">]);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;fy&quot;</span><span class="p">,</span> <span class="s2">&quot;gy&quot;</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2374/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2348/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last ten iterations.
-  y1, = fsolve(tmp, x0)
-/tmp/ipykernel_2374/4022852329.py:19: RuntimeWarning: The iteration is not making good progress, as measured by the 
+  (y1,) = fsolve(tmp, x0)
+/tmp/ipykernel_2348/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last five Jacobian evaluations.
-  y1, = fsolve(tmp, x0)
+  (y1,) = fsolve(tmp, x0)
 </pre></div>
 </div>
 <img alt="../_images/c4064c0d3bd573c56bd372d105e7ea22e4b477859c90da09c981cc675c1ab329.png" src="../_images/c4064c0d3bd573c56bd372d105e7ea22e4b477859c90da09c981cc675c1ab329.png" />
@@ -780,8 +793,9 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)]</span>
+
 
 <span class="nb">print</span><span class="p">(</span><span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
 </pre></div>
@@ -803,7 +817,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <p>These equations are trivial to solve:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">]],[</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">]],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -832,13 +846,13 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ode</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">LAMBDA</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="n">pfpx</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span>
     <span class="n">pfpy</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">pfpLAMBDA</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span><span class="p">;</span>
-    <span class="n">pgpx</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">pgpy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.</span> <span class="o">+</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">pgpLAMBDA</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+    <span class="n">pfpLAMBDA</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span>
+    <span class="n">pgpx</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pgpy</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.0</span> <span class="o">+</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">LAMBDA</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pgpLAMBDA</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">dxdLAMBDA</span> <span class="o">=</span> <span class="p">(</span><span class="n">pfpy</span> <span class="o">*</span> <span class="n">pgpLAMBDA</span> <span class="o">-</span> <span class="n">pfpLAMBDA</span> <span class="o">*</span> <span class="n">pgpy</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">pfpx</span> <span class="o">*</span> <span class="n">pgpy</span> <span class="o">-</span> <span class="n">pfpy</span> <span class="o">*</span> <span class="n">pgpx</span><span class="p">)</span>
     <span class="n">dydLAMBDA</span> <span class="o">=</span> <span class="p">(</span><span class="n">pfpLAMBDA</span> <span class="o">*</span> <span class="n">pgpx</span> <span class="o">-</span> <span class="n">pfpx</span> <span class="o">*</span> <span class="n">pgpLAMBDA</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">pfpx</span> <span class="o">*</span> <span class="n">pgpy</span> <span class="o">-</span> <span class="n">pfpy</span> <span class="o">*</span> <span class="n">pgpx</span><span class="p">)</span>
     <span class="n">dXdLAMBDA</span> <span class="o">=</span> <span class="p">[</span><span class="n">dxdLAMBDA</span><span class="p">,</span> <span class="n">dydLAMBDA</span><span class="p">]</span>
@@ -852,7 +866,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="n">X</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">ode</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">lambda_span</span><span class="p">)</span>
 
 <span class="n">xsol</span><span class="p">,</span> <span class="n">ysol</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The solution is at x=</span><span class="si">{0:1.3f}</span><span class="s1">, y=</span><span class="si">{1:1.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xsol</span><span class="p">,</span> <span class="n">ysol</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The solution is at x=</span><span class="si">{0:1.3f}</span><span class="s2">, y=</span><span class="si">{1:1.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xsol</span><span class="p">,</span> <span class="n">ysol</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">xsol</span><span class="p">,</span> <span class="n">ysol</span><span class="p">),</span> <span class="n">g</span><span class="p">(</span><span class="n">xsol</span><span class="p">,</span> <span class="n">ysol</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -884,16 +898,18 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">dxdL</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">):</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Lambda</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
 
-<span class="n">x0</span> <span class="o">=</span> <span class="mf">6.0</span><span class="o">/</span><span class="mf">5.0</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dxdL</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Lambda</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="n">x0</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">/</span> <span class="mf">5.0</span>
 <span class="n">Lspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dxdL</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">Lspan</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Lspan</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$\lambda$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$\lambda$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -908,16 +924,18 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">dxdL</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">Lambda</span><span class="p">)</span>
+
 
 <span class="n">x0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
 <span class="n">Lspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">dxdL</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">Lspan</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Lspan</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$\lambda$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$\lambda$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -939,6 +957,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">24</span><span class="p">]))</span>
 </pre></div>
 </div>
@@ -956,7 +975,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">24</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">24</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -976,7 +995,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">24</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">24</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
@@ -1001,19 +1020,22 @@ k = 0.23 * u.L/u.mol/u.s;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_ivp</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">12.0</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mf">4.0</span>
+    <span class="k">return</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">12.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">4.0</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">event</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">f</span> <span class="c1"># we want f = 0</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">f</span>  <span class="c1"># we want f = 0</span>
     <span class="k">return</span> <span class="n">value</span>
+
 
 <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">120</span><span class="p">,)</span>
 
 <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
-<span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># these are the found roots</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># these are the found roots</span>
 </pre></div>
 </div>
 </div>
@@ -1037,8 +1059,10 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="n">Bi</span> <span class="o">=</span> <span class="mi">1</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">jn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">Bi</span> <span class="o">*</span> <span class="n">jn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
 
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">));</span>
@@ -1060,28 +1084,32 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="n">Bi</span> <span class="o">=</span> <span class="mi">1</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="s2">&quot;function we want roots for&quot;</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">jn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">Bi</span> <span class="o">*</span> <span class="n">jn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">fprime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
     <span class="s2">&quot;df/dx&quot;</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">jn</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">Bi</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">jn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">e1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
     <span class="s2">&quot;event function to find zeros of f&quot;</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">f</span>
     <span class="k">return</span> <span class="n">value</span>
 
+
 <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">),)</span>
 <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 
 <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">e1</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s1">&#39;.-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Numerical solution&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">),</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Analytical function&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="o">.</span><span class="n">y_events</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;roots&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s2">&quot;.-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Numerical solution&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Analytical function&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="o">.</span><span class="n">y_events</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;roots&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1103,19 +1131,21 @@ y &amp;=&amp; 8 - x^2
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>            <span class="c1"># unpack the array in the argument</span>
-    <span class="n">z1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>       <span class="c1"># first equation</span>
-    <span class="n">z2</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>   <span class="c1"># second equation</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">]</span>     <span class="c1"># list of zeros</span>
 
-<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>           <span class="c1"># initial guesses</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>  <span class="c1"># unpack the array in the argument</span>
+    <span class="n">z1</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># first equation</span>
+    <span class="n">z2</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># second equation</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">]</span>  <span class="c1"># list of zeros</span>
+
+
+<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>  <span class="c1"># initial guesses</span>
 <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span>
 <span class="n">sol</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">guess</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
 
 <span class="c1"># of course there may be more than one solution</span>
-<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>           <span class="c1"># initial guesses</span>
+<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># initial guesses</span>
 <span class="n">guess</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span>
 <span class="n">sol</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">guess</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>

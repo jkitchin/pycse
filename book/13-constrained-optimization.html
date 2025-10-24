@@ -584,19 +584,21 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="n">V</span> <span class="o">=</span> <span class="mi">355</span>   <span class="c1"># cm^3</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mi">355</span>  <span class="c1"># cm^3</span>
 <span class="n">cost_tb</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># $/cm^2</span>
-<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span> <span class="c1"># $/cm^2</span>
+<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span>  <span class="c1"># $/cm^2</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cost</span><span class="p">(</span><span class="n">D</span><span class="p">):</span>
-    <span class="n">area_top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
-    
-    <span class="n">L</span> <span class="o">=</span> <span class="n">V</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># this is the elimination step</span>
+    <span class="n">area_top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">L</span> <span class="o">=</span> <span class="n">V</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># this is the elimination step</span>
     <span class="n">area_side</span> <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
-    
-    <span class="c1">#print((np.pi / 4) * D**2 * L)</span>
-    
+
+    <span class="c1"># print((np.pi / 4) * D**2 * L)</span>
+
     <span class="k">return</span> <span class="n">area_top</span> <span class="o">*</span> <span class="n">cost_tb</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">area_side</span> <span class="o">*</span> <span class="n">cost_side</span>
+
 
 <span class="n">cost</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
@@ -614,6 +616,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+
 <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
 <span class="n">sol</span>
 </pre></div>
@@ -643,21 +646,24 @@ document.write(`
 <span class="n">ct</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># Cost of the top $/cm**2</span>
 <span class="n">cs</span> <span class="o">=</span> <span class="mf">0.043</span>  <span class="c1"># Cost of the side $/cm**2</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">cost</span><span class="p">(</span><span class="n">D</span><span class="p">):</span>
     <span class="n">radius</span> <span class="o">=</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">top_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">top_bottom_cost</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ct</span> <span class="o">*</span> <span class="n">top_area</span>
-    <span class="n">L</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span> <span class="c1"># solved from the volume</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># solved from the volume</span>
     <span class="n">side_cost</span> <span class="o">=</span> <span class="n">cs</span> <span class="o">*</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
     <span class="k">return</span> <span class="n">top_bottom_cost</span> <span class="o">+</span> <span class="n">side_cost</span>
+
 
 <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">cost</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Diameter&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Cost&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Diameter&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Cost&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -669,9 +675,11 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
-<span class="n">D</span><span class="p">,</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+<span class="p">(</span><span class="n">D</span><span class="p">,)</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
 <span class="n">L</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The optimal diameter is </span><span class="si">{</span><span class="n">D</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> cm. The optimal length is </span><span class="si">{</span><span class="n">L</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> cm. The cost is $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;The optimal diameter is </span><span class="si">{</span><span class="n">D</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> cm. The optimal length is </span><span class="si">{</span><span class="n">L</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> cm. The cost is $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2">.&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -703,11 +711,8 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">,</span>
-     <span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span>
-     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span>
-     <span class="mf">5.0</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">}</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">}</span>
 <span class="n">d</span>
 </pre></div>
 </div>
@@ -725,7 +730,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <p>Now, we can retrieve data from it like this:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mf">5.0</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mf">5.0</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -737,7 +742,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
 <span class="n">d</span>
 </pre></div>
 </div>
@@ -755,7 +760,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <p>It is usually an error to ask for a key that does not exist.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;NotHere&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;NotHere&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -763,7 +768,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;NotHere&#39;</span><span class="p">]</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;NotHere&quot;</span><span class="p">]</span>
 
 <span class="ne">KeyError</span>: &#39;NotHere&#39;
 </pre></div>
@@ -787,7 +792,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <p>We can get the function, and call it:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">](</span><span class="mi">3</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;func&quot;</span><span class="p">](</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -800,7 +805,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <p>The reason we have to consider dictionaries is that <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> uses dictionaries to specify constraints. See the constraints arg here.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">](</span><span class="mi">4</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;func&quot;</span><span class="p">](</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -849,13 +854,15 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">equality_constraint</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">D</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">x</span>
     <span class="n">radius</span> <span class="o">=</span> <span class="n">D</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L</span>
     <span class="k">return</span> <span class="n">V</span> <span class="o">-</span> <span class="mi">355</span>
 
-<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">equality_constraint</span><span class="p">}</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">equality_constraint</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -864,7 +871,8 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cost_top</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># $/cm^2</span>
-<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span> <span class="c1"># $/cm^2</span>
+<span class="n">cost_side</span> <span class="o">=</span> <span class="mf">0.043</span>  <span class="c1"># $/cm^2</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">D</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">x</span>  <span class="c1"># Now we vary both variables.</span>
@@ -873,6 +881,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
     <span class="n">side_area</span> <span class="o">=</span> <span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span>
     <span class="n">cost</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">top_area</span> <span class="o">*</span> <span class="n">cost_top</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">side_area</span> <span class="o">*</span> <span class="n">cost_side</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cost</span>
+
 
 <span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">(</span><span class="mf">9.2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">equality_constraint</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
@@ -900,11 +909,11 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="n">COST</span> <span class="o">=</span> <span class="n">objective</span><span class="p">([</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">COST</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">COST</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-<span class="n">VOLUME</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">DD</span><span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">LL</span>
+<span class="n">VOLUME</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">DD</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">LL</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">DD</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">VOLUME</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mi">354</span><span class="p">,</span> <span class="mi">356</span><span class="p">]);</span>
 </pre></div>
 </div>
@@ -921,16 +930,18 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
     <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
     <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">x3</span><span class="o">**</span><span class="mi">2</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">eq1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
-    <span class="k">return</span> <span class="n">x1</span> <span class="o">-</span> <span class="mi">1</span>   <span class="c1"># x = 1</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># x = 1</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">eq2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">x</span>
     <span class="k">return</span> <span class="n">x1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># x1**2 + x2**2 = 1</span>
 
-<span class="n">constraints</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">eq1</span><span class="p">},</span>
-               <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">eq2</span><span class="p">}]</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">eq1</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">eq2</span><span class="p">}]</span>
 
 <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 </pre></div>
@@ -962,11 +973,12 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
 
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">objective</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -978,9 +990,10 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ieq</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">x</span> <span class="o">+</span> <span class="mf">2.5</span>   <span class="c1"># -x + 2.5 &gt;= 0</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">x</span> <span class="o">+</span> <span class="mf">2.5</span>  <span class="c1"># -x + 2.5 &gt;= 0</span>
 
-<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">ieq</span><span class="p">}</span>
+
+<span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">ieq</span><span class="p">}</span>
 <span class="c1">#                       ^^^^</span>
 <span class="n">minimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">)</span>
 </pre></div>
@@ -1040,37 +1053,45 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">c1</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;Constraint on total cost to plant.&#39;</span>
+    <span class="s2">&quot;Constraint on total cost to plant.&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="c1"># $120 * x + $210 * y &lt;= 15000</span>
     <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">120</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">210</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">15000</span><span class="p">)</span>  <span class="c1"># this is &gt;= 0 at the solution</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">c2</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;Storage constraint&#39;</span>
+    <span class="s2">&quot;Storage constraint&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="c1"># 110 * x + 30 * y &lt;= 4000</span>
-    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">110</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">4000</span><span class="p">)</span> <span class="c1"># this is &gt;= 0 at the solution</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">110</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">4000</span><span class="p">)</span>  <span class="c1"># this is &gt;= 0 at the solution</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">c3</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;Land area constraint&#39;</span>
+    <span class="s2">&quot;Land area constraint&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="c1"># x + y &lt;= 75</span>
     <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">75</span><span class="p">)</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">c4</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;positivity constraint&#39;</span>
+    <span class="s2">&quot;positivity constraint&quot;</span>
     <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">c5</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;positivity constraint&#39;</span>
+    <span class="s2">&quot;positivity constraint&quot;</span>
     <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">profit</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="s1">&#39;Profit function we want to maximize&#39;</span>
+    <span class="s2">&quot;Profit function we want to maximize&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X</span>
     <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">143</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">profit</span><span class="p">,</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">}</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">c5</span><span class="p">]])</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">profit</span><span class="p">,</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">f</span><span class="p">}</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">,</span> <span class="n">c4</span><span class="p">,</span> <span class="n">c5</span><span class="p">]]</span>
+<span class="p">)</span>
 <span class="n">sol</span>
 </pre></div>
 </div>
@@ -1092,11 +1113,17 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">profit</span><span class="p">,</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">constraints</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c1</span><span class="p">},</span>
-                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c2</span><span class="p">},</span>
-                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c3</span><span class="p">},</span>
-                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c4</span><span class="p">},</span>
-                                             <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">c5</span><span class="p">}])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">profit</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+    <span class="n">constraints</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">c1</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">c2</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">c3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">c4</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ineq&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">:</span> <span class="n">c5</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 <span class="n">sol</span>
 </pre></div>
 </div>
@@ -1118,7 +1145,9 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We should plant </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of wheat, and </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of corn. We will earn $</span><span class="si">{</span><span class="o">-</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> in profit.&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;We should plant </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> roods of wheat, and </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> roods of corn. We will earn $</span><span class="si">{</span><span class="o">-</span><span class="n">sol</span><span class="o">.</span><span class="n">fun</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> in profit.&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1131,7 +1160,7 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 <p>We can always verify aspects of our solution. Here is the land area.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We used </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> roods of land&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;We used </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> roods of land&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1143,8 +1172,8 @@ The optimal diameter is 9.20 cm. The optimal length is 5.35 cm. The cost is $9.9
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We will pay $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">120</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">210</span><span class="si">:</span><span class="s1">1.2f</span><span class="si">}</span><span class="s1"> to plant.&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We will store </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">110</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">:</span><span class="s1">1.0f</span><span class="si">}</span><span class="s1"> bushels.&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;We will pay $</span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">120</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">210</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2"> to plant.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;We will store </span><span class="si">{</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">110</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">30</span><span class="si">:</span><span class="s2">1.0f</span><span class="si">}</span><span class="s2"> bushels.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
