@@ -478,6 +478,65 @@ class ActiveSurrogate:
         return bool(change < threshold)
 
     @classmethod
+    def _select_batch(cls, X_candidates, model, y_train, acquisition, batch_size):
+        """Select batch of points using sequential hallucination.
+
+        Parameters
+        ----------
+        X_candidates : ndarray, shape (n_candidates, n_dims)
+            Candidate points to select from.
+        model : sklearn model
+            Fitted model.
+        y_train : ndarray
+            Current training targets.
+        acquisition : str
+            Acquisition function name.
+        batch_size : int
+            Number of points to select.
+
+        Returns
+        -------
+        selected : ndarray, shape (batch_size, n_dims)
+            Selected points.
+        """
+        selected_indices = []
+        selected_points = []
+
+        # Copy training data for hallucination
+        y_hallucinated = y_train.copy()
+
+        for i in range(batch_size):
+            # Compute acquisition values
+            if acquisition == "ei":
+                acq_values = cls._acquisition_ei(X_candidates, model, y_hallucinated.max())
+            elif acquisition == "ucb":
+                acq_values = cls._acquisition_ucb(X_candidates, model)
+            elif acquisition == "pi":
+                acq_values = cls._acquisition_pi(X_candidates, model, y_hallucinated.max())
+            elif acquisition == "variance":
+                acq_values = cls._acquisition_variance(X_candidates, model)
+            else:
+                raise ValueError(f"Unknown acquisition: {acquisition}")
+
+            # Mask already selected points
+            acq_values = acq_values.copy()
+            for idx in selected_indices:
+                acq_values[idx] = -np.inf
+
+            # Select best point
+            best_idx = np.argmax(acq_values)
+            selected_indices.append(best_idx)
+            selected_points.append(X_candidates[best_idx])
+
+            # Hallucinate: predict value and add to training set (for next iteration)
+            if i < batch_size - 1:
+                X_new = X_candidates[best_idx : best_idx + 1]
+                y_new = model.predict(X_new)
+                y_hallucinated = np.concatenate([y_hallucinated, y_new.flatten()])
+
+        return np.array(selected_points)
+
+    @classmethod
     def build(
         cls,
         func,

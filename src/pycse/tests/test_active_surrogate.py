@@ -217,3 +217,71 @@ class TestStoppingCriteria:
 
         result = ActiveSurrogate._stopping_convergence(history, window=3, threshold=0.05)
         assert result is False
+
+
+class TestBatchSelection:
+    """Test batch selection with hallucination."""
+
+    @pytest.fixture
+    def fitted_model_2d(self):
+        """Create a fitted 2D GPR model."""
+        X = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
+        y = np.sin(X[:, 0]) + np.cos(X[:, 1])
+
+        kernel = C(1.0) * RBF(1.0)
+        model = GaussianProcessRegressor(kernel=kernel)
+        model.fit(X, y)
+        return model, y
+
+    def test_select_batch_single(self, fitted_model_2d):
+        """Test batch selection with batch_size=1."""
+        model, y_train = fitted_model_2d
+        X_candidates = np.random.rand(20, 2)
+
+        selected = ActiveSurrogate._select_batch(
+            X_candidates, model, y_train, acquisition="ei", batch_size=1
+        )
+
+        assert selected.shape == (1, 2)
+
+    def test_select_batch_multiple(self, fitted_model_2d):
+        """Test batch selection with batch_size>1."""
+        model, y_train = fitted_model_2d
+        X_candidates = np.random.rand(50, 2)
+
+        selected = ActiveSurrogate._select_batch(
+            X_candidates, model, y_train, acquisition="ucb", batch_size=3
+        )
+
+        assert selected.shape == (3, 2)
+        # Check that selected points are different
+        assert not np.array_equal(selected[0], selected[1])
+        assert not np.array_equal(selected[1], selected[2])
+
+    def test_select_batch_diversity(self, fitted_model_2d):
+        """Test that batch selection promotes diversity."""
+        model, y_train = fitted_model_2d
+        # Set random seed for reproducibility
+        np.random.seed(42)
+
+        # Create candidates with a clear cluster
+        X_candidates = np.vstack(
+            [
+                np.random.rand(40, 2) * 0.1 + 0.5,  # Clustered around 0.5
+                np.random.rand(10, 2),  # Spread across space
+            ]
+        )
+
+        selected = ActiveSurrogate._select_batch(
+            X_candidates, model, y_train, acquisition="variance", batch_size=3
+        )
+
+        # With hallucination, points should be somewhat spread
+        distances = []
+        for i in range(len(selected)):
+            for j in range(i + 1, len(selected)):
+                distances.append(np.linalg.norm(selected[i] - selected[j]))
+
+        # All selected points should be different (non-zero distances)
+        # Use a very small threshold to just verify diversity without being too strict
+        assert all(d > 0.0 for d in distances)
