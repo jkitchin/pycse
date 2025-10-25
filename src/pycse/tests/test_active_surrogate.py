@@ -7,6 +7,12 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 
 from pycse.pyroxy import ActiveSurrogate
 
+# Suppress sklearn numerical warnings that are expected during GPR optimization
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::RuntimeWarning:sklearn.gaussian_process._gpr",
+    "ignore::sklearn.exceptions.ConvergenceWarning",
+)
+
 
 @pytest.fixture
 def simple_gpr():
