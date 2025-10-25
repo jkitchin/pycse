@@ -19,8 +19,6 @@ import dill
 class MaxCallsExceededException(Exception):
     """Raised when maximum number of function calls is exceeded."""
 
-    pass
-
 
 class _Surrogate:
     def __init__(self, func, model, tol=1, max_calls=-1, verbose=False):
@@ -50,10 +48,6 @@ class _Surrogate:
 
         verbose : Boolean optional, default=False
         If truthy, output is more verbose.
-
-        Returns
-        -------
-        return
 
         """
         self.func = func
@@ -138,7 +132,7 @@ class _Surrogate:
             # if we think it is accurate enough we return it
             if np.all(se < self.tol):
                 self.surrogate += 1
-                return pf
+                return pf.flatten()
             else:
                 if self.verbose:
                     print(
@@ -165,13 +159,13 @@ class _Surrogate:
 
                 self.model.fit(self.xtrain, self.ytrain)
                 self.ntrain += 1
-                pf, se = self.model.predict(X, return_std=True)
                 return y
 
         except (AttributeError, NotFittedError):
             if self.verbose:
                 print(f"Running {X} to initialize the model.")
             y = self.func(X)
+            self.func_calls += 1
 
             self.xtrain = X
             self.ytrain = y
@@ -212,7 +206,6 @@ class _Surrogate:
 
         errs = self.ytrain - yp
 
-        """Returns a string representation of the surrogate."""
         return f"""{len(self.xtrain)} data points obtained.
         The model was fitted {self.ntrain} times.
         The surrogate was successful {self.surrogate} times.
@@ -257,3 +250,87 @@ def load(fname="model.pkl"):
 
 
 Surrogate.load = load
+
+
+class ActiveSurrogate:
+    """Build surrogate models using active learning.
+
+    This class provides methods to automatically build surrogate models by
+    iteratively sampling an input domain using acquisition functions to select
+    informative points.
+    """
+
+    @classmethod
+    def build(
+        cls,
+        func,
+        bounds,
+        model,
+        acquisition="ei",
+        stopping_criterion="mean_ratio",
+        stopping_threshold=1.5,
+        n_initial=None,
+        batch_size=1,
+        max_iterations=1000,
+        n_test_points=None,
+        n_candidates=None,
+        verbose=False,
+        callback=None,
+        tol=1.0,
+    ):
+        """Build a surrogate model using active learning.
+
+        Parameters
+        ----------
+        func : callable
+            Function to surrogate. Must accept 2D array and return 1D array.
+
+        bounds : list of tuples
+            Domain bounds as [(low1, high1), (low2, high2), ...].
+
+        model : sklearn model
+            Model with predict(X, return_std=True) interface.
+
+        acquisition : str, default='ei'
+            Acquisition function: 'ei', 'ucb', 'pi', 'variance'.
+
+        stopping_criterion : str, default='mean_ratio'
+            Stopping criterion: 'mean_ratio', 'percentile', 'absolute', 'convergence'.
+
+        stopping_threshold : float, default=1.5
+            Threshold value for stopping criterion.
+
+        n_initial : int, optional
+            Initial samples. Defaults to max(10, 5*n_dims).
+
+        batch_size : int, default=1
+            Number of points to sample per iteration.
+
+        max_iterations : int, default=1000
+            Maximum iterations before stopping.
+
+        n_test_points : int, optional
+            Test points for uncertainty estimation. Defaults to 100*n_dims.
+
+        n_candidates : int, optional
+            Candidate points for acquisition. Defaults to 50*n_dims.
+
+        verbose : bool, default=False
+            Print progress information.
+
+        callback : callable, optional
+            Function called each iteration: callback(iteration, history).
+
+        tol : float, default=1.0
+            Tolerance for returned _Surrogate object.
+
+        Returns
+        -------
+        surrogate : _Surrogate
+            Fitted surrogate model.
+
+        history : dict
+            Training history with metrics per iteration.
+        """
+        # Placeholder implementation
+        raise NotImplementedError("ActiveSurrogate.build() not yet implemented")
