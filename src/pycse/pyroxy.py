@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.exceptions import NotFittedError
 import dill
 from scipy.stats.qmc import LatinHypercube
+from scipy.stats import norm
 
 
 class MaxCallsExceededException(Exception):
@@ -287,6 +288,100 @@ class ActiveSurrogate:
             samples[:, i] = low + unit_samples[:, i] * (high - low)
 
         return samples
+
+    @staticmethod
+    def _acquisition_ei(X_candidates, model, y_best):
+        """Expected Improvement acquisition function.
+
+        Parameters
+        ----------
+        X_candidates : ndarray, shape (n_candidates, n_dims)
+            Candidate points to evaluate.
+        model : sklearn model
+            Fitted model with predict(return_std=True).
+        y_best : float
+            Current best observed value.
+
+        Returns
+        -------
+        ei : ndarray, shape (n_candidates,)
+            Expected improvement values.
+        """
+        mu, sigma = model.predict(X_candidates, return_std=True)
+        mu = mu.flatten()
+        sigma = sigma.flatten()
+
+        with np.errstate(divide="warn", invalid="ignore"):
+            Z = (mu - y_best) / sigma
+            ei = (mu - y_best) * norm.cdf(Z) + sigma * norm.pdf(Z)
+            ei[sigma == 0.0] = 0.0
+
+        return ei
+
+    @staticmethod
+    def _acquisition_ucb(X_candidates, model, kappa=2.0):
+        """Upper Confidence Bound acquisition function.
+
+        Parameters
+        ----------
+        X_candidates : ndarray, shape (n_candidates, n_dims)
+            Candidate points to evaluate.
+        model : sklearn model
+            Fitted model with predict(return_std=True).
+        kappa : float, default=2.0
+            Exploration parameter.
+
+        Returns
+        -------
+        ucb : ndarray, shape (n_candidates,)
+            UCB values.
+        """
+        mu, sigma = model.predict(X_candidates, return_std=True)
+        return mu.flatten() + kappa * sigma.flatten()
+
+    @staticmethod
+    def _acquisition_pi(X_candidates, model, y_best):
+        """Probability of Improvement acquisition function.
+
+        Parameters
+        ----------
+        X_candidates : ndarray, shape (n_candidates, n_dims)
+            Candidate points to evaluate.
+        model : sklearn model
+            Fitted model with predict(return_std=True).
+        y_best : float
+            Current best observed value.
+
+        Returns
+        -------
+        pi : ndarray, shape (n_candidates,)
+            Probability of improvement values.
+        """
+        mu, sigma = model.predict(X_candidates, return_std=True)
+        mu = mu.flatten()
+        sigma = sigma.flatten()
+
+        Z = (mu - y_best) / (sigma + 1e-9)
+        return norm.cdf(Z)
+
+    @staticmethod
+    def _acquisition_variance(X_candidates, model):
+        """Maximum Variance (pure exploration) acquisition function.
+
+        Parameters
+        ----------
+        X_candidates : ndarray, shape (n_candidates, n_dims)
+            Candidate points to evaluate.
+        model : sklearn model
+            Fitted model with predict(return_std=True).
+
+        Returns
+        -------
+        variance : ndarray, shape (n_candidates,)
+            Variance (uncertainty) values.
+        """
+        _, sigma = model.predict(X_candidates, return_std=True)
+        return sigma.flatten()
 
     @classmethod
     def build(

@@ -103,3 +103,60 @@ class TestActiveSurrogateLHS:
         # Check distribution across domain
         assert np.min(samples) < 0.2
         assert np.max(samples) > 0.8
+
+
+class TestAcquisitionFunctions:
+    """Test acquisition function implementations."""
+
+    @pytest.fixture
+    def fitted_model(self):
+        """Create a fitted GPR model."""
+        X = np.array([[0.0], [1.0], [2.0], [3.0]])
+        y = np.sin(X).flatten()
+
+        kernel = C(1.0) * RBF(1.0)
+        model = GaussianProcessRegressor(kernel=kernel)
+        model.fit(X, y)
+        return model, y
+
+    def test_acquisition_ei(self, fitted_model):
+        """Test Expected Improvement acquisition."""
+        model, y_train = fitted_model
+        X_candidates = np.array([[1.5], [2.5]])
+
+        ei = ActiveSurrogate._acquisition_ei(X_candidates, model, y_train.max())
+
+        assert ei.shape == (2,)
+        assert np.all(ei >= 0)
+
+    def test_acquisition_ucb(self, fitted_model):
+        """Test Upper Confidence Bound acquisition."""
+        model, _ = fitted_model
+        X_candidates = np.array([[1.5], [2.5]])
+
+        ucb = ActiveSurrogate._acquisition_ucb(X_candidates, model, kappa=2.0)
+
+        assert ucb.shape == (2,)
+
+    def test_acquisition_pi(self, fitted_model):
+        """Test Probability of Improvement acquisition."""
+        model, y_train = fitted_model
+        X_candidates = np.array([[1.5], [2.5]])
+
+        pi = ActiveSurrogate._acquisition_pi(X_candidates, model, y_train.max())
+
+        assert pi.shape == (2,)
+        assert np.all(pi >= 0)
+        assert np.all(pi <= 1)
+
+    def test_acquisition_variance(self, fitted_model):
+        """Test Maximum Variance acquisition."""
+        model, _ = fitted_model
+        X_candidates = np.array([[1.5], [2.5], [10.0]])
+
+        variance = ActiveSurrogate._acquisition_variance(X_candidates, model)
+
+        assert variance.shape == (3,)
+        assert np.all(variance >= 0)
+        # Point far from training data should have higher variance
+        assert variance[2] > variance[0]
