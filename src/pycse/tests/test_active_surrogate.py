@@ -285,3 +285,63 @@ class TestBatchSelection:
         # All selected points should be different (non-zero distances)
         # Use a very small threshold to just verify diversity without being too strict
         assert all(d > 0.0 for d in distances)
+
+
+class TestActiveSurrogateEndToEnd:
+    """End-to-end integration tests."""
+
+    def test_build_simple_1d(self, simple_gpr, simple_1d_function):
+        """Test building surrogate for simple 1D function."""
+        bounds = [(0, 2 * np.pi)]
+
+        surrogate, history = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="variance",
+            stopping_criterion="absolute",
+            stopping_threshold=0.2,
+            n_initial=5,
+            max_iterations=20,
+            verbose=False,
+        )
+
+        # Check surrogate is a _Surrogate instance
+        from pycse.pyroxy import _Surrogate
+
+        assert isinstance(surrogate, _Surrogate)
+
+        # Check it has training data
+        assert surrogate.xtrain is not None
+        assert surrogate.ytrain is not None
+        assert len(surrogate.xtrain) >= 5  # At least initial samples
+
+        # Check history
+        assert "iterations" in history
+        assert "n_samples" in history
+        assert "mean_uncertainty" in history
+        assert len(history["iterations"]) > 0
+
+        # Check surrogate works
+        X_test = np.array([[np.pi / 2]])
+        y_pred = surrogate(X_test)
+        assert y_pred.shape == (1,)
+
+    def test_build_respects_max_iterations(self, simple_gpr, simple_1d_function):
+        """Test that max_iterations limits are respected."""
+        bounds = [(0, 10)]
+
+        surrogate, history = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="ei",
+            stopping_criterion="absolute",
+            stopping_threshold=0.001,  # Very strict, won't be met
+            n_initial=3,
+            max_iterations=5,
+            verbose=False,
+        )
+
+        # Should stop at max_iterations
+        assert len(history["iterations"]) <= 5

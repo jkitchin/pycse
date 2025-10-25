@@ -634,5 +634,114 @@ class ActiveSurrogate:
         if n_candidates is None:
             n_candidates = 50 * n_dims
 
-        # Placeholder for rest of implementation
-        raise NotImplementedError("Rest of build() not yet implemented")
+        # Initialize history
+        history = {
+            "iterations": [],
+            "n_samples": [],
+            "acquisition_values": [],
+            "mean_uncertainty": [],
+            "max_uncertainty": [],
+            "X_sampled": [],
+        }
+
+        # Generate initial samples via LHS
+        X_train = cls._generate_lhs_samples(bounds, n_initial)
+        y_train = func(X_train)
+
+        # Fit initial model
+        model.fit(X_train, y_train)
+
+        if verbose:
+            print(f"Initialized with {n_initial} LHS samples")
+
+        # Active learning loop
+        for iteration in range(max_iterations):
+            # Generate test points for uncertainty estimation
+            X_test = cls._generate_lhs_samples(bounds, n_test_points)
+            _, test_uncertainties = model.predict(X_test, return_std=True)
+
+            # Get training uncertainties
+            _, train_uncertainties = model.predict(X_train, return_std=True)
+
+            # Record metrics
+            mean_unc = np.mean(test_uncertainties)
+            max_unc = np.max(test_uncertainties)
+
+            # Check stopping criterion
+            stopping_met = False
+            if stopping_criterion == "mean_ratio":
+                stopping_met = cls._stopping_mean_ratio(
+                    test_uncertainties, train_uncertainties, stopping_threshold
+                )
+            elif stopping_criterion == "percentile":
+                stopping_met = cls._stopping_percentile(test_uncertainties, stopping_threshold)
+            elif stopping_criterion == "absolute":
+                stopping_met = cls._stopping_absolute(test_uncertainties, stopping_threshold)
+            elif stopping_criterion == "convergence":
+                stopping_met = cls._stopping_convergence(history, threshold=stopping_threshold)
+
+            if stopping_met:
+                if verbose:
+                    print(f"Stopping criterion met at iteration {iteration}")
+                break
+
+            # Generate candidate points
+            X_candidates = cls._generate_lhs_samples(bounds, n_candidates)
+
+            # Select next batch
+            X_new = cls._select_batch(X_candidates, model, y_train, acquisition, batch_size)
+
+            # Evaluate function at new points
+            y_new = func(X_new)
+
+            # Compute acquisition value for logging
+            if acquisition == "ei":
+                acq_at_selected = cls._acquisition_ei(X_new, model, y_train.max())
+            elif acquisition == "ucb":
+                acq_at_selected = cls._acquisition_ucb(X_new, model)
+            elif acquisition == "pi":
+                acq_at_selected = cls._acquisition_pi(X_new, model, y_train.max())
+            elif acquisition == "variance":
+                acq_at_selected = cls._acquisition_variance(X_new, model)
+
+            best_acq = np.max(acq_at_selected)
+
+            # Update training data
+            X_train = np.vstack([X_train, X_new])
+            y_train = np.concatenate([y_train, y_new.flatten()])
+
+            # Refit model
+            model.fit(X_train, y_train)
+
+            # Update history
+            history["iterations"].append(iteration)
+            history["n_samples"].append(len(X_train))
+            history["acquisition_values"].append(best_acq)
+            history["mean_uncertainty"].append(mean_unc)
+            history["max_uncertainty"].append(max_unc)
+            history["X_sampled"].append(X_new)
+
+            if verbose:
+                print(f"Iteration {iteration}/{max_iterations}")
+                print(f"  Samples: {len(X_train)}")
+                print(f"  Best acquisition: {best_acq:.4f}")
+                print(f"  Mean uncertainty: {mean_unc:.4f}")
+                print(f"  Max uncertainty: {max_unc:.4f}")
+
+            # Call callback if provided
+            if callback is not None:
+                callback(iteration, history)
+
+        # Create and return _Surrogate
+        surrogate = _Surrogate(func=func, model=model, tol=tol, max_calls=-1, verbose=verbose)
+
+        # Populate with training data
+        surrogate.xtrain = X_train
+        surrogate.ytrain = y_train
+        surrogate.func_calls = len(X_train)
+        surrogate.ntrain = len(history["iterations"]) + 1  # +1 for initial fit
+
+        if verbose:
+            print(f"\nActive learning complete: {len(X_train)} samples")
+
+        return surrogate, history
