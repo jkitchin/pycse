@@ -300,7 +300,7 @@ class TestActiveSurrogateEndToEnd:
             model=simple_gpr,
             acquisition="variance",
             stopping_criterion="absolute",
-            stopping_threshold=0.2,
+            stopping_threshold=0.001,  # Strict threshold to force iterations
             n_initial=5,
             max_iterations=20,
             verbose=False,
@@ -345,3 +345,158 @@ class TestActiveSurrogateEndToEnd:
 
         # Should stop at max_iterations
         assert len(history["iterations"]) <= 5
+
+
+class TestActiveSurrogateIntegration:
+    """Additional integration tests for various scenarios."""
+
+    def test_build_2d_function(self, simple_gpr):
+        """Test with 2D function."""
+
+        def func_2d(X):
+            return (np.sin(X[:, 0]) * np.cos(X[:, 1])).flatten()
+
+        bounds = [(0, np.pi), (0, np.pi)]
+
+        surrogate, history = ActiveSurrogate.build(
+            func=func_2d,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="ei",
+            stopping_criterion="mean_ratio",
+            stopping_threshold=2.0,
+            n_initial=10,
+            max_iterations=15,
+            verbose=False,
+        )
+
+        assert surrogate.xtrain.shape[1] == 2
+        assert len(surrogate.ytrain) >= 10
+
+    def test_different_acquisitions(self, simple_gpr, simple_1d_function):
+        """Test all acquisition functions."""
+        bounds = [(0, 2 * np.pi)]
+
+        for acq in ["ei", "ucb", "pi", "variance"]:
+            surrogate, history = ActiveSurrogate.build(
+                func=simple_1d_function,
+                bounds=bounds,
+                model=simple_gpr,
+                acquisition=acq,
+                stopping_criterion="absolute",
+                stopping_threshold=0.5,
+                n_initial=5,
+                max_iterations=10,
+                verbose=False,
+            )
+
+            assert len(surrogate.xtrain) >= 5
+
+    def test_different_stopping_criteria(self, simple_gpr, simple_1d_function):
+        """Test all stopping criteria."""
+        bounds = [(0, 2 * np.pi)]
+
+        # Test mean_ratio
+        surrogate, _ = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            stopping_criterion="mean_ratio",
+            stopping_threshold=1.5,
+            n_initial=5,
+            max_iterations=20,
+        )
+        assert surrogate is not None
+
+        # Test percentile
+        surrogate, _ = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            stopping_criterion="percentile",
+            stopping_threshold=0.2,
+            n_initial=5,
+            max_iterations=20,
+        )
+        assert surrogate is not None
+
+        # Test absolute
+        surrogate, _ = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            stopping_criterion="absolute",
+            stopping_threshold=0.2,
+            n_initial=5,
+            max_iterations=20,
+        )
+        assert surrogate is not None
+
+    def test_batch_mode(self, simple_gpr, simple_1d_function):
+        """Test batch sampling."""
+        bounds = [(0, 2 * np.pi)]
+
+        surrogate, history = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="ucb",
+            batch_size=3,
+            stopping_criterion="absolute",
+            stopping_threshold=0.3,
+            n_initial=5,
+            max_iterations=5,
+        )
+
+        # With batch_size=3, should add 3 points per iteration
+        # Check that sample count increases appropriately
+        assert len(surrogate.xtrain) >= 5
+
+    def test_callback_invoked(self, simple_gpr, simple_1d_function):
+        """Test that callback is called during training."""
+        bounds = [(0, 2 * np.pi)]
+        callback_count = [0]
+
+        def test_callback(iteration, history):
+            callback_count[0] += 1
+
+        surrogate, history = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="variance",
+            stopping_criterion="absolute",
+            stopping_threshold=0.001,  # Very strict threshold to ensure iterations run
+            n_initial=3,
+            max_iterations=5,
+            callback=test_callback,
+        )
+
+        # Callback should be invoked at least once
+        assert callback_count[0] > 0
+
+    def test_surrogate_usage_after_build(self, simple_gpr, simple_1d_function):
+        """Test that returned surrogate can be used for prediction."""
+        bounds = [(0, 2 * np.pi)]
+
+        surrogate, _ = ActiveSurrogate.build(
+            func=simple_1d_function,
+            bounds=bounds,
+            model=simple_gpr,
+            acquisition="ei",
+            stopping_criterion="absolute",
+            stopping_threshold=0.3,
+            n_initial=10,
+            max_iterations=10,
+        )
+
+        # Test prediction
+        X_test = np.linspace(0, 2 * np.pi, 20).reshape(-1, 1)
+        y_pred = surrogate(X_test)
+
+        assert y_pred.shape == (20,)
+
+        # Check that predictions are reasonable
+        y_true = simple_1d_function(X_test)
+        rmse = np.sqrt(np.mean((y_pred - y_true) ** 2))
+        assert rmse < 0.5  # Should be reasonably accurate
