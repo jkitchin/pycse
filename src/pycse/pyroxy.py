@@ -383,6 +383,100 @@ class ActiveSurrogate:
         _, sigma = model.predict(X_candidates, return_std=True)
         return sigma.flatten()
 
+    @staticmethod
+    def _stopping_mean_ratio(test_uncertainties, train_uncertainties, threshold=1.5):
+        """Mean ratio stopping criterion.
+
+        Stop when mean test uncertainty is within threshold of training uncertainty.
+
+        Parameters
+        ----------
+        test_uncertainties : ndarray
+            Uncertainties at test points.
+        train_uncertainties : ndarray
+            Uncertainties at training points.
+        threshold : float
+            Ratio threshold.
+
+        Returns
+        -------
+        bool
+            True if stopping criterion is met.
+        """
+        mean_test = np.mean(test_uncertainties)
+        mean_train = np.mean(train_uncertainties)
+        ratio = mean_test / (mean_train + 1e-9)
+        return bool(ratio < threshold)
+
+    @staticmethod
+    def _stopping_percentile(test_uncertainties, threshold=0.1):
+        """Percentile-based stopping criterion.
+
+        Stop when 95th percentile of test uncertainty drops below threshold.
+
+        Parameters
+        ----------
+        test_uncertainties : ndarray
+            Uncertainties at test points.
+        threshold : float
+            Absolute threshold.
+
+        Returns
+        -------
+        bool
+            True if stopping criterion is met.
+        """
+        percentile_95 = np.percentile(test_uncertainties, 95)
+        return bool(percentile_95 < threshold)
+
+    @staticmethod
+    def _stopping_absolute(test_uncertainties, threshold=0.1):
+        """Absolute threshold stopping criterion.
+
+        Stop when maximum test uncertainty drops below threshold.
+
+        Parameters
+        ----------
+        test_uncertainties : ndarray
+            Uncertainties at test points.
+        threshold : float
+            Absolute threshold.
+
+        Returns
+        -------
+        bool
+            True if stopping criterion is met.
+        """
+        return bool(np.max(test_uncertainties) < threshold)
+
+    @staticmethod
+    def _stopping_convergence(history, window=5, threshold=0.01):
+        """Convergence-based stopping criterion.
+
+        Stop when uncertainty change over last 'window' iterations is small.
+
+        Parameters
+        ----------
+        history : dict
+            Training history with 'mean_uncertainty' key.
+        window : int
+            Number of iterations to check.
+        threshold : float
+            Relative change threshold.
+
+        Returns
+        -------
+        bool
+            True if stopping criterion is met.
+        """
+        if len(history["mean_uncertainty"]) < window + 1:
+            return False
+
+        recent = history["mean_uncertainty"][-window:]
+        previous = history["mean_uncertainty"][-(window + 1)]
+        change = abs(np.mean(recent) - previous) / (previous + 1e-9)
+        return bool(change < threshold)
+
     @classmethod
     def build(
         cls,

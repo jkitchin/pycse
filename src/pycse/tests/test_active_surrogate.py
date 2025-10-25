@@ -160,3 +160,60 @@ class TestAcquisitionFunctions:
         assert np.all(variance >= 0)
         # Point far from training data should have higher variance
         assert variance[2] > variance[0]
+
+
+class TestStoppingCriteria:
+    """Test stopping criterion implementations."""
+
+    def test_stopping_mean_ratio_met(self):
+        """Test mean_ratio criterion when met."""
+        test_unc = np.array([0.5, 0.6, 0.7])
+        train_unc = np.array([0.8, 0.9, 1.0])
+
+        # test mean = 0.6, train mean = 0.9, ratio = 0.67 < 1.5
+        result = ActiveSurrogate._stopping_mean_ratio(test_unc, train_unc, threshold=1.5)
+        assert result is True
+
+    def test_stopping_mean_ratio_not_met(self):
+        """Test mean_ratio criterion when not met."""
+        test_unc = np.array([1.5, 2.0, 2.5])
+        train_unc = np.array([0.8, 0.9, 1.0])
+
+        # test mean = 2.0, train mean = 0.9, ratio = 2.22 > 1.5
+        result = ActiveSurrogate._stopping_mean_ratio(test_unc, train_unc, threshold=1.5)
+        assert result is False
+
+    def test_stopping_percentile_met(self):
+        """Test percentile criterion when met."""
+        test_unc = np.linspace(0.01, 0.09, 100)
+
+        result = ActiveSurrogate._stopping_percentile(test_unc, threshold=0.1)
+        assert result is True
+
+    def test_stopping_absolute_met(self):
+        """Test absolute criterion when met."""
+        test_unc = np.array([0.05, 0.08, 0.09])
+
+        result = ActiveSurrogate._stopping_absolute(test_unc, threshold=0.1)
+        assert result is True
+
+    def test_stopping_absolute_not_met(self):
+        """Test absolute criterion when not met."""
+        test_unc = np.array([0.05, 0.08, 0.15])
+
+        result = ActiveSurrogate._stopping_absolute(test_unc, threshold=0.1)
+        assert result is False
+
+    def test_stopping_convergence_met(self):
+        """Test convergence criterion when met."""
+        history = {"mean_uncertainty": [1.0, 0.9, 0.89, 0.88, 0.87, 0.875, 0.87]}
+
+        result = ActiveSurrogate._stopping_convergence(history, window=5, threshold=0.05)
+        assert result is True
+
+    def test_stopping_convergence_not_met(self):
+        """Test convergence criterion when not met."""
+        history = {"mean_uncertainty": [1.0, 0.9, 0.7, 0.5, 0.3]}
+
+        result = ActiveSurrogate._stopping_convergence(history, window=3, threshold=0.05)
+        assert result is False
