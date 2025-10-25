@@ -31,3 +31,42 @@ class TestActiveSurrogateBasic:
     def test_class_exists(self):
         """Test that ActiveSurrogate class exists."""
         assert hasattr(ActiveSurrogate, "build")
+
+
+class TestActiveSurrogateValidation:
+    """Test input validation for ActiveSurrogate."""
+
+    def test_invalid_bounds_not_list(self, simple_gpr, simple_1d_function):
+        """Test that non-list bounds raise error."""
+        with pytest.raises(ValueError, match="bounds must be list"):
+            ActiveSurrogate.build(
+                func=simple_1d_function,
+                bounds=(0, 1),  # tuple not list
+                model=simple_gpr,
+            )
+
+    def test_invalid_bounds_not_tuples(self, simple_gpr, simple_1d_function):
+        """Test that non-tuple elements raise error."""
+        with pytest.raises(ValueError, match="bounds must be list"):
+            ActiveSurrogate.build(
+                func=simple_1d_function,
+                bounds=[[0, 1]],  # list not tuple
+                model=simple_gpr,
+            )
+
+    def test_invalid_acquisition(self, simple_gpr, simple_1d_function):
+        """Test that invalid acquisition raises error."""
+        with pytest.raises(ValueError, match="acquisition must be one of"):
+            ActiveSurrogate.build(
+                func=simple_1d_function, bounds=[(0, 1)], model=simple_gpr, acquisition="invalid"
+            )
+
+    def test_invalid_stopping_criterion(self, simple_gpr, simple_1d_function):
+        """Test that invalid stopping criterion raises error."""
+        with pytest.raises(ValueError, match="stopping_criterion must be one of"):
+            ActiveSurrogate.build(
+                func=simple_1d_function,
+                bounds=[(0, 1)],
+                model=simple_gpr,
+                stopping_criterion="invalid",
+            )

@@ -332,5 +332,31 @@ class ActiveSurrogate:
         history : dict
             Training history with metrics per iteration.
         """
-        # Placeholder implementation
-        raise NotImplementedError("ActiveSurrogate.build() not yet implemented")
+        # Validate bounds
+        if not isinstance(bounds, list) or not all(
+            isinstance(b, tuple) and len(b) == 2 for b in bounds
+        ):
+            raise ValueError("bounds must be list of (low, high) tuples")
+
+        n_dims = len(bounds)
+
+        # Validate acquisition
+        valid_acquisitions = ["ei", "ucb", "pi", "variance"]
+        if acquisition not in valid_acquisitions:
+            raise ValueError(f"acquisition must be one of {valid_acquisitions}")
+
+        # Validate stopping criterion
+        valid_criteria = ["mean_ratio", "percentile", "absolute", "convergence"]
+        if stopping_criterion not in valid_criteria:
+            raise ValueError(f"stopping_criterion must be one of {valid_criteria}")
+
+        # Set defaults
+        if n_initial is None:
+            n_initial = max(10, 5 * n_dims)
+        if n_test_points is None:
+            n_test_points = 100 * n_dims
+        if n_candidates is None:
+            n_candidates = 50 * n_dims
+
+        # Placeholder for rest of implementation
+        raise NotImplementedError("Rest of build() not yet implemented")
