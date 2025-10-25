@@ -70,3 +70,36 @@ class TestActiveSurrogateValidation:
                 model=simple_gpr,
                 stopping_criterion="invalid",
             )
+
+
+class TestActiveSurrogateLHS:
+    """Test Latin Hypercube Sampling helper."""
+
+    def test_generate_lhs_samples_1d(self):
+        """Test LHS for 1D domain."""
+        bounds = [(0.0, 10.0)]
+        samples = ActiveSurrogate._generate_lhs_samples(bounds, n_samples=20)
+
+        assert samples.shape == (20, 1)
+        assert np.all(samples >= 0.0)
+        assert np.all(samples <= 10.0)
+
+    def test_generate_lhs_samples_2d(self):
+        """Test LHS for 2D domain."""
+        bounds = [(0.0, 10.0), (-5.0, 5.0)]
+        samples = ActiveSurrogate._generate_lhs_samples(bounds, n_samples=30)
+
+        assert samples.shape == (30, 2)
+        assert np.all(samples[:, 0] >= 0.0)
+        assert np.all(samples[:, 0] <= 10.0)
+        assert np.all(samples[:, 1] >= -5.0)
+        assert np.all(samples[:, 1] <= 5.0)
+
+    def test_generate_lhs_samples_coverage(self):
+        """Test that LHS provides good coverage."""
+        bounds = [(0.0, 1.0)]
+        samples = ActiveSurrogate._generate_lhs_samples(bounds, n_samples=100)
+
+        # Check distribution across domain
+        assert np.min(samples) < 0.2
+        assert np.max(samples) > 0.8

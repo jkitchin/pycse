@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.exceptions import NotFittedError
 import dill
+from scipy.stats.qmc import LatinHypercube
 
 
 class MaxCallsExceededException(Exception):
@@ -259,6 +260,33 @@ class ActiveSurrogate:
     iteratively sampling an input domain using acquisition functions to select
     informative points.
     """
+
+    @staticmethod
+    def _generate_lhs_samples(bounds, n_samples):
+        """Generate Latin Hypercube samples within bounds.
+
+        Parameters
+        ----------
+        bounds : list of tuples
+            Domain bounds as [(low1, high1), (low2, high2), ...].
+        n_samples : int
+            Number of samples to generate.
+
+        Returns
+        -------
+        samples : ndarray, shape (n_samples, n_dims)
+            LHS samples scaled to bounds.
+        """
+        n_dims = len(bounds)
+        sampler = LatinHypercube(d=n_dims)
+        unit_samples = sampler.random(n=n_samples)
+
+        # Scale from [0,1] to actual bounds
+        samples = np.zeros_like(unit_samples)
+        for i, (low, high) in enumerate(bounds):
+            samples[:, i] = low + unit_samples[:, i] * (high - low)
+
+        return samples
 
     @classmethod
     def build(
