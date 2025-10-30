@@ -36,7 +36,9 @@ RUN ln -s / .lsp_symlink
 USER ${NB_UID}
 
 # Install Python packages
+# Note: Install greenlet first with minimum version for Python 3.13 compatibility
 RUN python -m pip install --upgrade pip \
+	&& python -m pip install 'greenlet>=3.1.0' \
 	&& python -m pip install pycse pint quantities uncertainties \
 	nbconvert nbconvert[webpdf] \
 	black flake8 pylint nbmake ruff \
