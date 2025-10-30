@@ -20,13 +20,11 @@ help:
 
 # Python 3.12 targets
 build-3.12: Dockerfile-3.12
-	docker build -f Dockerfile-3.12 -t pycse:3.12 -t pycse:latest .
+	docker build -f Dockerfile-3.12 -t pycse:3.12 .
 
 push-3.12:
 	docker tag pycse:3.12 jkitchin/pycse:3.12
-	docker tag pycse:3.12 jkitchin/pycse:latest
 	docker push jkitchin/pycse:3.12
-	docker push jkitchin/pycse:latest
 
 # Python 3.13 targets
 build-3.13: Dockerfile-3.13
@@ -36,13 +34,15 @@ push-3.13:
 	docker tag pycse:3.13 jkitchin/pycse:3.13
 	docker push jkitchin/pycse:3.13
 
-# Python 3.14 targets
+# Python 3.14 targets (latest)
 build-3.14: Dockerfile-3.14
-	docker build -f Dockerfile-3.14 -t pycse:3.14 .
+	docker build -f Dockerfile-3.14 -t pycse:3.14 -t pycse:latest .
 
 push-3.14:
 	docker tag pycse:3.14 jkitchin/pycse:3.14
+	docker tag pycse:3.14 jkitchin/pycse:latest
 	docker push jkitchin/pycse:3.14
+	docker push jkitchin/pycse:latest
 
 # Build and push all versions
 build-all: build-3.12 build-3.13 build-3.14
