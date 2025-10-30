@@ -13,6 +13,7 @@ import json
 import subprocess
 import time
 import webbrowser
+from importlib.metadata import version
 
 import numpy as np
 import requests
@@ -24,6 +25,17 @@ import click
 def pycse():
     """pycse CLI - Manage Docker-based Jupyter Lab and MCP server."""
     pass
+
+
+@pycse.command(name="version")
+def version_cmd():
+    """Display the installed pycse version."""
+    try:
+        ver = version("pycse")
+        click.echo(f"pycse version {ver}")
+    except Exception as e:
+        click.secho(f"Error: Could not determine version: {e}", fg="red", err=True)
+        sys.exit(1)
 
 
 @pycse.command()
