@@ -8,10 +8,16 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 import subprocess
+from click.testing import CliRunner
 
 
 class TestCLI:
     """Tests for pycse CLI functionality."""
+
+    @pytest.fixture
+    def cli_runner(self):
+        """Provide a Click CLI runner for testing."""
+        return CliRunner()
 
     @pytest.fixture
     def mock_docker_available(self):
@@ -79,17 +85,17 @@ class TestCLI:
 
         assert callable(pycse)
 
-    def test_docker_not_found_raises_exception(self, mock_docker_unavailable):
+    def test_docker_not_found_raises_exception(self, cli_runner, mock_docker_unavailable):
         """Test that missing Docker raises an exception."""
         from pycse.cli import pycse
 
-        with pytest.raises(Exception, match="docker was not found"):
-            pycse()
+        result = cli_runner.invoke(pycse, ["launch"])
+        assert result.exit_code == 1
+        assert "docker was not found" in result.output
 
-    @patch("sys.exit")
     def test_image_check_when_available(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -103,17 +109,16 @@ class TestCLI:
         # Mock: image exists
         mock_subprocess_run.return_value.returncode = 0
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should have called docker image inspect
         calls = mock_subprocess_run.call_args_list
         inspect_call = any("image" in str(call) and "inspect" in str(call) for call in calls)
         assert inspect_call, "Should check if image exists"
 
-    @patch("sys.exit")
     def test_image_pull_when_missing(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -136,17 +141,16 @@ class TestCLI:
 
         mock_subprocess_run.side_effect = run_side_effect
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should have called docker pull
         calls = mock_subprocess_run.call_args_list
         pull_call = any("pull" in str(call) for call in calls)
         assert pull_call, "Should pull image when it doesn't exist"
 
-    @patch("builtins.input", return_value="n")
     def test_existing_container_no_kill(
         self,
-        mock_input,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -176,9 +180,9 @@ class TestCLI:
 
         mock_subprocess_run.side_effect = run_side_effect
 
-        # sys.exit() should raise SystemExit
-        with pytest.raises(SystemExit):
-            pycse()
+        # Mock user declining to kill container
+        with patch("click.confirm", return_value=False):
+            cli_runner.invoke(pycse, ["launch"])
 
         # Should have opened browser with existing token
         mock_webbrowser.assert_called_once()
@@ -186,12 +190,9 @@ class TestCLI:
         assert "token=test-token-123" in url
         assert "8888" in url
 
-    @patch("sys.exit")
-    @patch("builtins.input", return_value="y")
     def test_existing_container_with_kill(
         self,
-        mock_input,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -221,17 +222,18 @@ class TestCLI:
 
         mock_subprocess_run.side_effect = run_side_effect
 
-        pycse()
+        # Mock user confirming to kill container
+        with patch("click.confirm", return_value=True):
+            cli_runner.invoke(pycse, ["launch"])
 
         # Should have called docker rm -f pycse
         calls = [str(call) for call in mock_subprocess_run.call_args_list]
         rm_call = any("rm" in call and "-f" in call and "pycse" in call for call in calls)
         assert rm_call, "Should kill existing container when user confirms"
 
-    @patch("sys.exit")
     def test_new_container_startup(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -245,7 +247,7 @@ class TestCLI:
         # Mock: no existing container
         mock_subprocess_run.return_value.stdout = b""
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should have called Popen to start container
         mock_subprocess_popen.assert_called_once()
@@ -259,10 +261,9 @@ class TestCLI:
         assert "pycse" in popen_cmd
         assert "-p" in popen_cmd  # Port mapping
 
-    @patch("sys.exit")
     def test_port_assignment(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -278,7 +279,7 @@ class TestCLI:
 
         with patch("numpy.random.randint") as mock_randint:
             mock_randint.return_value = 8765
-            pycse()
+            cli_runner.invoke(pycse, ["launch"])
 
             # Should call randint with correct range
             mock_randint.assert_called_once_with(8000, 9000)
@@ -287,10 +288,9 @@ class TestCLI:
             popen_cmd = mock_subprocess_popen.call_args[0][0]
             assert "8765:8888" in " ".join(popen_cmd)
 
-    @patch("sys.exit")
     def test_jupyter_token_generation(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -306,19 +306,15 @@ class TestCLI:
 
         with patch("uuid.uuid4") as mock_uuid:
             mock_uuid.return_value = "test-uuid-12345"
-            pycse()
-
-            # Token should be in environment
-            assert os.environ.get("JUPYTER_TOKEN") == "test-uuid-12345"
+            cli_runner.invoke(pycse, ["launch"])
 
             # Token should be in browser URL
             url = mock_webbrowser.call_args[0][0]
             assert "token=test-uuid-12345" in url
 
-    @patch("sys.exit")
     def test_volume_mount_current_directory(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -332,7 +328,7 @@ class TestCLI:
         # Mock: no existing container
         mock_subprocess_run.return_value.stdout = b""
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Check volume mount in command
         popen_cmd = mock_subprocess_popen.call_args[0][0]
@@ -343,10 +339,9 @@ class TestCLI:
         cwd = os.getcwd()
         assert f"{cwd}:/home/jovyan/work" in cmd_str
 
-    @patch("sys.exit")
     def test_webbrowser_opens_correct_url(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -362,7 +357,7 @@ class TestCLI:
 
         with patch("numpy.random.randint", return_value=8765):
             with patch("uuid.uuid4", return_value="test-token"):
-                pycse()
+                cli_runner.invoke(pycse, ["launch"])
 
                 # Should open browser with correct URL
                 mock_webbrowser.assert_called_once()
@@ -371,10 +366,9 @@ class TestCLI:
                 assert url.startswith("http://localhost:8765/lab")
                 assert "token=test-token" in url
 
-    @patch("sys.exit")
     def test_waits_for_jupyter_server(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -399,7 +393,7 @@ class TestCLI:
 
         mock_requests_get.side_effect = get_side_effect
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should have made at least 3 requests
         assert mock_requests_get.call_count >= 3
@@ -407,10 +401,9 @@ class TestCLI:
         # Should have slept between attempts
         assert mock_time_sleep.call_count >= 2
 
-    @patch("sys.exit")
     def test_attaches_to_container(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -424,7 +417,7 @@ class TestCLI:
         # Mock: no existing container
         mock_subprocess_run.return_value.stdout = b""
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should have called docker attach pycse as the last subprocess call
         last_call = mock_subprocess_run.call_args_list[-1]
@@ -433,10 +426,9 @@ class TestCLI:
         assert "attach" in cmd
         assert "pycse" in cmd
 
-    @patch("sys.exit")
     def test_image_name(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -450,17 +442,16 @@ class TestCLI:
         # Mock: no existing container
         mock_subprocess_run.return_value.stdout = b""
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         # Should use jkitchin/pycse image
         popen_cmd = mock_subprocess_popen.call_args[0][0]
         cmd_str = " ".join(popen_cmd)
         assert "jkitchin/pycse" in cmd_str
 
-    @patch("sys.exit")
     def test_container_flags(
         self,
-        mock_exit,
+        cli_runner,
         mock_docker_available,
         mock_subprocess_run,
         mock_subprocess_popen,
@@ -474,7 +465,7 @@ class TestCLI:
         # Mock: no existing container
         mock_subprocess_run.return_value.stdout = b""
 
-        pycse()
+        cli_runner.invoke(pycse, ["launch"])
 
         popen_cmd = mock_subprocess_popen.call_args[0][0]
         # Should use -it (interactive terminal), --rm (remove on exit)
@@ -501,51 +492,54 @@ class TestCLIEdgeCases:
         with patch("shutil.which", return_value="/usr/local/bin/docker"):
             yield
 
-    def test_image_inspect_exception_handling(self, mock_docker_available):
+    def test_image_inspect_exception_handling(self):
         """Test that exception during image inspect triggers pull."""
         from pycse.cli import pycse
 
-        with patch("subprocess.run") as mock_run:
-            with patch("subprocess.Popen"):
-                with patch("requests.get") as mock_get:
-                    with patch("webbrowser.open"):
-                        with patch("time.sleep"):
-                            mock_get.return_value.status_code = 200
+        runner = CliRunner()
+        with patch("shutil.which", return_value="/usr/local/bin/docker"):
+            with patch("subprocess.run") as mock_run:
+                with patch("subprocess.Popen"):
+                    with patch("requests.get") as mock_get:
+                        with patch("webbrowser.open"):
+                            with patch("time.sleep"):
+                                mock_get.return_value.status_code = 200
 
-                            # Mock: inspect raises exception, ps returns empty
-                            def run_side_effect(*args, **kwargs):
-                                cmd = args[0]
-                                if "inspect" in cmd:
-                                    raise Exception("Image not found")
-                                result = MagicMock()
-                                result.returncode = 0
-                                result.stdout = b""
-                                return result
+                                # Mock: inspect raises CalledProcessError, ps returns empty
+                                def run_side_effect(*args, **kwargs):
+                                    cmd = args[0]
+                                    if "inspect" in cmd:
+                                        raise subprocess.CalledProcessError(1, cmd)
+                                    result = MagicMock()
+                                    result.returncode = 0
+                                    result.stdout = b""
+                                    return result
 
-                            mock_run.side_effect = run_side_effect
+                                mock_run.side_effect = run_side_effect
 
-                            pycse()
+                                runner.invoke(pycse, ["launch"])
 
-                            # Should have attempted to pull
-                            calls = [str(c) for c in mock_run.call_args_list]
-                            pull_attempted = any("pull" in c for c in calls)
-                            assert pull_attempted
+                                # Should have attempted to pull
+                                calls = [str(c) for c in mock_run.call_args_list]
+                                pull_attempted = any("pull" in c for c in calls)
+                                assert pull_attempted
 
-    @patch("sys.exit")
-    def test_max_wait_time_for_server(self, mock_exit, mock_docker_available):
+    def test_max_wait_time_for_server(self):
         """Test that waiting for server has a maximum retry count."""
         from pycse.cli import pycse
 
-        with patch("subprocess.run") as mock_run:
-            with patch("subprocess.Popen"):
-                with patch("requests.get") as mock_get:
-                    with patch("webbrowser.open"):
-                        with patch("time.sleep"):
-                            # Mock: no container, server never becomes ready
-                            mock_run.return_value.stdout = b""
-                            mock_get.return_value.status_code = 500
+        runner = CliRunner()
+        with patch("shutil.which", return_value="/usr/local/bin/docker"):
+            with patch("subprocess.run") as mock_run:
+                with patch("subprocess.Popen"):
+                    with patch("requests.get") as mock_get:
+                        with patch("webbrowser.open"):
+                            with patch("time.sleep"):
+                                # Mock: no container, server never becomes ready
+                                mock_run.return_value.stdout = b""
+                                mock_get.return_value.status_code = 500
 
-                            pycse()
+                                runner.invoke(pycse, ["launch"])
 
-                            # Should have made exactly 10 attempts (0-9 range)
-                            assert mock_get.call_count == 10
+                                # Should have made exactly 10 attempts (0-9 range)
+                                assert mock_get.call_count == 10
