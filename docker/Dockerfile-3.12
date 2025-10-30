@@ -3,7 +3,7 @@
 # Base image from Quay.io with Python 3.12
 
 FROM quay.io/jupyter/scipy-notebook:python-3.12
-MAINTAINER John Kitchin <jkitchin@andrew.cmu.edu>
+LABEL maintainer="John Kitchin <jkitchin@andrew.cmu.edu>"
 
 # Set the default shell to bash instead of sh so the source commands work
 SHELL ["/bin/bash", "-c"]
@@ -12,21 +12,23 @@ USER root
 
 # These packages are to get PDF export via LaTeX (minimal) and via webpdf
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends pandoc \
+    && apt-get -y install --no-install-recommends \
+    pandoc \
     texlive-xetex texlive-fonts-recommended texlive-plain-generic \
     xorg xvfb gtk2-engines-pixbuf \
     dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi xfonts-cyrillic xfonts-scalable \
-    libnss3-dev libxss1 libcups2 libasound2 libpangocairo-1.0-0 \
+    libnss3-dev libxss1 libcups2t64 libasound2t64 libpangocairo-1.0-0 \
     libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 \
     nodejs npm libzmq3-dev tree \
-    curl jq graphviz file
+    curl jq graphviz file \
+    && rm -rf /var/lib/apt/lists/*
 
 # Do not exclude man pages & other documentation
-RUN rm -f /etc/dpkg/dpkg.cfg.d/excludes
+RUN if [ -f /etc/dpkg/dpkg.cfg.d/excludes ]; then rm -f /etc/dpkg/dpkg.cfg.d/excludes; fi
 # Reinstall all currently installed packages in order to get the man pages back
 RUN apt-get update && \
-    dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
-    rm -r /var/lib/apt/lists/*
+    dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall || true && \
+    rm -rf /var/lib/apt/lists/*
 
 # This is for jupyter-lsp
 # see https://github.com/jupyter-lsp/jupyterlab-lsp#installation

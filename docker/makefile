@@ -12,9 +12,12 @@ help:
 	@echo "  push-3.14      Push Python 3.14 image to Docker Hub"
 	@echo "  build-all      Build all Python version images"
 	@echo "  push-all       Push all Python version images"
+	@echo "  run-3.12       Run pycse with Python 3.12"
+	@echo "  run-3.13       Run pycse with Python 3.13"
+	@echo "  run-3.14       Run pycse with Python 3.14"
 	@echo "  build          Build Docker image using original Dockerfile (legacy)"
 	@echo "  push           Push legacy image to Docker Hub"
-	@echo "  run            Run pycse.sh script"
+	@echo "  run            Run pycse.sh script (uses latest)"
 	@echo ""
 	@echo "Example: make build-3.12"
 
@@ -60,5 +63,15 @@ push:
 run:
 	./pycse.sh
 
-.PHONY: help build-3.12 build-3.13 build-3.14 push-3.12 push-3.13 push-3.14 build-all push-all build push run
+# Run specific Python versions
+run-3.12:
+	./pycse.sh 3.12
+
+run-3.13:
+	./pycse.sh 3.13
+
+run-3.14:
+	./pycse.sh 3.14
+
+.PHONY: help build-3.12 build-3.13 build-3.14 push-3.12 push-3.13 push-3.14 build-all push-all run-3.12 run-3.13 run-3.14 build push run
 
