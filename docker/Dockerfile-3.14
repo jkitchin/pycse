@@ -1,0 +1,90 @@
+# https://jupyter-docker-stacks.readthedocs.io/en/latest/
+# Note this takes about 30 minutes to build
+# Base image from Quay.io with Python 3.14
+
+FROM quay.io/jupyter/scipy-notebook:python-3.14
+MAINTAINER John Kitchin <jkitchin@andrew.cmu.edu>
+
+# Set the default shell to bash instead of sh so the source commands work
+SHELL ["/bin/bash", "-c"]
+
+USER root
+
+# These packages are to get PDF export via LaTeX (minimal) and via webpdf
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends pandoc \
+    texlive-xetex texlive-fonts-recommended texlive-plain-generic \
+    xorg xvfb gtk2-engines-pixbuf \
+    dbus-x11 xfonts-base xfonts-100dpi xfonts-75dpi xfonts-cyrillic xfonts-scalable \
+    libnss3-dev libxss1 libcups2 libasound2 libpangocairo-1.0-0 \
+    libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 \
+    nodejs npm libzmq3-dev tree \
+    curl jq graphviz file
+
+# Do not exclude man pages & other documentation
+RUN rm -f /etc/dpkg/dpkg.cfg.d/excludes
+# Reinstall all currently installed packages in order to get the man pages back
+RUN apt-get update && \
+    dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -y --reinstall && \
+    rm -r /var/lib/apt/lists/*
+
+# This is for jupyter-lsp
+# see https://github.com/jupyter-lsp/jupyterlab-lsp#installation
+RUN ln -s / .lsp_symlink
+USER ${NB_UID}
+
+# Install Python packages
+RUN python -m pip install --upgrade pip \
+	&& python -m pip install pycse pint quantities uncertainties \
+	nbconvert nbconvert[webpdf] \
+	black flake8 pylint nbmake ruff \
+	jupyter-book matplotlib numpy ghp-import pandas sympy autograd numpydoc joblib plotly \
+        jupyter_server \
+        jupyterlab jupyterlab-lsp 'python-lsp-server[all]' \
+	jupyterlab-git jupyter-videochat \
+	jupyterlab-spellchecker \
+        jupyterlab-code-formatter \
+        pydotplus ase \
+        parsl \
+        pyppeteer \
+	&& jupyter server extension disable nbclassic
+
+# Now all the jupyter lab settings
+COPY jupyter_lab_config.py /home/jovyan/.jupyter/jupyter_lab_config.py
+
+# Get pyppeteer working for pdf export with webpdf.
+# Note: The chromium version path may need to be updated
+RUN pyppeteer-install || true
+
+# Find the chromium installation directory and set up the chrome wrapper
+RUN CHROMIUM_DIR=$(find /home/jovyan/.local/share/pyppeteer/local-chromium -type d -name "chrome-linux" 2>/dev/null | head -1) && \
+    if [ -n "$CHROMIUM_DIR" ] && [ -f "$CHROMIUM_DIR/chrome" ]; then \
+        mv "$CHROMIUM_DIR/chrome" "$CHROMIUM_DIR/chrome-exe" && \
+        echo '#!/bin/bash' > "$CHROMIUM_DIR/chrome" && \
+        echo 'exec "$0-exe" "$@"' >> "$CHROMIUM_DIR/chrome" && \
+        chmod +x "$CHROMIUM_DIR/chrome"; \
+    fi
+
+# Copy all jupyter configuration files
+COPY jupyter_nbconvert_config.py /home/jovyan/.jupyter/jupyter_nbconvert_config.py
+COPY jupyter_lab_config.py /home/jovyan/.jupyter/jupyter_lab_config.py
+COPY jupyter_server_config.json /home/jovyan/.jupyter/jupyter_server_config.json
+
+# Copy dictionary files for spellchecker
+COPY en_US.dic /home/jovyan/.local/share/jupyter/dictionaries/en_US.dic
+COPY en_US.aff /home/jovyan/.local/share/jupyter/dictionaries/en_US.aff
+
+# For code formatting
+RUN mkdir -p /home/jovyan/.jupyter/lab/user-settings/@ryantam626/jupyterlab_code_formatter && \
+    mkdir -p /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
+COPY jupyterlab-code-formatter.json /home/jovyan/.jupyter/lab/user-settings/@ryantam626/jupyterlab_code_formatter/settings.jupyterlab-settings
+COPY keyboard-shortcuts.json /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension/shortcuts.jupyterlab-settings
+
+# Fix ownership issues
+USER root
+RUN chown -R jovyan:users /home/jovyan/.jupyter \
+	&& chown -R jovyan:users /home/jovyan/.local
+USER ${NB_UID}
+
+# Change the final working dir to the place you mount your CWD
+WORKDIR /home/jovyan/work
