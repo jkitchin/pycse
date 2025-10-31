@@ -36,10 +36,12 @@ RUN ln -s / .lsp_symlink
 USER ${NB_UID}
 
 # Install Python packages
-# Note: Install greenlet first with minimum version for Python 3.13 compatibility
+# Create constraint file to prevent greenlet rebuild (base image has 3.2.4 preinstalled)
+# Note: parsl temporarily excluded for Python 3.13 (greenlet compatibility issues)
 RUN python -m pip install --upgrade pip \
-	&& python -m pip install 'greenlet>=3.1.0' \
-	&& python -m pip install pycse pint quantities uncertainties \
+	&& echo "greenlet==3.2.4" > /tmp/constraints.txt \
+	&& python -m pip install --prefer-binary --constraint /tmp/constraints.txt \
+	pycse pint quantities uncertainties \
 	nbconvert nbconvert[webpdf] \
 	black flake8 pylint nbmake ruff \
 	jupyter-book matplotlib numpy ghp-import pandas sympy autograd numpydoc joblib plotly \
@@ -49,9 +51,9 @@ RUN python -m pip install --upgrade pip \
 	jupyterlab-spellchecker \
         jupyterlab-code-formatter \
         pydotplus ase \
-        parsl \
         pyppeteer \
-	&& jupyter server extension disable nbclassic
+	&& jupyter server extension disable nbclassic \
+	&& rm /tmp/constraints.txt
 
 # Now all the jupyter lab settings
 COPY jupyter_lab_config.py /home/jovyan/.jupyter/jupyter_lab_config.py

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Accept optional Python version argument (e.g., 3.12, 3.13, 3.14)
+# Accept optional Python version argument (e.g., 3.12, 3.13)
 # Defaults to 'latest' if no argument provided
 VERSION=${1:-latest}
 

@@ -36,8 +36,10 @@ RUN ln -s / .lsp_symlink
 USER ${NB_UID}
 
 # Install Python packages
+# Use --prefer-binary to avoid building from source where possible
 RUN python -m pip install --upgrade pip \
-	&& python -m pip install pycse pint quantities uncertainties \
+	&& python -m pip install --prefer-binary \
+	pycse pint quantities uncertainties \
 	nbconvert nbconvert[webpdf] \
 	black flake8 pylint nbmake ruff \
 	jupyter-book matplotlib numpy ghp-import pandas sympy autograd numpydoc joblib plotly \
