@@ -507,6 +507,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.nlinfit"><code class="docutils literal notranslate"><span class="pre">nlinfit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.nlpredict"><code class="docutils literal notranslate"><span class="pre">nlpredict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.polyfit"><code class="docutils literal notranslate"><span class="pre">polyfit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.polyval"><code class="docutils literal notranslate"><span class="pre">polyval()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.predict"><code class="docutils literal notranslate"><span class="pre">predict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.regress"><code class="docutils literal notranslate"><span class="pre">regress()</span></code></a></li>
 </ul>
@@ -577,7 +578,7 @@ document.write(`
 <li><p>Differential equation solvers.</p></li>
 </ul>
 <p>See <a class="reference external" href="http://kitchingroup.cheme.cmu.edu/pycse">http://kitchingroup.cheme.cmu.edu/pycse</a></p>
-<p>Copyright 2020, John Kitchin
+<p>Copyright 2025, John Kitchin
 (see accompanying license files for details).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.PYCSE.Rsquared">
@@ -619,6 +620,8 @@ Y is a 1d array of predictions from a model.</p>
 <dt class="sig sig-object py" id="pycse.PYCSE.ivp">
 <span class="sig-prename descclassname"><span class="pre">pycse.PYCSE.</span></span><span class="sig-name descname"><span class="pre">ivp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tspan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.PYCSE.ivp" title="Link to this definition">#</a></dt>
 <dd><p>Solve an ODE initial value problem.</p>
+<p>This provides some convenience defaults that I think are better than
+solve_ivp.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -686,31 +689,51 @@ SE is an array of standard errors for the parameters.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.PYCSE.nlpredict">
-<span class="sig-prename descclassname"><span class="pre">pycse.PYCSE.</span></span><span class="sig-name descname"><span class="pre">nlpredict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">popt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xnew</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.PYCSE.nlpredict" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.PYCSE.</span></span><span class="sig-name descname"><span class="pre">nlpredict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">popt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xnew</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.PYCSE.nlpredict" title="Link to this definition">#</a></dt>
 <dd><p>Prediction error for a nonlinear fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>model</strong><span class="classifier">model function with signature model(x, …)</span></dt><dd></dd>
-<dt><strong>loss</strong><span class="classifier">loss function the model was fitted with loss(…)</span></dt><dd></dd>
-<dt><strong>popt</strong><span class="classifier">the optimized paramters</span></dt><dd></dd>
-<dt><strong>xnew</strong><span class="classifier">x-values to predict at</span></dt><dd></dd>
-<dt><strong>alpha</strong><span class="classifier">confidence level, 95% = 0.05</span></dt><dd></dd>
-<dt><strong>ub</strong><span class="classifier">upper bound for smallest allowed Hessian eigenvalue</span></dt><dd></dd>
-<dt><strong>ef</strong><span class="classifier">eigenvalue factor for scaling Hessian</span></dt><dd></dd>
+<dt><strong>X</strong><span class="classifier">array-like</span></dt><dd><p>Independent variable data used for fitting</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array-like</span></dt><dd><p>Dependent variable data used for fitting</p>
+</dd>
+<dt><strong>model</strong><span class="classifier">callable</span></dt><dd><p>Model function with signature model(x, …)</p>
+</dd>
+<dt><strong>popt</strong><span class="classifier">array-like</span></dt><dd><p>Optimized parameters from fitting (e.g., from curve_fit or nlinfit)</p>
+</dd>
+<dt><strong>xnew</strong><span class="classifier">array-like</span></dt><dd><p>x-values to predict at</p>
+</dd>
+<dt><strong>loss</strong><span class="classifier">callable, optional</span></dt><dd><p>Loss function that was minimized during fitting, with signature loss(<a href="#id1"><span class="problematic" id="id2">*</span></a>params).
+If None (default), assumes scipy.optimize.curve_fit was used and automatically
+constructs the correct loss function: loss = 0.5 * sum((y - model(X, <a href="#id3"><span class="problematic" id="id4">*</span></a>p))**2).
+This is the ½SSE convention used by scipy’s least_squares optimizer.
+If you used a different optimizer or loss function, provide it explicitly.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Confidence level (default: 0.05 for 95% confidence intervals)</p>
+</dd>
+<dt><strong>ub</strong><span class="classifier">float, optional</span></dt><dd><p>Upper bound for smallest allowed Hessian eigenvalue (default: 1e-5)</p>
+</dd>
+<dt><strong>ef</strong><span class="classifier">float, optional</span></dt><dd><p>Eigenvalue factor for scaling Hessian (default: 1.05)</p>
+</dd>
 <dt><strong>This function uses numdifftools for the Hessian and Jacobian.</strong></dt><dd></dd>
-<dt><strong>See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance</strong></dt><dd></dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>y, yint, se</dt><dd></dd>
-<dt><strong>y</strong><span class="classifier">predicted values</span></dt><dd></dd>
-<dt><strong>yint</strong><span class="classifier">prediction interval at alpha confidence interval</span></dt><dd></dd>
-<dt><strong>se</strong><span class="classifier">standard error of prediction</span></dt><dd></dd>
+<dt><strong>y</strong><span class="classifier">array</span></dt><dd><p>Predicted values at xnew</p>
+</dd>
+<dt><strong>yint</strong><span class="classifier">array</span></dt><dd><p>Prediction intervals at alpha confidence level, shape (n, 2)</p>
+</dd>
+<dt><strong>se</strong><span class="classifier">array</span></dt><dd><p>Standard error of predictions</p>
+</dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The default loss function (½SSE) matches the convention used by scipy.optimize.curve_fit,
+which internally minimizes 0.5 * sum(residuals**2). If you provide a custom loss function,
+ensure it uses the same convention as your fitting procedure.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -743,6 +766,37 @@ passing in a 2D-array that contains one dataset per column.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pycse.PYCSE.polyval">
+<span class="sig-prename descclassname"><span class="pre">pycse.PYCSE.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.PYCSE.polyval" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the polynomial p at x with prediction intervals.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>p: parameters from pycse.polyfit</strong></dt><dd></dd>
+<dt><strong>x: array_like, shape (M,)</strong></dt><dd><p>x-coordinates to evaluate the polynomial at.</p>
+</dd>
+<dt><strong>X: array_like, shape (N,)</strong></dt><dd><p>the original x-data that p was fitted from.</p>
+</dd>
+<dt><strong>y: array-like, shape (N,)</strong></dt><dd><p>the original y-data that p was fitted from.</p>
+<blockquote>
+<div><p>alpha : confidence level, 95% = 0.05</p>
+</div></blockquote>
+</dd>
+<dt><strong>ub</strong><span class="classifier">upper bound for smallest allowed Hessian eigenvalue</span></dt><dd></dd>
+<dt><strong>ef</strong><span class="classifier">eigenvalue factor for scaling Hessian</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>y, yint, pred_se</dt><dd></dd>
+<dt><strong>y</strong><span class="classifier">the predicted values</span></dt><dd></dd>
+<dt>yint: confidence interval</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pycse.PYCSE.predict">
 <span class="sig-prename descclassname"><span class="pre">pycse.PYCSE.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">XX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.PYCSE.predict" title="Link to this definition">#</a></dt>
 <dd><p>Prediction interval for linear regression.</p>
@@ -757,7 +811,7 @@ passing in a 2D-array that contains one dataset per column.</p>
 <dt><strong>alpha</strong><span class="classifier">confidence level, 95% = 0.05</span></dt><dd></dd>
 <dt><strong>ub</strong><span class="classifier">upper bound for smallest allowed Hessian eigenvalue</span></dt><dd></dd>
 <dt><strong>ef</strong><span class="classifier">eigenvalue factor for scaling Hessian</span></dt><dd></dd>
-<dt><strong>See See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance</strong></dt><dd></dd>
+<dt><strong>See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance</strong></dt><dd></dd>
 <dt><strong>Returns</strong></dt><dd></dd>
 <dt><strong>y, yint, pred_se</strong></dt><dd></dd>
 <dt><strong>y</strong><span class="classifier">the predicted values</span></dt><dd></dd>
@@ -869,6 +923,29 @@ The url should be viewable by anyone with the link.</p>
 <p>This monkey-patches go.Figure.show to provide a png image for org-mode, and an
 html file that is saved that you can click on in org-mode to see the interactive
 version.</p>
+<p>Example:</p>
+<blockquote>
+<div><p>import pycse.plotly
+import plotly.graph_objects as go</p>
+<p># Sample data
+x = [0, 1, 2, 3, 4]
+y = [0, 1, 4, 9, 16]</p>
+<p># Create a figure
+fig = go.Figure(</p>
+<blockquote>
+<div><p>data=go.Scatter(x=x, y=y, mode=’lines+markers’, name=’y = x^2’),
+layout=go.Layout(</p>
+<blockquote>
+<div><p>title=’Simple Line Plot’,
+xaxis_title=’x’,
+yaxis_title=’y’,</p>
+</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<p>)</p>
+<p># Show the plot
+fig.show()</p>
+</div></blockquote>
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.plotly.myshow">
 <span class="sig-prename descclassname"><span class="pre">pycse.plotly.</span></span><span class="sig-name descname"><span class="pre">myshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.plotly.myshow" title="Link to this definition">#</a></dt>
@@ -878,7 +955,7 @@ version.</p>
 </section>
 <section id="module-pycse.hashcache">
 <span id="pycse-hashcache"></span><h2>pycse.hashcache<a class="headerlink" href="#module-pycse.hashcache" title="Link to this heading">#</a></h2>
-<p>hashcache - a class decorator for persistent, file/hash-based cache</p>
+<p>hashcache - a class decorator for persistent, file/hash-based cache.</p>
 <p>I found some features of joblib were unsuitable for how I want to use a cache.</p>
 <p>1. The “file” Python thinks the function is in is used to save the results in
 joblib, which leads to repeated runs if you run the same code in Python,
@@ -936,13 +1013,13 @@ simply provide new functions for this.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">HashCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache" title="Link to this definition">#</a></dt>
-<dd><p>Class decorator to cache using hashes and pickle (via joblib).
-Data is stored in directories named by the hash.</p>
+<dd><p>Class decorator to cache using hashes and pickle (via joblib).</p>
+<p>Data is stored in directories named by the hash.</p>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
-<td><p>This is the decorator code that runs around self.function.</p></td>
+<td><p>Code to run around self.function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.dump" title="pycse.hashcache.HashCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
 <td><p>Dump KWARGS to the cache.</p></td>
@@ -957,7 +1034,7 @@ Data is stored in directories named by the hash.</p>
 <td><p>Return path to file for HSH.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.get_standardized_args" title="pycse.hashcache.HashCache.get_standardized_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code></a>(args, kwargs)</p></td>
-<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+<td><p>Return a standardized dictionary of kwargs for func(args, kwargs).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.HashCache.load" title="pycse.hashcache.HashCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh[, cache])</p></td>
 <td><p>Load saved variables from HSH.</p></td>
@@ -971,8 +1048,8 @@ Data is stored in directories named by the hash.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache.dump">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.dump" title="Link to this definition">#</a></dt>
-<dd><p>Dump KWARGS to the cache.
-Returns a hash string for future lookup.</p>
+<dd><p>Dump KWARGS to the cache.</p>
+<p>Returns a hash string for future lookup.</p>
 <p>cache is a special kwarg that is not saved</p>
 </dd></dl>
 
@@ -986,9 +1063,9 @@ Returns a hash string for future lookup.</p>
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache.get_hash">
 <span class="sig-name descname"><span class="pre">get_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.get_hash" title="Link to this definition">#</a></dt>
 <dd><p>Get a hash for running FUNC(ARGS, KWARGS).</p>
-<p>This is the most critical feature of hashcache as it provides a key to store
-and look up results later. You should think carefully before changing this
-function, it breaks past caches.</p>
+<p>This is the most critical feature of hashcache as it provides a key to
+store and look up results later. You should think carefully before
+changing this function, it breaks past caches.</p>
 <p>FUNC should be as pure as reasonable. This hash is insensitive to global
 variables.</p>
 <p>The hash is on the function name, bytecode, and a standardized kwargs
@@ -1008,7 +1085,7 @@ the hash fragile to changes in Python version that affect bytecode.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache.get_standardized_args">
 <span class="sig-name descname"><span class="pre">get_standardized_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.get_standardized_args" title="Link to this definition">#</a></dt>
-<dd><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p>
+<dd><p>Return a standardized dictionary of kwargs for func(args, kwargs).</p>
 <p>This dictionary includes default values, even if they were not called.</p>
 </dd></dl>
 
@@ -1045,7 +1122,7 @@ does not exist yet, sucess will be False, and data will be None.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
-<td><p>This is the decorator code that runs around self.function.</p></td>
+<td><p>Code to run around self.function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.dump" title="pycse.hashcache.JsonCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
 <td><p>Dump KWARGS to the cache.</p></td>
@@ -1060,13 +1137,13 @@ does not exist yet, sucess will be False, and data will be None.</p>
 <td><p>Return path to file for HSH.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code>(args, kwargs)</p></td>
-<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+<td><p>Return a standardized dictionary of kwargs for func(args, kwargs).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.load" title="pycse.hashcache.JsonCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh)</p></td>
 <td><p>Load data from HSH.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.JsonCache.load_data" title="pycse.hashcache.JsonCache.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data</span></code></a>(hsh)</p></td>
-<td><p>Load data for HSH.</p></td>
+<td><p>Load data from hsh.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1074,8 +1151,8 @@ does not exist yet, sucess will be False, and data will be None.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.JsonCache.dump">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.dump" title="Link to this definition">#</a></dt>
-<dd><p>Dump KWARGS to the cache.
-Returns a hash string for future lookup.</p>
+<dd><p>Dump KWARGS to the cache.</p>
+<p>Returns a hash string for future lookup.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1093,10 +1170,7 @@ Returns a hash string for future lookup.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.JsonCache.load_data">
 <span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.JsonCache.load_data" title="Link to this definition">#</a></dt>
-<dd><p>Load data for HSH.</p>
-<p>HSH is a string for the hash associated with the data you want.</p>
-<p>Returns success, data. If it succeeds, success with be True. If the data
-does not exist yet, sucess will be False, and data will be None.</p>
+<dd><p>Load data from hsh.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1104,8 +1178,8 @@ does not exist yet, sucess will be False, and data will be None.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pycse.hashcache.SqlCache">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">SqlCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache" title="Link to this definition">#</a></dt>
-<dd><p>Class decorator to cache using orjson and sqlite.
-Data is stored in a sqlite database as json.</p>
+<dd><p>Class decorator to cache using orjson and sqlite.</p>
+<p>Data is stored in a sqlite database as json.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -1117,7 +1191,7 @@ Data is stored in a sqlite database as json.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(*args, **kwargs)</p></td>
-<td><p>This is the decorator code that runs around self.function.</p></td>
+<td><p>Code to run around self.function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.dump" title="pycse.hashcache.SqlCache.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>(**kwargs)</p></td>
 <td><p>Dump KWARGS to the cache.</p></td>
@@ -1132,7 +1206,7 @@ Data is stored in a sqlite database as json.</p>
 <td><p>Return path to file for HSH.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_args</span></code>(args, kwargs)</p></td>
-<td><p>Returns a standardized dictionary of kwargs for func(args, kwargs)</p></td>
+<td><p>Return a standardized dictionary of kwargs for func(args, kwargs).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pycse.hashcache.SqlCache.load" title="pycse.hashcache.SqlCache.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(hsh)</p></td>
 <td><p>Load data from HSH.</p></td>
@@ -1149,15 +1223,15 @@ Data is stored in a sqlite database as json.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.SqlCache.dump">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.dump" title="Link to this definition">#</a></dt>
-<dd><p>Dump KWARGS to the cache.
-Returns a hash string for future lookup.</p>
+<dd><p>Dump KWARGS to the cache.</p>
+<p>Returns a hash string for future lookup.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.SqlCache.dump_data">
 <span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.dump_data" title="Link to this definition">#</a></dt>
-<dd><p>Dump DATA into HSH.
-DATA must be serializable to json.</p>
+<dd><p>Dump DATA into HSH.</p>
+<p>DATA must be serializable to json.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1178,8 +1252,8 @@ does not exist yet, sucess will be False, and data will be None.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.SqlCache.search">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.SqlCache.search" title="Link to this definition">#</a></dt>
-<dd><p>Run a sql QUERY with args.
-args are substituted in ? placeholders in the query.</p>
+<dd><p>Run a sql QUERY with args.</p>
+<p>args are substituted in ? placeholders in the query.</p>
 <p>This is just a light wrapper on con.execute.</p>
 </dd></dl>
 
@@ -1188,7 +1262,7 @@ args are substituted in ? placeholders in the query.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.hashcache.hashcache">
 <span class="sig-prename descclassname"><span class="pre">pycse.hashcache.</span></span><span class="sig-name descname"><span class="pre">hashcache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.hashcache" title="Link to this definition">#</a></dt>
-<dd><p>Raises an exception if the old hashcache decorator is used.</p>
+<dd><p>Raise an exception if the old hashcache decorator is used.</p>
 </dd></dl>
 
 </section>
@@ -1266,6 +1340,7 @@ args are substituted in ? placeholders in the query.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.nlinfit"><code class="docutils literal notranslate"><span class="pre">nlinfit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.nlpredict"><code class="docutils literal notranslate"><span class="pre">nlpredict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.polyfit"><code class="docutils literal notranslate"><span class="pre">polyfit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.polyval"><code class="docutils literal notranslate"><span class="pre">polyval()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.predict"><code class="docutils literal notranslate"><span class="pre">predict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycse.PYCSE.regress"><code class="docutils literal notranslate"><span class="pre">regress()</span></code></a></li>
 </ul>
