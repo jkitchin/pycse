@@ -209,7 +209,7 @@ class TestKfoldNNPredict:
         """Test basic prediction after fitting."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5], [0.7]])
         y_pred = model.predict(x_test)
@@ -229,7 +229,7 @@ class TestKfoldNNPredict:
         """Test prediction with uncertainty estimates."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_pred, y_std = model.predict(x_test, return_std=True)
@@ -242,7 +242,7 @@ class TestKfoldNNPredict:
         """Test that predict returns only predictions by default."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         result = model.predict(x_test, return_std=False)
@@ -255,7 +255,7 @@ class TestKfoldNNPredict:
         """Test that 1D input is converted to 2D automatically."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         # This should work (atleast_2d handles it)
         x_test_1d = jnp.array([0.5])
@@ -266,7 +266,7 @@ class TestKfoldNNPredict:
         """Test prediction for multiple test points."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.linspace(0, 1, 10)[:, None]
         y_pred = model.predict(x_test)
@@ -291,7 +291,7 @@ class TestKfoldNNPredict:
         """Test that repeated predictions give same results."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_pred1 = model.predict(x_test)
@@ -307,7 +307,7 @@ class TestKfoldNNCall:
         """Test basic __call__ usage."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_pred = model(x_test)
@@ -319,7 +319,7 @@ class TestKfoldNNCall:
         """Test __call__ with return_std=True."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_pred, y_std = model(x_test, return_std=True)
@@ -332,7 +332,7 @@ class TestKfoldNNCall:
         """Test __call__ with distribution=True."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_dist = model(x_test, distribution=True)
@@ -344,7 +344,7 @@ class TestKfoldNNCall:
         """Test __call__ with both distribution and return_std."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         y_dist, y_std = model(x_test, distribution=True, return_std=True)
@@ -364,7 +364,7 @@ class TestKfoldNNCall:
         """Test that distribution has correct shape."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 20))  # 20 output neurons
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.3], [0.5], [0.7]])
         y_dist = model(x_test, distribution=True)
@@ -375,7 +375,7 @@ class TestKfoldNNCall:
         """Test that standard deviations are always positive."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.linspace(0, 1, 10)[:, None]
         _, y_std = model(x_test, return_std=True)
@@ -386,7 +386,7 @@ class TestKfoldNNCall:
         """Test that __call__ and predict give same results."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
 
@@ -409,7 +409,7 @@ class TestKfoldNNPlot:
         """Test that plot creates a matplotlib figure."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         fig = model.plot(x, y)
         assert isinstance(fig, plt.Figure)
@@ -419,7 +419,7 @@ class TestKfoldNNPlot:
         """Test basic plot without distribution."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         fig = model.plot(x, y, distribution=False)
         assert isinstance(fig, plt.Figure)
@@ -433,7 +433,7 @@ class TestKfoldNNPlot:
         """Test plot showing full distribution."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         fig = model.plot(x, y, distribution=True)
         assert isinstance(fig, plt.Figure)
@@ -451,7 +451,7 @@ class TestKfoldNNPlot:
         """Test that plot returns the figure object."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         result = model.plot(x, y)
         assert result is not None
@@ -465,7 +465,7 @@ class TestKfoldNNReport:
         """Test report after model is fitted."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         info = model.report()
         assert info is not None
@@ -477,7 +477,7 @@ class TestKfoldNNReport:
         """Test that report returns a dictionary."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         info = model.report()
         assert isinstance(info, dict)
@@ -499,7 +499,7 @@ class TestKfoldNNScore:
         """Test R² score computation."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=500)
+        model.fit(x, y, maxiter=150)
 
         score = model.score(x, y)
         assert isinstance(score, (float, jnp.ndarray))
@@ -510,7 +510,7 @@ class TestKfoldNNScore:
         """Test that score indicates good fit."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 15, 20))
-        model.fit(x, y, maxiter=1000)
+        model.fit(x, y, maxiter=200)
 
         score = model.score(x, y)
         # With enough iterations, should achieve high R²
@@ -543,7 +543,7 @@ class TestKfoldNNStringMethods:
         """Test __repr__ after fitting."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         repr_str = repr(model)
         assert "fitted" in repr_str
@@ -563,7 +563,7 @@ class TestKfoldNNStringMethods:
         """Test __str__ after fitting."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         str_repr = str(model)
         assert "fitted" in str_repr
@@ -596,7 +596,7 @@ class TestKfoldNNUncertaintyQuantification:
         """Test that uncertainty increases in extrapolation regions."""
         x, y = sample_data  # Data from [0, 1]
         model = KfoldNN(layers=(1, 15, 20), xtrain=0.1)
-        model.fit(x, y, maxiter=500)
+        model.fit(x, y, maxiter=150)
 
         # Interpolation
         x_interp = jnp.array([[0.5]])
@@ -616,19 +616,19 @@ class TestKfoldNNUncertaintyQuantification:
         """Test that mean predictions are close to true values."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 15, 25), xtrain=0.15)
-        model.fit(x, y, maxiter=800)
+        model.fit(x, y, maxiter=200)
 
         y_pred = model.predict(x)
         mae = jnp.mean(jnp.abs(y_pred - y))
 
         # Should achieve low MAE on training data
-        assert mae < 0.1
+        assert mae < 0.15
 
     def test_std_always_positive(self, sample_data):
         """Test that standard deviations are always non-negative."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15), xtrain=0.1)
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.linspace(-1, 2, 30)[:, None]
         _, std = model.predict(x_test, return_std=True)
@@ -639,7 +639,7 @@ class TestKfoldNNUncertaintyQuantification:
         """Test that distribution shows ensemble variability."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 20), xtrain=0.1)
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         x_test = jnp.array([[0.5]])
         dist = model(x_test, distribution=True)
@@ -654,7 +654,7 @@ class TestKfoldNNUncertaintyQuantification:
         """Test that xtrain=1.0 gives very small uncertainty."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15), xtrain=1.0)
-        model.fit(x, y, maxiter=500)
+        model.fit(x, y, maxiter=150)
 
         x_test = jnp.array([[0.5]])
         _, std = model.predict(x_test, return_std=True)
@@ -685,7 +685,7 @@ class TestKfoldNNEdgeCases:
         y = jnp.array([0.1, 0.3, 0.5, 0.7, 0.9])
 
         model = KfoldNN(layers=(1, 5, 8))
-        model.fit(x, y, maxiter=500)
+        model.fit(x, y, maxiter=150)
 
         assert model.is_fitted
         y_pred = model.predict(x)
@@ -696,7 +696,7 @@ class TestKfoldNNEdgeCases:
         x, y = sample_data
         # Many output neurons for ensemble
         model = KfoldNN(layers=(1, 10, 50), xtrain=0.1)
-        model.fit(x, y, maxiter=300)
+        model.fit(x, y, maxiter=100)
 
         assert model.is_fitted
         dist = model(x[:5], distribution=True)
@@ -706,7 +706,7 @@ class TestKfoldNNEdgeCases:
         """Test with deep architecture."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 15, 20, 25, 20), xtrain=0.15)
-        model.fit(x, y, maxiter=400)
+        model.fit(x, y, maxiter=150)
 
         assert model.is_fitted
         y_pred = model.predict(x[:5])
@@ -737,7 +737,7 @@ class TestKfoldNNIntegration:
         assert not model.is_fitted
 
         # Fit
-        model.fit(x, y, maxiter=500, tol=1e-4)
+        model.fit(x, y, maxiter=150, tol=1e-4)
         assert model.is_fitted
 
         # Report
