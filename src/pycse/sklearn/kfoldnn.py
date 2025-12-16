@@ -40,8 +40,8 @@ KfoldNN
 
 Notes
 -----
-- Requires JAX, Flax, and jaxopt
-- Uses LBFGS optimizer for training
+- Requires JAX, Flax, and optax
+- Uses L-BFGS optimizer for training
 - Compatible with sklearn pipelines and cross-validation
 - Uncertainty estimates are approximate (not Bayesian posteriors)
 
@@ -84,11 +84,11 @@ import jax
 
 from jax import jit
 import jax.numpy as np
-from jax import value_and_grad
-from jaxopt import LBFGS
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
+
+from pycse.sklearn.optimizers import run_optimizer
 
 # Enable 64-bit precision for better numerical stability
 os.environ["JAX_ENABLE_X64"] = "True"
@@ -317,12 +317,11 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         y : array-like of shape (n_samples,) or (n_samples, 1)
             Target values. Will be converted to JAX array and flattened.
         **kwargs : dict, optional
-            Additional arguments passed to jaxopt.LBFGS solver:
+            Additional arguments passed to the L-BFGS optimizer:
             - maxiter : int, default=1500
                 Maximum number of optimization iterations.
             - tol : float, default=1e-3
                 Tolerance for convergence.
-            - Other LBFGS parameters (see jaxopt documentation).
 
         Returns
         -------
@@ -431,17 +430,16 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             return total_error
 
         # Set default solver parameters
-        if "maxiter" not in kwargs:
-            kwargs["maxiter"] = 1500
-        if "tol" not in kwargs:
-            kwargs["tol"] = 1e-3
+        maxiter = kwargs.pop("maxiter", 1500)
+        tol = kwargs.pop("tol", 1e-3)
 
         # Store maxiter for convergence checking
-        self.maxiter = kwargs["maxiter"]
+        self.maxiter = maxiter
 
-        # Run LBFGS optimization
-        solver = LBFGS(fun=value_and_grad(objective), value_and_grad=True, **kwargs)
-        self.optpars, self.state = solver.run(params)
+        # Run L-BFGS optimization using optax
+        self.optpars, self.state = run_optimizer(
+            "lbfgs", objective, params, maxiter=maxiter, tol=tol, **kwargs
+        )
 
         return self
 

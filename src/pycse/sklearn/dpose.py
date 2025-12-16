@@ -53,7 +53,7 @@ Example usage:
     z_mean = z_ensemble.mean(axis=1)
     z_std = z_ensemble.std(axis=1)
 
-Requires: flax, jaxopt, jax, scikit-learn
+Requires: flax, optax, jax, scikit-learn
 """
 
 import os
@@ -62,13 +62,12 @@ import jax
 
 from jax import jit
 import jax.numpy as np
-from jax import value_and_grad
-import jaxopt
-import optax
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
 from flax.linen.initializers import xavier_uniform
+
+from pycse.sklearn.optimizers import run_optimizer
 
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
@@ -188,12 +187,10 @@ class DPOSE(BaseEstimator, RegressorMixin):
                      - pretrain_maxiter: Iterations for MSE pre-training (default: 500)
 
                      Optimizer-specific parameters:
-                     - BFGS/LBFGS: stepsize, linesearch, max_linesearch_iter
-                     - Adam: learning_rate (default: 1e-3), b1, b2, eps
+                     - Adam: learning_rate (default: 1e-3), b1, b2
                      - SGD: learning_rate, momentum
                      - Muon: learning_rate (default: 0.02), beta (default: 0.95),
                              ns_steps (default: 5), weight_decay
-                     - See jaxopt documentation for full parameter lists
 
         Returns:
             self: Fitted model.
@@ -291,69 +288,13 @@ class DPOSE(BaseEstimator, RegressorMixin):
                 )
 
         # Solver configuration
-        if "maxiter" not in kwargs:
-            kwargs["maxiter"] = 1500
-        if "tol" not in kwargs:
-            kwargs["tol"] = 1e-3
+        maxiter = kwargs.pop("maxiter", 1500)
+        tol = kwargs.pop("tol", 1e-3)
 
-        # Select optimizer
-        if self.optimizer == "bfgs":
-            solver = jaxopt.BFGS(fun=value_and_grad(objective), value_and_grad=True, **kwargs)
-        elif self.optimizer == "lbfgs":
-            solver = jaxopt.LBFGS(fun=value_and_grad(objective), value_and_grad=True, **kwargs)
-        elif self.optimizer == "lbfgsb":
-            solver = jaxopt.LBFGSB(fun=value_and_grad(objective), value_and_grad=True, **kwargs)
-        elif self.optimizer == "nonlinear_cg":
-            solver = jaxopt.NonlinearCG(
-                fun=value_and_grad(objective), value_and_grad=True, **kwargs
-            )
-        elif self.optimizer == "adam":
-            # Adam uses OptaxSolver with optax optimizer
-            if "learning_rate" not in kwargs:
-                kwargs["learning_rate"] = 1e-3
-            solver = jaxopt.OptaxSolver(
-                opt=optax.adam(kwargs.pop("learning_rate")), fun=objective, **kwargs
-            )
-        elif self.optimizer == "sgd":
-            # SGD uses OptaxSolver with optax optimizer
-            if "learning_rate" not in kwargs:
-                kwargs["learning_rate"] = 1e-2
-            lr = kwargs.pop("learning_rate")
-            momentum = kwargs.pop("momentum", 0.9)
-            solver = jaxopt.OptaxSolver(
-                opt=optax.sgd(lr, momentum=momentum), fun=objective, **kwargs
-            )
-        elif self.optimizer == "muon":
-            # Muon uses OptaxSolver with optax.contrib.muon
-            # Muon orthogonalizes momentum updates for 2D parameters
-            if "learning_rate" not in kwargs:
-                kwargs["learning_rate"] = 0.02  # Muon typically uses higher LR than Adam
-            lr = kwargs.pop("learning_rate")
-            beta = kwargs.pop("beta", 0.95)
-            ns_steps = kwargs.pop("ns_steps", 5)
-            weight_decay = kwargs.pop("weight_decay", 0.0)
-
-            solver = jaxopt.OptaxSolver(
-                opt=optax.contrib.muon(
-                    learning_rate=lr,
-                    beta=beta,
-                    ns_steps=ns_steps,
-                    nesterov=True,
-                    weight_decay=weight_decay,
-                ),
-                fun=objective,
-                **kwargs,
-            )
-        elif self.optimizer == "gradient_descent":
-            solver = jaxopt.GradientDescent(fun=objective, **kwargs)
-        else:
-            raise ValueError(
-                f"Unknown optimizer: {self.optimizer}. "
-                f"Choose from: bfgs, lbfgs, lbfgsb, nonlinear_cg, adam, sgd, muon, gradient_descent"
-            )
-
-        # Optimize
-        self.optpars, self.state = solver.run(params)
+        # Run optimization using optax-based optimizers
+        self.optpars, self.state = run_optimizer(
+            self.optimizer, objective, params, maxiter=maxiter, tol=tol, **kwargs
+        )
 
         # Post-hoc calibration on validation set if provided
         if val_X is not None and val_y is not None:
