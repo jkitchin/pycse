@@ -271,9 +271,11 @@ def test_nlpredict_linear():
 
 def test_nlpredict_exponential():
     """Test nlpredict with exponential model."""
-    # Use exponential model: y = a * exp(b * x)
+    # Use exponential model: y = a * exp(b * x) with small noise
+    # Noise is required for meaningful standard error estimation
+    np.random.seed(42)
     x = np.linspace(0, 2, 20)
-    y = 2 * np.exp(0.5 * x)
+    y = 2 * np.exp(0.5 * x) + np.random.normal(0, 0.05, len(x))
 
     def exp_model(x, a, b):
         return a * np.exp(b * x)
@@ -285,9 +287,9 @@ def test_nlpredict_exponential():
     xnew = np.array([0.5, 1.0, 1.5])
     ypred, yint, pred_se = nlpredict(x, y, exp_model, popt, xnew)
 
-    # Check predictions are close
+    # Check predictions are close to true values
     expected = 2 * np.exp(0.5 * xnew)
-    np.testing.assert_allclose(ypred, expected, rtol=1e-5)
+    np.testing.assert_allclose(ypred, expected, rtol=0.1)
 
     # Check standard errors are positive
     assert np.all(pred_se > 0)
