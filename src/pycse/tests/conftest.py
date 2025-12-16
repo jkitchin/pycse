@@ -5,6 +5,11 @@ multiple test modules to reduce code duplication and improve test
 maintainability.
 """
 
+import os
+
+# Force JAX to use CPU backend to avoid Metal GPU issues on macOS
+os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
+
 import numpy as np
 import pytest
 
