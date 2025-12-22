@@ -36,7 +36,6 @@ Requires: flax, optax, jax, scikit-learn
 """
 
 import os
-from functools import partial
 
 import jax
 from jax import jit
