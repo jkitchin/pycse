@@ -719,3 +719,97 @@ class KAN(BaseEstimator, RegressorMixin):
             return self.predict_ensemble(X)
 
         return self.predict(X, return_std=return_std)
+
+    def plot_activations(self, layer_idx=0, figsize=(12, 8)):
+        """Visualize the learned spline activation functions.
+
+        This method plots the learned activation functions for each edge
+        in a specified layer, showing how the B-spline activations have
+        been shaped during training.
+
+        Args:
+            layer_idx: Which layer's activations to visualize (default: 0, first layer).
+            figsize: Figure size tuple (width, height).
+
+        Returns:
+            matplotlib figure object.
+        """
+        if not hasattr(self, "optpars"):
+            raise Exception("You need to fit the model first.")
+
+        # Get parameters for the specified layer
+        params = self.optpars["params"]
+        layer_keys = [k for k in params.keys() if k.startswith("KANLayer_")]
+
+        if layer_idx >= len(layer_keys):
+            raise ValueError(f"layer_idx {layer_idx} out of range. Model has {len(layer_keys)} layers.")
+
+        layer_key = layer_keys[layer_idx]
+        layer_params = params[layer_key]
+
+        spline_weight = np.asarray(layer_params["spline_weight"])
+        base_weight = np.asarray(layer_params["base_weight"])
+        spline_scale = np.asarray(layer_params["spline_scale"])
+
+        in_features, out_features, n_basis = spline_weight.shape
+
+        # Create grid for plotting
+        n_knots = self.grid_size + 1 + 2 * self.spline_order
+        grid = np.linspace(
+            self.grid_range[0] - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            self.grid_range[1] + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            n_knots,
+        )
+
+        x_plot = np.linspace(self.grid_range[0], self.grid_range[1], 200)
+
+        # Compute basis functions
+        basis = np.asarray(b_spline_basis(jnp.array(x_plot), jnp.array(grid), k=self.spline_order))
+
+        # Create subplots
+        n_plots = min(in_features * out_features, 16)  # Limit to 16 subplots
+        n_cols = min(4, n_plots)
+        n_rows = (n_plots + n_cols - 1) // n_cols
+
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, squeeze=False)
+        axes = axes.flatten()
+
+        plot_idx = 0
+        for i in range(in_features):
+            for j in range(out_features):
+                if plot_idx >= n_plots:
+                    break
+
+                ax = axes[plot_idx]
+
+                # Compute spline activation
+                spline_out = np.dot(basis, spline_weight[i, j, :])
+
+                # Compute base activation (SiLU)
+                silu_out = x_plot / (1 + np.exp(-x_plot))  # SiLU = x * sigmoid(x)
+                base_out = silu_out * base_weight[i, j]
+
+                # Combined output
+                combined = spline_scale[i, j] * spline_out + base_out
+
+                # Plot
+                ax.plot(x_plot, combined, 'b-', linewidth=2, label='Combined')
+                ax.plot(x_plot, spline_scale[i, j] * spline_out, 'r--', linewidth=1, alpha=0.7, label='Spline')
+                ax.plot(x_plot, base_out, 'g:', linewidth=1, alpha=0.7, label='Base (SiLU)')
+                ax.axhline(y=0, color='k', linewidth=0.5, alpha=0.3)
+                ax.axvline(x=0, color='k', linewidth=0.5, alpha=0.3)
+                ax.set_title(f'Edge ({i}→{j})', fontsize=10)
+                ax.grid(True, alpha=0.3)
+
+                if plot_idx == 0:
+                    ax.legend(fontsize=8)
+
+                plot_idx += 1
+
+        # Hide unused subplots
+        for idx in range(plot_idx, len(axes)):
+            axes[idx].set_visible(False)
+
+        plt.suptitle(f'Learned Activations - Layer {layer_idx}', fontsize=12)
+        plt.tight_layout()
+        return fig
