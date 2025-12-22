@@ -277,6 +277,9 @@ class KAN(BaseEstimator, RegressorMixin):
         optimizer="bfgs",
         loss_type="mse",
         min_sigma=1e-3,
+        l1_spline=0.0,
+        l1_activation=0.0,
+        entropy_reg=0.0,
     ):
         """Initialize a KAN model.
 
@@ -297,6 +300,13 @@ class KAN(BaseEstimator, RegressorMixin):
                       - 'sgd': SGD with momentum
             loss_type: Loss function - 'mse' or 'crps' (default: 'mse').
             min_sigma: Minimum std dev for numerical stability (default: 1e-3).
+            l1_spline: L1 regularization on spline coefficients (default: 0.0).
+                      Encourages sparse spline weights, simplifying activations.
+            l1_activation: L1 regularization on activation outputs (default: 0.0).
+                          Encourages sparse activation patterns.
+            entropy_reg: Entropy regularization strength (default: 0.0).
+                        Encourages activation functions to be more "decisive"
+                        (closer to step functions), improving interpretability.
         """
         self.layers = layers
         self.grid_size = grid_size
@@ -307,6 +317,9 @@ class KAN(BaseEstimator, RegressorMixin):
         self.optimizer = optimizer.lower()
         self.loss_type = loss_type
         self.min_sigma = min_sigma
+        self.l1_spline = l1_spline
+        self.l1_activation = l1_activation
+        self.entropy_reg = entropy_reg
         self.calibration_factor = 1.0
         self.n_ensemble = layers[-1]
 
@@ -380,11 +393,17 @@ class KAN(BaseEstimator, RegressorMixin):
         # Initialize parameters
         params = self.nn.init(self.key, X_norm)
 
+        # Store regularization params for closure
+        l1_spline = self.l1_spline
+        l1_activation = self.l1_activation
+        entropy_reg = self.entropy_reg
+
         @jit
         def objective(pars):
-            """Loss function."""
+            """Loss function with optional regularization."""
             pY = self.nn.apply(pars, X_norm)
 
+            # Compute main loss
             if self.n_ensemble > 1:
                 # Ensemble output for UQ
                 py = pY.mean(axis=1)
@@ -397,15 +416,46 @@ class KAN(BaseEstimator, RegressorMixin):
                     phi_z = jax.scipy.stats.norm.pdf(z)
                     Phi_z = jax.scipy.stats.norm.cdf(z)
                     crps = sigma * (z * (2 * Phi_z - 1) + 2 * phi_z - 1 / jnp.sqrt(jnp.pi))
-                    return jnp.mean(crps)
+                    loss = jnp.mean(crps)
                 else:
                     # MSE loss
-                    return jnp.mean(errs**2)
+                    loss = jnp.mean(errs**2)
             else:
                 # Single output
                 py = pY.ravel()
                 errs = y_norm - py
-                return jnp.mean(errs**2)
+                loss = jnp.mean(errs**2)
+
+            # Add regularization terms
+            reg_loss = 0.0
+
+            if l1_spline > 0 or entropy_reg > 0:
+                # Iterate over layer parameters
+                for key in pars["params"]:
+                    if key.startswith("KANLayer_"):
+                        layer_params = pars["params"][key]
+
+                        if l1_spline > 0 and "spline_weight" in layer_params:
+                            # L1 on spline coefficients
+                            spline_w = layer_params["spline_weight"]
+                            reg_loss = reg_loss + l1_spline * jnp.mean(jnp.abs(spline_w))
+
+                        if entropy_reg > 0 and "spline_weight" in layer_params:
+                            # Entropy regularization on spline weights
+                            # Encourages weights to be more concentrated (less uniform)
+                            spline_w = layer_params["spline_weight"]
+                            # Normalize to get "probabilities" per edge
+                            w_abs = jnp.abs(spline_w) + 1e-8
+                            w_norm = w_abs / jnp.sum(w_abs, axis=-1, keepdims=True)
+                            # Negative entropy (minimize to make weights more peaked)
+                            entropy = -jnp.sum(w_norm * jnp.log(w_norm), axis=-1)
+                            reg_loss = reg_loss + entropy_reg * jnp.mean(entropy)
+
+            if l1_activation > 0:
+                # L1 on activation outputs (encourages sparse activations)
+                reg_loss = reg_loss + l1_activation * jnp.mean(jnp.abs(pY))
+
+            return loss + reg_loss
 
         # Run optimization
         maxiter = kwargs.pop("maxiter", 1500)
@@ -531,6 +581,16 @@ class KAN(BaseEstimator, RegressorMixin):
         print(f"  Grid size: {self.grid_size}")
         print(f"  Spline order: {self.spline_order}")
         print(f"  Optimizer: {self.optimizer}")
+
+        # Show regularization if any is active
+        if self.l1_spline > 0 or self.l1_activation > 0 or self.entropy_reg > 0:
+            print("  Regularization:")
+            if self.l1_spline > 0:
+                print(f"    L1 spline: {self.l1_spline}")
+            if self.l1_activation > 0:
+                print(f"    L1 activation: {self.l1_activation}")
+            if self.entropy_reg > 0:
+                print(f"    Entropy: {self.entropy_reg}")
 
         if hasattr(self.state, "iter_num"):
             print(f"  Iterations: {self.state.iter_num}")
