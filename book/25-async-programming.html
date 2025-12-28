@@ -1,0 +1,2441 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Asynchronous Programming in Python &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "jkitchin/dsmles");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/25-async-programming';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reinforcement Learning for Engineering" href="26-reinforcement-learning.html" />
+    <link rel="prev" title="Parallel Processing in Python" href="24-parallel-processing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24-parallel-processing.html">Parallel Processing in Python</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Asynchronous Programming in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26-reinforcement-learning.html">Reinforcement Learning for Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/running-pycse.html">Running pycse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/beginner.html">pycse - Beginner mode</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/utils.html">pycse.utils</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://lab.amdatascience.com/hub/user-redirect/git-pull?repo=https%3A//github.com/jkitchin/pycse&urlpath=lab/tree/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/book/25-async-programming.ipynb&branch=master" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on JupyterHub"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="JupyterHub logo" src="../_static/images/logo_jupyterhub.svg">
+  </span>
+<span class="btn__text-container">JupyterHub</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/25-async-programming.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/25-async-programming.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/25-async-programming.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/25-async-programming.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Asynchronous Programming in Python</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-async-vs-parallel">Introduction: Async vs Parallel</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-async">When to Use Async</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-event-loop-mental-model">The Event Loop Mental Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-async-await-syntax">Basic async/await Syntax</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential-vs-concurrent-execution">Sequential vs Concurrent Execution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-asyncio-patterns">Core asyncio Patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-1-asyncio-gather-run-multiple-coroutines">Pattern 1: <code class="docutils literal notranslate"><span class="pre">asyncio.gather()</span></code> - Run Multiple Coroutines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-2-asyncio-create-task-fire-and-forget-or-join-later">Pattern 2: <code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code> - Fire and Forget (or Join Later)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-3-asyncio-as-completed-process-results-as-they-arrive">Pattern 3: <code class="docutils literal notranslate"><span class="pre">asyncio.as_completed()</span></code> - Process Results as They Arrive</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-4-timeouts-with-asyncio-wait-for">Pattern 4: Timeouts with <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-5-semaphores-for-rate-limiting">Pattern 5: Semaphores for Rate Limiting</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engineering-example-fetching-chemical-data-from-pubchem">Engineering Example: Fetching Chemical Data from PubChem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-context-managers-and-iterators">Async Context Managers and Iterators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-context-managers">Async Context Managers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-iterators">Async Iterators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engineering-example-concurrent-sensor-monitoring">Engineering Example: Concurrent Sensor Monitoring</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#external-libraries-for-async-i-o">External Libraries for Async I/O</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aiohttp">aiohttp</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#httpx">httpx</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aiofiles">aiofiles</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-async-with-parallel-processing">Combining Async with Parallel Processing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asyncio-to-thread-for-blocking-operations"><code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> for Blocking Operations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#full-pattern-async-fetch-parallel-process">Full Pattern: Async Fetch + Parallel Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-pitfalls-and-best-practices">Common Pitfalls and Best Practices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-1-blocking-the-event-loop">Pitfall 1: Blocking the Event Loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-2-forgetting-to-await">Pitfall 2: Forgetting to await</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-3-not-handling-exceptions-in-gather">Pitfall 3: Not Handling Exceptions in gather()</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices-summary">Best Practices Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives-to-asyncio">Alternatives to asyncio</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trio">Trio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anyio">AnyIO</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-what-decision-guide">When to Use What: Decision Guide</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-of-thumb">Rule of Thumb</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="asynchronous-programming-in-python">
+<h1>Asynchronous Programming in Python<a class="headerlink" href="#asynchronous-programming-in-python" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: asyncio, async, await, concurrency, aiohttp, event loop</p></li>
+</ul>
+<section id="introduction-async-vs-parallel">
+<h2>Introduction: Async vs Parallel<a class="headerlink" href="#introduction-async-vs-parallel" title="Link to this heading">#</a></h2>
+<p>In the <a class="reference internal" href="24-parallel-processing.html"><span class="std std-doc">previous chapter on parallel processing</span></a>, we learned how to use multiple CPU cores to speed up computation. This chapter covers a complementary technique: <strong>asynchronous programming</strong>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parallel Processing</p></th>
+<th class="head"><p>Async Programming</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Multiple workers doing tasks simultaneously</p></td>
+<td><p>One worker switching between tasks</p></td>
+</tr>
+<tr class="row-odd"><td><p>Best for CPU-bound work</p></td>
+<td><p>Best for I/O-bound work</p></td>
+</tr>
+<tr class="row-even"><td><p>Uses multiple cores</p></td>
+<td><p>Uses one core efficiently</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>, <code class="docutils literal notranslate"><span class="pre">joblib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code>, <code class="docutils literal notranslate"><span class="pre">aiohttp</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>The key insight</strong>: When your program spends most of its time <em>waiting</em> (for network responses, file I/O, instrument readings), async lets you do useful work during that wait time—all in a single thread.</p>
+<section id="when-to-use-async">
+<h3>When to Use Async<a class="headerlink" href="#when-to-use-async" title="Link to this heading">#</a></h3>
+<p>Async programming shines when:</p>
+<ul class="simple">
+<li><p>Fetching data from multiple web APIs</p></li>
+<li><p>Polling multiple sensors or instruments</p></li>
+<li><p>Handling many concurrent network connections</p></li>
+<li><p>Reading/writing many files</p></li>
+</ul>
+<p>Async does NOT help when:</p>
+<ul class="simple">
+<li><p>Doing heavy numerical computation (use multiprocessing)</p></li>
+<li><p>Tasks are CPU-bound rather than I/O-bound</p></li>
+<li><p>You only have one or two sequential I/O operations</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Note: In Jupyter notebooks, there&#39;s already an event loop running.</span>
+<span class="c1"># We use &#39;await&#39; directly instead of &#39;asyncio.run()&#39;</span>
+<span class="c1"># In regular Python scripts, you would use: asyncio.run(main())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="the-event-loop-mental-model">
+<h2>The Event Loop Mental Model<a class="headerlink" href="#the-event-loop-mental-model" title="Link to this heading">#</a></h2>
+<p>Think of async programming like a chef in a kitchen:</p>
+<ul class="simple">
+<li><p><strong>Synchronous</strong>: Cook one dish completely, then start the next. While water boils, stand there waiting.</p></li>
+<li><p><strong>Asynchronous</strong>: Start boiling water, then chop vegetables while waiting. When water boils, come back to it.</p></li>
+</ul>
+<p>The <strong>event loop</strong> is like the chef’s brain—it keeps track of all the tasks and switches between them when one is waiting.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Event Loop:
+┌─────────────────────────────────────────────────────────────┐
+│  Task A: [run]──[wait for I/O]──────────────────[run]──done │
+│  Task B:       [run]──[wait]────────[run]──done             │
+│  Task C:              [run]──[wait]───────────[run]──done   │
+│          ─────────────────────────────────────────────────► │
+│                              time                           │
+└─────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+<p>While Task A waits for I/O, Tasks B and C can run. Total time is much less than running sequentially.</p>
+</section>
+<section id="basic-async-await-syntax">
+<h2>Basic async/await Syntax<a class="headerlink" href="#basic-async-await-syntax" title="Link to this heading">#</a></h2>
+<p>Python’s async programming uses two keywords:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>: Defines a <em>coroutine</em> (an async function)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">await</span></code>: Pauses execution until the awaited coroutine completes</p></li>
+</ul>
+<p>Let’s start with a simple example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple coroutine that waits, then greets.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>  <span class="c1"># Non-blocking sleep</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">! (after </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Greeted </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Run a single coroutine</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">say_hello</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Hello, World! (after 1s)
+Result: Greeted World
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Important</strong>: <code class="docutils literal notranslate"><span class="pre">asyncio.sleep()</span></code> is different from <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code> blocks the entire thread—nothing else can run</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asyncio.sleep()</span></code> yields control to the event loop—other tasks can run</p></li>
+</ul>
+<section id="sequential-vs-concurrent-execution">
+<h3>Sequential vs Concurrent Execution<a class="headerlink" href="#sequential-vs-concurrent-execution" title="Link to this heading">#</a></h3>
+<p>The power of async comes from running multiple coroutines <em>concurrently</em>. Let’s compare:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate_sensor_read</span><span class="p">(</span><span class="n">sensor_id</span><span class="p">,</span> <span class="n">read_time</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate reading from a sensor (I/O-bound operation).&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">read_time</span><span class="p">)</span>  <span class="c1"># Simulate I/O delay</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># Simulated reading</span>
+    <span class="k">return</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="n">value</span>
+
+<span class="n">sensors</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;temp_1&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;temp_2&quot;</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;flow&quot;</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)]</span>
+
+<span class="c1"># SEQUENTIAL: One at a time</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">sequential_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="n">read_time</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">simulate_sensor_read</span><span class="p">(</span><span class="n">sensor_id</span><span class="p">,</span> <span class="n">read_time</span><span class="p">)</span>
+    <span class="n">sequential_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="c1"># CONCURRENT: All at once with asyncio.gather()</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">simulate_sensor_read</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">rt</span><span class="p">)</span> <span class="k">for</span> <span class="n">sid</span><span class="p">,</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">]</span>
+<span class="n">concurrent_results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+<span class="n">concurrent_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Concurrent: </span><span class="si">{</span><span class="n">concurrent_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">sequential_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">concurrent_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 2.21s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Concurrent: 0.70s
+Speedup: 3.1x
+</pre></div>
+</div>
+</div>
+</div>
+<p>The concurrent version takes only as long as the <em>slowest</em> task, not the sum of all tasks!</p>
+</section>
+</section>
+<section id="core-asyncio-patterns">
+<h2>Core asyncio Patterns<a class="headerlink" href="#core-asyncio-patterns" title="Link to this heading">#</a></h2>
+<section id="pattern-1-asyncio-gather-run-multiple-coroutines">
+<h3>Pattern 1: <code class="docutils literal notranslate"><span class="pre">asyncio.gather()</span></code> - Run Multiple Coroutines<a class="headerlink" href="#pattern-1-asyncio-gather-run-multiple-coroutines" title="Link to this heading">#</a></h3>
+<p>The most common pattern. Run multiple coroutines and get all results.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_temperature</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate fetching temperature from a weather API.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span> <span class="s2">&quot;temp_C&quot;</span><span class="p">:</span> <span class="n">temp</span><span class="p">}</span>
+
+<span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pittsburgh&quot;</span><span class="p">,</span> <span class="s2">&quot;New York&quot;</span><span class="p">,</span> <span class="s2">&quot;Chicago&quot;</span><span class="p">,</span> <span class="s2">&quot;Los Angeles&quot;</span><span class="p">,</span> <span class="s2">&quot;Houston&quot;</span><span class="p">]</span>
+
+<span class="c1"># Gather all results</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">fetch_temperature</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;temp_C&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pittsburgh: 31.2°C
+New York: 20.2°C
+Chicago: 26.1°C
+Los Angeles: 23.9°C
+Houston: 31.4°C
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pattern-2-asyncio-create-task-fire-and-forget-or-join-later">
+<h3>Pattern 2: <code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code> - Fire and Forget (or Join Later)<a class="headerlink" href="#pattern-2-asyncio-create-task-fire-and-forget-or-join-later" title="Link to this heading">#</a></h3>
+<p>Create a task that runs in the background. You can await it later or let it run.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">background_logger</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log messages at regular intervals.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [Log </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">] Background task running...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;Logging complete&quot;</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main_work</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do some main work while background task runs.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting main work...&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Main work complete!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;Main result&quot;</span>
+
+<span class="c1"># Create background task</span>
+<span class="n">logger_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">background_logger</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Do main work while logger runs</span>
+<span class="n">main_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">main_work</span><span class="p">()</span>
+
+<span class="c1"># Wait for background task to finish</span>
+<span class="n">logger_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">logger_task</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Results: </span><span class="si">{</span><span class="n">main_result</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">logger_result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Starting main work...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [Log 1/5] Background task running...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [Log 2/5] Background task running...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [Log 3/5] Background task running...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Main work complete!
+  [Log 4/5] Background task running...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [Log 5/5] Background task running...
+
+Results: Main result, Logging complete
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pattern-3-asyncio-as-completed-process-results-as-they-arrive">
+<h3>Pattern 3: <code class="docutils literal notranslate"><span class="pre">asyncio.as_completed()</span></code> - Process Results as They Arrive<a class="headerlink" href="#pattern-3-asyncio-as-completed-process-results-as-they-arrive" title="Link to this heading">#</a></h3>
+<p>When you want to process results as soon as they’re ready, not wait for all.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">slow_computation</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A task that takes variable time.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">duration</span>
+
+<span class="c1"># Tasks with different durations</span>
+<span class="n">task_specs</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)]</span>
+<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">slow_computation</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">dur</span><span class="p">)</span> <span class="k">for</span> <span class="n">tid</span><span class="p">,</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">task_specs</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing results as they complete:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coro</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">tasks</span><span class="p">):</span>
+    <span class="n">task_id</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="k">await</span> <span class="n">coro</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> finished (took </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing results as they complete:
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Task D finished (took 0.2s)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Task B finished (took 0.3s)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Task C finished (took 0.5s)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Task A finished (took 0.8s)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice the order: D, B, C, A—shortest tasks finish first!</p>
+</section>
+<section id="pattern-4-timeouts-with-asyncio-wait-for">
+<h3>Pattern 4: Timeouts with <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for()</span></code><a class="headerlink" href="#pattern-4-timeouts-with-asyncio-wait-for" title="Link to this heading">#</a></h3>
+<p>In real systems, you need to handle slow or hanging operations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unreliable_sensor</span><span class="p">(</span><span class="n">sensor_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A sensor that sometimes takes too long.&quot;&quot;&quot;</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_with_timeout</span><span class="p">(</span><span class="n">sensor_id</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read sensor with timeout protection.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+            <span class="n">unreliable_sensor</span><span class="p">(</span><span class="n">sensor_id</span><span class="p">),</span> 
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sensor&quot;</span><span class="p">:</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sensor&quot;</span><span class="p">:</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+<span class="c1"># Read from 8 sensors with timeout</span>
+<span class="n">sensor_ids</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sensor_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">read_with_timeout</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span> <span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">sensor_ids</span><span class="p">])</span>
+
+<span class="n">ok_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ok&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successful reads: </span><span class="si">{</span><span class="n">ok_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;TIMEOUT&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successful reads: 2/8
+  sensor_0: TIMEOUT
+  sensor_1: TIMEOUT
+  sensor_2: TIMEOUT
+  sensor_3: TIMEOUT
+  sensor_4: TIMEOUT
+  sensor_5: 24.68
+  sensor_6: TIMEOUT
+  sensor_7: 24.58
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pattern-5-semaphores-for-rate-limiting">
+<h3>Pattern 5: Semaphores for Rate Limiting<a class="headerlink" href="#pattern-5-semaphores-for-rate-limiting" title="Link to this heading">#</a></h3>
+<p>When calling external APIs, you often need to limit concurrent requests to avoid overwhelming the server or hitting rate limits.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">rate_limited_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a request, but limit concurrency.&quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>  <span class="c1"># Only N tasks can hold the semaphore at once</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Starting request to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Simulate request</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Completed request to </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Data from </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Limit to 3 concurrent requests</span>
+<span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;api/endpoint/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Making 6 requests with max 3 concurrent:&quot;</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">rate_limited_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">])</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total time: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s (2 batches of 3)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Making 6 requests with max 3 concurrent:
+  Starting request to api/endpoint/0
+  Starting request to api/endpoint/1
+  Starting request to api/endpoint/2
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Completed request to api/endpoint/0
+  Completed request to api/endpoint/1
+  Completed request to api/endpoint/2
+  Starting request to api/endpoint/3
+  Starting request to api/endpoint/4
+  Starting request to api/endpoint/5
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Completed request to api/endpoint/3
+  Completed request to api/endpoint/4
+  Completed request to api/endpoint/5
+
+Total time: 1.00s (2 batches of 3)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="engineering-example-fetching-chemical-data-from-pubchem">
+<h2>Engineering Example: Fetching Chemical Data from PubChem<a class="headerlink" href="#engineering-example-fetching-chemical-data-from-pubchem" title="Link to this heading">#</a></h2>
+<p>Let’s use async to fetch molecular properties for multiple compounds from the <a class="reference external" href="https://pubchem.ncbi.nlm.nih.gov/">PubChem API</a>. This is a real-world example of concurrent API requests.</p>
+<p>We’ll use Python’s built-in <code class="docutils literal notranslate"><span class="pre">urllib</span></code> for simplicity, wrapped in async. For production code, consider using <code class="docutils literal notranslate"><span class="pre">aiohttp</span></code> or <code class="docutils literal notranslate"><span class="pre">httpx</span></code> (discussed later).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_pubchem_sync</span><span class="p">(</span><span class="n">compound_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synchronous fetch of compound data from PubChem.&quot;&quot;&quot;</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://pubchem.ncbi.nlm.nih.gov/rest/pug&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/compound/name/</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">/property/MolecularWeight,MolecularFormula,IUPACName/JSON&quot;</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;PropertyTable&quot;</span><span class="p">][</span><span class="s2">&quot;Properties&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">compound_name</span><span class="p">,</span>
+                <span class="s2">&quot;formula&quot;</span><span class="p">:</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MolecularFormula&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;mw&quot;</span><span class="p">:</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MolecularWeight&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;iupac&quot;</span><span class="p">:</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;IUPACName&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span>
+            <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">compound_name</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+
+<span class="c1"># Test with one compound</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fetch_pubchem_sync</span><span class="p">(</span><span class="s2">&quot;ethanol&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ethanol: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, MW = </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;mw&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> g/mol&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ethanol: C2H6O, MW = 46.07 g/mol
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of compounds to look up</span>
+<span class="n">compounds</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;ethanol&quot;</span><span class="p">,</span> <span class="s2">&quot;methanol&quot;</span><span class="p">,</span> <span class="s2">&quot;acetone&quot;</span><span class="p">,</span> <span class="s2">&quot;benzene&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;toluene&quot;</span><span class="p">,</span> <span class="s2">&quot;hexane&quot;</span><span class="p">,</span> <span class="s2">&quot;acetic acid&quot;</span><span class="p">,</span> <span class="s2">&quot;ammonia&quot;</span><span class="p">,</span> <span class="s2">&quot;glucose&quot;</span>
+<span class="p">]</span>
+
+<span class="c1"># SEQUENTIAL: Fetch one at a time</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sequential fetch:&quot;</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">sequential_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">fetch_pubchem_sync</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">compounds</span><span class="p">]</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">compounds</span><span class="p">)</span><span class="si">}</span><span class="s2"> compounds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential fetch:
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 1.68s for 10 compounds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_pubchem_async</span><span class="p">(</span><span class="n">compound_name</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async fetch using run_in_executor for the blocking HTTP call.&quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>  <span class="c1"># Rate limit to be nice to PubChem</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="c1"># Run the synchronous function in a thread pool</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">fetch_pubchem_sync</span><span class="p">,</span> <span class="n">compound_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># CONCURRENT: Fetch all at once (with rate limiting)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Concurrent fetch (max 5 simultaneous):&quot;</span><span class="p">)</span>
+<span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Limit concurrent requests</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">concurrent_results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">[</span><span class="n">fetch_pubchem_async</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">compounds</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">concurrent_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">concurrent_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">compounds</span><span class="p">)</span><span class="si">}</span><span class="s2"> compounds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Speedup: </span><span class="si">{</span><span class="n">sequential_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">concurrent_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Concurrent fetch (max 5 simultaneous):
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 0.31s for 10 compounds
+  Speedup: 5.4x
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display results in a nice table</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Compound&#39;</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Formula&#39;</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;MW (g/mol)&#39;</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Status&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">concurrent_results</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ok&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;mw&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> OK&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;--&#39;</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;--&#39;</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>======================================================================
+Compound        Formula         MW (g/mol)   Status
+======================================================================
+water           H2O             18.015       OK
+ethanol         C2H6O           46.07        OK
+methanol        CH4O            32.042       OK
+acetone         --              --           error
+benzene         C6H6            78.11        OK
+toluene         --              --           error
+hexane          C6H14           86.18        OK
+acetic acid     --              --           error
+ammonia         --              --           error
+glucose         --              --           error
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="async-context-managers-and-iterators">
+<h2>Async Context Managers and Iterators<a class="headerlink" href="#async-context-managers-and-iterators" title="Link to this heading">#</a></h2>
+<p>Python supports async versions of context managers (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>) and iterators (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code>).</p>
+<section id="async-context-managers">
+<h3>Async Context Managers<a class="headerlink" href="#async-context-managers" title="Link to this heading">#</a></h3>
+<p>Useful for resources that need async setup/teardown (database connections, HTTP sessions, etc.).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AsyncInstrumentConnection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate an async connection to a lab instrument.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instrument_id</span> <span class="o">=</span> <span class="n">instrument_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async context manager entry.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_id</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>  <span class="c1"># Simulate connection time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async context manager exit.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnecting from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_id</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Simulate disconnect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disconnected from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a value from the instrument.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Not connected!&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>  <span class="c1"># Simulate read time</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Use the async context manager</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">AsyncInstrumentConnection</span><span class="p">(</span><span class="s2">&quot;Spectrometer-01&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">instrument</span><span class="p">:</span>
+    <span class="n">readings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">instrument</span><span class="o">.</span><span class="n">read_value</span><span class="p">()</span>
+        <span class="n">readings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Reading </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">readings</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Connecting to Spectrometer-01...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Connected to Spectrometer-01
+  Reading 1: 98.04
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Reading 2: 99.15
+  Reading 3: 98.81
+Average: 98.67
+Disconnecting from Spectrometer-01...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Disconnected from Spectrometer-01
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="async-iterators">
+<h3>Async Iterators<a class="headerlink" href="#async-iterators" title="Link to this heading">#</a></h3>
+<p>Perfect for streaming data from instruments or APIs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AsyncSensorStream</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stream readings from a sensor asynchronously.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_id</span><span class="p">,</span> <span class="n">n_readings</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_id</span> <span class="o">=</span> <span class="n">sensor_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_readings</span> <span class="o">=</span> <span class="n">n_readings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_readings</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+        
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>  <span class="c1"># Wait for next reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="c1"># Simulate a sensor with drift and noise</span>
+        <span class="n">base_value</span> <span class="o">=</span> <span class="mi">25</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span>  <span class="c1"># Slight drift</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sensor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensor_id</span><span class="p">,</span>
+            <span class="s2">&quot;reading&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">base_value</span> <span class="o">+</span> <span class="n">noise</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="p">}</span>
+
+<span class="c1"># Stream data from the sensor</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Streaming sensor data:&quot;</span><span class="p">)</span>
+<span class="n">readings</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">AsyncSensorStream</span><span class="p">(</span><span class="s2">&quot;TempSensor&quot;</span><span class="p">,</span> <span class="n">n_readings</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;reading&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+    <span class="n">readings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Streaming sensor data:
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [1] 24.80°C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [2] 25.08°C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [3] 24.79°C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [4] 25.80°C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [5] 26.63°C
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="engineering-example-concurrent-sensor-monitoring">
+<h2>Engineering Example: Concurrent Sensor Monitoring<a class="headerlink" href="#engineering-example-concurrent-sensor-monitoring" title="Link to this heading">#</a></h2>
+<p>Let’s build a realistic example: monitoring multiple process variables (temperature, pressure, flow rate) from different sensors simultaneously, with data logging.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ProcessSensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate a process sensor with realistic behavior.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">,</span> <span class="n">noise_std</span><span class="p">,</span> <span class="n">read_time</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="n">setpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_std</span> <span class="o">=</span> <span class="n">noise_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_time</span> <span class="o">=</span> <span class="n">read_time</span>  <span class="c1"># Time to get a reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">setpoint</span>
+    
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read current value (async with simulated I/O delay).&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_time</span><span class="p">)</span>
+        <span class="c1"># Simulate process dynamics: random walk around setpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_std</span><span class="p">)</span>
+        <span class="c1"># Mean reversion toward setpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sensor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="p">}</span>
+
+<span class="c1"># Create sensors for a chemical process</span>
+<span class="n">sensors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ProcessSensor</span><span class="p">(</span><span class="s2">&quot;Reactor_Temp&quot;</span><span class="p">,</span> <span class="s2">&quot;°C&quot;</span><span class="p">,</span> <span class="n">setpoint</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">read_time</span><span class="o">=</span><span class="mf">0.3</span><span class="p">),</span>
+    <span class="n">ProcessSensor</span><span class="p">(</span><span class="s2">&quot;Reactor_Press&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">setpoint</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">read_time</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="n">ProcessSensor</span><span class="p">(</span><span class="s2">&quot;Feed_Flow&quot;</span><span class="p">,</span> <span class="s2">&quot;L/min&quot;</span><span class="p">,</span> <span class="n">setpoint</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">read_time</span><span class="o">=</span><span class="mf">0.25</span><span class="p">),</span>
+    <span class="n">ProcessSensor</span><span class="p">(</span><span class="s2">&quot;Coolant_Temp&quot;</span><span class="p">,</span> <span class="s2">&quot;°C&quot;</span><span class="p">,</span> <span class="n">setpoint</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">read_time</span><span class="o">=</span><span class="mf">0.15</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">monitor_process</span><span class="p">(</span><span class="n">sensors</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitor all sensors concurrently for a specified duration.&quot;&quot;&quot;</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">all_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">}</span>
+    
+    <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&lt;</span> <span class="n">duration</span><span class="p">:</span>
+        <span class="c1"># Read all sensors concurrently</span>
+        <span class="n">readings</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sensors</span><span class="p">])</span>
+        
+        <span class="c1"># Log the readings</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">t = </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">reading</span> <span class="ow">in</span> <span class="n">readings</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">reading</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">reading</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">reading</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">all_data</span><span class="p">[</span><span class="n">reading</span><span class="p">[</span><span class="s1">&#39;sensor&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">elapsed</span><span class="p">,</span>
+                <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">reading</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+            <span class="p">})</span>
+        
+        <span class="c1"># Wait before next poll</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">all_data</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting process monitoring...&quot;</span><span class="p">)</span>
+<span class="n">monitoring_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">monitor_process</span><span class="p">(</span><span class="n">sensors</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Starting process monitoring...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 0.3s:
+  Reactor_Temp: 149.95 °C
+  Reactor_Press: 5.09 bar
+  Feed_Flow: 9.76 L/min
+  Coolant_Temp: 24.29 °C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 1.1s:
+  Reactor_Temp: 149.16 °C
+  Reactor_Press: 5.20 bar
+  Feed_Flow: 10.04 L/min
+  Coolant_Temp: 24.32 °C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 1.9s:
+  Reactor_Temp: 148.39 °C
+  Reactor_Press: 5.27 bar
+  Feed_Flow: 9.87 L/min
+  Coolant_Temp: 25.61 °C
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 2.7s:
+  Reactor_Temp: 150.00 °C
+  Reactor_Press: 5.22 bar
+  Feed_Flow: 10.15 L/min
+  Coolant_Temp: 26.79 °C
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the monitoring data</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">sensor_name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">monitoring_data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">sensor_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">sensor_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Concurrent Process Monitoring&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1100976131eb57a9198607874fcf485c9d6e26cd3607aa310d6d22f2da8b67fb.png" src="../_images/1100976131eb57a9198607874fcf485c9d6e26cd3607aa310d6d22f2da8b67fb.png" />
+</div>
+</div>
+</section>
+<section id="external-libraries-for-async-i-o">
+<h2>External Libraries for Async I/O<a class="headerlink" href="#external-libraries-for-async-i-o" title="Link to this heading">#</a></h2>
+<p>While we’ve used <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> with thread executors for HTTP requests, there are dedicated async libraries that are more efficient:</p>
+<section id="aiohttp">
+<h3>aiohttp<a class="headerlink" href="#aiohttp" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://docs.aiohttp.org/">aiohttp</a> is the most popular async HTTP client/server library.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">aiohttp</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_with_aiohttp</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="c1"># Fetch multiple URLs concurrently</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_all</span><span class="p">(</span><span class="n">urls</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+        <span class="n">responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="k">await</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="httpx">
+<h3>httpx<a class="headerlink" href="#httpx" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://www.python-httpx.org/">httpx</a> provides a requests-like API with async support.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_with_httpx</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="aiofiles">
+<h3>aiofiles<a class="headerlink" href="#aiofiles" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://github.com/Tinche/aiofiles">aiofiles</a> provides async file operations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">aiofiles</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_file_async</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">contents</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">write_file_async</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These libraries are truly non-blocking (unlike our executor-based approach) and are more efficient for high-concurrency applications.</p>
+</section>
+</section>
+<section id="combining-async-with-parallel-processing">
+<h2>Combining Async with Parallel Processing<a class="headerlink" href="#combining-async-with-parallel-processing" title="Link to this heading">#</a></h2>
+<p>Sometimes you need both: async for I/O and parallel for CPU. The pattern is:</p>
+<ol class="arabic simple">
+<li><p>Use async to gather data concurrently</p></li>
+<li><p>Use multiprocessing to process the data in parallel</p></li>
+</ol>
+<section id="asyncio-to-thread-for-blocking-operations">
+<h3><code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> for Blocking Operations<a class="headerlink" href="#asyncio-to-thread-for-blocking-operations" title="Link to this heading">#</a></h3>
+<p>Python 3.9+ provides <code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> to run blocking code in a thread pool.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_ivp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_ode_blocking</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;CPU-bound: Solve an ODE (blocking operation).&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ode</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">C</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">ode</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">dense_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_and_compute</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async wrapper that runs CPU-bound work in a thread.&quot;&quot;&quot;</span>
+    <span class="c1"># Simulate fetching the rate constant from an API</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># I/O wait</span>
+    
+    <span class="c1"># Run CPU-bound computation in thread pool</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="n">solve_ode_blocking</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># Process multiple rate constants</span>
+<span class="n">k_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">fetch_and_compute</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">])</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> computations in </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">final_conc</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  k=</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: C_final=</span><span class="si">{</span><span class="n">final_conc</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Completed 10 computations in 0.12s
+  k=0.10: C_final=0.3680
+  k=0.31: C_final=0.0446
+  k=0.52: C_final=0.0054
+  ...
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="full-pattern-async-fetch-parallel-process">
+<h3>Full Pattern: Async Fetch + Parallel Process<a class="headerlink" href="#full-pattern-async-fetch-parallel-process" title="Link to this heading">#</a></h3>
+<p>For heavy CPU work, combine async with <code class="docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_parameters</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async: Fetch parameters from multiple sources.&quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_one</span><span class="p">(</span><span class="n">source_id</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>  <span class="c1"># Simulate API call</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)}</span>
+    
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;source_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">fetch_one</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">heavy_computation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;CPU-bound: Heavy computation on fetched data.&quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">]</span>
+    <span class="c1"># Simulate heavy computation</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100000</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+<span class="c1"># Step 1: Fetch data concurrently (async)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Step 1: Fetching parameters asynchronously...&quot;</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_parameters</span><span class="p">()</span>
+<span class="n">fetch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Fetched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> parameter sets in </span><span class="si">{</span><span class="n">fetch_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="c1"># Step 2: Process in parallel (joblib)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Step 2: Processing in parallel...&quot;</span><span class="p">)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">heavy_computation</span><span class="p">)(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">)</span>
+<span class="n">compute_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> results in </span><span class="si">{</span><span class="n">compute_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total time: </span><span class="si">{</span><span class="n">fetch_time</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">compute_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 1: Fetching parameters asynchronously...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Fetched 8 parameter sets in 0.29s
+
+Step 2: Processing in parallel...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Processed 8 results in 0.47s
+
+Total time: 0.76s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="common-pitfalls-and-best-practices">
+<h2>Common Pitfalls and Best Practices<a class="headerlink" href="#common-pitfalls-and-best-practices" title="Link to this heading">#</a></h2>
+<section id="pitfall-1-blocking-the-event-loop">
+<h3>Pitfall 1: Blocking the Event Loop<a class="headerlink" href="#pitfall-1-blocking-the-event-loop" title="Link to this heading">#</a></h3>
+<p>Never use blocking calls in async code!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># BAD: This blocks the entire event loop!</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bad_example</span><span class="p">():</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># WRONG! Blocks everything</span>
+    <span class="k">return</span> <span class="s2">&quot;done&quot;</span>
+
+<span class="c1"># GOOD: Use async sleep</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">good_example</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Correct! Other tasks can run</span>
+    <span class="k">return</span> <span class="s2">&quot;done&quot;</span>
+
+<span class="c1"># For blocking I/O you can&#39;t avoid:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">blocking_io_example</span><span class="p">():</span>
+    <span class="c1"># Wrap blocking call in executor</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;done&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pitfall-2-forgetting-to-await">
+<h3>Pitfall 2: Forgetting to await<a class="headerlink" href="#pitfall-2-forgetting-to-await" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_coroutine</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">42</span>
+
+<span class="c1"># BAD: Forgetting await - you get a coroutine object, not the result</span>
+<span class="n">result_bad</span> <span class="o">=</span> <span class="n">my_coroutine</span><span class="p">()</span>  <span class="c1"># This is a coroutine, not 42!</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Without await: </span><span class="si">{</span><span class="n">result_bad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># GOOD: Use await to get the actual result</span>
+<span class="n">result_good</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_coroutine</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;With await: </span><span class="si">{</span><span class="n">result_good</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Without await: &lt;coroutine object my_coroutine at 0x7f611ef5d010&gt;
+With await: 42
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pitfall-3-not-handling-exceptions-in-gather">
+<h3>Pitfall 3: Not Handling Exceptions in gather()<a class="headerlink" href="#pitfall-3-not-handling-exceptions-in-gather" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">might_fail</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Don&#39;t like </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1"># By default, gather() raises on first exception</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">might_fail</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Caught error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Better: Use return_exceptions=True to get all results</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">[</span><span class="n">might_fail</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)],</span> 
+    <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Results with return_exceptions=True:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Task </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: ERROR - </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Task </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Caught error: Don&#39;t like 3!
+
+Results with return_exceptions=True:
+  Task 0: 0
+  Task 1: 2
+  Task 2: 4
+  Task 3: ERROR - Don&#39;t like 3!
+  Task 4: 8
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="best-practices-summary">
+<h3>Best Practices Summary<a class="headerlink" href="#best-practices-summary" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Never block the event loop</strong>: Use <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep()</span></code> not <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>. Use <code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> for unavoidable blocking calls.</p></li>
+<li><p><strong>Always await coroutines</strong>: Forgetting <code class="docutils literal notranslate"><span class="pre">await</span></code> is a common bug.</p></li>
+<li><p><strong>Use <code class="docutils literal notranslate"><span class="pre">return_exceptions=True</span></code></strong> in <code class="docutils literal notranslate"><span class="pre">gather()</span></code> when you want all results even if some fail.</p></li>
+<li><p><strong>Rate limit external APIs</strong>: Use semaphores to avoid overwhelming servers.</p></li>
+<li><p><strong>Use timeouts</strong>: Always set timeouts for external I/O with <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for()</span></code>.</p></li>
+<li><p><strong>Close resources properly</strong>: Use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> for connections and sessions.</p></li>
+</ol>
+</section>
+</section>
+<section id="alternatives-to-asyncio">
+<h2>Alternatives to asyncio<a class="headerlink" href="#alternatives-to-asyncio" title="Link to this heading">#</a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> is Python’s built-in solution, there are alternatives worth knowing:</p>
+<section id="trio">
+<h3>Trio<a class="headerlink" href="#trio" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://trio.readthedocs.io/">Trio</a> is a third-party async library with a focus on usability and correctness. It enforces “structured concurrency”—all tasks must complete before their parent scope exits.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">trio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="c1"># Similar to asyncio but with stricter guarantees</span>
+    <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Data from </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">fetch_data</span><span class="p">,</span> <span class="s2">&quot;url1&quot;</span><span class="p">)</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">fetch_data</span><span class="p">,</span> <span class="s2">&quot;url2&quot;</span><span class="p">)</span>
+    <span class="c1"># All tasks guaranteed complete here</span>
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>When to consider Trio</strong>: If you find asyncio’s task management confusing or want stricter guarantees about task completion.</p>
+</section>
+<section id="anyio">
+<h3>AnyIO<a class="headerlink" href="#anyio" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://anyio.readthedocs.io/">AnyIO</a> provides a unified API that works with both asyncio and Trio. Write once, run on either.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">anyio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">some_task</span><span class="p">)</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">another_task</span><span class="p">)</span>
+
+<span class="c1"># Run with asyncio backend</span>
+<span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;asyncio&#39;</span><span class="p">)</span>
+
+<span class="c1"># Or run with trio backend</span>
+<span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;trio&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>When to consider AnyIO</strong>: If you’re writing a library that should work with both asyncio and Trio users.</p>
+</section>
+</section>
+<section id="when-to-use-what-decision-guide">
+<h2>When to Use What: Decision Guide<a class="headerlink" href="#when-to-use-what-decision-guide" title="Link to this heading">#</a></h2>
+<p>Here’s how async programming fits with the parallel processing techniques from the <a class="reference internal" href="24-parallel-processing.html"><span class="std std-doc">previous chapter</span></a>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task Type</p></th>
+<th class="head"><p>Recommended Approach</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Many HTTP requests</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code> + <code class="docutils literal notranslate"><span class="pre">aiohttp</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Polling multiple sensors</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>CPU-heavy computations</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> / <code class="docutils literal notranslate"><span class="pre">joblib</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mix of I/O and CPU</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code> for I/O, then <code class="docutils literal notranslate"><span class="pre">joblib</span></code> for CPU</p></td>
+</tr>
+<tr class="row-even"><td><p>Simple file reads</p></td>
+<td><p>Regular sync code (fast enough)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Many file reads</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code> + <code class="docutils literal notranslate"><span class="pre">aiofiles</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Real-time data streams</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code> with async iterators</p></td>
+</tr>
+<tr class="row-odd"><td><p>Web server</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">asyncio</span></code> + <code class="docutils literal notranslate"><span class="pre">aiohttp</span></code> or FastAPI</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="rule-of-thumb">
+<h3>Rule of Thumb<a class="headerlink" href="#rule-of-thumb" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Waiting for responses?</strong> → Async</p></li>
+<li><p><strong>Crunching numbers?</strong> → Parallel</p></li>
+<li><p><strong>Both?</strong> → Async for I/O, then parallel for compute</p></li>
+</ul>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>This chapter covered asynchronous programming in Python:</p>
+<ol class="arabic simple">
+<li><p><strong>The Event Loop Model</strong>: One thread efficiently handling many I/O-bound tasks by switching between them during wait times.</p></li>
+<li><p><strong>Core Patterns</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> / <code class="docutils literal notranslate"><span class="pre">await</span></code> for defining and calling coroutines</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asyncio.gather()</span></code> for running multiple coroutines concurrently</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code> for background tasks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asyncio.as_completed()</span></code> for processing results as they arrive</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asyncio.wait_for()</span></code> for timeouts</p></li>
+<li><p>Semaphores for rate limiting</p></li>
+</ul>
+</li>
+<li><p><strong>Async Context Managers and Iterators</strong>: Using <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> and <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> for resource management and streaming data.</p></li>
+<li><p><strong>External Libraries</strong>: <code class="docutils literal notranslate"><span class="pre">aiohttp</span></code> for HTTP, <code class="docutils literal notranslate"><span class="pre">httpx</span></code> for a requests-like API, <code class="docutils literal notranslate"><span class="pre">aiofiles</span></code> for file I/O.</p></li>
+<li><p><strong>Combining with Parallel Processing</strong>: Use <code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> for blocking code, or combine async I/O with <code class="docutils literal notranslate"><span class="pre">joblib</span></code> for CPU-bound work.</p></li>
+<li><p><strong>Best Practices</strong>: Don’t block the event loop, always await coroutines, handle exceptions properly, use timeouts.</p></li>
+</ol>
+<p><strong>Key Takeaway</strong>: Async is about <em>concurrency</em> (doing many things by interleaving), while parallel processing (previous chapter) is about <em>parallelism</em> (doing many things simultaneously on different cores). Use async when you’re I/O-bound, parallel when you’re CPU-bound, and combine them when you need both.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="24-parallel-processing.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Parallel Processing in Python</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="26-reinforcement-learning.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Reinforcement Learning for Engineering</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-async-vs-parallel">Introduction: Async vs Parallel</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-async">When to Use Async</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-event-loop-mental-model">The Event Loop Mental Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-async-await-syntax">Basic async/await Syntax</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential-vs-concurrent-execution">Sequential vs Concurrent Execution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-asyncio-patterns">Core asyncio Patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-1-asyncio-gather-run-multiple-coroutines">Pattern 1: <code class="docutils literal notranslate"><span class="pre">asyncio.gather()</span></code> - Run Multiple Coroutines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-2-asyncio-create-task-fire-and-forget-or-join-later">Pattern 2: <code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code> - Fire and Forget (or Join Later)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-3-asyncio-as-completed-process-results-as-they-arrive">Pattern 3: <code class="docutils literal notranslate"><span class="pre">asyncio.as_completed()</span></code> - Process Results as They Arrive</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-4-timeouts-with-asyncio-wait-for">Pattern 4: Timeouts with <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-5-semaphores-for-rate-limiting">Pattern 5: Semaphores for Rate Limiting</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engineering-example-fetching-chemical-data-from-pubchem">Engineering Example: Fetching Chemical Data from PubChem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-context-managers-and-iterators">Async Context Managers and Iterators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-context-managers">Async Context Managers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-iterators">Async Iterators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#engineering-example-concurrent-sensor-monitoring">Engineering Example: Concurrent Sensor Monitoring</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#external-libraries-for-async-i-o">External Libraries for Async I/O</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aiohttp">aiohttp</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#httpx">httpx</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aiofiles">aiofiles</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-async-with-parallel-processing">Combining Async with Parallel Processing</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asyncio-to-thread-for-blocking-operations"><code class="docutils literal notranslate"><span class="pre">asyncio.to_thread()</span></code> for Blocking Operations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#full-pattern-async-fetch-parallel-process">Full Pattern: Async Fetch + Parallel Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-pitfalls-and-best-practices">Common Pitfalls and Best Practices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-1-blocking-the-event-loop">Pitfall 1: Blocking the Event Loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-2-forgetting-to-await">Pitfall 2: Forgetting to await</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pitfall-3-not-handling-exceptions-in-gather">Pitfall 3: Not Handling Exceptions in gather()</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices-summary">Best Practices Summary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives-to-asyncio">Alternatives to asyncio</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trio">Trio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anyio">AnyIO</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-what-decision-guide">When to Use What: Decision Guide</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rule-of-thumb">Rule of Thumb</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <!-- RAG Chat Widget - Self-contained version for Jupyter Book -->
+<style>
+/* RAG Widget Styles */
+:root {
+    --widget-primary-color: #1f77b4;
+    --widget-primary-hover: #1565a8;
+    --widget-bg-color: #ffffff;
+    --widget-text-color: #262730;
+    --widget-border-color: #e0e0e0;
+    --widget-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --widget-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.2);
+    --widget-border-radius: 16px;
+    --widget-button-size: 60px;
+    --widget-z-index: 9999;
+}
+
+.rag-widget {
+    position: fixed;
+    z-index: var(--widget-z-index);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    bottom: 20px;
+    right: 20px;
+}
+
+.widget-button {
+    width: var(--widget-button-size);
+    height: var(--widget-button-size);
+    border-radius: 50%;
+    background-color: var(--widget-primary-color);
+    border: none;
+    box-shadow: var(--widget-shadow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.widget-button:hover {
+    background-color: var(--widget-primary-hover);
+    box-shadow: var(--widget-shadow-lg);
+    transform: scale(1.05);
+}
+
+.widget-button:active {
+    transform: scale(0.95);
+}
+
+.widget-icon,
+.widget-close-icon {
+    width: 28px;
+    height: 28px;
+    color: white;
+    transition: all 0.3s ease;
+    position: absolute;
+}
+
+.widget-close-icon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+}
+
+.widget-button.active .widget-icon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0);
+}
+
+.widget-button.active .widget-close-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.widget-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: min(50vw, calc(100vw - 40px));
+    height: min(600px, calc(100vh - 120px));
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 120px);
+    background-color: var(--widget-bg-color);
+    border-radius: var(--widget-border-radius);
+    box-shadow: var(--widget-shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.widget-container.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+}
+
+.widget-container.hidden {
+    display: none;
+}
+
+.widget-header {
+    background-color: var(--widget-primary-color);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.widget-header-content {
+    flex: 1;
+}
+
+.widget-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.widget-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.2;
+}
+
+.widget-minimize-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.widget-minimize-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.widget-minimize-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.widget-iframe-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+#widget-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.widget-footer {
+    padding: 12px 20px;
+    background-color: var(--widget-bg-color);
+    border-top: 1px solid var(--widget-border-color);
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.widget-powered-by {
+    font-size: 12px;
+    color: #666;
+}
+
+.widget-powered-by a {
+    color: var(--widget-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.widget-powered-by a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .widget-container {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        border-radius: 0;
+    }
+
+    .widget-button {
+        width: 56px;
+        height: 56px;
+    }
+
+    .widget-icon,
+    .widget-close-icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rag-widget {
+        bottom: 16px;
+        right: 16px;
+    }
+}
+
+.widget-iframe-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--widget-primary-color);
+    border-radius: 50%;
+    animation: widget-spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.widget-iframe-container.loading::before {
+    opacity: 1;
+}
+
+@keyframes widget-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --widget-bg-color: #1e1e1e;
+        --widget-text-color: #ffffff;
+        --widget-border-color: #333333;
+    }
+
+    .widget-iframe-container {
+        background-color: #252525;
+    }
+}
+
+.widget-button:focus,
+.widget-minimize-btn:focus {
+    outline: 2px solid var(--widget-primary-color);
+    outline-offset: 2px;
+}
+
+@media print {
+    .rag-widget {
+        display: none !important;
+    }
+}
+</style>
+
+<div id="rag-widget" class="rag-widget">
+    <!-- Floating Button -->
+    <button id="widget-button" class="widget-button" aria-label="Open chat">
+        <svg class="widget-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+        </svg>
+        <svg class="widget-close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+    </button>
+
+    <!-- Chat Container -->
+    <div id="widget-container" class="widget-container hidden">
+        <!-- Header -->
+        <div class="widget-header">
+            <div class="widget-header-content">
+                <h3 class="widget-title">Secret A(i)gent</h3>
+                <p class="widget-subtitle">Ask me anything</p>
+            </div>
+            <button id="widget-minimize" class="widget-minimize-btn" aria-label="Minimize chat">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13H5v-2h14v2z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat iframe -->
+        <div class="widget-iframe-container">
+            <iframe
+                id="widget-iframe"
+                src=""
+                frameborder="0"
+                allow="clipboard-write"
+                title="RAG Chat Assistant">
+            </iframe>
+        </div>
+
+        <!-- Footer -->
+        <div class="widget-footer">
+            <span class="widget-powered-by">
+                Powered by <a href="https://github.com/jkitchin/streamlit-rag-widget" target="_blank">a Secret A(i)gent</a>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * RAG Widget Configuration and Script
+ */
+(function() {
+    'use strict';
+
+    // Configuration
+    const config = {
+        streamlitUrl: 'https://kitchin-services.cheme.cmu.edu',
+        position: 'bottom-right',
+        width: '50vw',
+        height: '600px',
+        primaryColor: '#1f77b4',
+        title: 'Secret A(i)gent',
+        subtitle: 'Ask me anything',
+        showPoweredBy: true,
+        autoOpen: false,
+        openDelay: 0,
+        zIndex: 9999,
+    };
+
+    // Widget state
+    let isOpen = false;
+
+    // Get DOM elements
+    const widget = document.getElementById('rag-widget');
+    const button = document.getElementById('widget-button');
+    const container = document.getElementById('widget-container');
+    const iframe = document.getElementById('widget-iframe');
+    const minimizeBtn = document.getElementById('widget-minimize');
+    const iframeContainer = document.querySelector('.widget-iframe-container');
+
+    if (!widget || !button || !container || !iframe) {
+        console.error('RAG Widget: Required elements not found');
+        return;
+    }
+
+    /**
+     * Initialize widget
+     */
+    function init() {
+        // Set iframe URL
+        iframe.src = config.streamlitUrl;
+
+        // Set custom colors
+        if (config.primaryColor) {
+            document.documentElement.style.setProperty('--widget-primary-color', config.primaryColor);
+        }
+
+        // Set title and subtitle
+        const title = document.querySelector('.widget-title');
+        const subtitle = document.querySelector('.widget-subtitle');
+        if (title && config.title) {
+            title.textContent = config.title;
+        }
+        if (subtitle && config.subtitle) {
+            subtitle.textContent = config.subtitle;
+        }
+
+        // Hide powered by if configured
+        if (!config.showPoweredBy) {
+            const footer = document.querySelector('.widget-footer');
+            if (footer) {
+                footer.style.display = 'none';
+            }
+        }
+
+        // Add event listeners
+        button.addEventListener('click', toggleWidget);
+        minimizeBtn.addEventListener('click', closeWidget);
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && isOpen) {
+                closeWidget();
+            }
+        });
+
+        // Auto-open if configured
+        if (config.autoOpen) {
+            setTimeout(openWidget, config.openDelay);
+        }
+
+        console.log('RAG Widget initialized');
+    }
+
+    /**
+     * Toggle widget open/closed
+     */
+    function toggleWidget() {
+        if (isOpen) {
+            closeWidget();
+        } else {
+            openWidget();
+        }
+    }
+
+    /**
+     * Open widget
+     */
+    function openWidget() {
+        isOpen = true;
+        button.classList.add('active');
+        container.classList.remove('hidden');
+
+        setTimeout(function() {
+            container.classList.add('visible');
+        }, 10);
+
+        setTimeout(function() {
+            iframe.focus();
+        }, 300);
+    }
+
+    /**
+     * Close widget
+     */
+    function closeWidget() {
+        isOpen = false;
+        button.classList.remove('active');
+        container.classList.remove('visible');
+
+        setTimeout(function() {
+            container.classList.add('hidden');
+        }, 300);
+    }
+
+    /**
+     * Public API
+     */
+    window.RAGWidget = {
+        open: openWidget,
+        close: closeWidget,
+        toggle: toggleWidget,
+        isOpen: function() { return isOpen; }
+    };
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
+</script>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

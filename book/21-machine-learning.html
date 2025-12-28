@@ -253,6 +253,9 @@ commentsRunWhenDOMLoaded(addUtterances);
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to machine learning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24-parallel-processing.html">Parallel Processing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25-async-programming.html">Asynchronous Programming in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26-reinforcement-learning.html">Reinforcement Learning for Engineering</a></li>
 <li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
@@ -660,22 +663,22 @@ least_squares<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     message: The maximum number of function evaluations is exceeded.
      success: False
       status: 0
-         fun: [-3.450e-05  5.019e-04 ...  8.610e-04  1.221e-03]
-           x: [-9.363e+01 -4.155e+01 -5.097e-01 -2.284e+00  3.514e+01
-                5.331e+00  2.889e+00  1.825e+01  5.471e+01  2.511e+00]
-        cost: 1.3723105063448922e-05
-         jac: [[-1.000e+00  9.795e-01 ...  0.000e+00 -4.746e-01]
-               [-1.000e+00  9.799e-01 ... -1.051e-03 -5.148e-02]
+         fun: [-3.284e-05  5.029e-04 ...  8.607e-04  1.220e-03]
+           x: [-1.046e+02 -4.637e+01 -5.092e-01 -2.340e+00 -2.035e+01
+               -5.470e+01 -2.566e+00 -3.918e+01 -5.331e+00 -2.944e+00]
+        cost: 1.3702535532616478e-05
+         jac: [[-1.000e+00  9.816e-01 ... -0.000e+00  4.321e-01]
+               [-1.000e+00  9.820e-01 ...  7.101e-03  3.479e-01]
                ...
-               [-1.000e+00  9.924e-01 ...  0.000e+00  0.000e+00]
-               [-1.000e+00  9.925e-01 ...  0.000e+00  0.000e+00]]
-        grad: [ 1.631e-04 -1.608e-04 -6.108e-05 -1.930e-04  1.629e-04
-                8.274e-07  1.238e-05  1.630e-04  7.879e-09  3.989e-06]
-  optimality: 0.00019295446733306803
+               [-1.000e+00  9.932e-01 ...  1.234e-05  1.263e-05]
+               [-1.000e+00  9.933e-01 ...  1.011e-05  1.020e-05]]
+        grad: [ 1.274e-04 -1.257e-04 -4.776e-05 -1.508e-04 -1.273e-04
+               -6.133e-09 -3.143e-06 -1.273e-04 -6.442e-07 -9.670e-06]
+  optimality: 0.00015082181036805
  active_mask: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00
                 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00]
         nfev: 1000
-        njev: 821
+        njev: 834
 </pre></div>
 </div>
 </div>
@@ -688,7 +691,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3723105063448922e-05)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3702535532616478e-05)
 </pre></div>
 </div>
 </div>
@@ -702,7 +705,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0., -0., -0., -0.,  0.,  0.,  0.,  0.,  0.,  0.])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0., -0., -0., -0., -0., -0., -0., -0., -0., -0.])
 </pre></div>
 </div>
 </div>
@@ -723,7 +726,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([532.227,  12.348,   0.627,   0.163,   0.022,   0.   ,   0.   ,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([532.836,  12.373,   0.627,   0.163,   0.022,   0.   ,   0.   ,
          0.   ,   0.   ,   0.   ])
 </pre></div>
 </div>
@@ -737,7 +740,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(2.0371658279648734e-33)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(5.2017205360570445e-34)
 </pre></div>
 </div>
 </div>
@@ -754,7 +757,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/becbcfd7291e4b609bb6a7ccf7d4bacb8154af238abf4d4bc0fe8117ca06e379.png" src="../_images/becbcfd7291e4b609bb6a7ccf7d4bacb8154af238abf4d4bc0fe8117ca06e379.png" />
+<img alt="../_images/90c5ee1eb0936eb1555c69702ba0df39e92f2fb48dfb2de462b527caffec4a40.png" src="../_images/90c5ee1eb0936eb1555c69702ba0df39e92f2fb48dfb2de462b527caffec4a40.png" />
 </div>
 </div>
 <p>Evidently, we just have not reached the required tolerances for least_squares to claim success.</p>
@@ -767,8 +770,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-93.627, -41.553,  -0.51 ,  -2.284,  35.137,   5.331,   2.889,
-        18.246,  54.708,   2.511])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-104.581,  -46.365,   -0.509,   -2.34 ,  -20.348,  -54.699,
+         -2.566,  -39.176,   -5.331,   -2.944])
 </pre></div>
 </div>
 </div>
@@ -780,8 +783,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-93.627, -41.553,  -0.51 ,  -2.284,  35.137,   5.331,   2.889,
-        18.246,  54.708,   2.511])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-104.581,  -46.365,   -0.509,   -2.34 ,  -20.348,  -54.699,
+         -2.566,  -39.176,   -5.331,   -2.944])
 </pre></div>
 </div>
 </div>
@@ -801,7 +804,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e8341a4ca5169e15df1ccc9d4e85f6128705011937f4c2911d251afa3995dc0a.png" src="../_images/e8341a4ca5169e15df1ccc9d4e85f6128705011937f4c2911d251afa3995dc0a.png" />
+<img alt="../_images/f35deaf2ee744cc8d2e1ca042903bc7f0b4e932912a88ca97012d2b73f394add.png" src="../_images/f35deaf2ee744cc8d2e1ca042903bc7f0b4e932912a88ca97012d2b73f394add.png" />
 </div>
 </div>
 <p>You can see that this model saturates for large <span class="math notranslate nohighlight">\(x\)</span>. That might be anticipated from knowledge of the tanh function, it also saturates at large values of <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -948,7 +951,7 @@ w1: (3, 1), b1: (1,)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 0: 0.02252298981875618
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010016662197145179
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 100: 0.00010016662197145348
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance reached at epoch 198, stopping
@@ -971,8 +974,8 @@ w1: (3, 1), b1: (1,)
 w1: [[ 0.711]
  [ 0.434]
  [-0.414]], b1: [-0.306]
-[-93.627 -41.553  -0.51   -2.284  35.137   5.331   2.889  18.246  54.708
-   2.511]
+[-104.581  -46.365   -0.509   -2.34   -20.348  -54.699   -2.566  -39.176
+   -5.331   -2.944]
 </pre></div>
 </div>
 </div>

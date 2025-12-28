@@ -1,0 +1,2265 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Parallel Processing in Python &#8212; pycse - Python Computations in Science and Engineering</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "jkitchin/dsmles");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-4H7VFJKEZY"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-4H7VFJKEZY');
+            </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'book/24-parallel-processing';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Asynchronous Programming in Python" href="25-async-programming.html" />
+    <link rel="prev" title="Gaussian Process Regression" href="23-gp.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
+    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to pycse - Python Computations in Science and Engineering
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse book</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">The pycse book</a></li>
+<li class="toctree-l1"><a class="reference internal" href="00-intro.html">Introduction to Python and Jupyter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-jupyter.html">More about using Jupyter notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-integration-1.html">Integration in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-fode-1.html">First-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-fode-2.html">Systems of first-order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-nth-odes.html">N<sup>th</sup> order differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-nla-1.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-nla-2.html">Polynomials in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-bvp.html">Boundary value problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-min-max.html">Introduction to optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-regression.html">Nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-nonlinear-regression-2.html">Uncertainty quantification in nonlinear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-constrained-optimization.html">Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-intro-linear-algebra.html">Introduction to linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16-linear-algebra.html">Applications of linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-linear-algebra-2.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-linear-regression.html">Linear regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-autograd-applications.html">Introduction to automatic differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-machine-learning.html">Introduction to machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22-ml-2.html">Topics in machine learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23-gp.html">Gaussian Process Regression</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Parallel Processing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25-async-programming.html">Asynchronous Programming in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26-reinforcement-learning.html">Reinforcement Learning for Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusions.html">Concluding remarks</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">The pycse blog</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../blog/intro.html">The PYCSE blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/basic-python.html">Basic python usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/linear-algebra.html">Linear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/nonlinear-algebra.html">Nonlinear algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/data-analysis.html">Data analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/interpolation.html">Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/optimization.html">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/differential-equations.html">Differential equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/programming.html">Programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../blog/worked-examples.html">Worked examples</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">pycse documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../docs/about.html">About pycse</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/running-pycse.html">Running pycse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/pycse.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs/beginner.html">pycse - Beginner mode</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/utils.html">pycse.utils</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../docs/execution-statistics.html">Build statistics</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://lab.amdatascience.com/hub/user-redirect/git-pull?repo=https%3A//github.com/jkitchin/pycse&urlpath=lab/tree/pycse/pycse-jb/pycse___python_computations_in_science_and_engineering/book/24-parallel-processing.ipynb&branch=master" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on JupyterHub"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="JupyterHub logo" src="../_static/images/logo_jupyterhub.svg">
+  </span>
+<span class="btn__text-container">JupyterHub</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/jkitchin/pycse/blob/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/24-parallel-processing.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/edit/master/pycse-jb/pycse___python_computations_in_science_and_engineering/book/24-parallel-processing.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/jkitchin/pycse/issues/new?title=Issue%20on%20page%20%2Fbook/24-parallel-processing.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/book/24-parallel-processing.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Parallel Processing in Python</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpu-bound-vs-i-o-bound-tasks">CPU-bound vs I/O-bound Tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-global-interpreter-lock-gil">The Global Interpreter Lock (GIL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threading-for-i-o-bound-tasks">Threading: For I/O-bound Tasks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-simulating-i-o-with-sleep">Example: Simulating I/O with sleep</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-threads-don-t-help-with-cpu-bound-tasks">Why threads DON’T help with CPU-bound tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiprocessing-for-cpu-bound-tasks">Multiprocessing: For CPU-bound Tasks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-parameter-sweep-for-reaction-kinetics">Example: Parameter Sweep for Reaction Kinetics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#important-notes-about-multiprocessing">Important Notes about Multiprocessing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concurrent-futures-the-modern-interface">concurrent.futures: The Modern Interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-monte-carlo-uncertainty-quantification">Example: Monte Carlo Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-submit-and-as-completed">Using submit() and as_completed()</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling-in-parallel-code">Error Handling in Parallel Code</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joblib-parallel-computing-made-easy">Joblib: Parallel Computing Made Easy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-batch-processing-experimental-data">Example: Batch Processing Experimental Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#joblib-backends-and-threading">Joblib Backends and Threading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching-results-with-joblib-memory">Caching Results with joblib.Memory</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-up-when-to-reach-for-bigger-tools">Scaling Up: When to Reach for Bigger Tools</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#signs-you-ve-outgrown-single-machine-parallelism">Signs You’ve Outgrown Single-Machine Parallelism</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-scalable-parallel-computing">Dask: Scalable Parallel Computing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-each-tool">When to Use Each Tool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-tools-worth-knowing">Other Tools Worth Knowing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-guidelines">Practical Guidelines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measure-before-optimizing">1. Measure Before Optimizing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chunk-your-work-appropriately">2. Chunk Your Work Appropriately</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#be-careful-with-shared-state">3. Be Careful with Shared State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-random-seeds-carefully">4. Handle Random Seeds Carefully</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="parallel-processing-in-python">
+<h1>Parallel Processing in Python<a class="headerlink" href="#parallel-processing-in-python" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p>KEYWORDS: multiprocessing, threading, concurrent.futures, joblib, parallel computing</p></li>
+</ul>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p>Many computational tasks in science and engineering are <em>embarrassingly parallel</em> - they can be broken into independent pieces that run simultaneously. Examples include:</p>
+<ul class="simple">
+<li><p>Parameter sweeps: solving an ODE with 1000 different rate constants</p></li>
+<li><p>Monte Carlo simulations: running 10,000 random trials for uncertainty quantification</p></li>
+<li><p>Batch processing: analyzing hundreds of experimental data files</p></li>
+<li><p>Cross-validation: training models on different data subsets</p></li>
+</ul>
+<p>Modern computers have multiple CPU cores, but Python code runs on a single core by default. This chapter shows you how to use all your cores effectively.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># How many CPU cores do we have?</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available CPU cores: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Available CPU cores: 4
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="cpu-bound-vs-i-o-bound-tasks">
+<h2>CPU-bound vs I/O-bound Tasks<a class="headerlink" href="#cpu-bound-vs-i-o-bound-tasks" title="Link to this heading">#</a></h2>
+<p>Before diving into parallel processing, we need to understand two types of tasks:</p>
+<p><strong>CPU-bound tasks</strong> spend most of their time doing computation:</p>
+<ul class="simple">
+<li><p>Numerical integration</p></li>
+<li><p>Matrix operations</p></li>
+<li><p>Solving differential equations</p></li>
+<li><p>Image processing algorithms</p></li>
+</ul>
+<p><strong>I/O-bound tasks</strong> spend most of their time waiting for input/output:</p>
+<ul class="simple">
+<li><p>Reading/writing files</p></li>
+<li><p>Network requests (downloading data, API calls)</p></li>
+<li><p>Database queries</p></li>
+</ul>
+<p>This distinction is critical because Python’s <em>Global Interpreter Lock (GIL)</em> affects how we parallelize each type.</p>
+</section>
+<section id="the-global-interpreter-lock-gil">
+<h2>The Global Interpreter Lock (GIL)<a class="headerlink" href="#the-global-interpreter-lock-gil" title="Link to this heading">#</a></h2>
+<p>Python has a mechanism called the <strong>Global Interpreter Lock (GIL)</strong> that allows only one thread to execute Python bytecode at a time. This was a design decision to simplify memory management in CPython.</p>
+<p><strong>Implications:</strong></p>
+<ul class="simple">
+<li><p><strong>Threads</strong> do NOT speed up CPU-bound Python code (they actually run one at a time!)</p></li>
+<li><p><strong>Threads</strong> DO speed up I/O-bound code (while one thread waits for I/O, another can run)</p></li>
+<li><p><strong>Processes</strong> bypass the GIL entirely (each process has its own Python interpreter)</p></li>
+</ul>
+<p>This is why we use:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">threading</span></code> for I/O-bound tasks (file operations, network requests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> for CPU-bound tasks (numerical computations)</p></li>
+</ul>
+<p>Let’s demonstrate this with a simple example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cpu_intensive_task</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A CPU-bound task: compute sum of squares.&quot;&quot;&quot;</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">total</span>
+
+<span class="c1"># Time a single call</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">cpu_intensive_task</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Single call: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Single call: 0.059 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="threading-for-i-o-bound-tasks">
+<h2>Threading: For I/O-bound Tasks<a class="headerlink" href="#threading-for-i-o-bound-tasks" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">threading</span></code> module creates lightweight threads that share memory. They’re ideal for I/O-bound tasks where threads spend time waiting.</p>
+<section id="example-simulating-i-o-with-sleep">
+<h3>Example: Simulating I/O with sleep<a class="headerlink" href="#example-simulating-i-o-with-sleep" title="Link to this heading">#</a></h3>
+<p>Let’s simulate reading multiple data files (using <code class="docutils literal notranslate"><span class="pre">time.sleep</span></code> to represent I/O wait time).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_file_read</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate reading a file (I/O-bound task).&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Simulate I/O wait</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">file_id</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Data from file </span><span class="si">{</span><span class="n">file_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Sequential approach</span>
+<span class="n">n_files</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">results_seq</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_files</span><span class="p">):</span>
+    <span class="n">simulate_file_read</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">results_seq</span><span class="p">)</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+<span class="c1"># Threaded approach</span>
+<span class="n">results_threaded</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_files</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">simulate_file_read</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">results_threaded</span><span class="p">))</span>
+    <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c1"># Wait for all threads to complete</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    
+<span class="n">threaded_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threaded: </span><span class="si">{</span><span class="n">threaded_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">sequential_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">threaded_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 2.50 seconds
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Threaded: 0.50 seconds
+Speedup: 5.0x
+</pre></div>
+</div>
+</div>
+</div>
+<p>The threaded version is ~5x faster because all threads can wait for I/O simultaneously.</p>
+</section>
+<section id="why-threads-don-t-help-with-cpu-bound-tasks">
+<h3>Why threads DON’T help with CPU-bound tasks<a class="headerlink" href="#why-threads-don-t-help-with-cpu-bound-tasks" title="Link to this heading">#</a></h3>
+<p>Let’s try the same approach with our CPU-intensive function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cpu_task_wrapper</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">cpu_intensive_task</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">500_000</span>
+<span class="n">n_tasks</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># Sequential</span>
+<span class="n">results_seq</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">):</span>
+    <span class="n">results_seq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cpu_intensive_task</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+<span class="c1"># Threaded (won&#39;t help due to GIL!)</span>
+<span class="n">results_threaded</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_tasks</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">cpu_task_wrapper</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">results_threaded</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+    <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<span class="n">threaded_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threaded: </span><span class="si">{</span><span class="n">threaded_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">sequential_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">threaded_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x (no improvement due to GIL!)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 0.113 seconds
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Threaded: 0.116 seconds
+Speedup: 0.98x (no improvement due to GIL!)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice that threading provides no speedup (and may even be slower due to overhead). The GIL ensures only one thread runs Python code at a time.</p>
+</section>
+</section>
+<section id="multiprocessing-for-cpu-bound-tasks">
+<h2>Multiprocessing: For CPU-bound Tasks<a class="headerlink" href="#multiprocessing-for-cpu-bound-tasks" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> module creates separate Python processes, each with its own GIL. This allows true parallel execution on multiple cores.</p>
+<section id="example-parameter-sweep-for-reaction-kinetics">
+<h3>Example: Parameter Sweep for Reaction Kinetics<a class="headerlink" href="#example-parameter-sweep-for-reaction-kinetics" title="Link to this heading">#</a></h3>
+<p>Consider a first-order reaction <span class="math notranslate nohighlight">\(A \rightarrow B\)</span> with rate <span class="math notranslate nohighlight">\(r = k C_A\)</span>. We want to study how the final conversion depends on the rate constant <span class="math notranslate nohighlight">\(k\)</span>. This requires solving the ODE:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dC_A}{dt} = -k C_A\]</div>
+<p>for many different values of <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_ivp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">C_A0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">t_final</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve first-order reaction kinetics for a given rate constant k.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns the final conversion X = (C_A0 - C_A) / C_A0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ode</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+        <span class="n">C_A</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">C_A</span><span class="p">]</span>
+    
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">ode</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_final</span><span class="p">],</span> <span class="p">[</span><span class="n">C_A0</span><span class="p">],</span> <span class="n">dense_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">C_A_final</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">conversion</span> <span class="o">=</span> <span class="p">(</span><span class="n">C_A0</span> <span class="o">-</span> <span class="n">C_A_final</span><span class="p">)</span> <span class="o">/</span> <span class="n">C_A0</span>
+    <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">conversion</span>
+
+<span class="c1"># Test it</span>
+<span class="n">k_test</span><span class="p">,</span> <span class="n">conv_test</span> <span class="o">=</span> <span class="n">solve_reaction</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;k = </span><span class="si">{</span><span class="n">k_test</span><span class="si">}</span><span class="s2">, conversion = </span><span class="si">{</span><span class="n">conv_test</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>k = 0.5, conversion = 0.9932
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+
+<span class="c1"># Generate 200 rate constants to test</span>
+<span class="n">k_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<span class="c1"># Sequential approach</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results_seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">]</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+<span class="c1"># Parallel approach using multiprocessing Pool</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">results_parallel</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">solve_reaction</span><span class="p">,</span> <span class="n">k_values</span><span class="p">)</span>
+<span class="n">parallel_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallel (</span><span class="si">{</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> cores): </span><span class="si">{</span><span class="n">parallel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Speedup: </span><span class="si">{</span><span class="n">sequential_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">parallel_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 0.115 seconds
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Parallel (4 cores): 0.095 seconds
+Speedup: 1.20x
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the results</span>
+<span class="n">k_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results_parallel</span><span class="p">]</span>
+<span class="n">conversions</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results_parallel</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_vals</span><span class="p">,</span> <span class="n">conversions</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Rate constant k (1/s)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Conversion X&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;First-order Reaction: Conversion vs Rate Constant&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1dbdaa63879ac8aa960b9c29dc39d94ac1a12be37a7060f92e2208a44dfaca9a.png" src="../_images/1dbdaa63879ac8aa960b9c29dc39d94ac1a12be37a7060f92e2208a44dfaca9a.png" />
+</div>
+</div>
+</section>
+<section id="important-notes-about-multiprocessing">
+<h3>Important Notes about Multiprocessing<a class="headerlink" href="#important-notes-about-multiprocessing" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Pickling</strong>: Data passed between processes must be <em>picklable</em> (serializable). Most numpy arrays and simple objects work fine, but lambda functions and some objects don’t.</p></li>
+<li><p><strong>Overhead</strong>: Creating processes has overhead. For very fast tasks, the overhead may exceed the benefit.</p></li>
+<li><p><strong>Memory</strong>: Each process has its own memory space. Large data is copied to each process.</p></li>
+<li><p><strong>Top-level functions</strong>: Functions used with <code class="docutils literal notranslate"><span class="pre">Pool.map()</span></code> must be defined at the module level (not inside another function).</p></li>
+</ol>
+</section>
+</section>
+<section id="concurrent-futures-the-modern-interface">
+<h2>concurrent.futures: The Modern Interface<a class="headerlink" href="#concurrent-futures-the-modern-interface" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code> module provides a clean, unified API for both threading and multiprocessing. It’s the recommended approach for most parallel tasks.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code>: For I/O-bound tasks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code>: For CPU-bound tasks</p></li>
+</ul>
+<p>Both have the same interface, making it easy to switch between them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+
+<span class="c1"># Using ProcessPoolExecutor for our reaction kinetics</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="c1"># map() returns results in order</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">solve_reaction</span><span class="p">,</span> <span class="n">k_values</span><span class="p">))</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ProcessPoolExecutor: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ProcessPoolExecutor: 0.108 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<section id="example-monte-carlo-uncertainty-quantification">
+<h3>Example: Monte Carlo Uncertainty Quantification<a class="headerlink" href="#example-monte-carlo-uncertainty-quantification" title="Link to this heading">#</a></h3>
+<p>A powerful application of parallel processing is Monte Carlo simulation. Suppose we’re measuring the heat transfer coefficient <span class="math notranslate nohighlight">\(h\)</span> for a cooling fin, and we want to estimate the uncertainty in the steady-state temperature.</p>
+<p>The fin equation gives us:
+$<span class="math notranslate nohighlight">\(T(x) = T_\infty + (T_0 - T_\infty) \frac{\cosh(m(L-x))}{\cosh(mL)}\)</span>$</p>
+<p>where <span class="math notranslate nohighlight">\(m = \sqrt{\frac{hP}{kA}}\)</span>.</p>
+<p>If <span class="math notranslate nohighlight">\(h\)</span> has measurement uncertainty (normally distributed), what’s the distribution of the tip temperature <span class="math notranslate nohighlight">\(T(L)\)</span>?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fin_tip_temperature</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">T0</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">T_inf</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the tip temperature of a cooling fin.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Heat transfer coefficient (W/m^2-K)</span>
+<span class="sd">    T0 : float</span>
+<span class="sd">        Base temperature (°C)</span>
+<span class="sd">    T_inf : float</span>
+<span class="sd">        Ambient temperature (°C)</span>
+<span class="sd">    L : float</span>
+<span class="sd">        Fin length (m)</span>
+<span class="sd">    k : float</span>
+<span class="sd">        Thermal conductivity (W/m-K)</span>
+<span class="sd">    P : float</span>
+<span class="sd">        Perimeter (m)</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross-sectional area (m^2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">P</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">A</span><span class="p">))</span>
+    <span class="n">T_tip</span> <span class="o">=</span> <span class="n">T_inf</span> <span class="o">+</span> <span class="p">(</span><span class="n">T0</span> <span class="o">-</span> <span class="n">T_inf</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T_tip</span>
+
+<span class="c1"># Nominal value</span>
+<span class="n">h_nominal</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># W/m^2-K</span>
+<span class="n">T_nominal</span> <span class="o">=</span> <span class="n">fin_tip_temperature</span><span class="p">(</span><span class="n">h_nominal</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nominal tip temperature: </span><span class="si">{</span><span class="n">T_nominal</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> °C&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Nominal tip temperature: 73.60 °C
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monte Carlo simulation with uncertainty in h</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">h_std</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Standard deviation in h measurement</span>
+
+<span class="c1"># Generate random samples of h</span>
+<span class="n">h_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">h_nominal</span><span class="p">,</span> <span class="n">h_std</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+<span class="n">h_samples</span> <span class="o">=</span> <span class="n">h_samples</span><span class="p">[</span><span class="n">h_samples</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># h must be positive</span>
+
+<span class="c1"># Sequential Monte Carlo</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">T_results_seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">fin_tip_temperature</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">h_samples</span><span class="p">]</span>
+<span class="n">sequential_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">sequential_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+<span class="c1"># Parallel Monte Carlo</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">T_results_parallel</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fin_tip_temperature</span><span class="p">,</span> <span class="n">h_samples</span><span class="p">))</span>
+<span class="n">parallel_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallel: </span><span class="si">{</span><span class="n">parallel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 0.008 seconds
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Parallel: 1.825 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze and visualize results</span>
+<span class="n">T_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T_results_parallel</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="c1"># Histogram of tip temperatures</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">T_array</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">T_nominal</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Nominal = </span><span class="si">{</span><span class="n">T_nominal</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">°C&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">T_array</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Mean = </span><span class="si">{</span><span class="n">T_array</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">°C&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Tip Temperature (°C)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probability Density&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Monte Carlo: Fin Tip Temperature Distribution&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># Scatter plot: h vs T_tip</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">h_samples</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">T_array</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Heat Transfer Coefficient h (W/m²K)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Tip Temperature (°C)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Sensitivity: T_tip vs h&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Monte Carlo Results (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">T_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mean tip temperature: </span><span class="si">{</span><span class="n">T_array</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> °C&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Standard deviation: </span><span class="si">{</span><span class="n">T_array</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> °C&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  95% confidence interval: [</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">T_array</span><span class="p">,</span><span class="w"> </span><span class="mf">2.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">T_array</span><span class="p">,</span><span class="w"> </span><span class="mf">97.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">] °C&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Monte Carlo Results (10000 samples):
+  Mean tip temperature: 73.66 °C
+  Standard deviation: 1.86 °C
+  95% confidence interval: [70.16, 77.48] °C
+</pre></div>
+</div>
+<img alt="../_images/41a74ab06cec9212870f708eabcae56569c44257e74a1a0195d71599622e98a4.png" src="../_images/41a74ab06cec9212870f708eabcae56569c44257e74a1a0195d71599622e98a4.png" />
+</div>
+</div>
+</section>
+<section id="using-submit-and-as-completed">
+<h3>Using submit() and as_completed()<a class="headerlink" href="#using-submit-and-as-completed" title="Link to this heading">#</a></h3>
+<p>Sometimes you want to process results as they become available, rather than waiting for all tasks to complete. The <code class="docutils literal notranslate"><span class="pre">submit()</span></code> method returns <code class="docutils literal notranslate"><span class="pre">Future</span></code> objects, and <code class="docutils literal notranslate"><span class="pre">as_completed()</span></code> yields them as they finish.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">slow_computation</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A computation that takes variable time.&quot;&quot;&quot;</span>
+    <span class="n">sleep_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sleep_time</span>
+
+<span class="c1"># Process results as they complete</span>
+<span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="c1"># Submit all tasks</span>
+    <span class="n">future_to_value</span> <span class="o">=</span> <span class="p">{</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">slow_computation</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">}</span>
+    
+    <span class="c1"># Process as they complete (not in submission order)</span>
+    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">future_to_value</span><span class="p">):</span>
+        <span class="n">original_value</span> <span class="o">=</span> <span class="n">future_to_value</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">original_value</span><span class="si">}</span><span class="s2">² = </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> (took </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1² = 1 (took 0.23s)
+  0² = 0 (took 0.23s)
+  2² = 4 (took 0.23s)
+  3² = 9 (took 0.23s)
+  4² = 16 (took 0.14s)
+  5² = 25 (took 0.14s)
+  6² = 36 (took 0.14s)
+  7² = 49 (took 0.14s)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="error-handling-in-parallel-code">
+<h3>Error Handling in Parallel Code<a class="headerlink" href="#error-handling-in-parallel-code" title="Link to this heading">#</a></h3>
+<p>When running many parallel tasks, some may fail. It’s important to handle errors gracefully.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">risky_computation</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A computation that might fail.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot process x=</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">future_to_value</span> <span class="o">=</span> <span class="p">{</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">risky_computation</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">}</span>
+    
+    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">future_to_value</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">future_to_value</span><span class="p">[</span><span class="n">future</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successful: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> tasks&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2"> tasks&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Errors: </span><span class="si">{</span><span class="n">errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successful: 9 tasks
+Failed: 1 tasks
+Errors: [(5, &#39;Cannot process x=5&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="joblib-parallel-computing-made-easy">
+<h2>Joblib: Parallel Computing Made Easy<a class="headerlink" href="#joblib-parallel-computing-made-easy" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://joblib.readthedocs.io/">Joblib</a> is a popular library in the scientific Python ecosystem. It’s used internally by scikit-learn and provides a simple interface for parallel computing.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p>Simple <code class="docutils literal notranslate"><span class="pre">Parallel</span></code> and <code class="docutils literal notranslate"><span class="pre">delayed</span></code> syntax</p></li>
+<li><p>Automatic backend selection (processes or threads)</p></li>
+<li><p>Built-in progress reporting</p></li>
+<li><p>Memory mapping for large numpy arrays</p></li>
+<li><p>Result caching with <code class="docutils literal notranslate"><span class="pre">Memory</span></code></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+
+<span class="c1"># Basic syntax: Parallel(n_jobs=...)(delayed(func)(args) for args in iterable)</span>
+
+<span class="c1"># Sequential</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results_seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="c1"># Parallel with joblib</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results_joblib</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span>  <span class="c1"># n_jobs=-1 uses all cores</span>
+    <span class="n">delayed</span><span class="p">(</span><span class="n">solve_reaction</span><span class="p">)(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Joblib parallel: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential: 0.122s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Joblib parallel: 0.783s
+</pre></div>
+</div>
+</div>
+</div>
+<section id="example-batch-processing-experimental-data">
+<h3>Example: Batch Processing Experimental Data<a class="headerlink" href="#example-batch-processing-experimental-data" title="Link to this heading">#</a></h3>
+<p>Suppose we have experimental data from multiple runs of a reaction, and we want to fit a kinetic model to each dataset. This is a perfect use case for parallel processing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">first_order_model</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">C0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;First-order decay: C(t) = C0 * exp(-k*t)&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">C0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="n">true_k</span><span class="p">,</span> <span class="n">true_C0</span><span class="p">,</span> <span class="n">noise_level</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate synthetic experimental data with noise.&quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">C_true</span> <span class="o">=</span> <span class="n">first_order_model</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">true_k</span><span class="p">,</span> <span class="n">true_C0</span><span class="p">)</span>
+    <span class="n">C_noisy</span> <span class="o">=</span> <span class="n">C_true</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_level</span> <span class="o">*</span> <span class="n">true_C0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">C_noisy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">C_noisy</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Concentration can&#39;t be negative</span>
+    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">C_noisy</span><span class="p">,</span> <span class="n">true_k</span><span class="p">,</span> <span class="n">true_C0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_kinetic_model</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit first-order model to experimental data.&quot;&quot;&quot;</span>
+    <span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">true_k</span><span class="p">,</span> <span class="n">true_C0</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">first_order_model</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]))</span>
+        <span class="n">k_fit</span><span class="p">,</span> <span class="n">C0_fit</span> <span class="o">=</span> <span class="n">popt</span>
+        <span class="n">k_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;true_k&#39;</span><span class="p">:</span> <span class="n">true_k</span><span class="p">,</span> 
+            <span class="s1">&#39;fitted_k&#39;</span><span class="p">:</span> <span class="n">k_fit</span><span class="p">,</span> 
+            <span class="s1">&#39;k_error&#39;</span><span class="p">:</span> <span class="n">k_err</span><span class="p">,</span>
+            <span class="s1">&#39;true_C0&#39;</span><span class="p">:</span> <span class="n">true_C0</span><span class="p">,</span>
+            <span class="s1">&#39;fitted_C0&#39;</span><span class="p">:</span> <span class="n">C0_fit</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+
+<span class="c1"># Generate 100 synthetic experiments with different true parameters</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">n_experiments</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">true_k_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">n_experiments</span><span class="p">)</span>
+<span class="n">true_C0_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">n_experiments</span><span class="p">)</span>
+
+<span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">generate_synthetic_data</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">C0</span><span class="p">)</span> 
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">C0</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_k_values</span><span class="p">,</span> <span class="n">true_C0_values</span><span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit all experiments in parallel with progress reporting</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">fit_results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span>
+    <span class="n">delayed</span><span class="p">(</span><span class="n">fit_kinetic_model</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">datasets</span>
+<span class="p">)</span>
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fitted </span><span class="si">{</span><span class="n">n_experiments</span><span class="si">}</span><span class="s2"> experiments in </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted 100 experiments in 0.13 seconds
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+[Parallel(n_jobs=-1)]: Done 100 out of 100 | elapsed:    0.1s finished
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze the fitting results</span>
+<span class="n">successful_fits</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">fit_results</span> <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+
+<span class="n">true_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;true_k&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">successful_fits</span><span class="p">])</span>
+<span class="n">fitted_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;fitted_k&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">successful_fits</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Parity plot</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">true_k</span><span class="p">,</span> <span class="n">fitted_k</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Perfect fit&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;True k (1/s)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Fitted k (1/s)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Parity Plot: True vs Fitted Rate Constants&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+
+<span class="c1"># Error distribution</span>
+<span class="n">relative_error</span> <span class="o">=</span> <span class="p">(</span><span class="n">fitted_k</span> <span class="o">-</span> <span class="n">true_k</span><span class="p">)</span> <span class="o">/</span> <span class="n">true_k</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">relative_error</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Relative Error (%)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Fitting Error Distribution (n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">successful_fits</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fitting Statistics:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mean absolute error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fitted_k</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">true_k</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> 1/s&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mean relative error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Std of relative error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitting Statistics:
+  Mean absolute error: 0.0799 1/s
+  Mean relative error: -0.47%
+  Std of relative error: 8.89%
+</pre></div>
+</div>
+<img alt="../_images/c1b41406aa8714237da0587294fa3612ac199295777aa36785e767f2092e28c7.png" src="../_images/c1b41406aa8714237da0587294fa3612ac199295777aa36785e767f2092e28c7.png" />
+</div>
+</div>
+</section>
+<section id="joblib-backends-and-threading">
+<h3>Joblib Backends and Threading<a class="headerlink" href="#joblib-backends-and-threading" title="Link to this heading">#</a></h3>
+<p>Joblib can use different backends:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">loky</span></code> (default): Process-based, robust to crashes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>: Standard multiprocessing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">threading</span></code>: Thread-based (for I/O-bound or numpy-heavy code)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using threading backend (useful when functions release the GIL, like numpy)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">numpy_heavy_computation</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numpy operations release the GIL, so threading can help.&quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200</span><span class="p">]</span> <span class="o">*</span> <span class="mi">20</span>
+
+<span class="c1"># Process-based (default)</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;loky&#39;</span><span class="p">)(</span>
+    <span class="n">delayed</span><span class="p">(</span><span class="n">numpy_heavy_computation</span><span class="p">)(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sizes</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loky (processes): </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="c1"># Thread-based </span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;threading&#39;</span><span class="p">)(</span>
+    <span class="n">delayed</span><span class="p">(</span><span class="n">numpy_heavy_computation</span><span class="p">)(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sizes</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threading: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loky (processes): 0.044s
+Threading: 0.107s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="caching-results-with-joblib-memory">
+<h3>Caching Results with joblib.Memory<a class="headerlink" href="#caching-results-with-joblib-memory" title="Link to this heading">#</a></h3>
+<p>When you run expensive computations repeatedly with the same inputs, caching can save time. Joblib’s <code class="docutils literal notranslate"><span class="pre">Memory</span></code> class provides transparent disk caching.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Memory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+<span class="c1"># Create a cache directory</span>
+<span class="n">cachedir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expensive_simulation</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate an expensive computation.&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Pretend this takes a while</span>
+    <span class="k">return</span> <span class="n">param</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.01</span>
+
+<span class="c1"># First run: computes and caches</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">result1</span> <span class="o">=</span> <span class="n">expensive_simulation</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First call: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s, result = </span><span class="si">{</span><span class="n">result1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Second run: retrieves from cache</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">result2</span> <span class="o">=</span> <span class="n">expensive_simulation</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cached call: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s, result = </span><span class="si">{</span><span class="n">result2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Clean up</span>
+<span class="n">memory</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">cachedir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>First call: 0.502s, result = 1764.0226
+Cached call: 0.001s, result = 1764.0226
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="scaling-up-when-to-reach-for-bigger-tools">
+<h2>Scaling Up: When to Reach for Bigger Tools<a class="headerlink" href="#scaling-up-when-to-reach-for-bigger-tools" title="Link to this heading">#</a></h2>
+<p>The tools we’ve covered (threading, multiprocessing, concurrent.futures, joblib) work well for parallelizing tasks on a single machine. But sometimes you need more:</p>
+<section id="signs-you-ve-outgrown-single-machine-parallelism">
+<h3>Signs You’ve Outgrown Single-Machine Parallelism<a class="headerlink" href="#signs-you-ve-outgrown-single-machine-parallelism" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Data doesn’t fit in memory</strong>: Your dataset is larger than your RAM</p></li>
+<li><p><strong>Need more cores</strong>: Even with all cores busy, computation takes too long</p></li>
+<li><p><strong>Complex task graphs</strong>: Tasks have dependencies that simple <code class="docutils literal notranslate"><span class="pre">map()</span></code> can’t express</p></li>
+<li><p><strong>Distributed computing</strong>: You want to use multiple machines</p></li>
+</ol>
+</section>
+<section id="dask-scalable-parallel-computing">
+<h3>Dask: Scalable Parallel Computing<a class="headerlink" href="#dask-scalable-parallel-computing" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://dask.org/">Dask</a> is a flexible parallel computing library that scales from laptops to clusters. It provides:</p>
+<ul class="simple">
+<li><p><strong>Dask Arrays</strong>: Parallel numpy arrays that can be larger than memory</p></li>
+<li><p><strong>Dask DataFrames</strong>: Parallel pandas DataFrames</p></li>
+<li><p><strong>Dask Delayed</strong>: Parallelize custom code with task graphs</p></li>
+<li><p><strong>Distributed scheduler</strong>: Scale to clusters</p></li>
+</ul>
+<p>Dask is designed to feel familiar if you know numpy and pandas.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: Dask delayed for custom parallel code</span>
+<span class="c1"># (Only run if dask is installed)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dask</span><span class="w"> </span><span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
+    
+    <span class="nd">@delayed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delayed_solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    
+    <span class="c1"># Build a task graph (no computation yet)</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">delayed_solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">[:</span><span class="mi">50</span><span class="p">]]</span>
+    
+    <span class="c1"># Execute in parallel</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dask parallel: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> results&quot;</span><span class="p">)</span>
+    
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dask not installed. Install with: pip install dask&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dask is useful when you need to:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  - Process data larger than memory&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  - Scale to multiple machines&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  - Build complex task dependency graphs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dask not installed. Install with: pip install dask
+Dask is useful when you need to:
+  - Process data larger than memory
+  - Scale to multiple machines
+  - Build complex task dependency graphs
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="when-to-use-each-tool">
+<h3>When to Use Each Tool<a class="headerlink" href="#when-to-use-each-tool" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Situation</p></th>
+<th class="head"><p>Recommended Tool</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>I/O-bound tasks (file/network)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">threading</span></code> or <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>CPU-bound, simple parallelism</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code> or <code class="docutils literal notranslate"><span class="pre">joblib</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Scientific computing, sklearn</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">joblib</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Need progress bars, easy syntax</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">joblib</span></code> with <code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Data larger than RAM</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dask</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Multiple machines / cluster</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dask.distributed</span></code> or <code class="docutils literal notranslate"><span class="pre">ray</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Heavy numerical arrays</p></td>
+<td><p>Consider <code class="docutils literal notranslate"><span class="pre">numba</span></code> for JIT compilation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="other-tools-worth-knowing">
+<h3>Other Tools Worth Knowing<a class="headerlink" href="#other-tools-worth-knowing" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="https://ray.io/">Ray</a></strong>: Distributed computing framework, especially for ML workloads</p></li>
+<li><p><strong><a class="reference external" href="https://numba.pydata.org/">Numba</a></strong>: JIT compiler that can parallelize numerical loops</p></li>
+<li><p><strong><a class="reference external" href="https://mpi4py.readthedocs.io/">mpi4py</a></strong>: MPI for Python, for HPC clusters</p></li>
+<li><p><strong><a class="reference external" href="https://spark.apache.org/docs/latest/api/python/">PySpark</a></strong>: For big data processing</p></li>
+</ul>
+</section>
+</section>
+<section id="practical-guidelines">
+<h2>Practical Guidelines<a class="headerlink" href="#practical-guidelines" title="Link to this heading">#</a></h2>
+<section id="measure-before-optimizing">
+<h3>1. Measure Before Optimizing<a class="headerlink" href="#measure-before-optimizing" title="Link to this heading">#</a></h3>
+<p>Always profile your code first. Parallelization has overhead, and the speedup depends on:</p>
+<ul class="simple">
+<li><p>Task duration (longer tasks benefit more)</p></li>
+<li><p>Number of tasks</p></li>
+<li><p>Data transfer costs</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">benchmark_parallel</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args_list</span><span class="p">,</span> <span class="n">n_jobs_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Benchmark parallel execution with different numbers of workers.&quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="c1"># Sequential baseline</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">]</span>
+    <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+    
+    <span class="k">for</span> <span class="n">n_jobs</span> <span class="ow">in</span> <span class="n">n_jobs_list</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">func</span><span class="p">)(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">n_jobs</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+    
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="c1"># Benchmark with our reaction solver</span>
+<span class="n">k_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">n_jobs_options</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># -1 means all cores</span>
+
+<span class="n">times</span> <span class="o">=</span> <span class="n">benchmark_parallel</span><span class="p">(</span><span class="n">solve_reaction</span><span class="p">,</span> <span class="n">k_test</span><span class="p">,</span> <span class="n">n_jobs_options</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Execution times:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">speedup</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">t</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;sequential&quot;</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> workers&quot;</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> workers (all)&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s (speedup: </span><span class="si">{</span><span class="n">speedup</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Execution times:
+  sequential: 0.061s (speedup: 1.00x)
+  2 workers: 0.584s (speedup: 0.10x)
+  4 workers: 0.711s (speedup: 0.09x)
+  4 workers (all): 0.043s (speedup: 1.41x)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="chunk-your-work-appropriately">
+<h3>2. Chunk Your Work Appropriately<a class="headerlink" href="#chunk-your-work-appropriately" title="Link to this heading">#</a></h3>
+<p>If you have many tiny tasks, the overhead of dispatching each one dominates. Group them into larger chunks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_chunk</span><span class="p">(</span><span class="n">k_chunk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process a chunk of k values.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">solve_reaction</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_chunk</span><span class="p">]</span>
+
+<span class="c1"># Split into chunks</span>
+<span class="n">k_values_large</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">k_values_large</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_values_large</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">)]</span>
+
+<span class="c1"># Process chunks in parallel</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="n">chunk_results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">process_chunk</span><span class="p">)(</span><span class="n">chunk</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">)</span>
+<span class="c1"># Flatten results</span>
+<span class="n">all_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">chunk_results</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chunked parallel: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_results</span><span class="p">)</span><span class="si">}</span><span class="s2"> tasks&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Chunked parallel: 0.145s for 400 tasks
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="be-careful-with-shared-state">
+<h3>3. Be Careful with Shared State<a class="headerlink" href="#be-careful-with-shared-state" title="Link to this heading">#</a></h3>
+<p>Parallel processes don’t share memory by default. Avoid patterns that require synchronization:</p>
+<ul class="simple">
+<li><p>Don’t modify global variables from parallel tasks</p></li>
+<li><p>Return results instead of writing to shared data structures</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">Manager</span></code> objects if you really need shared state (but prefer avoiding it)</p></li>
+</ul>
+</section>
+<section id="handle-random-seeds-carefully">
+<h3>4. Handle Random Seeds Carefully<a class="headerlink" href="#handle-random-seeds-carefully" title="Link to this heading">#</a></h3>
+<p>When running Monte Carlo simulations in parallel, ensure each worker has a different random seed to avoid correlated results.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">monte_carlo_with_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monte Carlo simulation with explicit seed.&quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="c1"># Generate unique seeds for each worker</span>
+<span class="n">base_seed</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">seeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_seed</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">monte_carlo_with_seed</span><span class="p">)(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">seeds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Monte Carlo results: mean = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, std = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Monte Carlo results: mean = 0.0046, std = 0.0338
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>This chapter covered the main approaches to parallel processing in Python:</p>
+<ol class="arabic simple">
+<li><p><strong>Threading</strong> (<code class="docutils literal notranslate"><span class="pre">threading</span></code>, <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code>): Best for I/O-bound tasks. The GIL prevents speedup for CPU-bound work.</p></li>
+<li><p><strong>Multiprocessing</strong> (<code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>, <code class="docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code>): Best for CPU-bound tasks. Each process has its own Python interpreter and GIL.</p></li>
+<li><p><strong>concurrent.futures</strong>: Modern, clean API that unifies threading and multiprocessing with the same interface.</p></li>
+<li><p><strong>Joblib</strong>: The go-to tool for scientific Python. Simple syntax, automatic backend selection, and useful features like caching.</p></li>
+<li><p><strong>Dask and beyond</strong>: When you outgrow single-machine parallelism, tools like Dask, Ray, and Spark can scale to larger data and distributed clusters.</p></li>
+</ol>
+<p><strong>Key takeaways:</strong></p>
+<ul class="simple">
+<li><p>Understand the GIL: threads for I/O, processes for CPU</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code> or <code class="docutils literal notranslate"><span class="pre">joblib</span></code> for most tasks</p></li>
+<li><p>Measure before parallelizing—overhead matters</p></li>
+<li><p>Keep tasks independent when possible</p></li>
+<li><p>Handle random seeds explicitly in Monte Carlo simulations</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./book"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="23-gp.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Gaussian Process Regression</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="25-async-programming.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Asynchronous Programming in Python</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpu-bound-vs-i-o-bound-tasks">CPU-bound vs I/O-bound Tasks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-global-interpreter-lock-gil">The Global Interpreter Lock (GIL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threading-for-i-o-bound-tasks">Threading: For I/O-bound Tasks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-simulating-i-o-with-sleep">Example: Simulating I/O with sleep</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-threads-don-t-help-with-cpu-bound-tasks">Why threads DON’T help with CPU-bound tasks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiprocessing-for-cpu-bound-tasks">Multiprocessing: For CPU-bound Tasks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-parameter-sweep-for-reaction-kinetics">Example: Parameter Sweep for Reaction Kinetics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#important-notes-about-multiprocessing">Important Notes about Multiprocessing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concurrent-futures-the-modern-interface">concurrent.futures: The Modern Interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-monte-carlo-uncertainty-quantification">Example: Monte Carlo Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-submit-and-as-completed">Using submit() and as_completed()</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling-in-parallel-code">Error Handling in Parallel Code</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joblib-parallel-computing-made-easy">Joblib: Parallel Computing Made Easy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-batch-processing-experimental-data">Example: Batch Processing Experimental Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#joblib-backends-and-threading">Joblib Backends and Threading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caching-results-with-joblib-memory">Caching Results with joblib.Memory</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-up-when-to-reach-for-bigger-tools">Scaling Up: When to Reach for Bigger Tools</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#signs-you-ve-outgrown-single-machine-parallelism">Signs You’ve Outgrown Single-Machine Parallelism</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-scalable-parallel-computing">Dask: Scalable Parallel Computing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-each-tool">When to Use Each Tool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-tools-worth-knowing">Other Tools Worth Knowing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-guidelines">Practical Guidelines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measure-before-optimizing">1. Measure Before Optimizing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chunk-your-work-appropriately">2. Chunk Your Work Appropriately</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#be-careful-with-shared-state">3. Be Careful with Shared State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-random-seeds-carefully">4. Handle Random Seeds Carefully</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By John Kitchin
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <!-- RAG Chat Widget - Self-contained version for Jupyter Book -->
+<style>
+/* RAG Widget Styles */
+:root {
+    --widget-primary-color: #1f77b4;
+    --widget-primary-hover: #1565a8;
+    --widget-bg-color: #ffffff;
+    --widget-text-color: #262730;
+    --widget-border-color: #e0e0e0;
+    --widget-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --widget-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.2);
+    --widget-border-radius: 16px;
+    --widget-button-size: 60px;
+    --widget-z-index: 9999;
+}
+
+.rag-widget {
+    position: fixed;
+    z-index: var(--widget-z-index);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    bottom: 20px;
+    right: 20px;
+}
+
+.widget-button {
+    width: var(--widget-button-size);
+    height: var(--widget-button-size);
+    border-radius: 50%;
+    background-color: var(--widget-primary-color);
+    border: none;
+    box-shadow: var(--widget-shadow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.widget-button:hover {
+    background-color: var(--widget-primary-hover);
+    box-shadow: var(--widget-shadow-lg);
+    transform: scale(1.05);
+}
+
+.widget-button:active {
+    transform: scale(0.95);
+}
+
+.widget-icon,
+.widget-close-icon {
+    width: 28px;
+    height: 28px;
+    color: white;
+    transition: all 0.3s ease;
+    position: absolute;
+}
+
+.widget-close-icon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+}
+
+.widget-button.active .widget-icon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0);
+}
+
+.widget-button.active .widget-close-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.widget-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: min(50vw, calc(100vw - 40px));
+    height: min(600px, calc(100vh - 120px));
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 120px);
+    background-color: var(--widget-bg-color);
+    border-radius: var(--widget-border-radius);
+    box-shadow: var(--widget-shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.widget-container.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+}
+
+.widget-container.hidden {
+    display: none;
+}
+
+.widget-header {
+    background-color: var(--widget-primary-color);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.widget-header-content {
+    flex: 1;
+}
+
+.widget-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.widget-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.2;
+}
+
+.widget-minimize-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.widget-minimize-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.widget-minimize-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.widget-iframe-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+#widget-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.widget-footer {
+    padding: 12px 20px;
+    background-color: var(--widget-bg-color);
+    border-top: 1px solid var(--widget-border-color);
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.widget-powered-by {
+    font-size: 12px;
+    color: #666;
+}
+
+.widget-powered-by a {
+    color: var(--widget-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.widget-powered-by a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .widget-container {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        border-radius: 0;
+    }
+
+    .widget-button {
+        width: 56px;
+        height: 56px;
+    }
+
+    .widget-icon,
+    .widget-close-icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rag-widget {
+        bottom: 16px;
+        right: 16px;
+    }
+}
+
+.widget-iframe-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--widget-primary-color);
+    border-radius: 50%;
+    animation: widget-spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.widget-iframe-container.loading::before {
+    opacity: 1;
+}
+
+@keyframes widget-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --widget-bg-color: #1e1e1e;
+        --widget-text-color: #ffffff;
+        --widget-border-color: #333333;
+    }
+
+    .widget-iframe-container {
+        background-color: #252525;
+    }
+}
+
+.widget-button:focus,
+.widget-minimize-btn:focus {
+    outline: 2px solid var(--widget-primary-color);
+    outline-offset: 2px;
+}
+
+@media print {
+    .rag-widget {
+        display: none !important;
+    }
+}
+</style>
+
+<div id="rag-widget" class="rag-widget">
+    <!-- Floating Button -->
+    <button id="widget-button" class="widget-button" aria-label="Open chat">
+        <svg class="widget-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+        </svg>
+        <svg class="widget-close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+    </button>
+
+    <!-- Chat Container -->
+    <div id="widget-container" class="widget-container hidden">
+        <!-- Header -->
+        <div class="widget-header">
+            <div class="widget-header-content">
+                <h3 class="widget-title">Secret A(i)gent</h3>
+                <p class="widget-subtitle">Ask me anything</p>
+            </div>
+            <button id="widget-minimize" class="widget-minimize-btn" aria-label="Minimize chat">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13H5v-2h14v2z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat iframe -->
+        <div class="widget-iframe-container">
+            <iframe
+                id="widget-iframe"
+                src=""
+                frameborder="0"
+                allow="clipboard-write"
+                title="RAG Chat Assistant">
+            </iframe>
+        </div>
+
+        <!-- Footer -->
+        <div class="widget-footer">
+            <span class="widget-powered-by">
+                Powered by <a href="https://github.com/jkitchin/streamlit-rag-widget" target="_blank">a Secret A(i)gent</a>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * RAG Widget Configuration and Script
+ */
+(function() {
+    'use strict';
+
+    // Configuration
+    const config = {
+        streamlitUrl: 'https://kitchin-services.cheme.cmu.edu',
+        position: 'bottom-right',
+        width: '50vw',
+        height: '600px',
+        primaryColor: '#1f77b4',
+        title: 'Secret A(i)gent',
+        subtitle: 'Ask me anything',
+        showPoweredBy: true,
+        autoOpen: false,
+        openDelay: 0,
+        zIndex: 9999,
+    };
+
+    // Widget state
+    let isOpen = false;
+
+    // Get DOM elements
+    const widget = document.getElementById('rag-widget');
+    const button = document.getElementById('widget-button');
+    const container = document.getElementById('widget-container');
+    const iframe = document.getElementById('widget-iframe');
+    const minimizeBtn = document.getElementById('widget-minimize');
+    const iframeContainer = document.querySelector('.widget-iframe-container');
+
+    if (!widget || !button || !container || !iframe) {
+        console.error('RAG Widget: Required elements not found');
+        return;
+    }
+
+    /**
+     * Initialize widget
+     */
+    function init() {
+        // Set iframe URL
+        iframe.src = config.streamlitUrl;
+
+        // Set custom colors
+        if (config.primaryColor) {
+            document.documentElement.style.setProperty('--widget-primary-color', config.primaryColor);
+        }
+
+        // Set title and subtitle
+        const title = document.querySelector('.widget-title');
+        const subtitle = document.querySelector('.widget-subtitle');
+        if (title && config.title) {
+            title.textContent = config.title;
+        }
+        if (subtitle && config.subtitle) {
+            subtitle.textContent = config.subtitle;
+        }
+
+        // Hide powered by if configured
+        if (!config.showPoweredBy) {
+            const footer = document.querySelector('.widget-footer');
+            if (footer) {
+                footer.style.display = 'none';
+            }
+        }
+
+        // Add event listeners
+        button.addEventListener('click', toggleWidget);
+        minimizeBtn.addEventListener('click', closeWidget);
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && isOpen) {
+                closeWidget();
+            }
+        });
+
+        // Auto-open if configured
+        if (config.autoOpen) {
+            setTimeout(openWidget, config.openDelay);
+        }
+
+        console.log('RAG Widget initialized');
+    }
+
+    /**
+     * Toggle widget open/closed
+     */
+    function toggleWidget() {
+        if (isOpen) {
+            closeWidget();
+        } else {
+            openWidget();
+        }
+    }
+
+    /**
+     * Open widget
+     */
+    function openWidget() {
+        isOpen = true;
+        button.classList.add('active');
+        container.classList.remove('hidden');
+
+        setTimeout(function() {
+            container.classList.add('visible');
+        }, 10);
+
+        setTimeout(function() {
+            iframe.focus();
+        }, 300);
+    }
+
+    /**
+     * Close widget
+     */
+    function closeWidget() {
+        isOpen = false;
+        button.classList.remove('active');
+        container.classList.remove('visible');
+
+        setTimeout(function() {
+            container.classList.add('hidden');
+        }, 300);
+    }
+
+    /**
+     * Public API
+     */
+    window.RAGWidget = {
+        open: openWidget,
+        close: closeWidget,
+        toggle: toggleWidget,
+        isOpen: function() { return isOpen; }
+    };
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
+</script>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
