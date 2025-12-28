@@ -41,6 +41,7 @@ import jax
 from jax import jit
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
@@ -959,9 +960,8 @@ class KAN(BaseEstimator, RegressorMixin):
     def plot_network(self, figsize=None, edge_samples=50):
         """Visualize the KAN as a network graph with learned activations on edges.
 
-        This creates a visualization similar to the original KAN paper, showing
-        the network structure with the learned activation function shapes drawn
-        on each edge.
+        This creates a visualization using NetworkX, showing the network structure
+        with the learned activation function shapes drawn in boxes on each edge.
 
         Args:
             figsize: Figure size tuple (width, height). If None, auto-computed.
@@ -985,27 +985,17 @@ class KAN(BaseEstimator, RegressorMixin):
         if figsize is None:
             figsize = (3 * n_layers, 2 * max_nodes)
 
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.set_aspect("equal")
-        ax.axis("off")
+        # Create directed graph
+        G = nx.DiGraph()
 
-        # Node positions
-        node_positions = {}  # (layer, node_idx) -> (x, y)
-        layer_spacing = 1.0
-        node_spacing = 0.5
-
+        # Add nodes with layer attribute
         for layer_idx, n_nodes in enumerate(layer_sizes):
-            x = layer_idx * layer_spacing
-            # Center nodes vertically
-            y_offset = (max_nodes - n_nodes) * node_spacing / 2
             for node_idx in range(n_nodes):
-                y = y_offset + node_idx * node_spacing
-                node_positions[(layer_idx, node_idx)] = (x, y)
+                node_id = f"L{layer_idx}_N{node_idx}"
+                G.add_node(node_id, layer=layer_idx, node_idx=node_idx)
 
-        # Precompute activation curves for all edges
+        # Precompute activation curves
         x_plot = np.linspace(self.grid_range[0], self.grid_range[1], edge_samples)
-
-        # Compute B-spline basis once
         n_knots = self.grid_size + 1 + 2 * self.spline_order
         grid = np.linspace(
             self.grid_range[0]
@@ -1016,7 +1006,8 @@ class KAN(BaseEstimator, RegressorMixin):
         )
         basis = np.asarray(b_spline_basis(jnp.array(x_plot), jnp.array(grid), k=self.spline_order))
 
-        # Draw edges with activation curves
+        # Add edges with activation data
+        edge_activations = {}
         for layer_idx, layer_key in enumerate(layer_keys):
             layer_params = params[layer_key]
             spline_weight = np.asarray(layer_params["spline_weight"])
@@ -1027,9 +1018,8 @@ class KAN(BaseEstimator, RegressorMixin):
 
             for i in range(in_features):
                 for j in range(out_features):
-                    # Get node positions
-                    x1, y1 = node_positions[(layer_idx, i)]
-                    x2, y2 = node_positions[(layer_idx + 1, j)]
+                    src = f"L{layer_idx}_N{i}"
+                    dst = f"L{layer_idx + 1}_N{j}"
 
                     # Compute activation curve
                     spline_out = np.dot(basis, spline_weight[i, j, :])
@@ -1046,53 +1036,105 @@ class KAN(BaseEstimator, RegressorMixin):
                     else:
                         activation_norm = np.zeros_like(activation)
 
-                    # Draw edge as activation curve
-                    # Map x_plot to edge position
-                    t = np.linspace(0, 1, edge_samples)
-                    edge_x = x1 + t * (x2 - x1)
-                    # Perpendicular offset for curve
-                    dx, dy = x2 - x1, y2 - y1
-                    length = np.sqrt(dx**2 + dy**2)
-                    if length > 1e-6:
-                        nx, ny = -dy / length, dx / length  # Normal vector
-                    else:
-                        nx, ny = 0, 1
-
-                    # Scale activation curve perpendicular to edge
-                    curve_scale = 0.15 * layer_spacing
-                    curve_y = (activation_norm - 0.5) * curve_scale
-
-                    edge_x_curved = edge_x + curve_y * nx
-                    edge_y = y1 + t * (y2 - y1) + curve_y * ny
-
-                    # Color based on edge strength
+                    # Calculate edge strength
                     strength = np.abs(spline_scale[i, j]) + np.abs(base_weight[i, j])
-                    alpha = min(0.3 + 0.7 * strength / (strength + 0.5), 1.0)
+                    alpha = min(0.2 + 0.6 * strength / (strength + 0.5), 0.8)
 
-                    ax.plot(edge_x_curved, edge_y, "b-", linewidth=1.5, alpha=alpha)
+                    G.add_edge(src, dst)
+                    edge_activations[(src, dst)] = {
+                        "activation": activation_norm,
+                        "strength": strength,
+                        "alpha": alpha,
+                    }
 
-        # Draw nodes
-        node_radius = 0.08
-        for (layer_idx, node_idx), (x, y) in node_positions.items():
-            if layer_idx == 0:
-                color = "lightgreen"  # Input layer
-                label = f"$x_{{{node_idx}}}$" if layer_sizes[0] <= 5 else ""
-            elif layer_idx == n_layers - 1:
-                color = "lightcoral"  # Output layer
+        # Create custom layout (multipartite with vertical centering)
+        pos = {}
+        layer_spacing = 1.0
+        node_spacing = 0.5
+
+        for layer_idx, n_nodes in enumerate(layer_sizes):
+            x = layer_idx * layer_spacing
+            y_offset = (max_nodes - n_nodes) * node_spacing / 2
+            for node_idx in range(n_nodes):
+                node_id = f"L{layer_idx}_N{node_idx}"
+                y = y_offset + node_idx * node_spacing
+                pos[node_id] = (x, y)
+
+        # Create figure
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.axis("off")
+
+        # Draw edges with activation boxes
+        box_width = 0.12
+        box_height = 0.08
+
+        for (src, dst), data in edge_activations.items():
+            x1, y1 = pos[src]
+            x2, y2 = pos[dst]
+
+            # Midpoint for activation box
+            mid_x = (x1 + x2) / 2
+            mid_y = (y1 + y2) / 2
+
+            alpha = data["alpha"]
+            activation_norm = data["activation"]
+
+            # Draw box around activation
+            box_rect = plt.Rectangle(
+                (mid_x - box_width / 2, mid_y - box_height / 2),
+                box_width,
+                box_height,
+                linewidth=0.5,
+                edgecolor="blue",
+                facecolor="white",
+                alpha=0.9,
+                zorder=5,
+            )
+            ax.add_patch(box_rect)
+
+            # Draw activation curve inside box
+            t_plot = np.linspace(0, 1, edge_samples)
+            plot_x = mid_x - box_width / 2 + t_plot * box_width
+            plot_y = mid_y + (activation_norm - 0.5) * box_height * 0.8
+
+            ax.plot(plot_x, plot_y, "b-", linewidth=0.8, alpha=min(alpha + 0.4, 1.0), zorder=6)
+
+            # Draw edges connecting nodes to box
+            box_left_x = mid_x - box_width / 2
+            box_right_x = mid_x + box_width / 2
+            ax.plot([x1, box_left_x], [y1, mid_y], "b-", linewidth=0.5, alpha=alpha, zorder=4)
+            ax.plot([box_right_x, x2], [mid_y, y2], "b-", linewidth=0.5, alpha=alpha, zorder=4)
+
+        # Draw nodes using networkx
+        node_colors = []
+        node_labels = {}
+
+        for node_id in G.nodes():
+            layer = G.nodes[node_id]["layer"]
+            node_idx = G.nodes[node_id]["node_idx"]
+
+            if layer == 0:
+                node_colors.append("lightgreen")
+                if layer_sizes[0] <= 5:
+                    node_labels[node_id] = f"$x_{{{node_idx}}}$"
+            elif layer == n_layers - 1:
+                node_colors.append("lightcoral")
                 if self.n_ensemble > 1:
                     out_idx = node_idx // self.n_ensemble
                     ens_idx = node_idx % self.n_ensemble
-                    label = f"$y_{{{out_idx},{ens_idx}}}$" if layer_sizes[-1] <= 8 else ""
+                    if layer_sizes[-1] <= 8:
+                        node_labels[node_id] = f"$y_{{{out_idx},{ens_idx}}}$"
                 else:
-                    label = f"$y_{{{node_idx}}}$" if layer_sizes[-1] <= 5 else ""
+                    if layer_sizes[-1] <= 5:
+                        node_labels[node_id] = f"$y_{{{node_idx}}}$"
             else:
-                color = "lightblue"  # Hidden layer
-                label = ""
+                node_colors.append("lightblue")
 
-            circle = plt.Circle((x, y), node_radius, color=color, ec="black", zorder=10)
-            ax.add_patch(circle)
-            if label:
-                ax.text(x, y, label, ha="center", va="center", fontsize=9, zorder=11)
+        nx.draw_networkx_nodes(
+            G, pos, node_color=node_colors, node_size=500, edgecolors="black", linewidths=1.5, ax=ax
+        )
+
+        nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=9, ax=ax)
 
         # Add layer labels
         for layer_idx, n_nodes in enumerate(layer_sizes):
