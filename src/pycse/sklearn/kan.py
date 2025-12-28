@@ -264,16 +264,15 @@ class KAN(BaseEstimator, RegressorMixin):
     - Learnable spline activations for each edge
     - More interpretable than standard MLPs
     - Can represent complex functions with fewer parameters
+    - Supports multi-output regression
     - Includes uncertainty quantification through ensemble output
     - Post-hoc calibration on validation set
 
-    The last element of `layers` determines the ensemble size for UQ.
-    For example, layers=(5, 10, 32) creates:
-    - Input: 5 features
-    - Hidden: 10 KAN neurons
-    - Output: 32 ensemble members (for uncertainty quantification)
-
-    For single-output regression without UQ, use layers=(n_features, ..., 1).
+    Architecture is specified via `layers` for network structure and
+    `n_ensemble` for uncertainty quantification:
+    - layers=(5, 10, 2) with n_ensemble=1: 5 inputs → 10 hidden → 2 outputs (no UQ)
+    - layers=(5, 10, 1) with n_ensemble=32: 5 inputs → 10 hidden → 1 output with 32 ensemble members (UQ)
+    - layers=(5, 10, 3) with n_ensemble=10: 5 inputs → 10 hidden → 3 outputs, each with 10 ensemble members
     """
 
     def __init__(
@@ -290,13 +289,14 @@ class KAN(BaseEstimator, RegressorMixin):
         l1_activation=0.0,
         entropy_reg=0.0,
         base_activation="silu",
+        n_ensemble=1,
     ):
         """Initialize a KAN model.
 
         Args:
             layers: Tuple of integers for neurons in each layer.
                    layers[0] is input dimension.
-                   layers[-1] is output dimension (or ensemble size for UQ).
+                   layers[-1] is output dimension (number of targets).
             grid_size: Number of grid intervals for B-splines (default: 5).
                       More intervals = more expressive but more parameters.
             spline_order: Order of B-spline (default: 3 for cubic).
@@ -319,6 +319,8 @@ class KAN(BaseEstimator, RegressorMixin):
                         (closer to step functions), improving interpretability.
             base_activation: Base residual activation ('silu' or 'linear').
                            Use 'linear' with spline_order=1 for exact MIP export.
+            n_ensemble: Number of ensemble members per output for UQ (default: 1).
+                       Set > 1 to enable uncertainty quantification.
         """
         self.layers = layers
         self.grid_size = grid_size
@@ -333,12 +335,16 @@ class KAN(BaseEstimator, RegressorMixin):
         self.l1_activation = l1_activation
         self.entropy_reg = entropy_reg
         self.base_activation = base_activation
+        self.n_ensemble = n_ensemble
         self.calibration_factor = 1.0
-        self.n_ensemble = layers[-1]
+        self.n_outputs = layers[-1]
+
+        # Internal network outputs n_outputs * n_ensemble
+        internal_layers = layers[:-1] + (layers[-1] * n_ensemble,)
 
         # Create the network
         self.nn = _KANN(
-            layers=layers,
+            layers=internal_layers,
             grid_size=grid_size,
             spline_order=spline_order,
             grid_range=grid_range,
@@ -358,19 +364,25 @@ class KAN(BaseEstimator, RegressorMixin):
         return X
 
     def _normalize_y(self, y):
-        """Normalize target values."""
+        """Normalize target values (handles multi-output)."""
         if self.y_mean_ is not None and self.y_std_ is not None:
             return (y - self.y_mean_) / (self.y_std_ + 1e-8)
         return y
 
     def _denormalize_y(self, y):
-        """Denormalize predictions."""
+        """Denormalize predictions (handles multi-output and ensemble)."""
         if self.y_mean_ is not None and self.y_std_ is not None:
+            # Handle 3D case: (batch, n_outputs, n_ensemble)
+            if y.ndim == 3:
+                # Reshape stats to (1, n_outputs, 1) for broadcasting
+                y_std = self.y_std_.reshape(1, -1, 1)
+                y_mean = self.y_mean_.reshape(1, -1, 1)
+                return y * y_std + y_mean
             return y * self.y_std_ + self.y_mean_
         return y
 
     def _denormalize_std(self, std):
-        """Denormalize standard deviations."""
+        """Denormalize standard deviations (handles multi-output)."""
         if self.y_std_ is not None:
             return std * self.y_std_
         return std
@@ -380,7 +392,7 @@ class KAN(BaseEstimator, RegressorMixin):
 
         Args:
             X: Training features, shape (n_samples, n_features).
-            y: Training targets, shape (n_samples,).
+            y: Training targets, shape (n_samples,) or (n_samples, n_outputs).
             val_X: Optional validation features for post-hoc calibration.
             val_y: Optional validation targets for post-hoc calibration.
             **kwargs: Additional arguments passed to the optimizer:
@@ -392,13 +404,23 @@ class KAN(BaseEstimator, RegressorMixin):
             self: Fitted model.
         """
         X = jnp.atleast_2d(X)
-        y = jnp.asarray(y).ravel()
+        y = jnp.asarray(y)
 
-        # Store normalization parameters
+        # Handle multi-output targets
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+
+        if y.shape[1] != self.n_outputs:
+            raise ValueError(
+                f"Target has {y.shape[1]} outputs but model expects {self.n_outputs}. "
+                f"Set layers[-1]={y.shape[1]} to match."
+            )
+
+        # Store normalization parameters (per output)
         self.X_mean_ = jnp.mean(X, axis=0)
         self.X_std_ = jnp.std(X, axis=0)
-        self.y_mean_ = jnp.mean(y)
-        self.y_std_ = jnp.std(y)
+        self.y_mean_ = jnp.mean(y, axis=0)  # Shape: (n_outputs,)
+        self.y_std_ = jnp.std(y, axis=0)    # Shape: (n_outputs,)
 
         # Normalize data
         X_norm = self._normalize_X(X)
@@ -411,17 +433,22 @@ class KAN(BaseEstimator, RegressorMixin):
         l1_spline = self.l1_spline
         l1_activation = self.l1_activation
         entropy_reg = self.entropy_reg
+        n_outputs = self.n_outputs
+        n_ensemble = self.n_ensemble
+        min_sigma = self.min_sigma
 
         @jit
         def objective(pars):
             """Loss function with optional regularization."""
-            pY = self.nn.apply(pars, X_norm)
+            pY_raw = self.nn.apply(pars, X_norm)
+            # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
+            pY = pY_raw.reshape(-1, n_outputs, n_ensemble)
 
             # Compute main loss
-            if self.n_ensemble > 1:
-                # Ensemble output for UQ
-                py = pY.mean(axis=1)
-                sigma = jnp.sqrt(pY.var(axis=1) + self.min_sigma**2)
+            if n_ensemble > 1:
+                # Ensemble output for UQ: mean over ensemble dimension
+                py = pY.mean(axis=2)  # (batch, n_outputs)
+                sigma = jnp.sqrt(pY.var(axis=2) + min_sigma**2)  # (batch, n_outputs)
                 errs = y_norm - py
 
                 if self.loss_type == "crps":
@@ -435,8 +462,8 @@ class KAN(BaseEstimator, RegressorMixin):
                     # MSE loss
                     loss = jnp.mean(errs**2)
             else:
-                # Single output
-                py = pY.ravel()
+                # No ensemble: squeeze ensemble dimension
+                py = pY.squeeze(axis=2)  # (batch, n_outputs)
                 errs = y_norm - py
                 loss = jnp.mean(errs**2)
 
@@ -493,23 +520,28 @@ class KAN(BaseEstimator, RegressorMixin):
             y: Validation targets.
         """
         if self.n_ensemble <= 1:
-            # No calibration for single output
+            # No calibration without ensemble
             return
 
         X = jnp.atleast_2d(X)
-        y = jnp.asarray(y).ravel()
+        y = jnp.asarray(y)
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
 
         X_norm = self._normalize_X(X)
-        pY = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn.apply(self.optpars, X_norm)
+
+        # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
+        pY = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
 
         # Get predictions in normalized space
-        py = pY.mean(axis=1)
-        sigma = jnp.sqrt(pY.var(axis=1) + self.min_sigma**2)
+        py = pY.mean(axis=2)  # (batch, n_outputs)
+        sigma = jnp.sqrt(pY.var(axis=2) + self.min_sigma**2)
 
         y_norm = self._normalize_y(y)
         errs = y_norm - py
 
-        # Calibration factor
+        # Calibration factor (averaged over all outputs)
         mean_sigma = jnp.mean(sigma)
         if mean_sigma < 1e-8:
             print("\n⚠ WARNING: Ensemble has collapsed!")
@@ -539,17 +571,22 @@ class KAN(BaseEstimator, RegressorMixin):
             return_std: If True, return (predictions, uncertainties).
 
         Returns:
-            predictions: Mean predictions, shape (n_samples,).
-            uncertainties: Standard deviation (if return_std=True).
+            predictions: Mean predictions.
+                - Shape (n_samples,) for single output (n_outputs=1)
+                - Shape (n_samples, n_outputs) for multi-output
+            uncertainties: Standard deviation per output (if return_std=True).
         """
         X = jnp.atleast_2d(X)
         X_norm = self._normalize_X(X)
-        pY = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn.apply(self.optpars, X_norm)
+
+        # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
+        pY = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
 
         if self.n_ensemble > 1:
-            # Ensemble predictions
-            mean_pred_norm = pY.mean(axis=1)
-            std_pred_norm = jnp.sqrt(pY.var(axis=1) + self.min_sigma**2)
+            # Ensemble predictions: mean over ensemble
+            mean_pred_norm = pY.mean(axis=2)  # (batch, n_outputs)
+            std_pred_norm = jnp.sqrt(pY.var(axis=2) + self.min_sigma**2)
 
             # Denormalize
             mean_pred = self._denormalize_y(mean_pred_norm)
@@ -559,16 +596,25 @@ class KAN(BaseEstimator, RegressorMixin):
             if self.calibration_factor != 1.0:
                 std_pred = std_pred * self.calibration_factor
 
+            # Squeeze if single output
+            if self.n_outputs == 1:
+                mean_pred = mean_pred.squeeze(axis=1)
+                std_pred = std_pred.squeeze(axis=1)
+
             if return_std:
                 return mean_pred, std_pred
             return mean_pred
         else:
-            # Single output
-            pred_norm = pY.ravel()
+            # No ensemble: squeeze ensemble dimension
+            pred_norm = pY.squeeze(axis=2)  # (batch, n_outputs)
             pred = self._denormalize_y(pred_norm)
 
+            # Squeeze if single output
+            if self.n_outputs == 1:
+                pred = pred.squeeze(axis=1)
+
             if return_std:
-                # No uncertainty for single output
+                # No uncertainty without ensemble
                 return pred, jnp.zeros_like(pred)
             return pred
 
@@ -579,14 +625,25 @@ class KAN(BaseEstimator, RegressorMixin):
             X: Input features, shape (n_samples, n_features).
 
         Returns:
-            ensemble_predictions: Full ensemble, shape (n_samples, n_ensemble).
+            ensemble_predictions: Full ensemble.
+                - Shape (n_samples, n_ensemble) for single output
+                - Shape (n_samples, n_outputs, n_ensemble) for multi-output
         """
         X = jnp.atleast_2d(X)
         X_norm = self._normalize_X(X)
-        pY_norm = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn.apply(self.optpars, X_norm)
 
-        # Denormalize each ensemble member
-        return self._denormalize_y(pY_norm)
+        # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
+        pY_norm = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
+
+        # Denormalize each output
+        pY = self._denormalize_y(pY_norm)
+
+        # Squeeze if single output
+        if self.n_outputs == 1:
+            pY = pY.squeeze(axis=1)  # (batch, n_ensemble)
+
+        return pY
 
     def report(self):
         """Print optimization diagnostics."""
@@ -894,9 +951,12 @@ class KAN(BaseEstimator, RegressorMixin):
         This method creates a Pyomo model representing the trained KAN,
         enabling global optimization over the neural network using MIP solvers.
 
-        IMPORTANT: Only works with spline_order=1 (linear splines), which
-        produces piecewise linear activation functions that can be exactly
-        represented as mixed-integer linear constraints.
+        Requirements for MIP export:
+        - spline_order=1 (linear splines for piecewise linear activations)
+        - base_activation='linear' (SiLU is not piecewise linear)
+        - n_ensemble=1 (ensemble models cannot be exported to MIP)
+
+        Supports multi-output models - each output becomes model.y[i].
 
         Args:
             input_bounds: List of (lower, upper) tuples for each input dimension.
@@ -905,26 +965,33 @@ class KAN(BaseEstimator, RegressorMixin):
         Returns:
             pyomo.ConcreteModel: A Pyomo model with:
                 - model.x[i]: Input variables
-                - model.y: Output variable (scalar)
-                - model.obj: Placeholder objective (minimize y by default)
+                - model.y[j]: Output variables (one per target)
+                - model.obj: Objective (minimizes y[0] by default, user can modify)
 
         Raises:
-            ValueError: If spline_order != 1 (only linear splines are MIP-representable)
+            ValueError: If model is not MIP-compatible (wrong spline_order,
+                       base_activation, or n_ensemble)
             ImportError: If pyomo is not installed
 
         Example:
-            >>> # Train KAN with linear splines
-            >>> kan = KAN(layers=(1, 4, 1), spline_order=1, grid_size=5)
+            >>> # Train MIP-compatible KAN
+            >>> kan = KAN(layers=(2, 4, 1), spline_order=1, grid_size=5,
+            ...           base_activation='linear', n_ensemble=1)
             >>> kan.fit(X_train, y_train)
             >>>
             >>> # Export to Pyomo
-            >>> model = kan.to_pyomo(input_bounds=[(0, 1)])
+            >>> model = kan.to_pyomo(input_bounds=[(0, 1), (0, 1)])
             >>>
             >>> # Solve for minimum
             >>> from pyomo.environ import SolverFactory
-            >>> solver = SolverFactory('glpk')  # or 'gurobi', 'cplex'
+            >>> solver = SolverFactory('glpk')
             >>> result = solver.solve(model)
-            >>> print(f"Optimal x: {model.x[0].value}, y: {model.y.value}")
+            >>> print(f"Optimal x: {[model.x[i].value for i in model.x]}")
+            >>> print(f"Optimal y: {model.y[0].value}")
+            >>>
+            >>> # For multi-output, optimize a different output or combination:
+            >>> model.obj.deactivate()
+            >>> model.obj2 = pyo.Objective(expr=model.y[1], sense=pyo.maximize)
         """
         if self.spline_order != 1:
             raise ValueError(
@@ -942,6 +1009,14 @@ class KAN(BaseEstimator, RegressorMixin):
                 f"for MIP-compatible models."
             )
 
+        if self.n_ensemble != 1:
+            raise ValueError(
+                f"to_pyomo() requires n_ensemble=1 for MIP export. "
+                f"Current n_ensemble={self.n_ensemble}. "
+                f"Ensemble models cannot be directly exported to MIP. "
+                f"Train with n_ensemble=1 for MIP-compatible models."
+            )
+
         if not hasattr(self, "optpars"):
             raise ValueError("Model must be fitted before exporting to Pyomo.")
 
@@ -954,14 +1029,7 @@ class KAN(BaseEstimator, RegressorMixin):
 
         # Get network dimensions
         n_inputs = self.layers[0]
-        n_outputs = self.layers[-1]
-
-        if n_outputs != 1:
-            raise ValueError(
-                f"to_pyomo() currently only supports single output (n_outputs=1). "
-                f"Got layers[-1]={n_outputs}. For UQ models with ensemble output, "
-                f"train a separate model with layers=(..., 1)."
-            )
+        n_outputs = self.n_outputs
 
         # Set default input bounds
         if input_bounds is None:
@@ -1120,18 +1188,22 @@ class KAN(BaseEstimator, RegressorMixin):
                     pyo.Constraint(expr=neuron_var == sum(edge_contributions))
                 )
 
-        # Output variable (denormalized)
-        model.y = pyo.Var(within=pyo.Reals)
+        # Output variables (denormalized) - one per output
+        model.y = pyo.Var(range(n_outputs), within=pyo.Reals)
 
-        # Final layer output
-        final_output = layer_outputs[len(layer_keys) - 1][0]
+        # Denormalization constraints for each output
+        model.denorm_constraints = pyo.ConstraintList()
+        for j in range(n_outputs):
+            final_output = layer_outputs[len(layer_keys) - 1][j]
 
-        # Denormalization constraint: y = y_norm * y_std + y_mean
-        y_mean = float(self.y_mean_) if self.y_mean_ is not None else 0.0
-        y_std = float(self.y_std_) if self.y_std_ is not None else 1.0
-        model.denorm = pyo.Constraint(expr=model.y == final_output * y_std + y_mean)
+            # Denormalization: y = y_norm * y_std + y_mean
+            y_mean = float(self.y_mean_[j]) if self.y_mean_ is not None else 0.0
+            y_std = float(self.y_std_[j]) if self.y_std_ is not None else 1.0
+            model.denorm_constraints.add(
+                model.y[j] == final_output * y_std + y_mean
+            )
 
-        # Default objective: minimize output
-        model.obj = pyo.Objective(expr=model.y, sense=pyo.minimize)
+        # Default objective: minimize first output (user can modify)
+        model.obj = pyo.Objective(expr=model.y[0], sense=pyo.minimize)
 
         return model

@@ -56,24 +56,27 @@ class TestKANBasicFunctionality:
         assert model.optimizer == "bfgs"
         assert model.loss_type == "mse"
         assert model.n_ensemble == 1
+        assert model.n_outputs == 1
 
     def test_initialization_custom(self):
         """Test KAN initialization with custom parameters."""
         model = KAN(
-            layers=(2, 10, 16),
+            layers=(2, 10, 1),
             grid_size=8,
             spline_order=2,
             optimizer="adam",
             seed=123,
             loss_type="crps",
+            n_ensemble=16,
         )
 
-        assert model.layers == (2, 10, 16)
+        assert model.layers == (2, 10, 1)
         assert model.grid_size == 8
         assert model.spline_order == 2
         assert model.optimizer == "adam"
         assert model.loss_type == "crps"
         assert model.n_ensemble == 16
+        assert model.n_outputs == 1
 
     def test_fit_predict_basic(self, simple_linear_data):
         """Test basic fit and predict cycle."""
@@ -94,8 +97,8 @@ class TestKANBasicFunctionality:
         """Test prediction with uncertainty estimates (ensemble output)."""
         X, y = simple_linear_data
 
-        # Use ensemble output for UQ
-        model = KAN(layers=(1, 5, 16), grid_size=3)
+        # Use n_ensemble > 1 for UQ
+        model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         y_pred, y_std = model.predict(X, return_std=True)
@@ -110,7 +113,7 @@ class TestKANBasicFunctionality:
         """Test ensemble prediction."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 5, 16), grid_size=3)
+        model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         ensemble_preds = model.predict_ensemble(X)
@@ -179,8 +182,8 @@ class TestKANCalibration:
             X, y, test_size=0.2, random_state=42
         )
 
-        # Use ensemble output for UQ
-        model = KAN(layers=(1, 5, 16), grid_size=3)
+        # Use n_ensemble > 1 for UQ
+        model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
 
         assert hasattr(model, "calibration_factor")
@@ -191,7 +194,7 @@ class TestKANCalibration:
         """Test that no calibration when validation data not provided."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 5, 16), grid_size=3)
+        model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         assert model.calibration_factor == 1.0
@@ -207,7 +210,7 @@ class TestKANUncertaintyMetrics:
             X, y, test_size=0.2, random_state=42
         )
 
-        model = KAN(layers=(1, 5, 16), grid_size=3)
+        model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
 
         metrics = model.uncertainty_metrics(X_val, y_val)
@@ -275,7 +278,7 @@ class TestKANReportAndVisualization:
         """Test plotting with ensemble distribution."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 3, 16), grid_size=3)
+        model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         import matplotlib.pyplot as plt
@@ -370,13 +373,14 @@ class TestKANSklearnCompatibility:
 
     def test_attributes_exist(self):
         """Test that key attributes exist after initialization."""
-        model = KAN(layers=(1, 5, 16), grid_size=5, seed=42)
+        model = KAN(layers=(1, 5, 1), grid_size=5, seed=42, n_ensemble=16)
 
         assert hasattr(model, "layers")
         assert hasattr(model, "grid_size")
         assert hasattr(model, "spline_order")
         assert hasattr(model, "optimizer")
         assert hasattr(model, "n_ensemble")
+        assert hasattr(model, "n_outputs")
         assert hasattr(model, "calibration_factor")
 
 
@@ -399,7 +403,7 @@ class TestKANCallInterface:
         """Test calling with return_std=True."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 3, 16), grid_size=3)
+        model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         y_pred, y_std = model(X, return_std=True)
@@ -411,7 +415,7 @@ class TestKANCallInterface:
         """Test calling with distribution=True."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 3, 16), grid_size=3)
+        model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
         model.fit(X, y, maxiter=100)
 
         ensemble = model(X, distribution=True)
@@ -460,7 +464,7 @@ class TestKANCRPSLoss:
         """Test that CRPS loss training works."""
         X, y = simple_linear_data
 
-        model = KAN(layers=(1, 5, 16), grid_size=3, loss_type="crps")
+        model = KAN(layers=(1, 5, 1), grid_size=3, loss_type="crps", n_ensemble=16)
         model.fit(X, y, maxiter=200)
 
         y_pred, y_std = model.predict(X, return_std=True)
@@ -468,6 +472,88 @@ class TestKANCRPSLoss:
         assert np.all(np.isfinite(y_pred))
         assert np.all(np.isfinite(y_std))
         assert np.all(y_std > 0)
+
+
+class TestKANMultiOutput:
+    """Test multi-output regression support."""
+
+    def test_multi_output_basic(self):
+        """Test basic multi-output regression."""
+        np.random.seed(42)
+        X = np.random.rand(100, 2)
+        y = np.column_stack([
+            np.sin(2 * np.pi * X[:, 0]),
+            np.cos(2 * np.pi * X[:, 1])
+        ])
+
+        model = KAN(layers=(2, 5, 2), grid_size=5)
+        model.fit(X, y, maxiter=200)
+
+        y_pred = model.predict(X)
+
+        assert y_pred.shape == (100, 2)
+        assert np.all(np.isfinite(y_pred))
+
+    def test_multi_output_with_uq(self):
+        """Test multi-output with uncertainty quantification."""
+        np.random.seed(42)
+        X = np.random.rand(100, 2)
+        y = np.column_stack([X[:, 0] ** 2, X[:, 1] ** 2])
+
+        model = KAN(layers=(2, 4, 2), grid_size=4, n_ensemble=8)
+        model.fit(X, y, maxiter=200)
+
+        mean, std = model.predict(X, return_std=True)
+
+        assert mean.shape == (100, 2)
+        assert std.shape == (100, 2)
+        assert np.all(std >= 0)
+
+    def test_multi_output_ensemble(self):
+        """Test multi-output ensemble predictions."""
+        np.random.seed(42)
+        X = np.random.rand(50, 2)
+        y = np.column_stack([X[:, 0], X[:, 1]])
+
+        model = KAN(layers=(2, 3, 2), grid_size=3, n_ensemble=10)
+        model.fit(X, y, maxiter=100)
+
+        ensemble = model.predict_ensemble(X)
+
+        assert ensemble.shape == (50, 2, 10)
+        assert np.all(np.isfinite(ensemble))
+
+    def test_multi_output_mip_export(self):
+        """Test MIP export with multi-output."""
+        np.random.seed(42)
+        X = np.random.rand(50, 2)
+        y = np.column_stack([X[:, 0] + X[:, 1], X[:, 0] - X[:, 1]])
+
+        model = KAN(
+            layers=(2, 3, 2),
+            spline_order=1,
+            grid_size=4,
+            base_activation='linear',
+            n_ensemble=1
+        )
+        model.fit(X, y, maxiter=200)
+
+        # Export to Pyomo
+        model_pyomo = model.to_pyomo(input_bounds=[(0, 1), (0, 1)])
+
+        # Check output variables exist
+        assert len(list(model_pyomo.y)) == 2
+
+    def test_multi_output_error_mismatch(self):
+        """Test error when target dimensions don't match."""
+        np.random.seed(42)
+        X = np.random.rand(50, 2)
+        y = np.column_stack([X[:, 0], X[:, 1], X[:, 0] + X[:, 1]])  # 3 outputs
+
+        model = KAN(layers=(2, 3, 2))  # Expects 2 outputs
+
+        with pytest.raises(ValueError, match="outputs"):
+            model.fit(X, y, maxiter=100)
 
 
 if __name__ == "__main__":
