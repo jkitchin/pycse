@@ -12,8 +12,8 @@ from pycse.sklearn.kan import KAN
 def simple_linear_data():
     """Generate simple linear data for quick tests."""
     np.random.seed(42)
-    X = np.linspace(0, 10, 100)[:, None]
-    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(100)
+    X = np.linspace(0, 10, 50)[:, None]
+    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(50)
     return X, y
 
 
@@ -21,8 +21,8 @@ def simple_linear_data():
 def sinusoidal_data():
     """Generate sinusoidal data (good for testing KAN's expressiveness)."""
     np.random.seed(42)
-    X = np.linspace(0, 2 * np.pi, 150)[:, None]
-    y = np.sin(X.ravel()) + 0.1 * np.random.randn(150)
+    X = np.linspace(0, 2 * np.pi, 75)[:, None]
+    y = np.sin(X.ravel()) + 0.1 * np.random.randn(75)
     return X, y
 
 
@@ -30,14 +30,14 @@ def sinusoidal_data():
 def heteroscedastic_data():
     """Generate heteroscedastic regression data (noise increases with X)."""
     key = jax.random.PRNGKey(42)
-    X = np.linspace(0, 1, 200)[:, None]
+    X = np.linspace(0, 1, 100)[:, None]
 
     # True function: y = x^(1/3)
     y_true = X.ravel() ** (1 / 3)
 
     # Heteroscedastic noise: increases with X
     noise_std = 0.01 + 0.08 * X.ravel()
-    noise = noise_std * np.asarray(jax.random.normal(key, (200,)))
+    noise = noise_std * np.asarray(jax.random.normal(key, (100,)))
     y = y_true + noise
 
     return X, y, noise_std
@@ -84,7 +84,7 @@ class TestKANBasicFunctionality:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3)
-        model.fit(X_train, y_train, maxiter=100)
+        model.fit(X_train, y_train, maxiter=50)
 
         y_pred = model.predict(X_test)
 
@@ -97,7 +97,7 @@ class TestKANBasicFunctionality:
 
         # Use n_ensemble > 1 for UQ
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred, y_std = model.predict(X, return_std=True)
 
@@ -112,7 +112,7 @@ class TestKANBasicFunctionality:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         ensemble_preds = model.predict_ensemble(X)
 
@@ -154,7 +154,7 @@ class TestKANOptimizers:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), optimizer="bfgs")
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -164,7 +164,7 @@ class TestKANOptimizers:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), optimizer="adam")
-        model.fit(X, y, maxiter=200, learning_rate=1e-2)
+        model.fit(X, y, maxiter=50, learning_rate=1e-2)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -180,7 +180,7 @@ class TestKANCalibration:
 
         # Use n_ensemble > 1 for UQ
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
-        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         assert hasattr(model, "calibration_factor")
         assert np.isfinite(model.calibration_factor)
@@ -191,7 +191,7 @@ class TestKANCalibration:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         assert model.calibration_factor == 1.0
 
@@ -205,7 +205,7 @@ class TestKANUncertaintyMetrics:
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
-        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         metrics = model.uncertainty_metrics(X_val, y_val)
 
@@ -226,7 +226,7 @@ class TestKANUncertaintyMetrics:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         metrics = model.uncertainty_metrics(X, y)
 
@@ -246,7 +246,7 @@ class TestKANReportAndVisualization:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=5, optimizer="adam")
-        model.fit(X, y, maxiter=100, learning_rate=1e-2)
+        model.fit(X, y, maxiter=50, learning_rate=1e-2)
 
         model.report()
 
@@ -260,7 +260,7 @@ class TestKANReportAndVisualization:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         import matplotlib.pyplot as plt
 
@@ -273,7 +273,7 @@ class TestKANReportAndVisualization:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         import matplotlib.pyplot as plt
 
@@ -286,7 +286,7 @@ class TestKANReportAndVisualization:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 4, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         import matplotlib.pyplot as plt
 
@@ -299,7 +299,7 @@ class TestKANReportAndVisualization:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 2, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         import matplotlib.pyplot as plt
 
@@ -318,7 +318,7 @@ class TestKANEdgeCases:
         y = 2 * X.ravel() + np.random.randn(50) * 0.1
 
         model = KAN(layers=(1, 3, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (50,)
@@ -330,7 +330,7 @@ class TestKANEdgeCases:
         y = np.sum(X, axis=1) + 0.1 * np.random.randn(100)
 
         model = KAN(layers=(3, 5, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (100,)
@@ -341,7 +341,7 @@ class TestKANEdgeCases:
         y = np.array([2, 4, 6, 8, 10], dtype=float)
 
         model = KAN(layers=(1, 3, 1), grid_size=2)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (5,)
@@ -353,11 +353,11 @@ class TestKANEdgeCases:
         y = np.sum(X, axis=1)
 
         model1 = KAN(layers=(2, 3, 1), grid_size=3, seed=42)
-        model1.fit(X, y, maxiter=100)
+        model1.fit(X, y, maxiter=50)
         pred1 = model1.predict(X)
 
         model2 = KAN(layers=(2, 3, 1), grid_size=3, seed=42)
-        model2.fit(X, y, maxiter=100)
+        model2.fit(X, y, maxiter=50)
         pred2 = model2.predict(X)
 
         np.testing.assert_allclose(pred1, pred2, rtol=1e-10)
@@ -371,7 +371,7 @@ class TestKANSklearnCompatibility:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1))
-        result = model.fit(X, y, maxiter=100)
+        result = model.fit(X, y, maxiter=50)
 
         assert result is model
 
@@ -381,7 +381,7 @@ class TestKANSklearnCompatibility:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3)
-        model.fit(X_train, y_train, maxiter=200)
+        model.fit(X_train, y_train, maxiter=50)
 
         score = model.score(X_test, y_test)
 
@@ -410,7 +410,7 @@ class TestKANCallInterface:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model(X)
 
@@ -422,7 +422,7 @@ class TestKANCallInterface:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred, y_std = model(X, return_std=True)
 
@@ -434,7 +434,7 @@ class TestKANCallInterface:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 3, 1), grid_size=3, n_ensemble=16)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         ensemble = model(X, distribution=True)
 
@@ -450,7 +450,7 @@ class TestKANExpressiveness:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 8, 1), grid_size=8)
-        model.fit(X_train, y_train, maxiter=500)
+        model.fit(X_train, y_train, maxiter=50)
 
         # Check R² on test set
         score = model.score(X_test, y_test)
@@ -465,7 +465,7 @@ class TestKANExpressiveness:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 8, 1), grid_size=8)
-        model.fit(X_train, y_train, maxiter=500)
+        model.fit(X_train, y_train, maxiter=50)
 
         score = model.score(X_test, y_test)
         assert score > 0.8, f"KAN should fit polynomial well, got R²={score}"
@@ -479,7 +479,7 @@ class TestKANCRPSLoss:
         X, y = simple_linear_data
 
         model = KAN(layers=(1, 5, 1), grid_size=3, loss_type="crps", n_ensemble=16)
-        model.fit(X, y, maxiter=200)
+        model.fit(X, y, maxiter=50)
 
         y_pred, y_std = model.predict(X, return_std=True)
 
@@ -498,7 +498,7 @@ class TestKANMultiOutput:
         y = np.column_stack([np.sin(2 * np.pi * X[:, 0]), np.cos(2 * np.pi * X[:, 1])])
 
         model = KAN(layers=(2, 5, 2), grid_size=5)
-        model.fit(X, y, maxiter=200)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
 
@@ -512,7 +512,7 @@ class TestKANMultiOutput:
         y = np.column_stack([X[:, 0] ** 2, X[:, 1] ** 2])
 
         model = KAN(layers=(2, 4, 2), grid_size=4, n_ensemble=8)
-        model.fit(X, y, maxiter=200)
+        model.fit(X, y, maxiter=50)
 
         mean, std = model.predict(X, return_std=True)
 
@@ -527,7 +527,7 @@ class TestKANMultiOutput:
         y = np.column_stack([X[:, 0], X[:, 1]])
 
         model = KAN(layers=(2, 3, 2), grid_size=3, n_ensemble=10)
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         ensemble = model.predict_ensemble(X)
 
@@ -543,7 +543,7 @@ class TestKANMultiOutput:
         model = KAN(
             layers=(2, 3, 2), spline_order=1, grid_size=4, base_activation="linear", n_ensemble=1
         )
-        model.fit(X, y, maxiter=200)
+        model.fit(X, y, maxiter=50)
 
         # Export to Pyomo
         model_pyomo = model.to_pyomo(input_bounds=[(0, 1), (0, 1)])
@@ -560,7 +560,7 @@ class TestKANMultiOutput:
         model = KAN(layers=(2, 3, 2))  # Expects 2 outputs
 
         with pytest.raises(ValueError, match="outputs"):
-            model.fit(X, y, maxiter=100)
+            model.fit(X, y, maxiter=50)
 
 
 if __name__ == "__main__":

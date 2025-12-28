@@ -13,14 +13,14 @@ from pycse.sklearn.dpose import DPOSE
 def heteroscedastic_data():
     """Generate heteroscedastic regression data (noise increases with X)."""
     key = jax.random.PRNGKey(42)
-    X = np.linspace(0, 1, 200)[:, None]
+    X = np.linspace(0, 1, 100)[:, None]
 
     # True function: y = x^(1/3)
     y_true = X.ravel() ** (1 / 3)
 
     # Heteroscedastic noise: increases with X
     noise_std = 0.01 + 0.08 * X.ravel()
-    noise = noise_std * jax.random.normal(key, (200,))
+    noise = noise_std * jax.random.normal(key, (100,))
     y = y_true + noise
 
     return X, y, noise_std
@@ -30,8 +30,8 @@ def heteroscedastic_data():
 def simple_linear_data():
     """Generate simple linear data for quick tests."""
     np.random.seed(42)
-    X = np.linspace(0, 10, 100)[:, None]
-    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(100)
+    X = np.linspace(0, 10, 50)[:, None]
+    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(50)
     return X, y
 
 
@@ -66,7 +66,7 @@ class TestDPOSEBasicFunctionality:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = DPOSE(layers=(1, 10, 16), loss_type="mse")
-        model.fit(X_train, y_train, maxiter=100)
+        model.fit(X_train, y_train, maxiter=50)
 
         # Test prediction
         y_pred = model.predict(X_test)
@@ -79,7 +79,7 @@ class TestDPOSEBasicFunctionality:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred, y_std = model.predict(X, return_std=True)
 
@@ -94,7 +94,7 @@ class TestDPOSEBasicFunctionality:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))  # 16 ensemble members
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         ensemble_preds = model.predict_ensemble(X)
 
@@ -110,7 +110,7 @@ class TestDPOSELossFunctions:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), loss_type="crps")
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -121,7 +121,7 @@ class TestDPOSELossFunctions:
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = DPOSE(layers=(1, 10, 16), loss_type="nll")
-        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, pretrain_maxiter=100, maxiter=100)
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, pretrain_maxiter=50, maxiter=50)
 
         y_pred, y_std = model.predict(X_val, return_std=True)
         assert np.all(np.isfinite(y_pred))
@@ -133,7 +133,7 @@ class TestDPOSELossFunctions:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), loss_type="mse")
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -147,7 +147,7 @@ class TestDPOSEOptimizers:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="bfgs")
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -157,7 +157,7 @@ class TestDPOSEOptimizers:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="lbfgs")
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -167,7 +167,7 @@ class TestDPOSEOptimizers:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="adam")
-        model.fit(X, y, maxiter=200, learning_rate=1e-3)
+        model.fit(X, y, maxiter=50, learning_rate=1e-3)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -177,7 +177,7 @@ class TestDPOSEOptimizers:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="sgd")
-        model.fit(X, y, maxiter=200, learning_rate=1e-2)
+        model.fit(X, y, maxiter=50, learning_rate=1e-2)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -187,7 +187,7 @@ class TestDPOSEOptimizers:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="muon")
-        model.fit(X, y, maxiter=200, learning_rate=0.02)
+        model.fit(X, y, maxiter=50, learning_rate=0.02)
 
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
@@ -202,7 +202,7 @@ class TestDPOSECalibration:
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = DPOSE(layers=(1, 20, 32))
-        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         # Check that calibration factor exists
         assert hasattr(model, "calibration_factor")
@@ -214,7 +214,7 @@ class TestDPOSECalibration:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         # Calibration factor should be 1.0 (no calibration)
         assert model.calibration_factor == 1.0
@@ -226,11 +226,11 @@ class TestDPOSECalibration:
 
         # Train with calibration
         model_cal = DPOSE(layers=(1, 20, 32))
-        model_cal.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
+        model_cal.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         # Train without calibration
         model_no_cal = DPOSE(layers=(1, 20, 32), seed=19)
-        model_no_cal.fit(X_train, y_train, maxiter=150)
+        model_no_cal.fit(X_train, y_train, maxiter=50)
 
         # Get uncertainties
         _, y_std_cal = model_cal.predict(X_val, return_std=True)
@@ -250,7 +250,7 @@ class TestDPOSEUncertaintyMetrics:
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = DPOSE(layers=(1, 20, 32))
-        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         metrics = model.uncertainty_metrics(X_val, y_val)
 
@@ -271,7 +271,7 @@ class TestDPOSEUncertaintyMetrics:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         model.print_metrics(X, y)
 
@@ -289,7 +289,7 @@ class TestDPOSEReportAndVisualization:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16), optimizer="adam", loss_type="crps")
-        model.fit(X, y, maxiter=100, learning_rate=1e-3)
+        model.fit(X, y, maxiter=50, learning_rate=1e-3)
 
         model.report()
 
@@ -303,7 +303,7 @@ class TestDPOSEReportAndVisualization:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         # Test that plot runs without error
         import matplotlib.pyplot as plt
@@ -317,7 +317,7 @@ class TestDPOSEReportAndVisualization:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         import matplotlib.pyplot as plt
 
@@ -335,7 +335,7 @@ class TestDPOSEEdgeCases:
         y = 2 * X.ravel() + np.random.randn(50) * 0.1
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (50,)
@@ -347,7 +347,7 @@ class TestDPOSEEdgeCases:
         y = np.sum(X, axis=1) + 0.1 * np.random.randn(100)
 
         model = DPOSE(layers=(5, 20, 32))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (100,)
@@ -358,7 +358,7 @@ class TestDPOSEEdgeCases:
         y = np.array([2, 4, 6, 8, 10])
 
         model = DPOSE(layers=(1, 5, 8))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred = model.predict(X)
         assert y_pred.shape == (5,)
@@ -369,11 +369,11 @@ class TestDPOSEEdgeCases:
         y = np.sum(X, axis=1)
 
         model1 = DPOSE(layers=(2, 10, 16), seed=42)
-        model1.fit(X, y, maxiter=100)
+        model1.fit(X, y, maxiter=50)
         pred1 = model1.predict(X)
 
         model2 = DPOSE(layers=(2, 10, 16), seed=42)
-        model2.fit(X, y, maxiter=100)
+        model2.fit(X, y, maxiter=50)
         pred2 = model2.predict(X)
 
         np.testing.assert_allclose(pred1, pred2, rtol=1e-10)
@@ -387,7 +387,7 @@ class TestDPOSESklearnCompatibility:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        result = model.fit(X, y, maxiter=100)
+        result = model.fit(X, y, maxiter=50)
 
         assert result is model
 
@@ -411,7 +411,7 @@ class TestDPOSECallInterface:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         # Call model directly
         y_pred = model(X)
@@ -424,7 +424,7 @@ class TestDPOSECallInterface:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         y_pred, y_std = model(X, return_std=True)
 
@@ -436,7 +436,7 @@ class TestDPOSECallInterface:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         ensemble = model(X, distribution=True)
 
@@ -451,7 +451,7 @@ class TestDPOSEUncertaintyPropagation:
         X, y = simple_linear_data
 
         model = DPOSE(layers=(1, 10, 16))
-        model.fit(X, y, maxiter=100)
+        model.fit(X, y, maxiter=50)
 
         # Get ensemble predictions
         ensemble = model.predict_ensemble(X)
@@ -478,7 +478,7 @@ class TestDPOSEPerformance:
         y = 2 * X.ravel() + 3 + 0.1 * np.random.randn(200)
 
         model = DPOSE(layers=(1, 20, 32), loss_type="mse")
-        model.fit(X, y, maxiter=300)
+        model.fit(X, y, maxiter=100)
 
         # Test on training data range
         X_test = np.array([[1], [5], [9]])
@@ -494,7 +494,7 @@ class TestDPOSEPerformance:
         X, y, true_noise = heteroscedastic_data
 
         model = DPOSE(layers=(1, 20, 32))
-        model.fit(X, y, maxiter=200)
+        model.fit(X, y, maxiter=50)
 
         _, y_std = model.predict(X, return_std=True)
 

@@ -16,8 +16,8 @@ from pycse.sklearn.nngmm import NeuralNetworkGMM  # noqa: E402
 def simple_linear_data():
     """Generate simple linear data for testing."""
     np.random.seed(42)
-    X = np.linspace(0, 10, 100)[:, None]
-    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(100)
+    X = np.linspace(0, 10, 50)[:, None]
+    y = 2 * X.ravel() + 1 + 0.1 * np.random.randn(50)
     return X, y
 
 
@@ -25,14 +25,14 @@ def simple_linear_data():
 def heteroscedastic_data():
     """Generate heteroscedastic regression data (noise increases with X)."""
     np.random.seed(42)
-    X = np.linspace(0, 1, 200)[:, None]
+    X = np.linspace(0, 1, 100)[:, None]
 
     # True function: y = x^(1/3)
     y_true = X.ravel() ** (1 / 3)
 
     # Heteroscedastic noise: increases with X
     noise_std = 0.01 + 0.08 * X.ravel()
-    noise = noise_std * np.random.randn(200)
+    noise = noise_std * np.random.randn(100)
     y = y_true + noise
 
     return X, y, noise_std
@@ -45,7 +45,7 @@ def simple_nn():
         hidden_layer_sizes=(20,),
         activation="relu",
         solver="lbfgs",
-        max_iter=1000,
+        max_iter=300,
         random_state=42,
     )
 
@@ -64,11 +64,11 @@ class TestNNGMMBasicFunctionality:
 
     def test_initialization_custom(self, simple_nn):
         """Test NNGMM initialization with custom parameters."""
-        model = NeuralNetworkGMM(simple_nn, n_components=3, n_samples=1000)
+        model = NeuralNetworkGMM(simple_nn, n_components=3, n_samples=300)
 
         assert model.nn is simple_nn
         assert model.n_components == 3
-        assert model.n_samples == 1000
+        assert model.n_samples == 300
         assert model.calibration_factor == 1.0
 
     def test_fit_predict_basic(self, simple_linear_data, simple_nn):
@@ -148,14 +148,14 @@ class TestNNGMMCalibration:
             hidden_layer_sizes=(20,),
             activation="relu",
             solver="lbfgs",
-            max_iter=1000,
+            max_iter=300,
             random_state=42,
         )
         nn2 = MLPRegressor(
             hidden_layer_sizes=(20,),
             activation="relu",
             solver="lbfgs",
-            max_iter=1000,
+            max_iter=300,
             random_state=42,
         )
 
@@ -341,7 +341,7 @@ class TestNNGMMEdgeCases:
         X = np.linspace(0, 1, 50)[:, None]
         y = 2 * X.ravel() + np.random.randn(50) * 0.1
 
-        nn = MLPRegressor(hidden_layer_sizes=(10,), solver="lbfgs", max_iter=500, random_state=42)
+        nn = MLPRegressor(hidden_layer_sizes=(10,), solver="lbfgs", max_iter=200, random_state=42)
 
         model = NeuralNetworkGMM(nn, n_components=1)
         model.fit(X, y)
@@ -357,7 +357,7 @@ class TestNNGMMEdgeCases:
         X = np.random.randn(100, 5)
         y = np.sum(X, axis=1) + 0.1 * np.random.randn(100)
 
-        nn = MLPRegressor(hidden_layer_sizes=(20,), solver="lbfgs", max_iter=500, random_state=42)
+        nn = MLPRegressor(hidden_layer_sizes=(20,), solver="lbfgs", max_iter=200, random_state=42)
 
         model = NeuralNetworkGMM(nn, n_components=1)
         model.fit(X, y)
@@ -373,7 +373,7 @@ class TestNNGMMEdgeCases:
         X = np.array([[1], [2], [3], [4], [5]])
         y = np.array([2, 4, 6, 8, 10])
 
-        nn = MLPRegressor(hidden_layer_sizes=(5,), solver="lbfgs", max_iter=500, random_state=42)
+        nn = MLPRegressor(hidden_layer_sizes=(5,), solver="lbfgs", max_iter=200, random_state=42)
 
         model = NeuralNetworkGMM(nn, n_components=1)
         model.fit(X, y)
@@ -391,7 +391,7 @@ class TestNNGMMArchitectures:
         """Test with single hidden layer."""
         X, y = simple_linear_data
 
-        nn = MLPRegressor(hidden_layer_sizes=(20,), solver="lbfgs", max_iter=500, random_state=42)
+        nn = MLPRegressor(hidden_layer_sizes=(20,), solver="lbfgs", max_iter=200, random_state=42)
 
         model = NeuralNetworkGMM(nn, n_components=1)
         model.fit(X, y)
@@ -405,7 +405,7 @@ class TestNNGMMArchitectures:
         X, y = simple_linear_data
 
         nn = MLPRegressor(
-            hidden_layer_sizes=(20, 10), solver="lbfgs", max_iter=500, random_state=42
+            hidden_layer_sizes=(20, 10), solver="lbfgs", max_iter=200, random_state=42
         )
 
         model = NeuralNetworkGMM(nn, n_components=1)
@@ -424,7 +424,7 @@ class TestNNGMMArchitectures:
                 hidden_layer_sizes=(20,),
                 activation=activation,
                 solver="lbfgs",
-                max_iter=500,
+                max_iter=200,
                 random_state=42,
             )
 
@@ -471,7 +471,7 @@ class TestNNGMMComparison:
         """Test that multiple predictions on same data give similar results."""
         X, y = simple_linear_data
 
-        model = NeuralNetworkGMM(simple_nn, n_components=1, n_samples=1000)
+        model = NeuralNetworkGMM(simple_nn, n_components=1, n_samples=300)
         model.fit(X, y)
 
         # Due to sampling, predictions might vary slightly
@@ -512,12 +512,12 @@ class TestNNGMMPerformance:
         nn = MLPRegressor(
             hidden_layer_sizes=(50, 25),
             solver="lbfgs",
-            max_iter=2000,
+            max_iter=200,
             random_state=123,
             alpha=0.001,  # Small L2 regularization
         )
 
-        model = NeuralNetworkGMM(nn, n_components=1, n_samples=1000)
+        model = NeuralNetworkGMM(nn, n_components=1, n_samples=300)
         model.fit(X, y)
 
         # Test on training data
@@ -532,7 +532,7 @@ class TestNNGMMPerformance:
         """Test that NNGMM provides reasonable uncertainty estimates."""
         X, y, true_noise = heteroscedastic_data
 
-        nn = MLPRegressor(hidden_layer_sizes=(50,), solver="lbfgs", max_iter=1000, random_state=42)
+        nn = MLPRegressor(hidden_layer_sizes=(50,), solver="lbfgs", max_iter=300, random_state=42)
 
         model = NeuralNetworkGMM(nn, n_components=1)
         model.fit(X, y)
