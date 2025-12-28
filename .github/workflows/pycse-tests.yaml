@@ -18,11 +18,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for testmon to detect changes
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Cache pytest-testmon data
+        uses: actions/cache@v4
+        with:
+          path: .testmondata
+          key: testmon-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.sha }}
+          restore-keys: |
+            testmon-${{ runner.os }}-py${{ matrix.python-version }}-
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -33,6 +43,7 @@ jobs:
       - name: Install package with dependencies
         run: |
           uv pip install --system -e ".[test]"
+          uv pip install --system pytest-testmon
 
       - name: Run ruff format check
         run: |
@@ -43,13 +54,21 @@ jobs:
         run: |
           ruff check src/pycse
 
-      - name: Run tests with pytest
+      - name: Run tests with pytest (affected tests only)
+        if: github.event_name == 'pull_request'
         run: |
+          # On PRs, run only affected tests without coverage for speed
+          pytest src/pycse/tests -v --testmon
+
+      - name: Run tests with pytest (full suite with coverage)
+        if: github.event_name == 'push'
+        run: |
+          # On push to main, run full suite with coverage
           pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        if: github.event_name == 'push' && matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
