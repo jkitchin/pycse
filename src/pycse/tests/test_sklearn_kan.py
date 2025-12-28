@@ -81,9 +81,7 @@ class TestKANBasicFunctionality:
     def test_fit_predict_basic(self, simple_linear_data):
         """Test basic fit and predict cycle."""
         X, y = simple_linear_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3)
         model.fit(X_train, y_train, maxiter=100)
@@ -178,9 +176,7 @@ class TestKANCalibration:
     def test_calibration_with_validation(self, heteroscedastic_data):
         """Test that calibration is applied when validation data provided."""
         X, y, _ = heteroscedastic_data
-        X_train, X_val, y_train, y_val = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Use n_ensemble > 1 for UQ
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
@@ -206,9 +202,7 @@ class TestKANUncertaintyMetrics:
     def test_uncertainty_metrics_with_ensemble(self, heteroscedastic_data):
         """Test uncertainty metrics computation with ensemble output."""
         X, y, _ = heteroscedastic_data
-        X_train, X_val, y_train, y_val = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=16)
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=150)
@@ -358,9 +352,7 @@ class TestKANSklearnCompatibility:
     def test_score_method(self, simple_linear_data):
         """Test score method returns R²."""
         X, y = simple_linear_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 5, 1), grid_size=3)
         model.fit(X_train, y_train, maxiter=200)
@@ -429,9 +421,7 @@ class TestKANExpressiveness:
     def test_sinusoidal_fit(self, sinusoidal_data):
         """Test that KAN can fit a sinusoidal function."""
         X, y = sinusoidal_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 8, 1), grid_size=8)
         model.fit(X_train, y_train, maxiter=500)
@@ -446,9 +436,7 @@ class TestKANExpressiveness:
         X = np.linspace(-2, 2, 100)[:, None]
         y = X.ravel() ** 3 - 2 * X.ravel() ** 2 + X.ravel() + 0.1 * np.random.randn(100)
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = KAN(layers=(1, 8, 1), grid_size=8)
         model.fit(X_train, y_train, maxiter=500)
@@ -481,10 +469,7 @@ class TestKANMultiOutput:
         """Test basic multi-output regression."""
         np.random.seed(42)
         X = np.random.rand(100, 2)
-        y = np.column_stack([
-            np.sin(2 * np.pi * X[:, 0]),
-            np.cos(2 * np.pi * X[:, 1])
-        ])
+        y = np.column_stack([np.sin(2 * np.pi * X[:, 0]), np.cos(2 * np.pi * X[:, 1])])
 
         model = KAN(layers=(2, 5, 2), grid_size=5)
         model.fit(X, y, maxiter=200)
@@ -530,11 +515,7 @@ class TestKANMultiOutput:
         y = np.column_stack([X[:, 0] + X[:, 1], X[:, 0] - X[:, 1]])
 
         model = KAN(
-            layers=(2, 3, 2),
-            spline_order=1,
-            grid_size=4,
-            base_activation='linear',
-            n_ensemble=1
+            layers=(2, 3, 2), spline_order=1, grid_size=4, base_activation="linear", n_ensemble=1
         )
         model.fit(X, y, maxiter=200)
 

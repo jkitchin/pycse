@@ -138,8 +138,10 @@ class KANLayer(nn.Module):
         # Extended grid for B-splines (need extra knots for boundary conditions)
         n_knots = self.grid_size + 1 + 2 * self.spline_order
         self.grid = jnp.linspace(
-            self.grid_range[0] - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
-            self.grid_range[1] + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            self.grid_range[0]
+            - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            self.grid_range[1]
+            + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
             n_knots,
         )
         self.n_basis = self.grid_size + self.spline_order
@@ -202,9 +204,7 @@ class KANLayer(nn.Module):
                     base_out = x[:, i] * base_weight[i, j]
 
                 # Combine with learnable scale
-                output = output.at[:, j].add(
-                    spline_scale[i, j] * spline_out + base_out
-                )
+                output = output.at[:, j].add(spline_scale[i, j] * spline_out + base_out)
 
         return output
 
@@ -420,7 +420,7 @@ class KAN(BaseEstimator, RegressorMixin):
         self.X_mean_ = jnp.mean(X, axis=0)
         self.X_std_ = jnp.std(X, axis=0)
         self.y_mean_ = jnp.mean(y, axis=0)  # Shape: (n_outputs,)
-        self.y_std_ = jnp.std(y, axis=0)    # Shape: (n_outputs,)
+        self.y_std_ = jnp.std(y, axis=0)  # Shape: (n_outputs,)
 
         # Normalize data
         X_norm = self._normalize_X(X)
@@ -873,7 +873,9 @@ class KAN(BaseEstimator, RegressorMixin):
         layer_keys = [k for k in params.keys() if k.startswith("KANLayer_")]
 
         if layer_idx >= len(layer_keys):
-            raise ValueError(f"layer_idx {layer_idx} out of range. Model has {len(layer_keys)} layers.")
+            raise ValueError(
+                f"layer_idx {layer_idx} out of range. Model has {len(layer_keys)} layers."
+            )
 
         layer_key = layer_keys[layer_idx]
         layer_params = params[layer_key]
@@ -887,8 +889,10 @@ class KAN(BaseEstimator, RegressorMixin):
         # Create grid for plotting
         n_knots = self.grid_size + 1 + 2 * self.spline_order
         grid = np.linspace(
-            self.grid_range[0] - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
-            self.grid_range[1] + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            self.grid_range[0]
+            - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+            self.grid_range[1]
+            + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
             n_knots,
         )
 
@@ -924,12 +928,19 @@ class KAN(BaseEstimator, RegressorMixin):
                 combined = spline_scale[i, j] * spline_out + base_out
 
                 # Plot
-                ax.plot(x_plot, combined, 'b-', linewidth=2, label='Combined')
-                ax.plot(x_plot, spline_scale[i, j] * spline_out, 'r--', linewidth=1, alpha=0.7, label='Spline')
-                ax.plot(x_plot, base_out, 'g:', linewidth=1, alpha=0.7, label='Base (SiLU)')
-                ax.axhline(y=0, color='k', linewidth=0.5, alpha=0.3)
-                ax.axvline(x=0, color='k', linewidth=0.5, alpha=0.3)
-                ax.set_title(f'Edge ({i}→{j})', fontsize=10)
+                ax.plot(x_plot, combined, "b-", linewidth=2, label="Combined")
+                ax.plot(
+                    x_plot,
+                    spline_scale[i, j] * spline_out,
+                    "r--",
+                    linewidth=1,
+                    alpha=0.7,
+                    label="Spline",
+                )
+                ax.plot(x_plot, base_out, "g:", linewidth=1, alpha=0.7, label="Base (SiLU)")
+                ax.axhline(y=0, color="k", linewidth=0.5, alpha=0.3)
+                ax.axvline(x=0, color="k", linewidth=0.5, alpha=0.3)
+                ax.set_title(f"Edge ({i}→{j})", fontsize=10)
                 ax.grid(True, alpha=0.3)
 
                 if plot_idx == 0:
@@ -941,7 +952,7 @@ class KAN(BaseEstimator, RegressorMixin):
         for idx in range(plot_idx, len(axes)):
             axes[idx].set_visible(False)
 
-        plt.suptitle(f'Learned Activations - Layer {layer_idx}', fontsize=12)
+        plt.suptitle(f"Learned Activations - Layer {layer_idx}", fontsize=12)
         plt.tight_layout()
         return fig
 
@@ -1023,9 +1034,7 @@ class KAN(BaseEstimator, RegressorMixin):
         try:
             import pyomo.environ as pyo
         except ImportError:
-            raise ImportError(
-                "Pyomo is required for MIP export. Install with: pip install pyomo"
-            )
+            raise ImportError("Pyomo is required for MIP export. Install with: pip install pyomo")
 
         # Get network dimensions
         n_inputs = self.layers[0]
@@ -1039,10 +1048,7 @@ class KAN(BaseEstimator, RegressorMixin):
         model = pyo.ConcreteModel(name="KAN_MIP")
 
         # Input variables (in original space)
-        model.x = pyo.Var(
-            range(n_inputs),
-            bounds=lambda m, i: input_bounds[i]
-        )
+        model.x = pyo.Var(range(n_inputs), bounds=lambda m, i: input_bounds[i])
 
         # Normalized input variables
         model.x_norm = pyo.Var(range(n_inputs), within=pyo.Reals)
@@ -1053,9 +1059,7 @@ class KAN(BaseEstimator, RegressorMixin):
             x_mean = float(self.X_mean_[i]) if self.X_mean_ is not None else 0.0
             x_std = float(self.X_std_[i]) if self.X_std_ is not None else 1.0
             # x_norm = (x - x_mean) / x_std
-            model.norm_constraints.add(
-                model.x_norm[i] == (model.x[i] - x_mean) / x_std
-            )
+            model.norm_constraints.add(model.x_norm[i] == (model.x[i] - x_mean) / x_std)
 
         # Get breakpoints for piecewise linear formulation (in normalized space)
         n_segments = self.grid_size
@@ -1094,7 +1098,11 @@ class KAN(BaseEstimator, RegressorMixin):
 
             # Lambda variables for convex combination (SOS2-like formulation)
             lam_name = f"lam_{idx}"
-            setattr(model, lam_name, pyo.Var(range(n_segs + 1), within=pyo.NonNegativeReals, bounds=(0, 1)))
+            setattr(
+                model,
+                lam_name,
+                pyo.Var(range(n_segs + 1), within=pyo.NonNegativeReals, bounds=(0, 1)),
+            )
             lam = getattr(model, lam_name)
 
             # Constraints
@@ -1153,11 +1161,19 @@ class KAN(BaseEstimator, RegressorMixin):
                         # Compute basis functions at this breakpoint
                         n_knots = self.grid_size + 1 + 2 * self.spline_order
                         grid = np.linspace(
-                            self.grid_range[0] - self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
-                            self.grid_range[1] + self.spline_order * (self.grid_range[1] - self.grid_range[0]) / self.grid_size,
+                            self.grid_range[0]
+                            - self.spline_order
+                            * (self.grid_range[1] - self.grid_range[0])
+                            / self.grid_size,
+                            self.grid_range[1]
+                            + self.spline_order
+                            * (self.grid_range[1] - self.grid_range[0])
+                            / self.grid_size,
                             n_knots,
                         )
-                        basis = np.asarray(b_spline_basis(jnp.array([bp]), jnp.array(grid), k=self.spline_order))
+                        basis = np.asarray(
+                            b_spline_basis(jnp.array([bp]), jnp.array(grid), k=self.spline_order)
+                        )
 
                         # Spline contribution
                         spline_val = float(np.dot(basis[0], spline_weight[i, j, :]))
@@ -1173,7 +1189,9 @@ class KAN(BaseEstimator, RegressorMixin):
                     edge_var_name = f"edge_{layer_idx}_{i}_{j}"
                     edge_lb = min(pw_values) - 1.0
                     edge_ub = max(pw_values) + 1.0
-                    setattr(model, edge_var_name, pyo.Var(within=pyo.Reals, bounds=(edge_lb, edge_ub)))
+                    setattr(
+                        model, edge_var_name, pyo.Var(within=pyo.Reals, bounds=(edge_lb, edge_ub))
+                    )
                     edge_var = getattr(model, edge_var_name)
                     edge_contributions.append(edge_var)
 
@@ -1185,7 +1203,7 @@ class KAN(BaseEstimator, RegressorMixin):
                 setattr(
                     model,
                     sum_constraint_name,
-                    pyo.Constraint(expr=neuron_var == sum(edge_contributions))
+                    pyo.Constraint(expr=neuron_var == sum(edge_contributions)),
                 )
 
         # Output variables (denormalized) - one per output
@@ -1199,9 +1217,7 @@ class KAN(BaseEstimator, RegressorMixin):
             # Denormalization: y = y_norm * y_std + y_mean
             y_mean = float(self.y_mean_[j]) if self.y_mean_ is not None else 0.0
             y_std = float(self.y_std_[j]) if self.y_std_ is not None else 1.0
-            model.denorm_constraints.add(
-                model.y[j] == final_output * y_std + y_mean
-            )
+            model.denorm_constraints.add(model.y[j] == final_output * y_std + y_mean)
 
         # Default objective: minimize first output (user can modify)
         model.obj = pyo.Objective(expr=model.y[0], sense=pyo.minimize)
