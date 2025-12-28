@@ -778,10 +778,10 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2390/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2400/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last ten iterations.
   (y1,) = fsolve(tmp, x0)
-/tmp/ipykernel_2390/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
+/tmp/ipykernel_2400/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last five Jacobian evaluations.
   (y1,) = fsolve(tmp, x0)
 </pre></div>
@@ -1040,7 +1040,98 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-6., -2.,  2.])
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="ne">TypeError</span>: only 0-dimensional arrays can be converted to Python scalars
+
+<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
+
+<span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="n">line</span> <span class="mi">17</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">120</span><span class="p">,)</span>
+<span class="ne">---&gt; </span><span class="mi">17</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># these are the found roots</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:681,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">678</span>     <span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">dense_output</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">680</span> <span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="ne">--&gt; </span><span class="mi">681</span> <span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">terminate</span> <span class="o">=</span> <span class="n">handle_events</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">682</span>     <span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">683</span>     <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">685</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">686</span>     <span class="n">t_events</span><span class="p">[</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:110,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    108         Whether a terminal event occurred.</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">110</span>     <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_event_equation</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="n">event_index</span><span class="p">],</span> <span class="n">sol</span><span class="p">,</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span>              <span class="k">for</span> <span class="n">event_index</span> <span class="ow">in</span> <span class="n">active_events</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">113</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:110,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    108         Whether a terminal event occurred.</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">110</span>     <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_event_equation</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="n">event_index</span><span class="p">],</span> <span class="n">sol</span><span class="p">,</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span>              <span class="k">for</span> <span class="n">event_index</span> <span class="ow">in</span> <span class="n">active_events</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">113</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:75,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
+<span class="sd">   (...)     72     Found solution.</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+<span class="ne">---&gt; </span><span class="mi">75</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
+<span class="g g-Whitespace">    </span><span class="mi">844</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rtol too small (</span><span class="si">{</span><span class="n">rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">845</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_wrap_nan_raise</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">846</span> <span class="n">r</span> <span class="o">=</span> <span class="n">_zeros</span><span class="o">.</span><span class="n">_brentq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">847</span> <span class="k">return</span> <span class="n">results_c</span><span class="p">(</span><span class="n">full_output</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s2">&quot;brentq&quot;</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
+<span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">def</span><span class="w"> </span><span class="nf">f_raise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">94</span>     <span class="n">fx</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">95</span>     <span class="n">f_raise</span><span class="o">.</span><span class="n">_function_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="g g-Whitespace">     </span><span class="mi">96</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:75,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
+<span class="sd">   (...)     72     Found solution.</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+<span class="ne">---&gt; </span><span class="mi">75</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:265,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">252</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Evaluate the interpolant.</span>
+<span class="g g-Whitespace">    </span><span class="mi">253</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">254</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    263         1-D array.</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">265</span>     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">266</span>     <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">267</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`t` must be a float or a 1-D array.&quot;</span><span class="p">)</span>
+
+<span class="ne">SystemError</span>: &lt;built-in function asarray&gt; returned a result with an exception set
 </pre></div>
 </div>
 </div>
@@ -1114,7 +1205,101 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3d0783c5624bcca3b67c51266f85725d655a7240215d62b20f45e643d9132492.png" src="../_images/3d0783c5624bcca3b67c51266f85725d655a7240215d62b20f45e643d9132492.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="ne">TypeError</span>: only 0-dimensional arrays can be converted to Python scalars
+
+<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
+
+<span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">18</span><span class="p">],</span> <span class="n">line</span> <span class="mi">29</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">),)</span>
+<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">29</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">e1</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s2">&quot;.-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Numerical solution&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">32</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Analytical function&quot;</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:681,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">678</span>     <span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">dense_output</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">680</span> <span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="ne">--&gt; </span><span class="mi">681</span> <span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">terminate</span> <span class="o">=</span> <span class="n">handle_events</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">682</span>     <span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">683</span>     <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">685</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">686</span>     <span class="n">t_events</span><span class="p">[</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:110,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    108         Whether a terminal event occurred.</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">110</span>     <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_event_equation</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="n">event_index</span><span class="p">],</span> <span class="n">sol</span><span class="p">,</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span>              <span class="k">for</span> <span class="n">event_index</span> <span class="ow">in</span> <span class="n">active_events</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">113</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:110,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    108         Whether a terminal event occurred.</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">110</span>     <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">solve_event_equation</span><span class="p">(</span><span class="n">events</span><span class="p">[</span><span class="n">event_index</span><span class="p">],</span> <span class="n">sol</span><span class="p">,</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span>              <span class="k">for</span> <span class="n">event_index</span> <span class="ow">in</span> <span class="n">active_events</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">113</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:75,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
+<span class="sd">   (...)     72     Found solution.</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+<span class="ne">---&gt; </span><span class="mi">75</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
+<span class="g g-Whitespace">    </span><span class="mi">844</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rtol too small (</span><span class="si">{</span><span class="n">rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">845</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_wrap_nan_raise</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">846</span> <span class="n">r</span> <span class="o">=</span> <span class="n">_zeros</span><span class="o">.</span><span class="n">_brentq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">847</span> <span class="k">return</span> <span class="n">results_c</span><span class="p">(</span><span class="n">full_output</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s2">&quot;brentq&quot;</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
+<span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">def</span><span class="w"> </span><span class="nf">f_raise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">94</span>     <span class="n">fx</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">95</span>     <span class="n">f_raise</span><span class="o">.</span><span class="n">_function_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="g g-Whitespace">     </span><span class="mi">96</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:75,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
+<span class="sd">   (...)     72     Found solution.</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+<span class="ne">---&gt; </span><span class="mi">75</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:265,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">252</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Evaluate the interpolant.</span>
+<span class="g g-Whitespace">    </span><span class="mi">253</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">254</span><span class="sd">     Parameters</span>
+<span class="sd">   (...)    263         1-D array.</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">265</span>     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">266</span>     <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">267</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`t` must be a float or a 1-D array.&quot;</span><span class="p">)</span>
+
+<span class="ne">SystemError</span>: &lt;built-in function asarray&gt; returned a result with an exception set
+</pre></div>
+</div>
 </div>
 </div>
 <p>You can work this out once, and then you have all the roots in the interval and you can select the one you want.</p>
