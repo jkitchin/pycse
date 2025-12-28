@@ -281,6 +281,32 @@ class TestKANReportAndVisualization:
         model.plot(X, y, ax=ax, distribution=True)
         plt.close(fig)
 
+    def test_plot_network(self, simple_linear_data):
+        """Test network graph visualization."""
+        X, y = simple_linear_data
+
+        model = KAN(layers=(1, 4, 1), grid_size=3)
+        model.fit(X, y, maxiter=100)
+
+        import matplotlib.pyplot as plt
+
+        fig = model.plot_network()
+        assert fig is not None
+        plt.close(fig)
+
+    def test_plot_network_multi_layer(self, simple_linear_data):
+        """Test network visualization with multiple hidden layers."""
+        X, y = simple_linear_data
+
+        model = KAN(layers=(1, 3, 2, 1), grid_size=3)
+        model.fit(X, y, maxiter=100)
+
+        import matplotlib.pyplot as plt
+
+        fig = model.plot_network(figsize=(12, 6))
+        assert fig is not None
+        plt.close(fig)
+
 
 class TestKANEdgeCases:
     """Test edge cases and error handling."""
