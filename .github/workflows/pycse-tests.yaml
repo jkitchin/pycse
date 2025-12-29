@@ -60,13 +60,15 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           # On PRs, run only affected tests without coverage for speed
-          pytest src/pycse/tests -v --testmon
+          # -n auto uses all available CPU cores (2 on ubuntu-latest)
+          pytest src/pycse/tests -v --testmon -n auto
 
       - name: Run tests with pytest (full suite with coverage)
         if: github.event_name == 'push'
         run: |
-          # On push to main, run full suite with coverage
-          pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml
+          # On push to main, run full suite with coverage in parallel
+          # -n auto uses all available CPU cores (2 on ubuntu-latest)
+          pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=20
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
