@@ -7,6 +7,14 @@ from sklearn.model_selection import train_test_split
 
 from pycse.sklearn.kan import KAN
 
+# Check if pyomo is available
+try:
+    import pyomo.environ  # noqa: F401
+
+    PYOMO_AVAILABLE = True
+except ImportError:
+    PYOMO_AVAILABLE = False
+
 
 @pytest.fixture
 def simple_linear_data():
@@ -534,6 +542,7 @@ class TestKANMultiOutput:
         assert ensemble.shape == (50, 2, 10)
         assert np.all(np.isfinite(ensemble))
 
+    @pytest.mark.skipif(not PYOMO_AVAILABLE, reason="pyomo not installed")
     def test_multi_output_mip_export(self):
         """Test MIP export with multi-output."""
         np.random.seed(42)

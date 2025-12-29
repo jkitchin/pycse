@@ -1,10 +1,19 @@
 """Tests for NNGMM (Neural Network Gaussian Mixture Model) module."""
 
+import sys
 import numpy as np
 import pytest
 
 # Skip all tests in this module if gmr is not installed
 pytest.importorskip("gmr", reason="gmr not installed")
+
+# Skip all tests on Python 3.13 - GMR library has compatibility issues
+# with NumPy 2.x scalar conversion that causes errors in Python 3.13
+if sys.version_info >= (3, 13):
+    pytest.skip(
+        "NNGMM tests skipped on Python 3.13 due to GMR library compatibility issues",
+        allow_module_level=True,
+    )
 
 from sklearn.model_selection import train_test_split  # noqa: E402
 from sklearn.neural_network import MLPRegressor  # noqa: E402

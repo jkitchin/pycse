@@ -148,7 +148,9 @@ def nsolve(objective, x0, *args, **kwargs):
         raise Exception("nsolve did not finish cleanly: {}".format(msg))
 
     if len(ans) == 1:
-        return float(ans)
+        # Use item() for NumPy 2.x compatibility (Python 3.13+)
+        # This works for both 0-d and 1-d arrays with single element
+        return float(ans[0]) if hasattr(ans, "__getitem__") else float(ans)
     else:
         return ans
 
