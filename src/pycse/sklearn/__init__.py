@@ -6,6 +6,7 @@ quantification capabilities.
 Available estimators:
 - DPOSE: Direct Propagation of Shallow Ensembles (JAX/Flax)
 - KAN: Kolmogorov-Arnold Networks (JAX/Flax)
+- KANLLPR: KAN with Last-Layer Prediction Rigidity (JAX/Flax)
 - KfoldNN: K-fold ensemble neural network (JAX/Flax)
 - LLPR: Last-Layer Prediction Rigidity (JAX/Flax)
 - NNBR: Neural Network + Bayesian Ridge (sklearn)
@@ -17,6 +18,7 @@ Available estimators:
 __all__ = [
     "DPOSE",
     "KAN",
+    "KANLLPR",
     "KfoldNN",
     "LLPR",
     "NNBR",
@@ -35,6 +37,10 @@ def __getattr__(name):
         from pycse.sklearn.kan import KAN
 
         return KAN
+    elif name == "KANLLPR":
+        from pycse.sklearn.kan_llpr import KANLLPR
+
+        return KANLLPR
     elif name == "KfoldNN":
         from pycse.sklearn.kfoldnn import KfoldNN
 
