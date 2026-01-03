@@ -52,7 +52,7 @@ import numpy as np
 import optax
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
-from typing import Tuple, Optional, Dict, Any, List
+from typing import Tuple, Dict, Any
 
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
@@ -188,7 +188,7 @@ def _forward(
         Scalar output f(x).
     """
     phi = _softplus if activation == "softplus" else _relu
-    make_nonneg = _softplus if nonneg_param == "softplus" else (lambda w: w ** 2)
+    make_nonneg = _softplus if nonneg_param == "softplus" else (lambda w: w**2)
 
     n_layers = len(params["Wx"])
     z = None
@@ -237,7 +237,10 @@ def _forward_batch(
     Returns:
         Output array of shape (n_samples,).
     """
-    forward_single = lambda x: _forward(params, x, activation, nonneg_param)
+
+    def forward_single(x):
+        return _forward(params, x, activation, nonneg_param)
+
     return vmap(forward_single)(X)
 
 
@@ -500,9 +503,7 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
                 X_batch = X_shuffled[start_idx:end_idx]
                 y_batch = y_shuffled[start_idx:end_idx]
 
-                params, opt_state, batch_loss = train_step(
-                    params, opt_state, X_batch, y_batch
-                )
+                params, opt_state, batch_loss = train_step(params, opt_state, X_batch, y_batch)
                 epoch_losses.append(float(batch_loss))
 
             epoch_loss = np.mean(epoch_losses)
@@ -533,9 +534,7 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
         X_proc = self._preprocess_X(X, fit=False)
 
         # Compute ICNN output
-        preds = _forward_batch(
-            self.params_, X_proc, self.activation, self.nonneg_param
-        )
+        preds = _forward_batch(self.params_, X_proc, self.activation, self.nonneg_param)
 
         # Inverse transform to original scale
         y_pred = self._postprocess_y(preds)
@@ -544,7 +543,7 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
         if self.strong_convexity_mu > 0:
             # ||x||^2 in original X units
             X_orig = np.atleast_2d(X)
-            y_pred = y_pred + 0.5 * self.strong_convexity_mu * np.sum(X_orig ** 2, axis=1)
+            y_pred = y_pred + 0.5 * self.strong_convexity_mu * np.sum(X_orig**2, axis=1)
 
         return y_pred
 
@@ -565,7 +564,6 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
             Gradient df/dx for each sample.
         """
         X = np.atleast_2d(X)
-        n_samples = X.shape[0]
 
         # We need to compute the gradient in original X space
         # If X is standardized, we need to account for the chain rule:
@@ -656,7 +654,7 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
         # Add strong convexity terms
         if self.strong_convexity_mu > 0:
             X_orig = np.atleast_2d(X)
-            y_pred = y_pred + 0.5 * self.strong_convexity_mu * np.sum(X_orig ** 2, axis=1)
+            y_pred = y_pred + 0.5 * self.strong_convexity_mu * np.sum(X_orig**2, axis=1)
             grads_orig = grads_orig + self.strong_convexity_mu * X_orig
 
         return y_pred, grads_orig
@@ -698,12 +696,10 @@ if __name__ == "__main__":
     X = np.random.randn(n_samples, 3) * 2
 
     # Convex target: sum of squared features
-    y = np.sum(X ** 2, axis=1) + 0.1 * np.random.randn(n_samples)
+    y = np.sum(X**2, axis=1) + 0.1 * np.random.randn(n_samples)
 
     # Split data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Create and fit model
     model = JAXICNNRegressor(

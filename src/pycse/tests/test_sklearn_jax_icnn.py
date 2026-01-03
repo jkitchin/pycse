@@ -15,7 +15,7 @@ def quadratic_data():
     np.random.seed(42)
     X = np.random.randn(100, 2) * 2
     # y = x1^2 + x2^2 (convex)
-    y = np.sum(X ** 2, axis=1) + 0.1 * np.random.randn(100)
+    y = np.sum(X**2, axis=1) + 0.1 * np.random.randn(100)
     return X, y
 
 
@@ -34,7 +34,7 @@ def high_dim_data():
     np.random.seed(42)
     X = np.random.randn(150, 5)
     # Convex function
-    y = np.sum(X ** 2, axis=1) + np.sum(np.abs(X), axis=1)
+    y = np.sum(X**2, axis=1) + np.sum(np.abs(X), axis=1)
     return X, y
 
 
@@ -102,9 +102,7 @@ class TestJAXICNNBasicFunctionality:
     def test_fit_predict_basic(self, quadratic_data):
         """Test basic fit and predict cycle."""
         X, y = quadratic_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = JAXICNNRegressor(epochs=50, hidden_dims=(16, 16))
         model.fit(X_train, y_train)
@@ -419,9 +417,7 @@ class TestJAXICNNScore:
     def test_score_returns_float(self, quadratic_data):
         """Test score method returns a float."""
         X, y = quadratic_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         model = JAXICNNRegressor(epochs=100, hidden_dims=(32, 32))
         model.fit(X_train, y_train)
@@ -434,9 +430,7 @@ class TestJAXICNNScore:
     def test_score_positive_for_good_fit(self, quadratic_data):
         """Test score is positive for reasonable fit."""
         X, y = quadratic_data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Use default learning rate (5e-3) which works well for ICNN
         model = JAXICNNRegressor(epochs=500, hidden_dims=(32, 32))
@@ -471,10 +465,12 @@ class TestJAXICNNSklearnCompatibility:
         """Test compatibility with sklearn Pipeline."""
         X, y = quadratic_data
 
-        pipe = Pipeline([
-            ("scaler", StandardScaler()),
-            ("icnn", JAXICNNRegressor(epochs=20, standardize_X=False)),
-        ])
+        pipe = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("icnn", JAXICNNRegressor(epochs=20, standardize_X=False)),
+            ]
+        )
 
         pipe.fit(X, y)
         y_pred = pipe.predict(X)
