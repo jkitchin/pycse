@@ -5,6 +5,7 @@ quantification capabilities.
 
 Available estimators:
 - DPOSE: Direct Propagation of Shallow Ensembles (JAX/Flax)
+- JAXICNNRegressor: Input Convex Neural Network for convex surrogates (JAX)
 - KAN: Kolmogorov-Arnold Networks (JAX/Flax)
 - KANLLPR: KAN with Last-Layer Prediction Rigidity (JAX/Flax)
 - KfoldNN: K-fold ensemble neural network (JAX/Flax)
@@ -17,6 +18,7 @@ Available estimators:
 # Lazy imports to avoid loading all backends
 __all__ = [
     "DPOSE",
+    "JAXICNNRegressor",
     "KAN",
     "KANLLPR",
     "KfoldNN",
@@ -33,6 +35,10 @@ def __getattr__(name):
         from pycse.sklearn.dpose import DPOSE
 
         return DPOSE
+    elif name == "JAXICNNRegressor":
+        from pycse.sklearn.jax_icnn import JAXICNNRegressor
+
+        return JAXICNNRegressor
     elif name == "KAN":
         from pycse.sklearn.kan import KAN
 
