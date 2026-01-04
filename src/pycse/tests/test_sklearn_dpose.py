@@ -40,25 +40,23 @@ class TestDPOSEBasicFunctionality:
 
     def test_initialization_default(self):
         """Test DPOSE initialization with default parameters."""
-        model = DPOSE(layers=(1, 20, 32))
+        model = DPOSE(layers=(1, 4, 8))
 
-        assert model.layers == (1, 20, 32)
+        assert model.layers == (1, 4, 8)
         assert model.loss_type == "crps"
         assert model.optimizer == "bfgs"
         assert model.min_sigma == 1e-3
-        assert model.n_ensemble == 32
+        assert model.n_ensemble == 8
 
     def test_initialization_custom(self):
         """Test DPOSE initialization with custom parameters."""
-        model = DPOSE(
-            layers=(2, 10, 16), loss_type="mse", optimizer="adam", seed=123, min_sigma=1e-4
-        )
+        model = DPOSE(layers=(2, 4, 8), loss_type="mse", optimizer="adam", seed=123, min_sigma=1e-4)
 
-        assert model.layers == (2, 10, 16)
+        assert model.layers == (2, 4, 8)
         assert model.loss_type == "mse"
         assert model.optimizer == "adam"
         assert model.min_sigma == 1e-4
-        assert model.n_ensemble == 16
+        assert model.n_ensemble == 8
 
     def test_fit_predict_basic(self, simple_linear_data):
         """Test basic fit and predict cycle."""
