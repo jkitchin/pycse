@@ -280,6 +280,148 @@ class TestJAXPeriodicPeriodicity:
         np.testing.assert_allclose(y_base, model.predict(x_shift_2), rtol=1e-10)
 
 
+class TestJAXPeriodicInputFormats:
+    """Test different input formats for periodicity parameter."""
+
+    def test_periodicity_float_input(self, periodic_sine_data):
+        """Test periodicity as a single float (feature 0)."""
+        X, y = periodic_sine_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=2 * np.pi,  # Single float
+            n_harmonics=3,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        # Check that periodicity was correctly interpreted
+        assert model.periodicity_ == {0: 2 * np.pi}
+
+        # Verify periodicity works
+        x_base = np.array([[0.5]])
+        x_shifted = x_base + 2 * np.pi
+        np.testing.assert_allclose(model.predict(x_base), model.predict(x_shifted), rtol=1e-10)
+
+    def test_periodicity_list_input(self, periodic_2d_data):
+        """Test periodicity as a list."""
+        X, y = periodic_2d_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=[2 * np.pi, None],  # First periodic, second not
+            n_harmonics=3,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        # Check that periodicity was correctly interpreted
+        assert model.periodicity_ == {0: 2 * np.pi}
+
+    def test_periodicity_list_all_periodic(self, multi_periodic_data):
+        """Test periodicity as a list with all features periodic."""
+        X, y = multi_periodic_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=[2 * np.pi, 2 * np.pi, 2 * np.pi],  # All periodic
+            n_harmonics=2,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        # Check that all features are periodic
+        assert model.periodicity_ == {0: 2 * np.pi, 1: 2 * np.pi, 2: 2 * np.pi}
+
+    def test_periodicity_tuple_input(self, periodic_2d_data):
+        """Test periodicity as a tuple."""
+        X, y = periodic_2d_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=(2 * np.pi, None),  # Tuple format
+            n_harmonics=3,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        assert model.periodicity_ == {0: 2 * np.pi}
+
+    def test_periodicity_numpy_array_input(self, multi_periodic_data):
+        """Test periodicity as a numpy array."""
+        X, y = multi_periodic_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=np.array([2 * np.pi, 1.0, 2 * np.pi]),
+            n_harmonics=2,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        assert 0 in model.periodicity_
+        assert 1 in model.periodicity_
+        assert 2 in model.periodicity_
+
+    def test_periodicity_int_input(self, periodic_sine_data):
+        """Test periodicity as an integer."""
+        X, y = periodic_sine_data
+
+        model = JAXPeriodicRegressor(
+            periodicity=1,  # Integer period
+            n_harmonics=3,
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+        )
+        model.fit(X, y)
+
+        assert model.periodicity_ == {0: 1.0}
+
+    def test_periodicity_formats_equivalent(self, periodic_sine_data):
+        """Test that different formats produce equivalent results."""
+        X, y = periodic_sine_data
+        period = 2 * np.pi
+
+        # Train with different formats
+        model_float = JAXPeriodicRegressor(
+            periodicity=period,
+            n_harmonics=3,
+            epochs=20,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            random_state=42,
+        )
+        model_list = JAXPeriodicRegressor(
+            periodicity=[period],
+            n_harmonics=3,
+            epochs=20,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            random_state=42,
+        )
+        model_dict = JAXPeriodicRegressor(
+            periodicity={0: period},
+            n_harmonics=3,
+            epochs=20,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            random_state=42,
+        )
+
+        model_float.fit(X, y)
+        model_list.fit(X, y)
+        model_dict.fit(X, y)
+
+        # All should have same internal representation
+        assert model_float.periodicity_ == model_list.periodicity_ == model_dict.periodicity_
+
+        # All should produce same predictions (same random state)
+        X_test = np.array([[0.5], [1.0], [2.0]])
+        np.testing.assert_allclose(
+            model_float.predict(X_test), model_list.predict(X_test), rtol=1e-10
+        )
+        np.testing.assert_allclose(
+            model_float.predict(X_test), model_dict.predict(X_test), rtol=1e-10
+        )
+
+
 class TestJAXPeriodicUncertainty:
     """Test LLPR uncertainty quantification."""
 

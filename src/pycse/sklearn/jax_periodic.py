@@ -370,12 +370,16 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
     hidden_dims : tuple of int, default=(32, 32)
         Dimensions of hidden layers.
 
-    periodicity : dict or None, default=None
-        Dictionary mapping feature indices to their periods.
-        Example: {0: 2*np.pi, 2: 1.0} means feature 0 has period 2π
-        and feature 2 has period 1.0. Unspecified features are non-periodic.
-        If None, no features are treated as periodic.
-        When learn_period=True, these are used as initial guesses.
+    periodicity : float, list, dict, or None, default=None
+        Specifies which features are periodic and their periods.
+        Accepts multiple formats:
+        - float: Feature 0 has this period (e.g., 2*np.pi)
+        - list: Each position i has period[i], None for non-periodic
+          (e.g., [2*np.pi, None, 24.0])
+        - dict: Maps feature indices to periods (e.g., {0: 2*np.pi, 2: 24.0})
+        - None: No features are periodic
+        Unspecified features are treated as non-periodic.
+        When learn_period=True, these values are used as initial guesses.
 
     n_harmonics : int, default=5
         Number of harmonics to use for each periodic feature.
@@ -539,8 +543,17 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         Args:
             n_features: Number of input features.
         """
+        # Normalize input to dict format
         if self.periodicity is None:
             self.periodicity_ = {}
+        elif isinstance(self.periodicity, (int, float, np.integer, np.floating)):
+            # Single number: feature 0 has this period
+            self.periodicity_ = {0: float(self.periodicity)}
+        elif isinstance(self.periodicity, (list, tuple, np.ndarray)):
+            # List: each position i has period[i], None means non-periodic
+            self.periodicity_ = {
+                i: float(p) for i, p in enumerate(self.periodicity) if p is not None
+            }
         else:
             self.periodicity_ = dict(self.periodicity)
 
