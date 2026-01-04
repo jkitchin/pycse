@@ -445,9 +445,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             if not isinstance(idx, (int, np.integer)):
                 raise ValueError(f"Periodicity index must be int, got {type(idx)}")
             if idx < 0 or idx >= n_features:
-                raise ValueError(
-                    f"Periodicity index {idx} out of range [0, {n_features})"
-                )
+                raise ValueError(f"Periodicity index {idx} out of range [0, {n_features})")
 
         # Validate periods
         for idx, period in self.periodicity_.items():
@@ -506,7 +504,6 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         Returns:
             Expanded array of shape (n_samples, n_expanded_features).
         """
-        n_samples = X.shape[0]
         n_original = X.shape[1]
 
         def expand_single(x):
@@ -574,9 +571,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
     ) -> None:
         """Calibrate alpha_squared and zeta_squared on validation set."""
         # Get predictions and features
-        y_pred = self._postprocess_y(
-            _forward_batch(self.params_, X_val_expanded, self.activation)
-        )
+        y_pred = self._postprocess_y(_forward_batch(self.params_, X_val_expanded, self.activation))
         _, features = _forward_batch(
             self.params_,
             X_val_expanded,
@@ -657,14 +652,12 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             train_idx, val_idx = train_test_split(
                 indices, test_size=self.val_size, random_state=self.random_state
             )
-            X_train = X_proc[train_idx]
             X_train_expanded = X_expanded[train_idx]
             y_train = y_proc[train_idx]
             X_val = X_proc[val_idx]
             X_val_expanded = X_expanded[val_idx]
             y_val = y_proc[val_idx]
         else:
-            X_train = X_proc
             X_train_expanded = X_expanded
             y_train = y_proc
             X_val, X_val_expanded, y_val = None, None, None
@@ -915,6 +908,6 @@ if __name__ == "__main__":
     print(f"\nNumber of expanded features: {model.n_expanded_features_}")
     print(f"  Original: {model.n_features_in_}")
     print(f"  Periodic feature 0: 2 * {model.n_harmonics} = {2 * model.n_harmonics} features")
-    print(f"  Non-periodic feature 1: 1 feature")
+    print("  Non-periodic feature 1: 1 feature")
 
     print("\nExample complete!")

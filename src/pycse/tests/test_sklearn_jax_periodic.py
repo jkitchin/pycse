@@ -374,7 +374,10 @@ class TestJAXPeriodicFeatureExpansion:
 
         n_harmonics = 4
         model = JAXPeriodicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, periodicity={1: 1.0}, n_harmonics=n_harmonics
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={1: 1.0},
+            n_harmonics=n_harmonics,
         )
         model.fit(X, y)
 
