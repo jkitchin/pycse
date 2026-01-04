@@ -858,3 +858,223 @@ class TestJAXPeriodicValidation:
 
         with pytest.raises(ValueError, match="Period must be positive"):
             model.fit(X, y)
+
+
+class TestJAXPeriodicLearnablePeriods:
+    """Test learnable period functionality."""
+
+    def test_learn_period_default_false(self):
+        """Test that learn_period defaults to False."""
+        model = JAXPeriodicRegressor()
+        assert model.learn_period is False
+
+    def test_learn_period_initialization(self):
+        """Test initialization with learn_period=True."""
+        model = JAXPeriodicRegressor(
+            periodicity={0: 2 * np.pi},
+            learn_period=True,
+            period_reg=0.05,
+        )
+        assert model.learn_period is True
+        assert model.period_reg == 0.05
+
+    def test_learn_period_params_contain_period_raw(self):
+        """Test that params contain period_raw when learn_period=True."""
+        np.random.seed(42)
+        X = np.random.uniform(0, 2 * np.pi, (50, 1))
+        y = np.sin(X[:, 0])
+
+        model = JAXPeriodicRegressor(
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 2 * np.pi},
+            learn_period=True,
+        )
+        model.fit(X, y)
+
+        assert "period_raw" in model.params_
+
+    def test_learn_period_no_period_raw_when_false(self):
+        """Test that params don't contain period_raw when learn_period=False."""
+        np.random.seed(42)
+        X = np.random.uniform(0, 2 * np.pi, (50, 1))
+        y = np.sin(X[:, 0])
+
+        model = JAXPeriodicRegressor(
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 2 * np.pi},
+            learn_period=False,
+        )
+        model.fit(X, y)
+
+        assert "period_raw" not in model.params_
+
+    def test_learned_periods_attribute(self):
+        """Test that learned_periods_ is set correctly."""
+        np.random.seed(42)
+        X = np.random.uniform(0, 2 * np.pi, (50, 1))
+        y = np.sin(X[:, 0])
+
+        # With learn_period=True
+        model_learn = JAXPeriodicRegressor(
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 2 * np.pi},
+            learn_period=True,
+        )
+        model_learn.fit(X, y)
+        assert model_learn.learned_periods_ is not None
+        assert 0 in model_learn.learned_periods_
+        assert model_learn.learned_periods_[0] > 0
+
+        # With learn_period=False
+        model_fixed = JAXPeriodicRegressor(
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 2 * np.pi},
+            learn_period=False,
+        )
+        model_fixed.fit(X, y)
+        assert model_fixed.learned_periods_ is None
+
+    def test_learn_period_discovers_correct_period(self):
+        """Test that learnable periods can discover the correct period."""
+        np.random.seed(42)
+        true_period = 5.0
+        n_samples = 150
+
+        X = np.random.uniform(0, 3 * true_period, (n_samples, 1))
+        y = np.sin(2 * np.pi * X[:, 0] / true_period) + 0.05 * np.random.randn(n_samples)
+
+        # Start with wrong initial guess
+        model = JAXPeriodicRegressor(
+            epochs=100,  # More epochs for learning
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 6.0},  # Initial guess (wrong)
+            learn_period=True,
+            period_reg=0.001,  # Low regularization to allow learning
+            n_harmonics=3,
+            random_state=42,
+        )
+        model.fit(X, y)
+
+        # Check that period moved toward true value
+        learned = model.learned_periods_[0]
+        initial = 6.0
+
+        # Learned period should be closer to true period than initial guess
+        assert abs(learned - true_period) < abs(initial - true_period)
+
+    def test_learn_period_regularization_effect(self):
+        """Test that period_reg controls how much period can change."""
+        np.random.seed(42)
+        true_period = 5.0
+        initial_guess = 7.0
+
+        X = np.random.uniform(0, 3 * true_period, (100, 1))
+        y = np.sin(2 * np.pi * X[:, 0] / true_period) + 0.05 * np.random.randn(100)
+
+        # High regularization: period should stay close to initial
+        model_high_reg = JAXPeriodicRegressor(
+            epochs=50,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: initial_guess},
+            learn_period=True,
+            period_reg=10.0,  # High regularization
+            n_harmonics=3,
+            random_state=42,
+        )
+        model_high_reg.fit(X, y)
+
+        # Low regularization: period should move more
+        model_low_reg = JAXPeriodicRegressor(
+            epochs=50,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: initial_guess},
+            learn_period=True,
+            period_reg=0.001,  # Low regularization
+            n_harmonics=3,
+            random_state=42,
+        )
+        model_low_reg.fit(X, y)
+
+        # High reg should stay closer to initial
+        high_reg_change = abs(model_high_reg.learned_periods_[0] - initial_guess)
+        low_reg_change = abs(model_low_reg.learned_periods_[0] - initial_guess)
+
+        assert high_reg_change < low_reg_change
+
+    def test_learn_period_with_multiple_periodic_features(self):
+        """Test learnable periods with multiple periodic features."""
+        np.random.seed(42)
+        n_samples = 100
+        period1, period2 = 4.0, 6.0
+
+        X = np.column_stack(
+            [
+                np.random.uniform(0, 2 * period1, n_samples),
+                np.random.uniform(0, 2 * period2, n_samples),
+            ]
+        )
+        y = (
+            np.sin(2 * np.pi * X[:, 0] / period1)
+            + np.cos(2 * np.pi * X[:, 1] / period2)
+            + 0.05 * np.random.randn(n_samples)
+        )
+
+        model = JAXPeriodicRegressor(
+            epochs=50,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 5.0, 1: 7.0},  # Initial guesses
+            learn_period=True,
+            period_reg=0.01,
+            n_harmonics=3,
+            random_state=42,
+        )
+        model.fit(X, y)
+
+        # Both features should have learned periods
+        assert 0 in model.learned_periods_
+        assert 1 in model.learned_periods_
+        assert model.learned_periods_[0] > 0
+        assert model.learned_periods_[1] > 0
+
+    def test_learn_period_sklearn_compatibility(self):
+        """Test that learn_period works with sklearn utilities."""
+        from sklearn.base import clone
+
+        np.random.seed(42)
+        X = np.random.uniform(0, 2 * np.pi, (50, 1))
+        y = np.sin(X[:, 0])
+
+        model = JAXPeriodicRegressor(
+            epochs=_TEST_EPOCHS,
+            hidden_dims=_TEST_HIDDEN_DIMS,
+            periodicity={0: 2 * np.pi},
+            learn_period=True,
+            period_reg=0.1,
+        )
+        model.fit(X, y)
+
+        # Clone should preserve learn_period setting
+        cloned = clone(model)
+        assert cloned.learn_period is True
+        assert cloned.period_reg == 0.1
+        assert not hasattr(cloned, "learned_periods_")
+
+    def test_learn_period_get_set_params(self):
+        """Test get_params and set_params with learn_period."""
+        model = JAXPeriodicRegressor(
+            periodicity={0: 2 * np.pi},
+            learn_period=True,
+            period_reg=0.5,
+        )
+
+        params = model.get_params()
+        assert params["learn_period"] is True
+        assert params["period_reg"] == 0.5
+
+        model.set_params(learn_period=False, period_reg=0.2)
+        assert model.learn_period is False
+        assert model.period_reg == 0.2

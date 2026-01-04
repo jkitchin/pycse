@@ -21,6 +21,15 @@ The expanded features are then processed through a standard MLP:
     z_k+1 = φ(W_k @ z_k + b_k)  for k = 0, ..., L-1
     f(x) = W_out @ z_L + b_out
 
+Learnable Periods:
+-----------------
+When `learn_period=True`, the periods are learned from data instead of being
+fixed. The periods are parameterized using softplus to ensure positivity:
+    T = softplus(T_raw) = log(1 + exp(T_raw))
+
+A regularization term encourages periods to stay near their initial values:
+    L_reg = period_reg * Σ (T - T_init)²
+
 LLPR Uncertainty Quantification:
 -------------------------------
 Uses Last-Layer Prediction Rigidity to provide uncertainty estimates:
@@ -40,21 +49,20 @@ References:
 Example usage:
     from pycse.sklearn.jax_periodic import JAXPeriodicRegressor
 
-    # Single periodic feature
+    # Fixed period (default)
     model = JAXPeriodicRegressor(
-        hidden_dims=(32, 32),
         periodicity={0: 2*np.pi},  # x0 is periodic with period 2π
         n_harmonics=5,
-        epochs=500,
+    )
+
+    # Learnable period
+    model = JAXPeriodicRegressor(
+        periodicity={0: 2*np.pi},  # Initial guess for period
+        learn_period=True,         # Learn the actual period from data
+        period_reg=0.1,            # Regularization toward initial period
     )
     model.fit(X_train, y_train)
-    yhat = model.predict(X_test)
-    yhat, std = model.predict_with_uncertainty(X_test)
-
-    # Multiple periodic features with different periods
-    model = JAXPeriodicRegressor(
-        periodicity={0: 2*np.pi, 2: 1.0},  # x0 period 2π, x2 period 1.0
-    )
+    print(f"Learned period: {model.learned_periods_[0]:.4f}")
 
 Requires: numpy, sklearn, jax, optax
 """
@@ -100,43 +108,108 @@ def _tanh(x: jnp.ndarray) -> jnp.ndarray:
     return jnp.tanh(x)
 
 
-def _expand_periodic_features(
+def _softplus_inverse(x: jnp.ndarray) -> jnp.ndarray:
+    """Inverse of softplus: log(exp(x) - 1).
+
+    Used to initialize raw period parameters.
+    """
+    return jnp.log(jnp.exp(x) - 1.0 + 1e-10)
+
+
+def _expand_periodic_features_vectorized(
     x: jnp.ndarray,
-    n_original_features: int,
-    periodic_indices: jnp.ndarray,
     periods: jnp.ndarray,
-    n_harmonics: int,
+    expand_indices: jnp.ndarray,
+    harmonic_nums: jnp.ndarray,
+    is_sin: jnp.ndarray,
 ) -> jnp.ndarray:
-    """Expand input with Fourier features for periodic dimensions.
+    """Expand input with Fourier features using precomputed index structure.
+
+    This function is designed to be JIT-compatible without Python conditionals.
+    The structure arrays (expand_indices, harmonic_nums, is_sin) are precomputed
+    at init time and describe how to build the output.
 
     Args:
-        x: Input array of shape (n_original_features,).
-        n_original_features: Number of original input features.
-        periodic_indices: Array of indices that are periodic (-1 for non-periodic).
-        periods: Array of periods for periodic features.
-        n_harmonics: Number of harmonics to use.
+        x: Input array of shape (n_features,).
+        periods: Array of periods for each input feature, shape (n_features,).
+        expand_indices: Which input feature each output comes from, shape (n_output,).
+        harmonic_nums: Harmonic number for each output (0 for passthrough), shape (n_output,).
+        is_sin: Whether each output is sin (True) or cos/passthrough (False), shape (n_output,).
 
     Returns:
-        Expanded feature array.
+        Expanded feature array of shape (n_output,).
     """
-    expanded = []
+    # Get the input feature values and periods for each output
+    input_vals = x[expand_indices]  # (n_output,)
+    period_vals = periods[expand_indices]  # (n_output,)
 
-    for i in range(n_original_features):
-        # Check if this feature is periodic
+    # Compute frequency for each output
+    # For passthrough (harmonic_nums == 0), this will compute garbage but we mask it out
+    freqs = 2.0 * jnp.pi * harmonic_nums / jnp.maximum(period_vals, 1e-10)  # (n_output,)
+    phase = freqs * input_vals
+
+    # Compute sin and cos
+    sin_vals = jnp.sin(phase)
+    cos_vals = jnp.cos(phase)
+
+    # Select: passthrough (harmonic_nums == 0), sin, or cos
+    is_passthrough = harmonic_nums == 0
+
+    result = jnp.where(
+        is_passthrough,
+        input_vals,
+        jnp.where(is_sin, sin_vals, cos_vals),
+    )
+
+    return result
+
+
+def _build_expansion_indices(
+    n_features: int,
+    periodic_indices: np.ndarray,
+    n_harmonics: int,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Build index arrays for vectorized feature expansion.
+
+    This is called once at init time to precompute the structure.
+
+    Args:
+        n_features: Number of input features.
+        periodic_indices: Array of indices (-1 for non-periodic).
+        n_harmonics: Number of harmonics for periodic features.
+
+    Returns:
+        Tuple of (expand_indices, harmonic_nums, is_sin) arrays.
+    """
+    expand_indices = []
+    harmonic_nums = []
+    is_sin = []
+
+    for i in range(n_features):
         is_periodic = periodic_indices[i] >= 0
 
         if is_periodic:
-            period = periods[i]
             # Add Fourier features: sin and cos for each harmonic
             for h in range(1, n_harmonics + 1):
-                freq = 2.0 * jnp.pi * h / period
-                expanded.append(jnp.sin(freq * x[i]))
-                expanded.append(jnp.cos(freq * x[i]))
+                # Sin term
+                expand_indices.append(i)
+                harmonic_nums.append(h)
+                is_sin.append(True)
+                # Cos term
+                expand_indices.append(i)
+                harmonic_nums.append(h)
+                is_sin.append(False)
         else:
-            # Non-periodic: pass through unchanged
-            expanded.append(x[i])
+            # Non-periodic: pass through
+            expand_indices.append(i)
+            harmonic_nums.append(0)  # 0 indicates passthrough
+            is_sin.append(False)
 
-    return jnp.array(expanded)
+    return (
+        np.array(expand_indices, dtype=np.int32),
+        np.array(harmonic_nums, dtype=np.float64),
+        np.array(is_sin, dtype=np.bool_),
+    )
 
 
 def _compute_expanded_dim(
@@ -165,6 +238,8 @@ def _init_params(
     key: jax.random.PRNGKey,
     n_expanded_features: int,
     hidden_dims: Tuple[int, ...],
+    periods_init: Optional[jnp.ndarray] = None,
+    learn_period: bool = False,
 ) -> Dict[str, Any]:
     """Initialize network parameters with Xavier scaling.
 
@@ -172,6 +247,8 @@ def _init_params(
         key: JAX PRNG key.
         n_expanded_features: Number of expanded input features.
         hidden_dims: Tuple of hidden layer dimensions.
+        periods_init: Initial period values (for learnable periods).
+        learn_period: Whether periods are learnable.
 
     Returns:
         PyTree of parameters.
@@ -191,6 +268,12 @@ def _init_params(
 
         params["W"].append(W)
         params["b"].append(b)
+
+    # Add learnable period parameters if requested
+    if learn_period and periods_init is not None:
+        # Use softplus parameterization: period = softplus(period_raw)
+        # Initialize so that softplus(period_raw) ≈ periods_init
+        params["period_raw"] = _softplus_inverse(periods_init)
 
     return params
 
@@ -292,11 +375,22 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         Example: {0: 2*np.pi, 2: 1.0} means feature 0 has period 2π
         and feature 2 has period 1.0. Unspecified features are non-periodic.
         If None, no features are treated as periodic.
+        When learn_period=True, these are used as initial guesses.
 
     n_harmonics : int, default=5
         Number of harmonics to use for each periodic feature.
         Higher values capture more complex periodic patterns but
         increase model capacity and potential overfitting.
+
+    learn_period : bool, default=False
+        Whether to learn the periods from data. If True, the periods
+        specified in `periodicity` are used as initial guesses and
+        optimized during training.
+
+    period_reg : float, default=0.1
+        Regularization strength for learned periods. Encourages periods
+        to stay near their initial values. Only used when learn_period=True.
+        Higher values = stronger regularization toward initial periods.
 
     activation : str, default="silu"
         Activation function for hidden layers.
@@ -344,13 +438,17 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         Fitted parameters of the network.
 
     periodicity_ : dict
-        Validated periodicity specification.
+        Validated periodicity specification (initial values).
+
+    learned_periods_ : dict or None
+        If learn_period=True, the learned period values after fitting.
+        Maps feature indices to learned periods. None if learn_period=False.
 
     periodic_indices_ : ndarray
         Array marking which features are periodic.
 
     periods_ : ndarray
-        Array of periods for each feature.
+        Array of periods for each feature (learned or fixed).
 
     n_expanded_features_ : int
         Number of features after Fourier expansion.
@@ -381,18 +479,20 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
     >>> import numpy as np
     >>> from pycse.sklearn.jax_periodic import JAXPeriodicRegressor
     >>>
-    >>> # Generate periodic data
-    >>> X = np.random.uniform(0, 2*np.pi, (100, 2))
-    >>> y = np.sin(X[:, 0]) + 0.5*np.cos(2*X[:, 1])  # Periodic in both
-    >>>
+    >>> # Fixed periods (default)
     >>> model = JAXPeriodicRegressor(
-    ...     periodicity={0: 2*np.pi, 1: np.pi},  # Different periods
+    ...     periodicity={0: 2*np.pi},
     ...     n_harmonics=3,
-    ...     epochs=100
+    ... )
+    >>>
+    >>> # Learnable periods
+    >>> model = JAXPeriodicRegressor(
+    ...     periodicity={0: 6.0},  # Initial guess
+    ...     learn_period=True,
+    ...     period_reg=0.1,
     ... )
     >>> model.fit(X, y)
-    >>> yhat = model.predict(X[:5])
-    >>> yhat, std = model.predict_with_uncertainty(X[:5])
+    >>> print(f"Learned period: {model.learned_periods_[0]:.4f}")
     """
 
     def __init__(
@@ -400,6 +500,8 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         hidden_dims: Tuple[int, ...] = (32, 32),
         periodicity: Optional[Dict[int, float]] = None,
         n_harmonics: int = 5,
+        learn_period: bool = False,
+        period_reg: float = 0.1,
         activation: str = "silu",
         learning_rate: float = 5e-3,
         weight_decay: float = 0.0,
@@ -416,6 +518,8 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         self.hidden_dims = hidden_dims
         self.periodicity = periodicity
         self.n_harmonics = n_harmonics
+        self.learn_period = learn_period
+        self.period_reg = period_reg
         self.activation = activation
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -462,10 +566,43 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             dtype=jnp.float64,
         )
 
+        # Store initial periods for regularization
+        self.initial_periods_ = self.periods_.copy()
+
         # Compute expanded dimension
         self.n_expanded_features_ = _compute_expanded_dim(
             n_features, self.periodicity_, self.n_harmonics
         )
+
+        # Build precomputed index arrays for vectorized feature expansion
+        # This enables JIT-compatible expansion without Python conditionals
+        expand_indices, harmonic_nums, is_sin = _build_expansion_indices(
+            n_features, np.array(self.periodic_indices_), self.n_harmonics
+        )
+        self.expand_indices_ = jnp.array(expand_indices)
+        self.harmonic_nums_ = jnp.array(harmonic_nums)
+        self.is_sin_ = jnp.array(is_sin)
+
+    def _get_periods(self, params: Optional[Dict[str, Any]] = None) -> jnp.ndarray:
+        """Get current periods (learned or fixed).
+
+        Args:
+            params: Parameter dict. If None, uses self.params_.
+
+        Returns:
+            Array of periods for each feature.
+        """
+        if params is None:
+            params = self.params_
+
+        if self.learn_period and "period_raw" in params:
+            # Learned periods: apply softplus to get positive values
+            learned_periods = _softplus(params["period_raw"])
+            # Only use learned values for periodic features
+            periods = jnp.where(self.periodic_indices_ >= 0, learned_periods, self.periods_)
+            return periods
+        else:
+            return self.periods_
 
     def _preprocess_X(self, X: np.ndarray, fit: bool = False) -> jnp.ndarray:
         """Preprocess input features.
@@ -495,24 +632,33 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
 
         return jnp.array(X, dtype=jnp.float64)
 
-    def _expand_features(self, X: jnp.ndarray) -> jnp.ndarray:
+    def _expand_features(
+        self, X: jnp.ndarray, periods: Optional[jnp.ndarray] = None
+    ) -> jnp.ndarray:
         """Expand features with Fourier basis for periodic dimensions.
 
         Args:
             X: Input array of shape (n_samples, n_features).
+            periods: Periods to use. If None, uses self.periods_.
 
         Returns:
             Expanded array of shape (n_samples, n_expanded_features).
         """
-        n_original = X.shape[1]
+        if periods is None:
+            periods = self.periods_
+
+        # Use precomputed index arrays for vectorized expansion
+        expand_indices = self.expand_indices_
+        harmonic_nums = self.harmonic_nums_
+        is_sin = self.is_sin_
 
         def expand_single(x):
-            return _expand_periodic_features(
+            return _expand_periodic_features_vectorized(
                 x,
-                n_original,
-                self.periodic_indices_,
-                self.periods_,
-                self.n_harmonics,
+                periods,
+                expand_indices,
+                harmonic_nums,
+                is_sin,
             )
 
         return vmap(expand_single)(X)
@@ -643,26 +789,22 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         X_proc = self._preprocess_X(X, fit=True)
         y_proc = self._preprocess_y(y, fit=True)
 
-        # Expand features
-        X_expanded = self._expand_features(X_proc)
-
         # Split for validation (used for LLPR calibration)
         if self.val_size > 0:
             indices = np.arange(len(X_proc))
             train_idx, val_idx = train_test_split(
                 indices, test_size=self.val_size, random_state=self.random_state
             )
-            X_train_expanded = X_expanded[train_idx]
+            X_train = X_proc[train_idx]
             y_train = y_proc[train_idx]
             X_val = X_proc[val_idx]
-            X_val_expanded = X_expanded[val_idx]
             y_val = y_proc[val_idx]
         else:
-            X_train_expanded = X_expanded
+            X_train = X_proc
             y_train = y_proc
-            X_val, X_val_expanded, y_val = None, None, None
+            X_val, y_val = None, None
 
-        n_samples = X_train_expanded.shape[0]
+        n_samples = X_train.shape[0]
 
         # Initialize parameters
         key = jax.random.PRNGKey(self.random_state)
@@ -671,6 +813,8 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             init_key,
             self.n_expanded_features_,
             self.hidden_dims,
+            periods_init=self.periods_ if self.learn_period else None,
+            learn_period=self.learn_period,
         )
 
         # Create optimizer
@@ -686,11 +830,51 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
 
         # JIT-compiled functions
         activation = self.activation
+        periodic_indices = self.periodic_indices_
+        initial_periods = self.initial_periods_
+        period_reg = self.period_reg
+        learn_period = self.learn_period
+
+        # Precomputed index arrays for vectorized expansion
+        expand_indices = self.expand_indices_
+        harmonic_nums = self.harmonic_nums_
+        is_sin = self.is_sin_
+
+        def expand_with_params(X_batch, params):
+            """Expand features using periods from params."""
+            if learn_period and "period_raw" in params:
+                periods = _softplus(params["period_raw"])
+            else:
+                periods = initial_periods
+
+            def expand_single(x):
+                return _expand_periodic_features_vectorized(
+                    x, periods, expand_indices, harmonic_nums, is_sin
+                )
+
+            return vmap(expand_single)(X_batch)
 
         @jit
         def loss_fn(params, X_batch, y_batch):
-            preds = _forward_batch(params, X_batch, activation)
-            return jnp.mean((preds - y_batch) ** 2)
+            # Expand features with current periods
+            X_expanded = expand_with_params(X_batch, params)
+            preds = _forward_batch(params, X_expanded, activation)
+            mse_loss = jnp.mean((preds - y_batch) ** 2)
+
+            # Add period regularization if learning periods
+            if learn_period and "period_raw" in params:
+                learned_periods = _softplus(params["period_raw"])
+                # Regularize toward initial periods (only for periodic features)
+                period_loss = period_reg * jnp.sum(
+                    jnp.where(
+                        periodic_indices >= 0,
+                        (learned_periods - initial_periods) ** 2,
+                        0.0,
+                    )
+                )
+                return mse_loss + period_loss
+
+            return mse_loss
 
         @jit
         def train_step(params, opt_state, X_batch, y_batch):
@@ -706,7 +890,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         for epoch in range(self.epochs):
             key, shuffle_key = jax.random.split(key)
             perm = jax.random.permutation(shuffle_key, n_samples)
-            X_shuffled = X_train_expanded[perm]
+            X_shuffled = X_train[perm]
             y_shuffled = y_train[perm]
 
             epoch_losses = []
@@ -725,15 +909,40 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             self.loss_history_.append(epoch_loss)
 
             if self.verbose and (epoch + 1) % 100 == 0:
-                print(f"Epoch {epoch + 1}/{self.epochs}, Loss: {epoch_loss:.6f}")
+                msg = f"Epoch {epoch + 1}/{self.epochs}, Loss: {epoch_loss:.6f}"
+                if self.learn_period and "period_raw" in params:
+                    learned_periods = _softplus(params["period_raw"])
+                    period_strs = [
+                        f"{i}:{float(learned_periods[i]):.4f}"
+                        for i in range(len(learned_periods))
+                        if self.periodic_indices_[i] >= 0
+                    ]
+                    msg += f", Periods: {{{', '.join(period_strs)}}}"
+                print(msg)
 
         self.params_ = params
+
+        # Update periods_ with learned values if applicable
+        if self.learn_period and "period_raw" in self.params_:
+            self.periods_ = self._get_periods()
+            # Store learned periods as dict for easy access
+            self.learned_periods_ = {
+                i: float(self.periods_[i])
+                for i in range(self.n_features_in_)
+                if self.periodic_indices_[i] >= 0
+            }
+        else:
+            self.learned_periods_ = None
+
+        # Expand features with final periods for LLPR
+        X_train_expanded = self._expand_features(X_train, self.periods_)
 
         # Compute LLPR covariance matrix
         self._compute_covariance(X_train_expanded)
 
         # Calibrate uncertainty parameters
         if X_val is not None and (self.alpha_squared == "auto" or self.zeta_squared == "auto"):
+            X_val_expanded = self._expand_features(X_val, self.periods_)
             self._calibrate_uncertainty(X_val, X_val_expanded, y_val)
         else:
             self.alpha_squared_ = 1.0 if self.alpha_squared == "auto" else self.alpha_squared
@@ -756,7 +965,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         """
         X = np.atleast_2d(X)
         X_proc = self._preprocess_X(X, fit=False)
-        X_expanded = self._expand_features(X_proc)
+        X_expanded = self._expand_features(X_proc, self.periods_)
 
         preds = _forward_batch(self.params_, X_expanded, self.activation)
 
@@ -785,7 +994,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         """
         X = np.atleast_2d(X)
         X_proc = self._preprocess_X(X, fit=False)
-        X_expanded = self._expand_features(X_proc)
+        X_expanded = self._expand_features(X_proc, self.periods_)
 
         preds, features = _forward_batch(
             self.params_,
@@ -825,7 +1034,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         """
         X = np.atleast_2d(X)
         X_proc = self._preprocess_X(X, fit=False)
-        X_expanded = self._expand_features(X_proc)
+        X_expanded = self._expand_features(X_proc, self.periods_)
         return np.array(X_expanded)
 
     def score(self, X: np.ndarray, y: np.ndarray) -> float:
@@ -856,58 +1065,59 @@ if __name__ == "__main__":
     print("JAXPeriodicRegressor Example")
     print("=" * 50)
 
-    # Generate periodic data
+    # Generate periodic data with unknown period
     np.random.seed(42)
     n_samples = 200
-    X = np.random.uniform(0, 2 * np.pi, (n_samples, 2))
-
-    # Target: periodic in x0 (period 2π), linear in x1
-    y = np.sin(X[:, 0]) + 0.5 * np.cos(2 * X[:, 0]) + 0.3 * X[:, 1]
-    y += 0.1 * np.random.randn(n_samples)
+    true_period = 5.5  # True period (unknown to the model)
+    X = np.random.uniform(0, 3 * true_period, (n_samples, 1))
+    y = np.sin(2 * np.pi * X[:, 0] / true_period) + 0.1 * np.random.randn(n_samples)
 
     from sklearn.model_selection import train_test_split
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Create model with periodic features
-    model = JAXPeriodicRegressor(
+    # Model with learnable period (initial guess = 6.0)
+    print("\n1. Learnable period model:")
+    model_learn = JAXPeriodicRegressor(
         hidden_dims=(32, 32),
-        periodicity={0: 2 * np.pi},  # x0 is periodic with period 2π
+        periodicity={0: 6.0},  # Initial guess (true period is 5.5)
+        learn_period=True,
+        period_reg=0.01,
         n_harmonics=5,
-        learning_rate=1e-3,
         epochs=500,
-        batch_size=32,
         random_state=42,
         verbose=True,
     )
 
-    print("\nFitting model...")
-    model.fit(X_train, y_train)
+    model_learn.fit(X_train, y_train)
+    print(f"\nTrue period: {true_period:.4f}")
+    print(f"Learned period: {model_learn.learned_periods_[0]:.4f}")
+    print(f"R² score: {model_learn.score(X_test, y_test):.4f}")
 
-    # Predict
-    y_pred = model.predict(X_test)
-    r2 = model.score(X_test, y_test)
-    print(f"\nR² score: {r2:.4f}")
+    # Model with fixed period (correct)
+    print("\n2. Fixed period model (correct period):")
+    model_fixed = JAXPeriodicRegressor(
+        hidden_dims=(32, 32),
+        periodicity={0: true_period},
+        learn_period=False,
+        n_harmonics=5,
+        epochs=500,
+        random_state=42,
+    )
+    model_fixed.fit(X_train, y_train)
+    print(f"R² score: {model_fixed.score(X_test, y_test):.4f}")
 
-    # Predict with uncertainty
-    y_pred, y_std = model.predict_with_uncertainty(X_test)
-    print(f"Mean uncertainty: {np.mean(y_std):.4f}")
-
-    # Verify periodicity
-    print("\nVerifying periodicity:")
-    x_test_point = np.array([[0.5, 1.0]])
-    x_test_shifted = np.array([[0.5 + 2 * np.pi, 1.0]])  # Shift by period
-
-    y1 = model.predict(x_test_point)[0]
-    y2 = model.predict(x_test_shifted)[0]
-    print(f"  f(0.5, 1.0) = {y1:.4f}")
-    print(f"  f(0.5 + 2π, 1.0) = {y2:.4f}")
-    print(f"  Difference: {abs(y1 - y2):.6f} (should be ~0)")
-
-    # Show expanded features
-    print(f"\nNumber of expanded features: {model.n_expanded_features_}")
-    print(f"  Original: {model.n_features_in_}")
-    print(f"  Periodic feature 0: 2 * {model.n_harmonics} = {2 * model.n_harmonics} features")
-    print("  Non-periodic feature 1: 1 feature")
+    # Model with fixed period (wrong)
+    print("\n3. Fixed period model (wrong period):")
+    model_wrong = JAXPeriodicRegressor(
+        hidden_dims=(32, 32),
+        periodicity={0: 6.0},  # Wrong period
+        learn_period=False,
+        n_harmonics=5,
+        epochs=500,
+        random_state=42,
+    )
+    model_wrong.fit(X_train, y_train)
+    print(f"R² score: {model_wrong.score(X_test, y_test):.4f}")
 
     print("\nExample complete!")
