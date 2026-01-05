@@ -85,7 +85,7 @@ class TestJAXMonotonicInitialization:
             nonneg_param="square",
             learning_rate=5e-4,
             weight_decay=1e-4,
-            epochs=1000,
+            epochs=100,
             batch_size=64,
             standardize_X=False,
             standardize_y=False,
@@ -102,7 +102,7 @@ class TestJAXMonotonicInitialization:
         assert model.nonneg_param == "square"
         assert model.learning_rate == 5e-4
         assert model.weight_decay == 1e-4
-        assert model.epochs == 1000
+        assert model.epochs == 100
         assert model.batch_size == 64
         assert model.standardize_X is False
         assert model.standardize_y is False
@@ -372,7 +372,7 @@ class TestJAXMonotonicScoring:
         X, y = monotonic_increasing_data
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        model = JAXMonotonicRegressor(epochs=20, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42)
+        model = JAXMonotonicRegressor(epochs=10, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42)
         model.fit(X_train, y_train)
 
         score = model.score(X_test, y_test)
@@ -402,19 +402,19 @@ class TestJAXMonotonicSklearnCompatibility:
 
     def test_get_params(self):
         """Test get_params method."""
-        model = JAXMonotonicRegressor(hidden_dims=(64, 64), monotonicity=-1, epochs=100)
+        model = JAXMonotonicRegressor(hidden_dims=(64, 64), monotonicity=-1, epochs=10)
         params = model.get_params()
 
         assert params["hidden_dims"] == (64, 64)
         assert params["monotonicity"] == -1
-        assert params["epochs"] == 100
+        assert params["epochs"] == 10
 
     def test_set_params(self):
         """Test set_params method."""
         model = JAXMonotonicRegressor()
-        model.set_params(epochs=200, monotonicity=-1)
+        model.set_params(epochs=100, monotonicity=-1)
 
-        assert model.epochs == 200
+        assert model.epochs == 100
         assert model.monotonicity == -1
 
     def test_clone(self, simple_linear_data):
