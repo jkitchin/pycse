@@ -7,6 +7,7 @@ Available estimators:
 - DPOSE: Direct Propagation of Shallow Ensembles (JAX/Flax)
 - JAXICNNRegressor: Input Convex Neural Network for convex surrogates (JAX)
 - JAXMonotonicRegressor: Monotonic Neural Network with LLPR uncertainty (JAX)
+- JAXPeriodicRegressor: Periodic Neural Network with LLPR uncertainty (JAX)
 - KAN: Kolmogorov-Arnold Networks (JAX/Flax)
 - KANLLPR: KAN with Last-Layer Prediction Rigidity (JAX/Flax)
 - KfoldNN: K-fold ensemble neural network (JAX/Flax)
@@ -21,6 +22,7 @@ __all__ = [
     "DPOSE",
     "JAXICNNRegressor",
     "JAXMonotonicRegressor",
+    "JAXPeriodicRegressor",
     "KAN",
     "KANLLPR",
     "KfoldNN",
@@ -45,6 +47,10 @@ def __getattr__(name):
         from pycse.sklearn.jax_monotonic import JAXMonotonicRegressor
 
         return JAXMonotonicRegressor
+    elif name == "JAXPeriodicRegressor":
+        from pycse.sklearn.jax_periodic import JAXPeriodicRegressor
+
+        return JAXPeriodicRegressor
     elif name == "KAN":
         from pycse.sklearn.kan import KAN
 
