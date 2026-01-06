@@ -8,6 +8,9 @@ from sklearn.preprocessing import StandardScaler
 
 from pycse.sklearn.jax_icnn import JAXICNNRegressor
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def quadratic_data():

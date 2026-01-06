@@ -11,6 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pycse.sklearn.kfoldnn import KfoldNN, _NN
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def sample_data():

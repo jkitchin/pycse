@@ -15,6 +15,9 @@ try:
 except ImportError:
     PYOMO_AVAILABLE = False
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def simple_linear_data():

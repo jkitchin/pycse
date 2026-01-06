@@ -8,6 +8,9 @@ from sklearn.model_selection import train_test_split
 # Import DPOSE
 from pycse.sklearn.dpose import DPOSE
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def heteroscedastic_data():

@@ -13,6 +13,9 @@ from pycse.sklearn.jax_periodic import JAXPeriodicRegressor
 _TEST_EPOCHS = 10
 _TEST_HIDDEN_DIMS = (8, 8)
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def periodic_sine_data():

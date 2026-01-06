@@ -1,4 +1,4 @@
-name: Run pycse tests
+name: Fast Tests (unit and integration)
 
 on:
   push:
@@ -6,14 +6,15 @@ on:
 
 jobs:
   test:
-    name: Test with Python ${{ matrix.python-version }}
+    name: Fast Tests - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.12", "3.13"]
+        # Test only 3.12 on PRs, both versions on master
+        python-version: ${{ github.event_name == 'pull_request' && fromJSON('["3.12"]') || fromJSON('["3.12", "3.13"]') }}
 
     steps:
       - name: Checkout code
@@ -56,19 +57,20 @@ jobs:
         run: |
           ruff check src/pycse
 
-      - name: Run tests with pytest (affected tests only)
+      - name: Run fast tests (affected tests only)
         if: github.event_name == 'pull_request'
         run: |
-          # On PRs, run only affected tests without coverage for speed
+          # On PRs, run only affected fast tests (exclude slow ML tests)
           # -n auto uses all available CPU cores (2 on ubuntu-latest)
-          pytest src/pycse/tests -v --testmon -n auto
+          pytest src/pycse/tests -v --testmon -m "not slow" -n auto
 
-      - name: Run tests with pytest (full suite with coverage)
+      - name: Run fast tests (full suite with coverage)
         if: github.event_name == 'push'
         run: |
-          # On push to main, run full suite with coverage in parallel
+          # On push, run full fast test suite with coverage (exclude slow ML tests)
+          # Slow tests are run in a separate workflow
           # -n auto uses all available CPU cores (2 on ubuntu-latest)
-          pytest src/pycse/tests -v --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=20
+          pytest src/pycse/tests -v -m "not slow" --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=20
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

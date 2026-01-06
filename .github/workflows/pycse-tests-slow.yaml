@@ -1,0 +1,57 @@
+name: Slow Tests (ML/training models)
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual triggers
+
+jobs:
+  slow-tests:
+    name: Slow Tests - Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install package with dependencies
+        run: |
+          uv pip install --system -e ".[test]"
+
+      - name: Run slow tests only (ML/training tests)
+        run: |
+          # Run only slow tests (ML model training)
+          # -n auto uses all available CPU cores (2 on ubuntu-latest)
+          pytest src/pycse/tests -v -m "slow" --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=30
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: slow-tests

@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 
 from pycse.sklearn.kan_llpr import KANLLPR, compute_calibration_metrics
 
+# Mark all tests in this module as slow (ML model training)
+pytestmark = pytest.mark.slow
+
 
 @pytest.fixture
 def simple_linear_data():
