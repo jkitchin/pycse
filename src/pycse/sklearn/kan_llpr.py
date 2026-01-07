@@ -341,7 +341,7 @@ class KANLLPR(BaseEstimator, RegressorMixin):
             return loss + reg_loss
 
         # Run optimization
-        maxiter = kwargs.pop("maxiter", 1500)
+        maxiter = kwargs.pop("maxiter", 300)
         tol = kwargs.pop("tol", 1e-3)
 
         self.optpars, self.state = run_optimizer(

@@ -226,7 +226,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
     Notes
     -----
     - The hidden layers see all training data; only the final layer is split into folds
-    - Training uses LBFGS optimizer (default: maxiter=1500, tol=1e-3)
+    - Training uses LBFGS optimizer (default: maxiter = 300, tol=1e-3)
     - Predictions are computed as the mean across output neurons
     - Uncertainty is estimated as the standard deviation across output neurons
     - Works best with smooth regression problems
@@ -430,7 +430,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             return total_error
 
         # Set default solver parameters
-        maxiter = kwargs.pop("maxiter", 1500)
+        maxiter = kwargs.pop("maxiter", 300)
         tol = kwargs.pop("tol", 1e-3)
 
         # Store maxiter for convergence checking

@@ -288,7 +288,7 @@ class DPOSE(BaseEstimator, RegressorMixin):
                 )
 
         # Solver configuration
-        maxiter = kwargs.pop("maxiter", 1500)
+        maxiter = kwargs.pop("maxiter", 300)
         tol = kwargs.pop("tol", 1e-3)
 
         # Run optimization using optax-based optimizers
