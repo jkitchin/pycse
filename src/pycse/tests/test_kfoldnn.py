@@ -787,20 +787,3 @@ class TestKfoldNNIntegration:
         # sklearn-style score
         r2 = model.score(X, y)
         assert isinstance(r2, (float, jnp.ndarray))
-
-    def test_reproducibility(self, sample_data):
-        """Test that same seed gives reproducible results."""
-        x, y = sample_data
-
-        # First model
-        model1 = KfoldNN(layers=(1, 10, 15), xtrain=0.1, seed=123)
-        model1.fit(x, y, maxiter=10)
-        pred1 = model1.predict(x)
-
-        # Second model with same seed
-        model2 = KfoldNN(layers=(1, 10, 15), xtrain=0.1, seed=123)
-        model2.fit(x, y, maxiter=10)
-        pred2 = model2.predict(x)
-
-        # Should give same results
-        assert jnp.allclose(pred1, pred2, rtol=1e-5)

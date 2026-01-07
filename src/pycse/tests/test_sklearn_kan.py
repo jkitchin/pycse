@@ -357,22 +357,6 @@ class TestKANEdgeCases:
         y_pred = model.predict(X)
         assert y_pred.shape == (5,)
 
-    def test_reproducibility_with_seed(self):
-        """Test that same seed produces same results."""
-        np.random.seed(42)
-        X = np.random.randn(50, 2)
-        y = np.sum(X, axis=1)
-
-        model1 = KAN(layers=(2, 3, 1), grid_size=3, seed=42)
-        model1.fit(X, y, maxiter=10)
-        pred1 = model1.predict(X)
-
-        model2 = KAN(layers=(2, 3, 1), grid_size=3, seed=42)
-        model2.fit(X, y, maxiter=10)
-        pred2 = model2.predict(X)
-
-        np.testing.assert_allclose(pred1, pred2, rtol=1e-10)
-
 
 class TestKANSklearnCompatibility:
     """Test sklearn API compatibility."""

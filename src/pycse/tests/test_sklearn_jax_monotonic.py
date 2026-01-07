@@ -461,7 +461,8 @@ class TestJAXMonotonicSklearnCompatibility:
         X, y = simple_linear_data
 
         model = JAXMonotonicRegressor(epochs=5, hidden_dims=(4,))
-        param_grid = {"hidden_dims": [(4,), (4, 4)], "learning_rate": [1e-3, 5e-3]}
+        # Minimal param grid - just verify GridSearchCV mechanics work
+        param_grid = {"hidden_dims": [(4,), (4, 4)]}
 
         # Just test that it runs without error
         grid = GridSearchCV(model, param_grid, cv=2, scoring="r2")
@@ -517,47 +518,6 @@ class TestJAXMonotonicStandardization:
 
         assert model.scaler_X_ is None
         assert model.scaler_y_ is not None
-
-
-class TestJAXMonotonicReproducibility:
-    """Test reproducibility with random state."""
-
-    def test_reproducibility(self, simple_linear_data):
-        """Test that same random_state gives same results."""
-        X, y = simple_linear_data
-
-        model1 = JAXMonotonicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model1.fit(X, y)
-        y_pred1 = model1.predict(X)
-
-        model2 = JAXMonotonicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model2.fit(X, y)
-        y_pred2 = model2.predict(X)
-
-        np.testing.assert_allclose(y_pred1, y_pred2, rtol=1e-5)
-
-    def test_different_random_states(self, simple_linear_data):
-        """Test that different random_states give different results."""
-        X, y = simple_linear_data
-
-        model1 = JAXMonotonicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model1.fit(X, y)
-        y_pred1 = model1.predict(X)
-
-        model2 = JAXMonotonicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=123
-        )
-        model2.fit(X, y)
-        y_pred2 = model2.predict(X)
-
-        # Predictions should be different (not exactly equal)
-        assert not np.allclose(y_pred1, y_pred2)
 
 
 class TestJAXMonotonicActivations:

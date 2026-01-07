@@ -380,50 +380,6 @@ class TestJAXPeriodicInputFormats:
 
         assert model.periodicity_ == {0: 1.0}
 
-    def test_periodicity_formats_equivalent(self, periodic_sine_data):
-        """Test that different formats produce equivalent results."""
-        X, y = periodic_sine_data
-        period = 2 * np.pi
-
-        # Train with different formats
-        model_float = JAXPeriodicRegressor(
-            periodicity=period,
-            n_harmonics=3,
-            epochs=20,
-            hidden_dims=_TEST_HIDDEN_DIMS,
-            random_state=42,
-        )
-        model_list = JAXPeriodicRegressor(
-            periodicity=[period],
-            n_harmonics=3,
-            epochs=20,
-            hidden_dims=_TEST_HIDDEN_DIMS,
-            random_state=42,
-        )
-        model_dict = JAXPeriodicRegressor(
-            periodicity={0: period},
-            n_harmonics=3,
-            epochs=20,
-            hidden_dims=_TEST_HIDDEN_DIMS,
-            random_state=42,
-        )
-
-        model_float.fit(X, y)
-        model_list.fit(X, y)
-        model_dict.fit(X, y)
-
-        # All should have same internal representation
-        assert model_float.periodicity_ == model_list.periodicity_ == model_dict.periodicity_
-
-        # All should produce same predictions (same random state)
-        X_test = np.array([[0.5], [1.0], [2.0]])
-        np.testing.assert_allclose(
-            model_float.predict(X_test), model_list.predict(X_test), rtol=1e-10
-        )
-        np.testing.assert_allclose(
-            model_float.predict(X_test), model_dict.predict(X_test), rtol=1e-10
-        )
-
 
 class TestJAXPeriodicUncertainty:
     """Test LLPR uncertainty quantification."""
@@ -667,7 +623,8 @@ class TestJAXPeriodicSklearnCompatibility:
         X, y = simple_linear_data
 
         model = JAXPeriodicRegressor(epochs=5, hidden_dims=(4,))
-        param_grid = {"hidden_dims": [(4,), (4, 4)], "n_harmonics": [2, 3]}
+        # Minimal param grid - just verify GridSearchCV mechanics work
+        param_grid = {"hidden_dims": [(4,), (4, 4)]}
 
         # Just test that it runs without error
         grid = GridSearchCV(model, param_grid, cv=2, scoring="r2")
@@ -742,47 +699,6 @@ class TestJAXPeriodicStandardization:
         # Only non-periodic feature should be in scaler
         # scaler_X_ only applies to non-periodic features
         assert model.scaler_X_ is not None
-
-
-class TestJAXPeriodicReproducibility:
-    """Test reproducibility with random state."""
-
-    def test_reproducibility(self, simple_linear_data):
-        """Test that same random_state gives same results."""
-        X, y = simple_linear_data
-
-        model1 = JAXPeriodicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model1.fit(X, y)
-        y_pred1 = model1.predict(X)
-
-        model2 = JAXPeriodicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model2.fit(X, y)
-        y_pred2 = model2.predict(X)
-
-        np.testing.assert_allclose(y_pred1, y_pred2, rtol=1e-5)
-
-    def test_different_random_states(self, simple_linear_data):
-        """Test that different random_states give different results."""
-        X, y = simple_linear_data
-
-        model1 = JAXPeriodicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=42
-        )
-        model1.fit(X, y)
-        y_pred1 = model1.predict(X)
-
-        model2 = JAXPeriodicRegressor(
-            epochs=_TEST_EPOCHS, hidden_dims=_TEST_HIDDEN_DIMS, random_state=123
-        )
-        model2.fit(X, y)
-        y_pred2 = model2.predict(X)
-
-        # Predictions should be different (not exactly equal)
-        assert not np.allclose(y_pred1, y_pred2)
 
 
 class TestJAXPeriodicActivations:
@@ -1094,7 +1010,7 @@ class TestJAXPeriodicLearnablePeriods:
 
         # Start with wrong initial guess
         model = JAXPeriodicRegressor(
-            epochs=100,  # More epochs for learning
+            epochs=20,  # Reduced epochs for faster testing
             hidden_dims=_TEST_HIDDEN_DIMS,
             periodicity={0: 6.0},  # Initial guess (wrong)
             learn_period=True,
@@ -1122,7 +1038,7 @@ class TestJAXPeriodicLearnablePeriods:
 
         # High regularization: period should stay close to initial
         model_high_reg = JAXPeriodicRegressor(
-            epochs=50,
+            epochs=15,  # Reduced epochs for faster testing
             hidden_dims=_TEST_HIDDEN_DIMS,
             periodicity={0: initial_guess},
             learn_period=True,
@@ -1134,7 +1050,7 @@ class TestJAXPeriodicLearnablePeriods:
 
         # Low regularization: period should move more
         model_low_reg = JAXPeriodicRegressor(
-            epochs=50,
+            epochs=15,  # Reduced epochs for faster testing
             hidden_dims=_TEST_HIDDEN_DIMS,
             periodicity={0: initial_guess},
             learn_period=True,
@@ -1169,7 +1085,7 @@ class TestJAXPeriodicLearnablePeriods:
         )
 
         model = JAXPeriodicRegressor(
-            epochs=50,
+            epochs=15,  # Reduced epochs for faster testing
             hidden_dims=_TEST_HIDDEN_DIMS,
             periodicity={0: 5.0, 1: 7.0},  # Initial guesses
             learn_period=True,

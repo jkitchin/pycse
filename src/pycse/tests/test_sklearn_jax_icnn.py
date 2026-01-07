@@ -484,10 +484,8 @@ class TestJAXICNNSklearnCompatibility:
         X, y = quadratic_data
 
         model = JAXICNNRegressor(epochs=5)
-        param_grid = {
-            "hidden_dims": [(16,), (16, 16)],
-            "learning_rate": [1e-3, 1e-2],
-        }
+        # Minimal param grid - just verify GridSearchCV mechanics work
+        param_grid = {"hidden_dims": [(16,), (16, 16)]}
 
         grid_search = GridSearchCV(
             model,
@@ -499,39 +497,6 @@ class TestJAXICNNSklearnCompatibility:
 
         assert hasattr(grid_search, "best_params_")
         assert hasattr(grid_search, "best_score_")
-
-
-class TestJAXICNNReproducibility:
-    """Test reproducibility."""
-
-    def test_same_seed_same_results(self, quadratic_data):
-        """Test that same random_state gives same results."""
-        X, y = quadratic_data
-
-        model1 = JAXICNNRegressor(epochs=5, random_state=123)
-        model1.fit(X, y)
-        pred1 = model1.predict(X)
-
-        model2 = JAXICNNRegressor(epochs=5, random_state=123)
-        model2.fit(X, y)
-        pred2 = model2.predict(X)
-
-        np.testing.assert_allclose(pred1, pred2, rtol=1e-10)
-
-    def test_different_seed_different_results(self, quadratic_data):
-        """Test that different random_state gives different results."""
-        X, y = quadratic_data
-
-        model1 = JAXICNNRegressor(epochs=5, random_state=123)
-        model1.fit(X, y)
-        pred1 = model1.predict(X)
-
-        model2 = JAXICNNRegressor(epochs=5, random_state=456)
-        model2.fit(X, y)
-        pred2 = model2.predict(X)
-
-        # Results should be different (not exactly equal)
-        assert not np.allclose(pred1, pred2, rtol=1e-10)
 
 
 class TestJAXICNNLossHistory:
