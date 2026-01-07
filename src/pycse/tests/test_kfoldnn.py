@@ -106,7 +106,7 @@ class TestKfoldNNFit:
         """Test basic fitting with valid data."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=50)
+        model.fit(x, y, maxiter=10)
 
         assert model.is_fitted
         assert hasattr(model, "optpars")
@@ -116,7 +116,7 @@ class TestKfoldNNFit:
         """Test that fit stores optimized parameters."""
         x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        model.fit(x, y, maxiter=50)
+        model.fit(x, y, maxiter=10)
 
         assert model.optpars is not None
         assert "params" in model.optpars

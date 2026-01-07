@@ -509,7 +509,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
         activation: str = "silu",
         learning_rate: float = 5e-3,
         weight_decay: float = 0.0,
-        epochs: int = 200,
+        epochs: int = 50,
         batch_size: int = 32,
         standardize_X: bool = True,
         standardize_y: bool = True,

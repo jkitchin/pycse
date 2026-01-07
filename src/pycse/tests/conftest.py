@@ -132,6 +132,105 @@ def assert_standard_errors_positive(se):
     assert_positive(se)
 
 
+# Autouse fixture to speed up slow tests
+@pytest.fixture(autouse=True)
+def fast_training_defaults(monkeypatch):
+    """Override model defaults to use minimal iterations for tests.
+
+    This fixture automatically reduces training iterations to 10 for all models
+    during testing to speed up CI. Models still use reasonable defaults (50)
+    for actual usage, but tests only need to verify functionality, not convergence.
+    """
+    # Import all the model classes
+    try:
+        from pycse.sklearn.jax_icnn import JAXICNNRegressor
+
+        orig_icnn_init = JAXICNNRegressor.__init__
+
+        def fast_icnn_init(self, *args, epochs=10, **kwargs):
+            orig_icnn_init(self, *args, epochs=epochs, **kwargs)
+
+        monkeypatch.setattr(JAXICNNRegressor, "__init__", fast_icnn_init)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.jax_monotonic import JAXMonotonicRegressor
+
+        orig_mono_init = JAXMonotonicRegressor.__init__
+
+        def fast_mono_init(self, *args, epochs=10, **kwargs):
+            orig_mono_init(self, *args, epochs=epochs, **kwargs)
+
+        monkeypatch.setattr(JAXMonotonicRegressor, "__init__", fast_mono_init)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.jax_periodic import JAXPeriodicRegressor
+
+        orig_periodic_init = JAXPeriodicRegressor.__init__
+
+        def fast_periodic_init(self, *args, epochs=10, **kwargs):
+            orig_periodic_init(self, *args, epochs=epochs, **kwargs)
+
+        monkeypatch.setattr(JAXPeriodicRegressor, "__init__", fast_periodic_init)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.dpose import DPOSE
+
+        orig_dpose_fit = DPOSE.fit
+
+        def fast_dpose_fit(self, X, y, **kwargs):
+            kwargs.setdefault("maxiter", 10)
+            return orig_dpose_fit(self, X, y, **kwargs)
+
+        monkeypatch.setattr(DPOSE, "fit", fast_dpose_fit)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.kfoldnn import KfoldNN
+
+        orig_kfold_fit = KfoldNN.fit
+
+        def fast_kfold_fit(self, X, y, **kwargs):
+            kwargs.setdefault("maxiter", 10)
+            return orig_kfold_fit(self, X, y, **kwargs)
+
+        monkeypatch.setattr(KfoldNN, "fit", fast_kfold_fit)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.kan import KANRegressor
+
+        orig_kan_fit = KANRegressor.fit
+
+        def fast_kan_fit(self, X, y, **kwargs):
+            kwargs.setdefault("maxiter", 10)
+            return orig_kan_fit(self, X, y, **kwargs)
+
+        monkeypatch.setattr(KANRegressor, "fit", fast_kan_fit)
+    except ImportError:
+        pass
+
+    try:
+        from pycse.sklearn.kan_llpr import KANLLPRRegressor
+
+        orig_kanllpr_fit = KANLLPRRegressor.fit
+
+        def fast_kanllpr_fit(self, X, y, **kwargs):
+            kwargs.setdefault("maxiter", 10)
+            return orig_kanllpr_fit(self, X, y, **kwargs)
+
+        monkeypatch.setattr(KANLLPRRegressor, "fit", fast_kanllpr_fit)
+    except ImportError:
+        pass
+
+
 # Markers for test categorization
 def pytest_configure(config):
     """Register custom markers."""
