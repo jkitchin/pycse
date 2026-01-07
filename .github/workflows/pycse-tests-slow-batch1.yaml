@@ -1,4 +1,4 @@
-name: Slow Tests Batch 2
+name: Slow Tests Batch 1
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
   workflow_dispatch:  # Allow manual triggers
 
 jobs:
-  slow-tests-batch2:
-    name: Slow Tests Batch 2 - Python ${{ matrix.python-version }}
+  slow-tests-batch1:
+    name: Slow Tests Batch 1 - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -41,11 +41,11 @@ jobs:
         run: |
           uv pip install --system -e ".[test]"
 
-      - name: Run slow tests batch 2 (second half)
+      - name: Run slow tests batch 1 (first half)
         run: |
-          # Run second half of slow tests using pytest-split
-          # --splits=2 --group=2 runs second half of tests
-          pytest src/pycse/tests -v -m "slow" --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=30 --splits=2 --group=2
+          # Run first half of slow tests using pytest-split
+          # --splits=2 --group=1 runs first half of tests
+          pytest src/pycse/tests -v -m "slow" --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=30 --splits=2 --group=1
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -54,4 +54,4 @@ jobs:
           files: ./coverage.xml
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: slow-tests-batch2
+          flags: slow-tests-batch1

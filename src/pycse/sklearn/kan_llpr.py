@@ -985,7 +985,7 @@ if __name__ == "__main__":
         seed=42,
     )
 
-    model.fit(X_train, y_train, maxiter=1000)
+    model.fit(X_train, y_train, maxiter=5000)
 
     # Report
     model.report()
