@@ -406,7 +406,7 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
     weight_decay : float, default=0.0
         L2 regularization strength.
 
-    epochs : int, default=500
+    epochs : int, default=50
         Number of training epochs.
 
     batch_size : int, default=32
@@ -1097,7 +1097,7 @@ if __name__ == "__main__":
         learn_period=True,
         period_reg=0.01,
         n_harmonics=5,
-        epochs=500,
+        epochs=50,
         random_state=42,
         verbose=True,
     )
@@ -1114,7 +1114,7 @@ if __name__ == "__main__":
         periodicity={0: true_period},
         learn_period=False,
         n_harmonics=5,
-        epochs=500,
+        epochs=50,
         random_state=42,
     )
     model_fixed.fit(X_train, y_train)
@@ -1127,7 +1127,7 @@ if __name__ == "__main__":
         periodicity={0: 6.0},  # Wrong period
         learn_period=False,
         n_harmonics=5,
-        epochs=500,
+        epochs=50,
         random_state=42,
     )
     model_wrong.fit(X_train, y_train)

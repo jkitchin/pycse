@@ -40,7 +40,7 @@ Example usage:
     model = JAXMonotonicRegressor(
         hidden_dims=(32, 32),
         monotonicity=1,  # +1 = increasing, -1 = decreasing, 0 = none
-        epochs=500,
+        epochs=50,
     )
     model.fit(X_train, y_train)
     yhat = model.predict(X_test)
@@ -323,7 +323,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
     weight_decay : float, default=0.0
         L2 regularization strength.
 
-    epochs : int, default=500
+    epochs : int, default=50
         Number of training epochs.
 
     batch_size : int, default=32
@@ -870,7 +870,7 @@ if __name__ == "__main__":
         hidden_dims=(32, 32),
         monotonicity=[1, -1, 0],  # x0 increasing, x1 decreasing, x2 unconstrained
         learning_rate=1e-3,
-        epochs=500,
+        epochs=50,
         batch_size=32,
         random_state=42,
         verbose=True,

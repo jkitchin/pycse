@@ -69,7 +69,7 @@ class TestJAXMonotonicInitialization:
         assert model.nonneg_param == "softplus"
         assert model.learning_rate == 5e-3
         assert model.weight_decay == 0.0
-        assert model.epochs == 500
+        assert model.epochs == 50
         assert model.batch_size == 32
         assert model.standardize_X is True
         assert model.standardize_y is True

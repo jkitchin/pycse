@@ -32,7 +32,7 @@ Example usage:
     model = JAXICNNRegressor(
         hidden_dims=(32, 32),
         learning_rate=1e-3,
-        epochs=500,
+        epochs=50,
         batch_size=32,
         random_state=42,
     )
@@ -279,7 +279,7 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
     weight_decay : float, default=0.0
         L2 regularization strength (weight decay).
 
-    epochs : int, default=500
+    epochs : int, default=50
         Number of training epochs.
 
     batch_size : int, default=32
@@ -705,7 +705,7 @@ if __name__ == "__main__":
     model = JAXICNNRegressor(
         hidden_dims=(32, 32),
         learning_rate=1e-3,
-        epochs=500,
+        epochs=50,
         batch_size=32,
         random_state=42,
         verbose=True,
@@ -732,7 +732,7 @@ if __name__ == "__main__":
 
     model_sc = JAXICNNRegressor(
         hidden_dims=(32, 32),
-        epochs=500,
+        epochs=50,
         strong_convexity_mu=0.1,
         random_state=42,
     )
