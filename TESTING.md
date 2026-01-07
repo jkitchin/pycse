@@ -10,11 +10,20 @@ This document provides guidelines for writing and maintaining tests in the pycse
 # Install test dependencies
 uv pip install -e ".[test]"
 
+# Run fast tests only (recommended for development)
+pytest -m "not slow"
+
+# Run slow tests only (ML/training models)
+pytest -m "slow"
+
 # Run all tests
 pytest
 
-# Run with coverage
-pytest --cov=src/pycse --cov-report=html --cov-report=term-missing
+# Run fast tests with coverage (recommended)
+pytest -m "not slow" --cov=src/pycse --cov-report=html --cov-report=term-missing
+
+# Run with parallelization (faster)
+pytest -m "not slow" -n auto
 
 # Run specific test file
 pytest src/pycse/tests/test_pycse.py
@@ -26,9 +35,25 @@ pytest -k "test_regress"
 open htmlcov/index.html
 ```
 
+**Tip**: Use `pytest -m "not slow"` during development for quick feedback (~10 seconds). Run the full suite before submitting PRs.
+
 ### Running Tests in CI
 
-Tests run automatically on every push and pull request via GitHub Actions. Coverage reports are uploaded to Codecov.
+Tests run automatically on every push and pull request via GitHub Actions. The test suite is split into **fast tests** and **slow tests** for optimal feedback:
+
+#### Fast Tests (Unit & Integration)
+- **What**: 493 tests (60% of suite) - unit tests, integration tests, non-ML code
+- **When**: Every push and pull request
+- **Duration**: ~1-2 minutes
+- **Python versions**: 3.12 only on PRs, 3.12+3.13 on master
+
+#### Slow Tests (ML/Training)
+- **What**: 324 tests (40% of suite) - ML model training and neural network tests
+- **When**: Master branch pushes, nightly at 2 AM UTC, manual dispatch
+- **Duration**: ~40 minutes
+- **Python versions**: 3.12 and 3.13
+
+Coverage reports from both workflows are uploaded to Codecov.
 
 ## Test Structure
 
@@ -212,7 +237,7 @@ def test_with_mocked_api():
 Use markers to categorize tests:
 
 ```python
-@pytest.mark.slow  # Tests that take >1 second
+@pytest.mark.slow  # ML/training tests (model fitting, neural networks)
 @pytest.mark.integration  # Integration tests
 @pytest.mark.regression  # Critical path tests
 @pytest.mark.sklearn  # sklearn module tests
@@ -220,12 +245,35 @@ Use markers to categorize tests:
 
 Run specific markers:
 ```bash
-# Skip slow tests
+# Skip slow tests (fast development cycle)
 pytest -m "not slow"
+
+# Run only slow tests (ML/training models)
+pytest -m "slow"
 
 # Run only regression tests
 pytest -m regression
 ```
+
+### When to Mark Tests as Slow
+
+Mark a test as `@pytest.mark.slow` if it:
+- Trains ML models or neural networks
+- Takes more than 1 second to run
+- Performs iterative optimization (epochs, maxiter)
+- Fits models with JAX, KAN, or other ML frameworks
+
+**Module-level marking**: For test files where ALL tests are slow (e.g., ML model tests), use:
+```python
+# Mark all tests in this module as slow
+pytestmark = pytest.mark.slow
+```
+
+**Examples of slow tests**:
+- `test_kfoldnn.py` - K-fold Neural Networks
+- `test_sklearn_kan.py` - Kolmogorov-Arnold Networks
+- `test_sklearn_jax_*.py` - JAX-based neural network models
+- `test_sklearn_dpose.py` - DPOSE ensemble learning
 
 ## Coverage Best Practices
 
@@ -261,19 +309,61 @@ Coverage settings are in `pyproject.toml`:
 
 ## Continuous Integration
 
-### GitHub Actions Workflow
+### GitHub Actions Workflows
 
-Tests run on:
-- Every push
+The test suite is split into two workflows for optimal performance:
+
+#### 1. Fast Tests (`.github/workflows/pycse-tests.yaml`)
+
+**Triggers**:
+- Every push to any branch
 - Every pull request
-- Python 3.12 and 3.13
-- Ubuntu Linux
+
+**Configuration**:
+- **Tests**: Fast tests only (`-m "not slow"`) - 493 tests
+- **Duration**: ~1-2 minutes
+- **Timeout**: 15 minutes
+- **Python versions**:
+  - PRs: 3.12 only (for speed)
+  - Master: 3.12 and 3.13
+- **Parallelization**: Enabled (`-n auto`)
+- **Coverage**: Full coverage on fast tests
+
+**Purpose**: Provide rapid feedback on code changes during development.
+
+#### 2. Slow Tests (`.github/workflows/pycse-tests-slow.yaml`)
+
+**Triggers**:
+- Push to master branch
+- Nightly schedule (2 AM UTC)
+- Manual dispatch (workflow_dispatch)
+
+**Configuration**:
+- **Tests**: Slow tests only (`-m "slow"`) - 324 tests
+- **Duration**: ~40 minutes
+- **Timeout**: 40 minutes
+- **Python versions**: 3.12 and 3.13
+- **Parallelization**: Enabled (`-n auto`)
+- **Coverage**: Separate coverage report with `slow-tests` flag
+
+**Purpose**: Ensure ML/training tests remain healthy without blocking PRs.
+
+### Pre-commit Hook
+
+The pre-commit hook runs **fast tests only**:
+```yaml
+- id: pytest
+  entry: pytest -m "not slow"
+```
+
+This provides instant feedback (8-10 seconds) before committing, without the 40-minute wait.
 
 ### Coverage Requirements
 
 - Coverage reports uploaded to Codecov
 - PR comments show coverage changes
 - Coverage must not decrease (enforced in CI)
+- Both fast and slow test coverage is tracked
 
 ## Common Testing Patterns
 
@@ -349,7 +439,64 @@ When adding new tests:
 5. **Include docstrings** explaining the test purpose
 6. **Keep tests focused** - one concept per test
 7. **Use fixtures** from conftest.py when appropriate
-8. **Mark expensive tests** with `@pytest.mark.slow`
+8. **Mark ML/training tests** with `@pytest.mark.slow` to keep CI fast
+
+### Writing Fast Tests
+
+To maintain quick feedback loops:
+
+**Do**:
+- Use small datasets (30-50 samples for ML tests)
+- Reduce epochs/iterations for training tests (5-10 instead of 500)
+- Use small network architectures for neural network tests
+- Mock expensive operations when testing interfaces
+- Test one concept per test function
+
+**Don't**:
+- Train production-sized models in tests
+- Use large datasets unless testing scalability
+- Run expensive optimization without marking as slow
+- Duplicate tests across parameter combinations (use parametrization)
+
+### Example: Converting a Slow Test to Fast
+
+**Before** (slow test):
+```python
+def test_model_training():
+    """Test model training convergence."""
+    X = np.random.randn(1000, 10)  # Large dataset
+    y = np.random.randn(1000)
+
+    model = NeuralNetwork(hidden_dims=(128, 64, 32))  # Large network
+    model.fit(X, y, epochs=500)  # Many epochs
+
+    assert model.score(X, y) > 0.95  # Expects high accuracy
+```
+
+**After** (fast test):
+```python
+def test_model_training():
+    """Test model training interface (not convergence)."""
+    X = np.random.randn(50, 2)  # Small dataset
+    y = np.random.randn(50)
+
+    model = NeuralNetwork(hidden_dims=(8, 8))  # Small network
+    model.fit(X, y, epochs=10)  # Few epochs
+
+    # Test interface, not accuracy
+    assert hasattr(model, 'params_')
+    assert model.predict(X).shape == (50,)
+```
+
+**For convergence tests** (mark as slow):
+```python
+@pytest.mark.slow
+def test_model_convergence():
+    """Test that model achieves good accuracy (slow)."""
+    # Use realistic dataset and epochs
+    # Test actual convergence and accuracy
+    pass
+```
 
 ## Resources
 
