@@ -16,6 +16,7 @@ Available estimators:
 - NNGMM: Neural Network + Gaussian Mixture Model (sklearn)
 - LeafModelRegressor: Decision tree with sub-models per leaf
 - SISSO: Sure Independence Screening and Sparsifying Operator (TorchSISSO)
+- SISSOEnsemble: Shallow ensemble of SISSO equations with calibrated UQ
 """
 
 # Lazy imports to avoid loading all backends
@@ -32,6 +33,7 @@ __all__ = [
     "NNGMM",
     "LeafModelRegressor",
     "SISSO",
+    "SISSOEnsemble",
 ]
 
 
@@ -85,4 +87,8 @@ def __getattr__(name):
         from pycse.sklearn.sisso import SISSO
 
         return SISSO
+    elif name == "SISSOEnsemble":
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        return SISSOEnsemble
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
