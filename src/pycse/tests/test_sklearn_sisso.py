@@ -398,3 +398,244 @@ class TestSISSOImport:
         from pycse.sklearn.sisso import SISSO
 
         assert SISSO is not None
+
+
+class TestSISSOEnsembleBasicFunctionality:
+    """Test basic SISSOEnsemble functionality."""
+
+    def test_initialization_default(self):
+        """Test SISSOEnsemble initialization with default parameters."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble()
+
+        assert model.n_models == 5
+        assert model.operators is None
+        assert model.n_expansion == 2
+        assert model.n_terms_range == (1, 3)
+        assert model.loss_type == "crps"
+        assert model.min_sigma == 1e-3
+
+    def test_initialization_custom(self):
+        """Test SISSOEnsemble initialization with custom parameters."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble(
+            n_models=3,
+            operators=["+", "-", "*"],
+            n_expansion=1,
+            n_terms_range=(1, 2),
+            loss_type="nll",
+            feature_names=["a", "b"],
+        )
+
+        assert model.n_models == 3
+        assert model.operators == ["+", "-", "*"]
+        assert model.n_expansion == 1
+        assert model.n_terms_range == (1, 2)
+        assert model.loss_type == "nll"
+        assert model.feature_names == ["a", "b"]
+
+    def test_fit_returns_self(self, simple_additive_data):
+        """fit() should return self for method chaining."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2))
+        result = model.fit(X, y)
+        assert result is model
+
+    def test_predict_shape(self, simple_additive_data):
+        """predict() returns correct shape."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+        y_pred = model.predict(X)
+        assert y_pred.shape == (50,)
+
+    def test_equations_attribute(self, simple_additive_data):
+        """equations_ should be a list of strings after fitting."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+        assert isinstance(model.equations_, list)
+        assert len(model.equations_) >= 1
+        assert all(isinstance(eq, str) for eq in model.equations_)
+
+
+class TestSISSOEnsembleUncertainty:
+    """Test SISSOEnsemble uncertainty quantification."""
+
+    def test_return_std_shape(self, noisy_linear_data):
+        """return_std=True should return (y_pred, y_std)."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y, _ = noisy_linear_data
+        model = SISSOEnsemble(n_models=3, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+
+        y_pred, y_std = model.predict(X, return_std=True)
+        assert y_pred.shape == (60,)
+        assert y_std.shape == (60,)
+
+    def test_uncertainty_positive(self, noisy_linear_data):
+        """Uncertainties should be positive."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y, _ = noisy_linear_data
+        model = SISSOEnsemble(n_models=3, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+
+        _, y_std = model.predict(X, return_std=True)
+        assert np.all(y_std > 0)
+
+    def test_uncertainty_finite(self, noisy_linear_data):
+        """Uncertainties should be finite."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y, _ = noisy_linear_data
+        model = SISSOEnsemble(n_models=3, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+
+        _, y_std = model.predict(X, return_std=True)
+        assert np.all(np.isfinite(y_std))
+
+    def test_predict_ensemble_shape(self, simple_additive_data):
+        """predict_ensemble() should return (n_samples, n_ensemble)."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(n_models=3, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+
+        ensemble_preds = model.predict_ensemble(X)
+        assert ensemble_preds.shape[0] == 50
+        assert ensemble_preds.shape[1] == model.n_ensemble_
+
+    def test_calibration_with_validation(self, noisy_linear_data):
+        """Calibration factor should be computed when validation data provided."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+        from sklearn.model_selection import train_test_split
+
+        X, y, _ = noisy_linear_data
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        model = SISSOEnsemble(n_models=3, n_expansion=1, n_terms_range=(1, 2))
+        model.fit(X_train, y_train, val_X=X_val, val_y=y_val)
+
+        assert hasattr(model, "calibration_factor_")
+        assert model.calibration_factor_ > 0
+
+
+class TestSISSOEnsembleLossTypes:
+    """Test different loss types."""
+
+    def test_crps_loss(self, simple_additive_data):
+        """CRPS loss should work."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(
+            n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="crps"
+        ).fit(X, y)
+        y_pred = model.predict(X)
+        assert np.all(np.isfinite(y_pred))
+
+    def test_nll_loss(self, simple_additive_data):
+        """NLL loss should work."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(
+            n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="nll"
+        ).fit(X, y)
+        y_pred = model.predict(X)
+        assert np.all(np.isfinite(y_pred))
+
+    def test_mse_loss(self, simple_additive_data):
+        """MSE loss should work."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(
+            n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="mse"
+        ).fit(X, y)
+        y_pred = model.predict(X)
+        assert np.all(np.isfinite(y_pred))
+
+
+class TestSISSOEnsembleSklearnCompatibility:
+    """Test sklearn compatibility."""
+
+    def test_sklearn_clone(self):
+        """Model should be clonable."""
+        from sklearn.base import clone
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble(n_models=3, n_expansion=2, loss_type="nll")
+        cloned = clone(model)
+
+        assert cloned.n_models == 3
+        assert cloned.n_expansion == 2
+        assert cloned.loss_type == "nll"
+        assert not hasattr(cloned, "is_fitted_") or not cloned.is_fitted_
+
+    def test_get_params(self):
+        """get_params() should return all parameters."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble(n_models=4, n_expansion=3, loss_type="crps")
+        params = model.get_params()
+
+        assert "n_models" in params
+        assert "n_expansion" in params
+        assert "loss_type" in params
+        assert params["n_models"] == 4
+        assert params["n_expansion"] == 3
+        assert params["loss_type"] == "crps"
+
+    def test_set_params(self):
+        """set_params() should update parameters."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble(n_models=3)
+        model.set_params(n_models=5, loss_type="nll")
+
+        assert model.n_models == 5
+        assert model.loss_type == "nll"
+
+    def test_score_method(self, simple_additive_data):
+        """score() should return R² value."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        X, y = simple_additive_data
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2)).fit(X, y)
+        score = model.score(X, y)
+
+        assert isinstance(score, float)
+        assert score <= 1.0
+
+    def test_repr(self):
+        """__repr__ should return readable string."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        model = SISSOEnsemble(n_models=3, n_expansion=2, loss_type="crps")
+        repr_str = repr(model)
+
+        assert "SISSOEnsemble" in repr_str
+        assert "n_models=3" in repr_str
+        assert "loss_type='crps'" in repr_str
+
+
+class TestSISSOEnsembleImport:
+    """Test import functionality."""
+
+    def test_lazy_import(self):
+        """SISSOEnsemble should be importable from pycse.sklearn."""
+        from pycse.sklearn import SISSOEnsemble
+
+        assert SISSOEnsemble is not None
+
+    def test_direct_import(self):
+        """SISSOEnsemble should be importable directly from module."""
+        from pycse.sklearn.sisso import SISSOEnsemble
+
+        assert SISSOEnsemble is not None
