@@ -118,6 +118,14 @@ class SISSO(BaseEstimator, RegressorMixin):
     out-of-sample calibration without requiring a separate validation set.
     This is valid because SISSO's final model is linear in its selected
     feature space, allowing efficient LOOCV computation via the hat matrix.
+
+    **Limitation:** The hat matrix method detects extrapolation (unusual
+    feature values) but may not increase uncertainty in input-space gaps
+    where feature values remain within the training range. For example,
+    with polynomial features [x, x², x³], a gap in x-space may not show
+    increased uncertainty if the polynomial feature values still fall
+    within the training range. For gap-aware uncertainty, consider
+    Gaussian Processes or ensemble methods like DPOSE.
     """
 
     def __init__(
