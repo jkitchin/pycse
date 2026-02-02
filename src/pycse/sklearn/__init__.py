@@ -15,6 +15,7 @@ Available estimators:
 - NNBR: Neural Network + Bayesian Ridge (sklearn)
 - NNGMM: Neural Network + Gaussian Mixture Model (sklearn)
 - LeafModelRegressor: Decision tree with sub-models per leaf
+- SISSO: Sure Independence Screening and Sparsifying Operator (TorchSISSO)
 """
 
 # Lazy imports to avoid loading all backends
@@ -30,6 +31,7 @@ __all__ = [
     "NNBR",
     "NNGMM",
     "LeafModelRegressor",
+    "SISSO",
 ]
 
 
@@ -79,4 +81,8 @@ def __getattr__(name):
         from pycse.sklearn.leaf_model import LeafModelRegressor
 
         return LeafModelRegressor
+    elif name == "SISSO":
+        from pycse.sklearn.sisso import SISSO
+
+        return SISSO
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
