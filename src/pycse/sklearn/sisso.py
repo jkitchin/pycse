@@ -108,12 +108,16 @@ class SISSO(BaseEstimator, RegressorMixin):
     The uncertainty quantification uses the hat matrix method:
 
     1. Build design matrix Φ from the selected nonlinear features
-    2. Compute residual variance: σ² = RSS / (n - p)
-    3. Prediction variance: Var(ŷ*) = σ² · (1 + φ*ᵀ(ΦᵀΦ)⁻¹φ*)
-    4. Calibrate using training data z-scores
+    2. Compute leverage h_ii (diagonal of hat matrix H = Φ(ΦᵀΦ)⁻¹Φᵀ)
+    3. Compute LOOCV residuals: e_i / (1 - h_ii) for proper out-of-sample calibration
+    4. Estimate σ from LOOCV residuals (PRESS-like statistic)
+    5. Prediction variance: Var(ŷ*) = σ² · (1 + φ*ᵀ(ΦᵀΦ)⁻¹φ*)
+    6. Calibrate using LOOCV z-scores
 
-    This provides valid uncertainties because SISSO's final model is
-    linear in its selected feature space.
+    Using LOOCV residuals instead of training residuals provides proper
+    out-of-sample calibration without requiring a separate validation set.
+    This is valid because SISSO's final model is linear in its selected
+    feature space, allowing efficient LOOCV computation via the hat matrix.
     """
 
     def __init__(
@@ -327,7 +331,16 @@ class SISSO(BaseEstimator, RegressorMixin):
         return Phi
 
     def _compute_uq_params(self, X, y):
-        """Compute parameters for uncertainty quantification."""
+        """Compute parameters for uncertainty quantification.
+
+        Uses Leave-One-Out Cross-Validation (LOOCV) residuals for calibration,
+        which can be computed efficiently for linear models using the hat matrix:
+
+            LOOCV_residual_i = residual_i / (1 - h_ii)
+
+        where h_ii is the leverage (diagonal of hat matrix). This provides
+        proper out-of-sample calibration without actually refitting the model.
+        """
         # Get predictions on training data
         y_pred = self._evaluate(X)
         n = len(y)
@@ -343,19 +356,31 @@ class SISSO(BaseEstimator, RegressorMixin):
             # Fallback if matrix is singular
             self._PhiTPhi_inv = np.eye(p) * 1e-6
 
-        # Residual standard deviation
-        residuals = y - y_pred
-        dof = max(n - p, 1)
-        self.sigma_ = np.sqrt(np.sum(residuals**2) / dof)
-
-        # Calibration: compute z-scores and calibration factor
-        # Prediction std on training data
+        # Compute leverage (diagonal of hat matrix H = Φ(ΦᵀΦ)⁻¹Φᵀ)
         leverage = np.sum((Phi @ self._PhiTPhi_inv) * Phi, axis=1)
-        std_pred = self.sigma_ * np.sqrt(1 + np.maximum(leverage, 0))
+        # Clip leverage to avoid division issues (h_ii should be in [0, 1])
+        leverage = np.clip(leverage, 0, 0.999)
+
+        # Training residuals
+        residuals = y - y_pred
+
+        # LOOCV residuals: e_i / (1 - h_ii)
+        # This is the residual we'd get if point i was left out during training
+        loocv_residuals = residuals / (1 - leverage)
+
+        # Estimate sigma using LOOCV residuals (PRESS statistic)
+        # This gives a less biased estimate than training RSS
+        self.sigma_ = np.sqrt(np.sum(loocv_residuals**2) / n)
+
+        # Calibration using LOOCV z-scores
+        # Prediction std for new points (not in training)
+        std_pred = self.sigma_ * np.sqrt(1 + leverage)
 
         # Avoid division by zero
         std_pred = np.maximum(std_pred, 1e-10)
-        z_scores = residuals / std_pred
+
+        # Z-scores using LOOCV residuals (proper out-of-sample calibration)
+        z_scores = loocv_residuals / std_pred
 
         # Calibration factor (should be ~1 for well-calibrated)
         self.calibration_factor_ = np.std(z_scores) if len(z_scores) > 1 else 1.0
