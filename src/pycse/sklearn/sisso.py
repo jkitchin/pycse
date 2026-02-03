@@ -607,9 +607,7 @@ class SISSOEnsemble(BaseEstimator, RegressorMixin):
         try:
             from TorchSisso import SissoModel
         except ImportError:
-            raise ImportError(
-                "TorchSisso is required. Install with: pip install TorchSisso"
-            )
+            raise ImportError("TorchSisso is required. Install with: pip install TorchSisso")
 
         equations = []
         sisso_models = []
@@ -853,7 +851,10 @@ class SISSOEnsemble(BaseEstimator, RegressorMixin):
         y : array-like
             Validation targets.
         """
-        y_pred, y_std = self.predict(X, return_std=True)
+        # Use _predict_ensemble directly since is_fitted_ not set yet
+        preds = self._predict_ensemble(X)
+        y_pred = preds.mean(axis=1)
+        y_std = np.sqrt(preds.var(axis=1) + self.min_sigma**2)
         y = np.asarray(y).ravel()
 
         errs = y - y_pred

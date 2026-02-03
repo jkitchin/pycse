@@ -1,10 +1,17 @@
 """Tests for SISSO (Sure Independence Screening and Sparsifying Operator) module."""
 
+import importlib.util
+
 import numpy as np
 import pytest
 
 # Mark all tests in this module as slow (SISSO training involves optimization)
 pytestmark = pytest.mark.slow
+
+# Check if TorchSisso is available
+HAS_TORCHSISSO = importlib.util.find_spec("TorchSisso") is not None
+
+requires_torchsisso = pytest.mark.skipif(not HAS_TORCHSISSO, reason="TorchSisso not installed")
 
 
 @pytest.fixture
@@ -70,6 +77,7 @@ class TestSISSOBasicFunctionality:
         assert model.k == 15
         assert model.feature_names == ["a", "b"]
 
+    @requires_torchsisso
     def test_fit_returns_self(self, simple_additive_data):
         """fit() should return self for method chaining."""
         from pycse.sklearn.sisso import SISSO
@@ -79,6 +87,7 @@ class TestSISSOBasicFunctionality:
         result = model.fit(X, y)
         assert result is model
 
+    @requires_torchsisso
     def test_predict_shape(self, simple_additive_data):
         """predict() returns correct shape."""
         from pycse.sklearn.sisso import SISSO
@@ -88,6 +97,7 @@ class TestSISSOBasicFunctionality:
         y_pred = model.predict(X)
         assert y_pred.shape == (50,)
 
+    @requires_torchsisso
     def test_equation_attribute(self, simple_additive_data):
         """equation_ should be a string after fitting."""
         from pycse.sklearn.sisso import SISSO
@@ -97,6 +107,7 @@ class TestSISSOBasicFunctionality:
         assert isinstance(model.equation_, str)
         assert len(model.equation_) > 0
 
+    @requires_torchsisso
     def test_rmse_attribute(self, simple_additive_data):
         """rmse_ should be set after fitting."""
         from pycse.sklearn.sisso import SISSO
@@ -106,6 +117,7 @@ class TestSISSOBasicFunctionality:
         assert hasattr(model, "rmse_")
         assert model.rmse_ >= 0
 
+    @requires_torchsisso
     def test_r2_attribute(self, simple_additive_data):
         """r2_ should be set after fitting."""
         from pycse.sklearn.sisso import SISSO
@@ -128,6 +140,7 @@ class TestSISSOPrediction:
         with pytest.raises(ValueError, match="not fitted"):
             model.predict(X)
 
+    @requires_torchsisso
     def test_predict_finite_values(self, simple_additive_data):
         """Predictions should be finite."""
         from pycse.sklearn.sisso import SISSO
@@ -137,6 +150,7 @@ class TestSISSOPrediction:
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
 
+    @requires_torchsisso
     def test_predict_reasonable_accuracy(self, simple_additive_data):
         """Predictions should have reasonable accuracy on simple data."""
         from pycse.sklearn.sisso import SISSO
@@ -149,6 +163,7 @@ class TestSISSOPrediction:
         rmse = np.sqrt(np.mean((y - y_pred) ** 2))
         assert rmse < 0.5  # Generous bound
 
+    @requires_torchsisso
     def test_score_method(self, simple_additive_data):
         """score() should return R² value."""
         from pycse.sklearn.sisso import SISSO
@@ -166,6 +181,7 @@ class TestSISSOPrediction:
 class TestSISSOUncertainty:
     """Test SISSO uncertainty quantification."""
 
+    @requires_torchsisso
     def test_return_std_shape(self, noisy_linear_data):
         """return_std=True should return (y_pred, y_std)."""
         from pycse.sklearn.sisso import SISSO
@@ -177,6 +193,7 @@ class TestSISSOUncertainty:
         assert y_pred.shape == (60,)
         assert y_std.shape == (60,)
 
+    @requires_torchsisso
     def test_uncertainty_positive(self, noisy_linear_data):
         """Uncertainties should be positive."""
         from pycse.sklearn.sisso import SISSO
@@ -187,6 +204,7 @@ class TestSISSOUncertainty:
         _, y_std = model.predict(X, return_std=True)
         assert np.all(y_std > 0)
 
+    @requires_torchsisso
     def test_uncertainty_finite(self, noisy_linear_data):
         """Uncertainties should be finite."""
         from pycse.sklearn.sisso import SISSO
@@ -197,6 +215,7 @@ class TestSISSOUncertainty:
         _, y_std = model.predict(X, return_std=True)
         assert np.all(np.isfinite(y_std))
 
+    @requires_torchsisso
     def test_sigma_computed(self, noisy_linear_data):
         """sigma_ should be computed after fit."""
         from pycse.sklearn.sisso import SISSO
@@ -207,6 +226,7 @@ class TestSISSOUncertainty:
         assert hasattr(model, "sigma_")
         assert model.sigma_ > 0
 
+    @requires_torchsisso
     def test_calibration_factor_computed(self, noisy_linear_data):
         """calibration_factor_ should be computed after fit."""
         from pycse.sklearn.sisso import SISSO
@@ -217,6 +237,7 @@ class TestSISSOUncertainty:
         assert hasattr(model, "calibration_factor_")
         assert model.calibration_factor_ > 0
 
+    @requires_torchsisso
     def test_uncertainty_increases_extrapolation(self, simple_additive_data):
         """Uncertainty should increase for extrapolation."""
         from pycse.sklearn.sisso import SISSO
@@ -293,6 +314,7 @@ class TestSISSOSklearnCompatibility:
 class TestSISSOFeatureNames:
     """Test feature naming functionality."""
 
+    @requires_torchsisso
     def test_default_feature_names(self, simple_additive_data):
         """Default feature names should be x0, x1, etc."""
         from pycse.sklearn.sisso import SISSO
@@ -302,6 +324,7 @@ class TestSISSOFeatureNames:
 
         assert model._feature_names == ["x0", "x1"]
 
+    @requires_torchsisso
     def test_custom_feature_names(self, simple_additive_data):
         """Custom feature names should be used in equation."""
         from pycse.sklearn.sisso import SISSO
@@ -344,6 +367,7 @@ class TestSISSOEquationParsing:
 class TestSISSOEdgeCases:
     """Test edge cases and error handling."""
 
+    @requires_torchsisso
     def test_single_feature(self):
         """Should work with single feature."""
         from pycse.sklearn.sisso import SISSO
@@ -358,6 +382,7 @@ class TestSISSOEdgeCases:
         assert y_pred.shape == (40,)
         assert np.all(np.isfinite(y_pred))
 
+    @requires_torchsisso
     def test_many_features(self):
         """Should work with many features."""
         from pycse.sklearn.sisso import SISSO
@@ -371,6 +396,7 @@ class TestSISSOEdgeCases:
 
         assert y_pred.shape == (50,)
 
+    @requires_torchsisso
     def test_reproducibility(self, simple_additive_data):
         """Results should be reproducible with same data."""
         from pycse.sklearn.sisso import SISSO
@@ -436,6 +462,7 @@ class TestSISSOEnsembleBasicFunctionality:
         assert model.loss_type == "nll"
         assert model.feature_names == ["a", "b"]
 
+    @requires_torchsisso
     def test_fit_returns_self(self, simple_additive_data):
         """fit() should return self for method chaining."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -445,6 +472,7 @@ class TestSISSOEnsembleBasicFunctionality:
         result = model.fit(X, y)
         assert result is model
 
+    @requires_torchsisso
     def test_predict_shape(self, simple_additive_data):
         """predict() returns correct shape."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -454,6 +482,7 @@ class TestSISSOEnsembleBasicFunctionality:
         y_pred = model.predict(X)
         assert y_pred.shape == (50,)
 
+    @requires_torchsisso
     def test_equations_attribute(self, simple_additive_data):
         """equations_ should be a list of strings after fitting."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -468,6 +497,7 @@ class TestSISSOEnsembleBasicFunctionality:
 class TestSISSOEnsembleUncertainty:
     """Test SISSOEnsemble uncertainty quantification."""
 
+    @requires_torchsisso
     def test_return_std_shape(self, noisy_linear_data):
         """return_std=True should return (y_pred, y_std)."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -479,6 +509,7 @@ class TestSISSOEnsembleUncertainty:
         assert y_pred.shape == (60,)
         assert y_std.shape == (60,)
 
+    @requires_torchsisso
     def test_uncertainty_positive(self, noisy_linear_data):
         """Uncertainties should be positive."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -489,6 +520,7 @@ class TestSISSOEnsembleUncertainty:
         _, y_std = model.predict(X, return_std=True)
         assert np.all(y_std > 0)
 
+    @requires_torchsisso
     def test_uncertainty_finite(self, noisy_linear_data):
         """Uncertainties should be finite."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -499,6 +531,7 @@ class TestSISSOEnsembleUncertainty:
         _, y_std = model.predict(X, return_std=True)
         assert np.all(np.isfinite(y_std))
 
+    @requires_torchsisso
     def test_predict_ensemble_shape(self, simple_additive_data):
         """predict_ensemble() should return (n_samples, n_ensemble)."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -510,6 +543,7 @@ class TestSISSOEnsembleUncertainty:
         assert ensemble_preds.shape[0] == 50
         assert ensemble_preds.shape[1] == model.n_ensemble_
 
+    @requires_torchsisso
     def test_calibration_with_validation(self, noisy_linear_data):
         """Calibration factor should be computed when validation data provided."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -528,6 +562,7 @@ class TestSISSOEnsembleUncertainty:
 class TestSISSOEnsembleLossTypes:
     """Test different loss types."""
 
+    @requires_torchsisso
     def test_crps_loss(self, simple_additive_data):
         """CRPS loss should work."""
         from pycse.sklearn.sisso import SISSOEnsemble
@@ -539,25 +574,27 @@ class TestSISSOEnsembleLossTypes:
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
 
+    @requires_torchsisso
     def test_nll_loss(self, simple_additive_data):
         """NLL loss should work."""
         from pycse.sklearn.sisso import SISSOEnsemble
 
         X, y = simple_additive_data
-        model = SISSOEnsemble(
-            n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="nll"
-        ).fit(X, y)
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="nll").fit(
+            X, y
+        )
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
 
+    @requires_torchsisso
     def test_mse_loss(self, simple_additive_data):
         """MSE loss should work."""
         from pycse.sklearn.sisso import SISSOEnsemble
 
         X, y = simple_additive_data
-        model = SISSOEnsemble(
-            n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="mse"
-        ).fit(X, y)
+        model = SISSOEnsemble(n_models=2, n_expansion=1, n_terms_range=(1, 2), loss_type="mse").fit(
+            X, y
+        )
         y_pred = model.predict(X)
         assert np.all(np.isfinite(y_pred))
 
@@ -602,6 +639,7 @@ class TestSISSOEnsembleSklearnCompatibility:
         assert model.n_models == 5
         assert model.loss_type == "nll"
 
+    @requires_torchsisso
     def test_score_method(self, simple_additive_data):
         """score() should return R² value."""
         from pycse.sklearn.sisso import SISSOEnsemble
