@@ -17,10 +17,12 @@ Available estimators:
 - LeafModelRegressor: Decision tree with sub-models per leaf
 - SISSO: Sure Independence Screening and Sparsifying Operator (TorchSISSO)
 - SISSOEnsemble: Shallow ensemble of SISSO equations with calibrated UQ
+- ActiveLearner: Model-agnostic active learning for iterative experiment selection
 """
 
 # Lazy imports to avoid loading all backends
 __all__ = [
+    "ActiveLearner",
     "DPOSE",
     "JAXICNNRegressor",
     "JAXMonotonicRegressor",
@@ -39,7 +41,11 @@ __all__ = [
 
 def __getattr__(name):
     """Lazy import of estimators."""
-    if name == "DPOSE":
+    if name == "ActiveLearner":
+        from pycse.sklearn.active_learning import ActiveLearner
+
+        return ActiveLearner
+    elif name == "DPOSE":
         from pycse.sklearn.dpose import DPOSE
 
         return DPOSE
