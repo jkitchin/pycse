@@ -289,23 +289,27 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
 
         # Grid search over hyperparameters
         alpha_candidates = jnp.logspace(-2, 2, 20)
-        zeta_candidates = jnp.logspace(-8, 0, 20)
+        zeta_candidates = jnp.logspace(-2, 2, 20)
 
         best_nll = float("inf")
         best_alpha = 1.0
-        best_zeta = 1e-6
+        best_zeta = 1e-2
 
         for alpha in alpha_candidates:
             for zeta in zeta_candidates:
                 # Compute uncertainties
                 variances = self._compute_uncertainties_batch(features, alpha, zeta)
 
+                # Skip if any variance is non-positive or NaN
+                if jnp.any(variances <= 0) or jnp.any(jnp.isnan(variances)):
+                    continue
+
                 # Compute negative log-likelihood
                 nll = jnp.mean(
                     0.5 * ((y_val - y_pred) ** 2 / variances + jnp.log(2 * jnp.pi * variances))
                 )
 
-                if nll < best_nll:
+                if jnp.isfinite(nll) and nll < best_nll:
                     best_nll = nll
                     best_alpha = alpha
                     best_zeta = zeta
