@@ -108,10 +108,9 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         activations = {"silu": nn.silu, "relu": nn.relu, "tanh": nn.tanh, "gelu": nn.gelu}
         return activations.get(self.activation, nn.silu)
 
-    def _create_train_state(self, rng, input_dim):
+    def _create_train_state(self, rng, input_dim, output_dim):
         """Create initial training state."""
-        # Full architecture including output dimension (1 for regression)
-        features = self.hidden_dims + (1,)
+        features = self.hidden_dims + (output_dim,)
         model = MLP(features=features, activation=self._get_activation())
 
         # Initialize parameters
@@ -133,7 +132,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
     @staticmethod
     def _mse_loss(params, apply_fn, X, y):
         """Mean squared error loss."""
-        predictions = apply_fn(params, X).squeeze()
+        predictions = apply_fn(params, X)
         return jnp.mean((predictions - y) ** 2)
 
     def _make_train_step(self):
@@ -144,7 +143,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
             """Single training step."""
 
             def loss_fn(params):
-                predictions = state.apply_fn(params, X_batch).squeeze()
+                predictions = state.apply_fn(params, X_batch)
                 return jnp.mean((predictions - y_batch) ** 2)
 
             loss, grads = jax.value_and_grad(loss_fn)(state.params)
@@ -174,7 +173,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         ----------
         X : array-like of shape (n_samples, n_features)
             Training data
-        y : array-like of shape (n_samples,)
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             Target values
 
         Returns
@@ -184,7 +183,13 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         """
         # Convert to JAX arrays
         X = jnp.array(X, dtype=jnp.float32)
-        y = jnp.array(y, dtype=jnp.float32).squeeze()
+        y = jnp.array(y, dtype=jnp.float32)
+
+        # Ensure y is 2D: (n_samples, n_outputs)
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+
+        self.n_outputs_ = y.shape[1]
 
         # Train/validation split
         if self.val_size > 0:
@@ -203,7 +208,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         rng = random.PRNGKey(self.random_state)
         rng, init_rng = random.split(rng)
 
-        state, model = self._create_train_state(init_rng, X.shape[1])
+        state, model = self._create_train_state(init_rng, X.shape[1], self.n_outputs_)
         self.model_ = model
 
         # Create JIT-compiled training step
@@ -225,7 +230,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
 
             # Validation
             if X_val is not None:
-                val_predictions = state.apply_fn(state.params, X_val).squeeze()
+                val_predictions = state.apply_fn(state.params, X_val)
                 val_loss = jnp.mean((val_predictions - y_val) ** 2)
 
                 # Early stopping
@@ -253,8 +258,20 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         if X_val is not None and (self.alpha_squared == "auto" or self.zeta_squared == "auto"):
             self._calibrate_uncertainty(X_val, y_val)
         else:
-            self.alpha_squared_ = 1.0 if self.alpha_squared == "auto" else self.alpha_squared
-            self.zeta_squared_ = 1e-6 if self.zeta_squared == "auto" else self.zeta_squared
+            # Set default values as arrays (one per output)
+            if self.alpha_squared == "auto":
+                self.alpha_squared_ = np.ones(self.n_outputs_)
+            elif np.isscalar(self.alpha_squared):
+                self.alpha_squared_ = np.full(self.n_outputs_, self.alpha_squared)
+            else:
+                self.alpha_squared_ = np.array(self.alpha_squared)
+
+            if self.zeta_squared == "auto":
+                self.zeta_squared_ = np.full(self.n_outputs_, 1e-6)
+            elif np.isscalar(self.zeta_squared):
+                self.zeta_squared_ = np.full(self.n_outputs_, self.zeta_squared)
+            else:
+                self.zeta_squared_ = np.array(self.zeta_squared)
 
         return self
 
@@ -282,46 +299,83 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         """
         Calibrate alpha_squared and zeta_squared on validation set.
         Uses grid search to minimize validation NLL.
+
+        For multi-output models, each output is calibrated separately.
         """
+        X_val = jnp.array(X_val)
+        y_val = jnp.array(y_val)
+
+        # Ensure y_val is 2D
+        if y_val.ndim == 1:
+            y_val = y_val.reshape(-1, 1)
+
         # Get predictions and features on validation set
-        y_pred = self.predict(X_val)
-        _, features = self.model_.apply(self.params_, X_val, return_features=True)
+        predictions, features = self.model_.apply(self.params_, X_val, return_features=True)
 
         # Grid search over hyperparameters
         alpha_candidates = jnp.logspace(-2, 2, 20)
         zeta_candidates = jnp.logspace(-2, 2, 20)
 
-        best_nll = float("inf")
-        best_alpha = 1.0
-        best_zeta = 1e-2
+        # Calibrate each output separately
+        alpha_squared_list = []
+        zeta_squared_list = []
 
-        for alpha in alpha_candidates:
-            for zeta in zeta_candidates:
-                # Compute uncertainties
-                variances = self._compute_uncertainties_batch(features, alpha, zeta)
+        for j in range(self.n_outputs_):
+            best_nll = float("inf")
+            best_alpha = 1.0
+            best_zeta = 1e-2
 
-                # Skip if any variance is non-positive or NaN
-                if jnp.any(variances <= 0) or jnp.any(jnp.isnan(variances)):
-                    continue
+            y_j = y_val[:, j]
+            pred_j = predictions[:, j]
 
-                # Compute negative log-likelihood
-                nll = jnp.mean(
-                    0.5 * ((y_val - y_pred) ** 2 / variances + jnp.log(2 * jnp.pi * variances))
+            for alpha in alpha_candidates:
+                for zeta in zeta_candidates:
+                    # Compute uncertainties
+                    variances = self._compute_uncertainties_batch(features, alpha, zeta)
+
+                    # Skip if any variance is non-positive or NaN
+                    if jnp.any(variances <= 0) or jnp.any(jnp.isnan(variances)):
+                        continue
+
+                    # Compute negative log-likelihood for this output
+                    nll = jnp.mean(
+                        0.5 * ((y_j - pred_j) ** 2 / variances + jnp.log(2 * jnp.pi * variances))
+                    )
+
+                    if jnp.isfinite(nll) and nll < best_nll:
+                        best_nll = nll
+                        best_alpha = alpha
+                        best_zeta = zeta
+
+            if self.alpha_squared == "auto":
+                alpha_squared_list.append(float(best_alpha))
+            else:
+                alpha_squared_list.append(
+                    self.alpha_squared if np.isscalar(self.alpha_squared) else self.alpha_squared[j]
                 )
 
-                if jnp.isfinite(nll) and nll < best_nll:
-                    best_nll = nll
-                    best_alpha = alpha
-                    best_zeta = zeta
+            if self.zeta_squared == "auto":
+                zeta_squared_list.append(float(best_zeta))
+            else:
+                zeta_squared_list.append(
+                    self.zeta_squared if np.isscalar(self.zeta_squared) else self.zeta_squared[j]
+                )
 
-        self.alpha_squared_ = (
-            float(best_alpha) if self.alpha_squared == "auto" else self.alpha_squared
-        )
-        self.zeta_squared_ = float(best_zeta) if self.zeta_squared == "auto" else self.zeta_squared
+            if self.n_outputs_ > 1:
+                print(
+                    f"Output {j}: alpha²={alpha_squared_list[-1]:.2e}, "
+                    f"zeta²={zeta_squared_list[-1]:.2e}, NLL={best_nll:.4f}"
+                )
 
-        print(
-            f"Calibrated: alpha²={self.alpha_squared_:.2e}, zeta²={self.zeta_squared_:.2e}, NLL={best_nll:.4f}"
-        )
+        # Store as arrays
+        self.alpha_squared_ = np.array(alpha_squared_list)
+        self.zeta_squared_ = np.array(zeta_squared_list)
+
+        if self.n_outputs_ == 1:
+            print(
+                f"Calibrated: alpha²={self.alpha_squared_[0]:.2e}, "
+                f"zeta²={self.zeta_squared_[0]:.2e}, NLL={best_nll:.4f}"
+            )
 
     def _compute_uncertainties_batch(self, features, alpha_squared, zeta_squared):
         """
@@ -353,12 +407,17 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
 
         Returns
         -------
-        y_pred : array of shape (n_samples,)
-            Predicted values
+        y_pred : array of shape (n_samples,) or (n_samples, n_outputs)
+            Predicted values. 1D for single output, 2D for multi-output.
         """
         X = jnp.array(X, dtype=jnp.float32)
         predictions = self.model_.apply(self.params_, X)
-        return np.array(predictions.squeeze())
+
+        # Squeeze single-output to 1D for backward compatibility
+        if self.n_outputs_ == 1:
+            predictions = predictions.squeeze(axis=1)
+
+        return np.array(predictions)
 
     def predict_with_uncertainty(self, X, return_std=True):
         """
@@ -373,9 +432,9 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
 
         Returns
         -------
-        y_pred : array of shape (n_samples,)
+        y_pred : array of shape (n_samples,) or (n_samples, n_outputs)
             Predicted values
-        uncertainty : array of shape (n_samples,)
+        uncertainty : array of shape (n_samples,) or (n_samples, n_outputs)
             Predicted uncertainties (std or variance)
         """
         X = jnp.array(X, dtype=jnp.float32)
@@ -383,39 +442,65 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         # Get predictions and last-layer features
         predictions, features = self.model_.apply(self.params_, X, return_features=True)
 
-        # Compute uncertainties
-        variances = self._compute_uncertainties_batch(
-            features, self.alpha_squared_, self.zeta_squared_
-        )
+        # Compute per-output uncertainties using each output's calibration params
+        n_samples = X.shape[0]
+        variances = np.zeros((n_samples, self.n_outputs_))
 
-        predictions = np.array(predictions.squeeze())
+        for j in range(self.n_outputs_):
+            alpha_j = self.alpha_squared_[j]
+            zeta_j = self.zeta_squared_[j]
+            var_j = self._compute_uncertainties_batch(features, alpha_j, zeta_j)
+            variances[:, j] = np.array(var_j)
+
+        predictions = np.array(predictions)
+
+        # Squeeze single-output to 1D for backward compatibility
+        if self.n_outputs_ == 1:
+            predictions = predictions.squeeze(axis=1)
+            variances = variances.squeeze(axis=1)
 
         if return_std:
-            return predictions, np.array(jnp.sqrt(variances))
+            return predictions, np.sqrt(variances)
         else:
-            return predictions, np.array(variances)
+            return predictions, variances
 
     def score(self, X, y):
         """
         Compute R² score.
 
+        For multi-output, returns the average R² across all outputs.
+
         Parameters
         ----------
         X : array-like of shape (n_samples, n_features)
             Test samples
-        y : array-like of shape (n_samples,)
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             True values
 
         Returns
         -------
         score : float
-            R² score
+            R² score (averaged across outputs for multi-output)
         """
         y_pred = self.predict(X)
         y = np.array(y)
-        ss_res = np.sum((y - y_pred) ** 2)
-        ss_tot = np.sum((y - np.mean(y)) ** 2)
-        return 1 - (ss_res / ss_tot)
+
+        if y.ndim == 1 and y_pred.ndim == 1:
+            ss_res = np.sum((y - y_pred) ** 2)
+            ss_tot = np.sum((y - np.mean(y)) ** 2)
+            return 1 - (ss_res / ss_tot)
+
+        # Multi-output: average R² across outputs
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+
+        r2_scores = []
+        for j in range(y.shape[1]):
+            ss_res = np.sum((y[:, j] - y_pred[:, j]) ** 2)
+            ss_tot = np.sum((y[:, j] - np.mean(y[:, j])) ** 2)
+            r2_scores.append(1 - (ss_res / ss_tot))
+
+        return float(np.mean(r2_scores))
 
 
 def compute_calibration_metrics(y_true, y_pred, y_std):
