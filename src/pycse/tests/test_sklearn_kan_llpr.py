@@ -60,7 +60,7 @@ class TestKANLLPRBasicFunctionality:
         assert model.alpha_squared == "auto"
         assert model.zeta_squared == "auto"
         assert model.val_size == 0.1
-        assert model.n_outputs == 1
+        assert model.layers[-1] == 1
 
     def test_initialization_custom(self):
         """Test KANLLPR initialization with custom parameters."""

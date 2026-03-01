@@ -67,7 +67,7 @@ class TestKANBasicFunctionality:
         assert model.optimizer == "bfgs"
         assert model.loss_type == "mse"
         assert model.n_ensemble == 1
-        assert model.n_outputs == 1
+        assert model.layers[-1] == 1
 
     def test_initialization_custom(self):
         """Test KAN initialization with custom parameters."""
@@ -87,7 +87,7 @@ class TestKANBasicFunctionality:
         assert model.optimizer == "adam"
         assert model.loss_type == "crps"
         assert model.n_ensemble == 16
-        assert model.n_outputs == 1
+        assert model.layers[-1] == 1
 
     def test_fit_predict_basic(self, simple_linear_data):
         """Test basic fit and predict cycle."""

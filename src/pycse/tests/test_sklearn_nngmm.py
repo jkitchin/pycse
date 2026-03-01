@@ -456,11 +456,11 @@ class TestNNGMMGMMIntegration:
         model = NeuralNetworkGMM(simple_nn, n_components=2)
         model.fit(X, y)
 
-        # Check that GMM was fitted - stored as 'gmm' not 'gmm_'
-        assert hasattr(model, "gmm")
-        assert model.gmm is not None
+        # Check that GMM was fitted
+        assert hasattr(model, "gmm_")
+        assert model.gmm_ is not None
         # gmr.GMM has 'priors' attribute (check gmr docs)
-        assert hasattr(model.gmm, "priors") or hasattr(model.gmm, "means")
+        assert hasattr(model.gmm_, "priors") or hasattr(model.gmm_, "means")
 
     def test_gmm_provides_uncertainty(self, simple_linear_data, simple_nn):
         """Test that GMM provides uncertainty estimates."""

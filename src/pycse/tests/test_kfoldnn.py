@@ -91,12 +91,16 @@ class TestKfoldNNInitialization:
         with pytest.raises(TypeError, match="seed must be an integer"):
             KfoldNN(layers=(1, 10, 15), seed="42")
 
-    def test_initialization_creates_nn_module(self):
-        """Test that initialization creates internal NN module."""
+    def test_initialization_creates_nn_module(self, sample_data):
+        """Test that nn_ module is created during fit."""
+        x, y = sample_data
         model = KfoldNN(layers=(1, 10, 15))
-        assert hasattr(model, "nn")
-        assert isinstance(model.nn, _NN)
-        assert model.nn.layers == (1, 10, 15)
+        # nn_ is created during fit, not in __init__
+        assert not hasattr(model, "nn_")
+        model.fit(x, y, maxiter=10)
+        assert hasattr(model, "nn_")
+        assert isinstance(model.nn_, _NN)
+        assert model.nn_.layers == (1, 10, 15)
 
 
 class TestKfoldNNFit:
@@ -109,8 +113,8 @@ class TestKfoldNNFit:
         model.fit(x, y, maxiter=10)
 
         assert model.is_fitted
-        assert hasattr(model, "optpars")
-        assert hasattr(model, "state")
+        assert hasattr(model, "optpars_")
+        assert hasattr(model, "state_")
 
     def test_fit_stores_parameters(self, sample_data):
         """Test that fit stores optimized parameters."""
@@ -118,8 +122,8 @@ class TestKfoldNNFit:
         model = KfoldNN(layers=(1, 10, 15))
         model.fit(x, y, maxiter=10)
 
-        assert model.optpars is not None
-        assert "params" in model.optpars
+        assert model.optpars_ is not None
+        assert "params" in model.optpars_
 
     def test_fit_with_custom_solver_params(self, sample_data):
         """Test fitting with custom solver parameters."""
@@ -129,7 +133,7 @@ class TestKfoldNNFit:
 
         assert model.is_fitted
         # Should stop early with relaxed tolerance
-        assert model.state.iter_num <= 500
+        assert model.state_.iter_num <= 500
 
     def test_fit_retraining_works(self, sample_data):
         """Test that model can be refitted (warm start)."""
@@ -138,11 +142,11 @@ class TestKfoldNNFit:
 
         # First fit
         model.fit(x, y, maxiter=10)
-        first_loss = model.state.value
+        first_loss = model.state_.value
 
         # Refit with more iterations
         model.fit(x, y, maxiter=10)
-        second_loss = model.state.value
+        second_loss = model.state_.value
 
         # Second fit should achieve lower or equal loss
         assert second_loss <= first_loss

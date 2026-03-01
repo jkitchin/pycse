@@ -49,7 +49,7 @@ class TestDPOSEBasicFunctionality:
         assert model.loss_type == "crps"
         assert model.optimizer == "bfgs"
         assert model.min_sigma == 1e-3
-        assert model.n_ensemble == 8
+        assert model.layers[-1] == 8
 
     def test_initialization_custom(self):
         """Test DPOSE initialization with custom parameters."""
@@ -59,7 +59,7 @@ class TestDPOSEBasicFunctionality:
         assert model.loss_type == "mse"
         assert model.optimizer == "adam"
         assert model.min_sigma == 1e-4
-        assert model.n_ensemble == 8
+        assert model.layers[-1] == 8
 
     def test_fit_predict_basic(self, simple_linear_data):
         """Test basic fit and predict cycle."""
@@ -385,8 +385,8 @@ class TestDPOSESklearnCompatibility:
         assert hasattr(model, "loss_type")
         assert hasattr(model, "optimizer")
         assert hasattr(model, "min_sigma")
-        assert hasattr(model, "n_ensemble")
-        assert hasattr(model, "calibration_factor_")
+        # calibration_factor_ is set during fit(), not in __init__
+        assert not hasattr(model, "calibration_factor_")
 
 
 class TestDPOSECallInterface:
