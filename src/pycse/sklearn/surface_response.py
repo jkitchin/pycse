@@ -358,8 +358,8 @@ class SurfaceResponse(Pipeline):
             features = self["poly"].get_feature_names_out()
 
             pars = self["surface response"].coefs_
-            pars_cint = self["surface response"].pars_cint
-            pars_se = self["surface response"].pars_se
+            pars_cint = self["surface response"].pars_cint_
+            pars_se = self["surface response"].pars_se_
 
             nrows, ncols = pars.shape
 

@@ -288,9 +288,8 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             raise TypeError(f"seed must be an integer, got {type(seed).__name__}")
 
         self.layers = layers
-        self.key = jax.random.PRNGKey(seed)
-        self.nn = _NN(layers)
         self.xtrain = xtrain
+        self.seed = seed
 
     @property
     def is_fitted(self):
@@ -301,7 +300,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         bool
             True if fit() has been called successfully, False otherwise.
         """
-        return hasattr(self, "optpars")
+        return hasattr(self, "optpars_")
 
     def fit(self, X, y, **kwargs):
         """Train the k-fold neural network on data.
@@ -387,11 +386,15 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         if len(X) != len(y):
             raise ValueError(f"X and y must have same length. Got X: {len(X)}, y: {len(y)}")
 
+        # Create derived objects from constructor params
+        self.nn_ = _NN(self.layers)
+        key = jax.random.PRNGKey(self.seed)
+
         # Initialize or reuse parameters (allows retraining)
         if not self.is_fitted:
-            params = self.nn.init(self.key, X)
+            params = self.nn_.init(key, X)
         else:
-            params = self.optpars
+            params = self.optpars_
 
         # Determine last layer name and number of folds
         last_layer = f"Dense_{len(self.layers) - 1}"
@@ -401,7 +404,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         # Create random permutations for each fold
         # Each fold gets a different ordering of the data indices
         folds = jax.random.permutation(
-            self.key, np.tile(np.arange(0, len(X))[:, None], N), axis=0, independent=True
+            key, np.tile(np.arange(0, len(X))[:, None], N), axis=0, independent=True
         ).T
 
         # Create smooth, differentiable cutoff function for fold masking
@@ -417,7 +420,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
 
             for i, fold in enumerate(folds):
                 # Predict for this fold's data ordering
-                P = self.nn.apply(pars, np.asarray(X)[fold])
+                P = self.nn_.apply(pars, np.asarray(X)[fold])
 
                 # Extract errors for this fold's output neuron
                 # fy masks out data we don't want this neuron to see
@@ -434,10 +437,10 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         tol = kwargs.pop("tol", 1e-3)
 
         # Store maxiter for convergence checking
-        self.maxiter = maxiter
+        self.maxiter_ = maxiter
 
         # Run L-BFGS optimization using optax
-        self.optpars, self.state = run_optimizer(
+        self.optpars_, self.state_ = run_optimizer(
             "lbfgs", objective, params, maxiter=maxiter, tol=tol, **kwargs
         )
 
@@ -491,7 +494,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             raise RuntimeError("Model must be fitted before making predictions. Call fit() first.")
 
         X = np.atleast_2d(X)
-        P = self.nn.apply(self.optpars, X)
+        P = self.nn_.apply(self.optpars_, X)
 
         if return_std:
             return np.mean(P, axis=1), np.std(P, axis=1)
@@ -552,7 +555,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             raise RuntimeError("Model must be fitted before calling. Call fit() first.")
 
         # Get all predictions from all output neurons
-        P = self.nn.apply(self.optpars, X)
+        P = self.nn_.apply(self.optpars_, X)
         se = P.std(axis=1)
 
         if not distribution:
@@ -587,12 +590,12 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             print("Model not fitted yet. Call fit() first.")
             return None
 
-        print(f"Iterations: {self.state.iter_num}, Loss: {self.state.value:.6f}")
+        print(f"Iterations: {self.state_.iter_num}, Loss: {self.state_.value:.6f}")
 
         return {
-            "iterations": int(self.state.iter_num),
-            "final_loss": float(self.state.value),
-            "converged": bool(self.state.iter_num < self.maxiter),
+            "iterations": int(self.state_.iter_num),
+            "final_loss": float(self.state_.value),
+            "converged": bool(self.state_.iter_num < self.maxiter_),
         }
 
     def plot(self, X, y, distribution=False):
@@ -642,7 +645,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before plotting. Call fit() first.")
 
-        P = self.nn.apply(self.optpars, X)
+        P = self.nn_.apply(self.optpars_, X)
         mp = P.mean(axis=1)
         se = P.std(axis=1)
 
@@ -670,7 +673,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         )
 
         if self.is_fitted:
-            repr_str += f", loss={self.state.value:.6f}"
+            repr_str += f", loss={self.state_.value:.6f}"
 
         return repr_str
 
@@ -689,6 +692,6 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         )
 
         if self.is_fitted:
-            desc += f"\n  Iterations: {self.state.iter_num}\n  Final loss: {self.state.value:.6f}"
+            desc += f"\n  Iterations: {self.state_.iter_num}\n  Final loss: {self.state_.value:.6f}"
 
         return desc

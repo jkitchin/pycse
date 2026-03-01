@@ -33,7 +33,6 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.metrics import mean_squared_error
 
 from nflows.flows import Flow
 from nflows.distributions import StandardNormal
@@ -493,26 +492,6 @@ class NFlowsRegressor(BaseEstimator, RegressorMixin):
         log_prob = log_prob - np.sum(np.log(self.y_std_))
 
         return log_prob.cpu().numpy()
-
-    def score(self, X, y):
-        """Return the negative mean squared error (for sklearn compatibility).
-
-        Higher is better (sklearn convention).
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            Test input data.
-        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
-            True target values.
-
-        Returns
-        -------
-        score : float
-            Negative mean squared error.
-        """
-        y_pred = self.predict(X, n_samples=50)
-        return -mean_squared_error(y, y_pred)
 
 
 # Convenience function for quick model creation

@@ -30,14 +30,14 @@ class TestLinearRegressionUQBasics:
 
         # Check that coefficients are stored
         assert hasattr(model, "coefs_")
-        assert hasattr(model, "pars_cint")
-        assert hasattr(model, "pars_se")
+        assert hasattr(model, "pars_cint_")
+        assert hasattr(model, "pars_se_")
 
         # Check training data is stored
-        assert hasattr(model, "xtrain")
-        assert hasattr(model, "ytrain")
-        np.testing.assert_array_equal(model.xtrain, X)
-        np.testing.assert_array_equal(model.ytrain, y)
+        assert hasattr(model, "xtrain_")
+        assert hasattr(model, "ytrain_")
+        np.testing.assert_array_equal(model.xtrain_, X)
+        np.testing.assert_array_equal(model.ytrain_, y)
 
     def test_fit_returns_self(self):
         """Test that fit() returns self for sklearn compatibility."""
@@ -188,8 +188,8 @@ class TestLinearRegressionUQConfidenceIntervals:
         model.fit(X, y)
 
         # Check that confidence intervals exist
-        assert model.pars_cint is not None
-        assert model.pars_se is not None
+        assert model.pars_cint_ is not None
+        assert model.pars_se_ is not None
 
     def test_confidence_interval_shape(self):
         """Test that confidence intervals have correct shape."""
@@ -200,7 +200,7 @@ class TestLinearRegressionUQConfidenceIntervals:
         model.fit(X, y)
 
         # pars_cint should be (n_features, 2) for lower and upper bounds
-        assert model.pars_cint.shape[1] == 2  # Lower and upper bounds
+        assert model.pars_cint_.shape[1] == 2  # Lower and upper bounds
 
     def test_standard_errors_positive(self):
         """Test that standard errors are non-negative."""
@@ -211,7 +211,7 @@ class TestLinearRegressionUQConfidenceIntervals:
         model.fit(X, y)
 
         # Standard errors should be positive
-        assert np.all(model.pars_se >= 0)
+        assert np.all(model.pars_se_ >= 0)
 
 
 class TestLinearRegressionUQNoisyData:
@@ -299,8 +299,8 @@ class TestLinearRegressionUQEdgeCases:
         model.fit(X, y)
 
         # Should convert to numpy arrays internally
-        assert isinstance(model.xtrain, np.ndarray)
-        assert isinstance(model.ytrain, np.ndarray)
+        assert isinstance(model.xtrain_, np.ndarray)
+        assert isinstance(model.ytrain_, np.ndarray)
 
         y_pred = model.predict(X)
         assert len(y_pred) == len(X)
@@ -362,8 +362,8 @@ class TestLinearRegressionUQIntegration:
         # Access through pipeline
         regressor = model["regressor"]
         assert hasattr(regressor, "coefs_")
-        assert hasattr(regressor, "pars_cint")
-        assert hasattr(regressor, "pars_se")
+        assert hasattr(regressor, "pars_cint_")
+        assert hasattr(regressor, "pars_se_")
 
 
 class TestLinearRegressionUQNumericalStability:

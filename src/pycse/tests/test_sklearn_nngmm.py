@@ -70,7 +70,8 @@ class TestNNGMMBasicFunctionality:
         assert model.nn is simple_nn
         assert model.n_components == 1
         assert model.n_samples == 500
-        assert model.calibration_factor == 1.0
+        # calibration_factor_ is set during fit(), not in __init__
+        assert not hasattr(model, "calibration_factor_")
 
     def test_initialization_custom(self, simple_nn):
         """Test NNGMM initialization with custom parameters."""
@@ -79,7 +80,7 @@ class TestNNGMMBasicFunctionality:
         assert model.nn is simple_nn
         assert model.n_components == 3
         assert model.n_samples == 500
-        assert model.calibration_factor == 1.0
+        assert not hasattr(model, "calibration_factor_")
 
     def test_fit_predict_basic(self, simple_linear_data, simple_nn):
         """Test basic fit and predict cycle."""
@@ -134,9 +135,9 @@ class TestNNGMMCalibration:
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val)
 
         # Check that calibration factor was computed
-        assert hasattr(model, "calibration_factor")
-        assert np.isfinite(model.calibration_factor)
-        assert model.calibration_factor > 0
+        assert hasattr(model, "calibration_factor_")
+        assert np.isfinite(model.calibration_factor_)
+        assert model.calibration_factor_ > 0
 
     def test_no_calibration_without_validation(self, simple_linear_data, simple_nn):
         """Test that no calibration when validation data not provided."""
@@ -146,7 +147,7 @@ class TestNNGMMCalibration:
         model.fit(X, y)
 
         # Calibration factor should be 1.0 (no calibration)
-        assert model.calibration_factor == 1.0
+        assert model.calibration_factor_ == 1.0
 
     def test_calibration_affects_uncertainty(self, heteroscedastic_data):
         """Test that calibration changes uncertainty estimates."""
@@ -182,7 +183,7 @@ class TestNNGMMCalibration:
         _, y_std_no_cal = model_no_cal.predict(X_val, return_std=True)
 
         # If calibration factor != 1.0, uncertainties should differ
-        if model_cal.calibration_factor != 1.0:
+        if model_cal.calibration_factor_ != 1.0:
             assert not np.allclose(y_std_cal, y_std_no_cal)
 
 

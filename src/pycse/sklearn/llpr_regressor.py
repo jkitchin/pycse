@@ -396,7 +396,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
 
         return uncertainties
 
-    def predict(self, X):
+    def predict(self, X, return_std=False):
         """
         Predict using the trained model.
 
@@ -404,12 +404,19 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         ----------
         X : array-like of shape (n_samples, n_features)
             Samples
+        return_std : bool, default=False
+            If True, return standard deviation alongside predictions.
 
         Returns
         -------
         y_pred : array of shape (n_samples,) or (n_samples, n_outputs)
             Predicted values. 1D for single output, 2D for multi-output.
+        y_std : array of shape (n_samples,) or (n_samples, n_outputs), optional
+            Standard deviation (only if return_std=True).
         """
+        if return_std:
+            return self.predict_with_uncertainty(X, return_std=True)
+
         X = jnp.array(X, dtype=jnp.float32)
         predictions = self.model_.apply(self.params_, X)
 

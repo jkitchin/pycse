@@ -70,7 +70,6 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         self.nn = nn
         self.n_components = n_components
         self.n_samples = n_samples
-        self.calibration_factor = 1.0  # For post-hoc calibration
 
     def _feat(self, X):
         """Return neural network features for X.
@@ -118,6 +117,8 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         """
         import warnings
 
+        self.calibration_factor_ = 1.0
+
         # Suppress ALL numerical warnings during training
         # (including from sklearn and scipy internals)
         with warnings.catch_warnings():
@@ -127,9 +128,9 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             self.nn.fit(X, y)
 
             # Create GMM from features and targets
-            self.gmm = GMM(n_components=self.n_components)
+            self.gmm_ = GMM(n_components=self.n_components)
             features = self._feat(X)
-            self.gmm.from_samples(np.hstack([features, y[:, None]]))
+            self.gmm_.from_samples(np.hstack([features, y[:, None]]))
 
             # Post-hoc calibration on validation set
             if val_X is not None and val_y is not None:
@@ -163,24 +164,24 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             print("    - Neural network overfit (reduce training iterations)")
             print("    - Too few samples for uncertainty estimation")
             print("\n  Skipping calibration (using α = 1.0)")
-            self.calibration_factor = 1.0
+            self.calibration_factor_ = 1.0
             return
 
         # Calibration factor: ratio of empirical to predicted variance
         alpha_sq = np.mean(errors**2) / np.mean(y_std**2)
-        self.calibration_factor = float(np.sqrt(alpha_sq))
+        self.calibration_factor_ = float(np.sqrt(alpha_sq))
 
         # Check for numerical issues
-        if not np.isfinite(self.calibration_factor):
-            print(f"\n⚠ WARNING: Calibration failed (α = {self.calibration_factor})")
+        if not np.isfinite(self.calibration_factor_):
+            print(f"\n⚠ WARNING: Calibration failed (α = {self.calibration_factor_})")
             print(f"  Mean error²: {np.mean(errors**2):.6f}")
             print(f"  Mean σ²: {np.mean(y_std**2):.6f}")
             print("  Skipping calibration (using α = 1.0)")
-            self.calibration_factor = 1.0
+            self.calibration_factor_ = 1.0
             return
 
-        print(f"\nCalibration factor α = {self.calibration_factor:.4f}")
-        if 0.9 <= self.calibration_factor <= 1.1:
+        print(f"\nCalibration factor α = {self.calibration_factor_:.4f}")
+        if 0.9 <= self.calibration_factor_ <= 1.1:
             print("  ✓ Model is well-calibrated")
 
     def predict(self, X, return_std=False):
@@ -207,20 +208,20 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             inds = np.arange(0, feat.shape[1])
 
             # Predict mean
-            y = self.gmm.predict(inds, feat)
+            y = self.gmm_.predict(inds, feat)
 
             if return_std:
                 se = []
                 for f in feat:
                     # Condition GMM on the features
-                    g = self.gmm.condition(np.arange(len(f)), f)
+                    g = self.gmm_.condition(np.arange(len(f)), f)
                     # Sample from conditional distribution
                     samples = g.sample(self.n_samples)
                     # Compute standard deviation
                     se.append(np.std(samples))
 
                 # Apply calibration factor
-                return y, self.calibration_factor * np.array(se)
+                return y, self.calibration_factor_ * np.array(se)
             else:
                 return y
 
@@ -238,7 +239,7 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         print(f"  Components: {self.n_components}")
         print(f"  Samples for UQ: {self.n_samples}")
         print("\nCalibration:")
-        print(f"  Calibration factor α: {self.calibration_factor:.4f}")
+        print(f"  Calibration factor α: {self.calibration_factor_:.4f}")
         print("=" * 50 + "\n")
 
     def plot(self, X, y, ax=None):

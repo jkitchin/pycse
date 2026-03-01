@@ -963,19 +963,26 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
 
         return self
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray, return_std: bool = False) -> np.ndarray:
         """Predict using the fitted periodic network.
 
         Parameters
         ----------
         X : array-like of shape (n_samples, n_features)
             Input samples.
+        return_std : bool, default=False
+            If True, return standard deviation alongside predictions.
 
         Returns
         -------
         y_pred : ndarray of shape (n_samples,)
             Predicted values.
+        y_std : ndarray of shape (n_samples,), optional
+            Standard deviation (only if return_std=True).
         """
+        if return_std:
+            return self.predict_with_uncertainty(X, return_std=True)
+
         X = np.atleast_2d(X)
         X_proc = self._preprocess_X(X, fit=False)
         X_expanded = self._expand_features(X_proc, self.periods_)

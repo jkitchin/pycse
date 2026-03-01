@@ -116,7 +116,7 @@ class LeafModelRegressor(DecisionTreeRegressor):
 
         # Now train the leaf models
         leaves = self.apply(X)
-        self.leaf_models = {}
+        self.leaf_models_ = {}
         self.leaf_stats_ = {}
 
         for leaf in set(leaves):
@@ -143,12 +143,12 @@ class LeafModelRegressor(DecisionTreeRegressor):
                 )
 
             # Fit the model for this leaf
-            self.leaf_models[leaf] = clone(self.leaf_model)
+            self.leaf_models_[leaf] = clone(self.leaf_model)
             try:
-                self.leaf_models[leaf].fit(_X, _y)
+                self.leaf_models_[leaf].fit(_X, _y)
 
                 # Store residuals for fallback UQ
-                y_pred = self.leaf_models[leaf].predict(_X)
+                y_pred = self.leaf_models_[leaf].predict(_X)
                 residuals = _y - y_pred
                 self.leaf_stats_[leaf]["residual_std"] = np.std(residuals)
             except Exception as e:
@@ -157,7 +157,7 @@ class LeafModelRegressor(DecisionTreeRegressor):
                     UserWarning,
                 )
                 # Fallback: store mean as a simple predictor
-                self.leaf_models[leaf] = None
+                self.leaf_models_[leaf] = None
 
         # Calibration if validation data provided
         self.calibration_factor_ = 1.0
@@ -203,7 +203,7 @@ class LeafModelRegressor(DecisionTreeRegressor):
         errors = np.zeros(X.shape[0])
 
         for leaf in set(pleaves):
-            model = self.leaf_models[leaf]
+            model = self.leaf_models_[leaf]
             ind = pleaves == leaf
 
             # Handle case where leaf model failed to fit

@@ -193,9 +193,9 @@ class TestKANCalibration:
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=4)
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=10)
 
-        assert hasattr(model, "calibration_factor")
-        assert np.isfinite(model.calibration_factor)
-        assert model.calibration_factor > 0
+        assert hasattr(model, "calibration_factor_")
+        assert np.isfinite(model.calibration_factor_)
+        assert model.calibration_factor_ > 0
 
     def test_no_calibration_without_validation(self, simple_linear_data):
         """Test that no calibration when validation data not provided."""
@@ -204,7 +204,7 @@ class TestKANCalibration:
         model = KAN(layers=(1, 5, 1), grid_size=3, n_ensemble=4)
         model.fit(X, y, maxiter=10)
 
-        assert model.calibration_factor == 1.0
+        assert model.calibration_factor_ == 1.0
 
 
 class TestKANUncertaintyMetrics:
@@ -394,7 +394,7 @@ class TestKANSklearnCompatibility:
         assert hasattr(model, "optimizer")
         assert hasattr(model, "n_ensemble")
         assert hasattr(model, "n_outputs")
-        assert hasattr(model, "calibration_factor")
+        assert hasattr(model, "calibration_factor_")
 
 
 class TestKANCallInterface:

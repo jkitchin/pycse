@@ -328,7 +328,6 @@ class KAN(BaseEstimator, RegressorMixin):
         self.spline_order = spline_order
         self.grid_range = grid_range
         self.seed = seed
-        self.key = jax.random.PRNGKey(seed)
         self.optimizer = optimizer.lower()
         self.loss_type = loss_type
         self.min_sigma = min_sigma
@@ -337,42 +336,22 @@ class KAN(BaseEstimator, RegressorMixin):
         self.entropy_reg = entropy_reg
         self.base_activation = base_activation
         self.n_ensemble = n_ensemble
-        self.calibration_factor = 1.0
-        self.n_outputs = layers[-1]
-
-        # Internal network outputs n_outputs * n_ensemble
-        internal_layers = layers[:-1] + (layers[-1] * n_ensemble,)
-
-        # Create the network
-        self.nn = _KANN(
-            layers=internal_layers,
-            grid_size=grid_size,
-            spline_order=spline_order,
-            grid_range=grid_range,
-            base_activation=base_activation,
-        )
-
-        # Normalization parameters (set during fit)
-        self.X_mean_ = None
-        self.X_std_ = None
-        self.y_mean_ = None
-        self.y_std_ = None
 
     def _normalize_X(self, X):
         """Normalize input features."""
-        if self.X_mean_ is not None and self.X_std_ is not None:
+        if hasattr(self, "X_mean_") and hasattr(self, "X_std_"):
             return (X - self.X_mean_) / (self.X_std_ + 1e-8)
         return X
 
     def _normalize_y(self, y):
         """Normalize target values (handles multi-output)."""
-        if self.y_mean_ is not None and self.y_std_ is not None:
+        if hasattr(self, "y_mean_") and hasattr(self, "y_std_"):
             return (y - self.y_mean_) / (self.y_std_ + 1e-8)
         return y
 
     def _denormalize_y(self, y):
         """Denormalize predictions (handles multi-output and ensemble)."""
-        if self.y_mean_ is not None and self.y_std_ is not None:
+        if hasattr(self, "y_mean_") and hasattr(self, "y_std_"):
             # Handle 3D case: (batch, n_outputs, n_ensemble)
             if y.ndim == 3:
                 # Reshape stats to (1, n_outputs, 1) for broadcasting
@@ -384,7 +363,7 @@ class KAN(BaseEstimator, RegressorMixin):
 
     def _denormalize_std(self, std):
         """Denormalize standard deviations (handles multi-output)."""
-        if self.y_std_ is not None:
+        if hasattr(self, "y_std_"):
             return std * self.y_std_
         return std
 
@@ -411,11 +390,24 @@ class KAN(BaseEstimator, RegressorMixin):
         if y.ndim == 1:
             y = y.reshape(-1, 1)
 
-        if y.shape[1] != self.n_outputs:
+        n_outputs = self.layers[-1]
+        if y.shape[1] != n_outputs:
             raise ValueError(
-                f"Target has {y.shape[1]} outputs but model expects {self.n_outputs}. "
+                f"Target has {y.shape[1]} outputs but model expects {n_outputs}. "
                 f"Set layers[-1]={y.shape[1]} to match."
             )
+
+        # Create derived objects from constructor params
+        key = jax.random.PRNGKey(self.seed)
+        internal_layers = self.layers[:-1] + (n_outputs * self.n_ensemble,)
+        self.nn_ = _KANN(
+            layers=internal_layers,
+            grid_size=self.grid_size,
+            spline_order=self.spline_order,
+            grid_range=self.grid_range,
+            base_activation=self.base_activation,
+        )
+        self.calibration_factor_ = 1.0
 
         # Store normalization parameters (per output)
         self.X_mean_ = jnp.mean(X, axis=0)
@@ -428,20 +420,20 @@ class KAN(BaseEstimator, RegressorMixin):
         y_norm = self._normalize_y(y)
 
         # Initialize parameters
-        params = self.nn.init(self.key, X_norm)
+        params = self.nn_.init(key, X_norm)
 
         # Store regularization params for closure
         l1_spline = self.l1_spline
         l1_activation = self.l1_activation
         entropy_reg = self.entropy_reg
-        n_outputs = self.n_outputs
+        n_outputs = self.layers[-1]
         n_ensemble = self.n_ensemble
         min_sigma = self.min_sigma
 
         @jit
         def objective(pars):
             """Loss function with optional regularization."""
-            pY_raw = self.nn.apply(pars, X_norm)
+            pY_raw = self.nn_.apply(pars, X_norm)
             # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
             pY = pY_raw.reshape(-1, n_outputs, n_ensemble)
 
@@ -503,7 +495,7 @@ class KAN(BaseEstimator, RegressorMixin):
         maxiter = kwargs.pop("maxiter", 300)
         tol = kwargs.pop("tol", 1e-3)
 
-        self.optpars, self.state = run_optimizer(
+        self.optpars_, self.state_ = run_optimizer(
             self.optimizer, objective, params, maxiter=maxiter, tol=tol, **kwargs
         )
 
@@ -530,10 +522,10 @@ class KAN(BaseEstimator, RegressorMixin):
             y = y.reshape(-1, 1)
 
         X_norm = self._normalize_X(X)
-        pY_raw = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn_.apply(self.optpars_, X_norm)
 
         # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
-        pY = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
+        pY = pY_raw.reshape(-1, self.layers[-1], self.n_ensemble)
 
         # Get predictions in normalized space
         py = pY.mean(axis=2)  # (batch, n_outputs)
@@ -546,20 +538,20 @@ class KAN(BaseEstimator, RegressorMixin):
         mean_sigma = jnp.mean(sigma)
         if mean_sigma < 1e-8:
             print("\n⚠ WARNING: Ensemble has collapsed!")
-            self.calibration_factor = 1.0
+            self.calibration_factor_ = 1.0
             return
 
         alpha_sq = jnp.mean(errs**2) / jnp.mean(sigma**2)
-        self.calibration_factor = float(jnp.sqrt(alpha_sq))
+        self.calibration_factor_ = float(jnp.sqrt(alpha_sq))
 
-        if not jnp.isfinite(self.calibration_factor):
-            self.calibration_factor = 1.0
+        if not jnp.isfinite(self.calibration_factor_):
+            self.calibration_factor_ = 1.0
             return
 
-        print(f"\nCalibration factor α = {self.calibration_factor:.4f}")
-        if self.calibration_factor > 1.5:
+        print(f"\nCalibration factor α = {self.calibration_factor_:.4f}")
+        if self.calibration_factor_ > 1.5:
             print("  ⚠ Model is overconfident (α > 1.5)")
-        elif self.calibration_factor < 0.7:
+        elif self.calibration_factor_ < 0.7:
             print("  ⚠ Model is underconfident (α < 0.7)")
         else:
             print("  ✓ Model is well-calibrated")
@@ -579,10 +571,10 @@ class KAN(BaseEstimator, RegressorMixin):
         """
         X = jnp.atleast_2d(X)
         X_norm = self._normalize_X(X)
-        pY_raw = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn_.apply(self.optpars_, X_norm)
 
         # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
-        pY = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
+        pY = pY_raw.reshape(-1, self.layers[-1], self.n_ensemble)
 
         if self.n_ensemble > 1:
             # Ensemble predictions: mean over ensemble
@@ -594,11 +586,11 @@ class KAN(BaseEstimator, RegressorMixin):
             std_pred = self._denormalize_std(std_pred_norm)
 
             # Apply calibration
-            if self.calibration_factor != 1.0:
-                std_pred = std_pred * self.calibration_factor
+            if self.calibration_factor_ != 1.0:
+                std_pred = std_pred * self.calibration_factor_
 
             # Squeeze if single output
-            if self.n_outputs == 1:
+            if self.layers[-1] == 1:
                 mean_pred = mean_pred.squeeze(axis=1)
                 std_pred = std_pred.squeeze(axis=1)
 
@@ -611,7 +603,7 @@ class KAN(BaseEstimator, RegressorMixin):
             pred = self._denormalize_y(pred_norm)
 
             # Squeeze if single output
-            if self.n_outputs == 1:
+            if self.layers[-1] == 1:
                 pred = pred.squeeze(axis=1)
 
             if return_std:
@@ -632,16 +624,16 @@ class KAN(BaseEstimator, RegressorMixin):
         """
         X = jnp.atleast_2d(X)
         X_norm = self._normalize_X(X)
-        pY_raw = self.nn.apply(self.optpars, X_norm)
+        pY_raw = self.nn_.apply(self.optpars_, X_norm)
 
         # Reshape: (batch, n_outputs * n_ensemble) -> (batch, n_outputs, n_ensemble)
-        pY_norm = pY_raw.reshape(-1, self.n_outputs, self.n_ensemble)
+        pY_norm = pY_raw.reshape(-1, self.layers[-1], self.n_ensemble)
 
         # Denormalize each output
         pY = self._denormalize_y(pY_norm)
 
         # Squeeze if single output
-        if self.n_outputs == 1:
+        if self.layers[-1] == 1:
             pY = pY.squeeze(axis=1)  # (batch, n_ensemble)
 
         return pY
@@ -664,14 +656,14 @@ class KAN(BaseEstimator, RegressorMixin):
             if self.entropy_reg > 0:
                 print(f"    Entropy: {self.entropy_reg}")
 
-        if hasattr(self.state, "iter_num"):
-            print(f"  Iterations: {self.state.iter_num}")
-        if hasattr(self.state, "value"):
-            print(f"  Final loss: {self.state.value:.6f}")
-        if hasattr(self.state, "converged"):
-            print(f"  Converged: {self.state.converged}")
-        if hasattr(self, "calibration_factor") and self.n_ensemble > 1:
-            print(f"  Calibration: α = {self.calibration_factor:.4f}")
+        if hasattr(self.state_, "iter_num"):
+            print(f"  Iterations: {self.state_.iter_num}")
+        if hasattr(self.state_, "value"):
+            print(f"  Final loss: {self.state_.value:.6f}")
+        if hasattr(self.state_, "converged"):
+            print(f"  Converged: {self.state_.converged}")
+        if hasattr(self, "calibration_factor_") and self.n_ensemble > 1:
+            print(f"  Calibration: α = {self.calibration_factor_:.4f}")
 
     def plot(self, X, y, ax=None, distribution=False):
         """Visualize predictions with uncertainty bands.
@@ -844,7 +836,7 @@ class KAN(BaseEstimator, RegressorMixin):
         Returns:
             Predictions (and uncertainties if requested).
         """
-        if not hasattr(self, "optpars"):
+        if not hasattr(self, "optpars_"):
             raise Exception("You need to fit the model first.")
 
         if distribution:
@@ -866,11 +858,11 @@ class KAN(BaseEstimator, RegressorMixin):
         Returns:
             matplotlib figure object.
         """
-        if not hasattr(self, "optpars"):
+        if not hasattr(self, "optpars_"):
             raise Exception("You need to fit the model first.")
 
         # Get parameters for the specified layer
-        params = self.optpars["params"]
+        params = self.optpars_["params"]
         layer_keys = [k for k in params.keys() if k.startswith("KANLayer_")]
 
         if layer_idx >= len(layer_keys):
@@ -970,10 +962,10 @@ class KAN(BaseEstimator, RegressorMixin):
         Returns:
             matplotlib figure object.
         """
-        if not hasattr(self, "optpars"):
+        if not hasattr(self, "optpars_"):
             raise Exception("You need to fit the model first.")
 
-        params = self.optpars["params"]
+        params = self.optpars_["params"]
         layer_keys = sorted([k for k in params.keys() if k.startswith("KANLayer_")])
         n_layers = len(layer_keys) + 1  # +1 for input layer
 
@@ -1235,7 +1227,7 @@ class KAN(BaseEstimator, RegressorMixin):
                 f"Train with n_ensemble=1 for MIP-compatible models."
             )
 
-        if not hasattr(self, "optpars"):
+        if not hasattr(self, "optpars_"):
             raise ValueError("Model must be fitted before exporting to Pyomo.")
 
         try:
@@ -1245,7 +1237,7 @@ class KAN(BaseEstimator, RegressorMixin):
 
         # Get network dimensions
         n_inputs = self.layers[0]
-        n_outputs = self.n_outputs
+        n_outputs = self.layers[-1]
 
         # Set default input bounds
         if input_bounds is None:
@@ -1273,7 +1265,7 @@ class KAN(BaseEstimator, RegressorMixin):
         breakpoints = np.linspace(self.grid_range[0], self.grid_range[1], n_segments + 1)
 
         # Extract parameters
-        params = self.optpars["params"]
+        params = self.optpars_["params"]
         layer_keys = sorted([k for k in params.keys() if k.startswith("KANLayer_")])
 
         # Track intermediate variables for each layer

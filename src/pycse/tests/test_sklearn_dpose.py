@@ -206,9 +206,9 @@ class TestDPOSECalibration:
         model.fit(X_train, y_train, val_X=X_val, val_y=y_val, maxiter=50)
 
         # Check that calibration factor exists
-        assert hasattr(model, "calibration_factor")
-        assert np.isfinite(model.calibration_factor)
-        assert model.calibration_factor > 0
+        assert hasattr(model, "calibration_factor_")
+        assert np.isfinite(model.calibration_factor_)
+        assert model.calibration_factor_ > 0
 
     def test_no_calibration_without_validation(self, simple_linear_data):
         """Test that no calibration when validation data not provided."""
@@ -218,7 +218,7 @@ class TestDPOSECalibration:
         model.fit(X, y, maxiter=50)
 
         # Calibration factor should be 1.0 (no calibration)
-        assert model.calibration_factor == 1.0
+        assert model.calibration_factor_ == 1.0
 
     def test_calibration_affects_uncertainty(self, heteroscedastic_data):
         """Test that calibration changes uncertainty estimates."""
@@ -238,7 +238,7 @@ class TestDPOSECalibration:
         _, y_std_no_cal = model_no_cal.predict(X_val, return_std=True)
 
         # If calibration factor != 1.0, uncertainties should differ
-        if model_cal.calibration_factor != 1.0:
+        if model_cal.calibration_factor_ != 1.0:
             assert not np.allclose(y_std_cal, y_std_no_cal)
 
 
@@ -386,7 +386,7 @@ class TestDPOSESklearnCompatibility:
         assert hasattr(model, "optimizer")
         assert hasattr(model, "min_sigma")
         assert hasattr(model, "n_ensemble")
-        assert hasattr(model, "calibration_factor")
+        assert hasattr(model, "calibration_factor_")
 
 
 class TestDPOSECallInterface:

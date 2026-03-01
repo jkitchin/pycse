@@ -69,7 +69,6 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         """
         self.nn = nn
         self.br = br
-        self.calibration_factor = 1.0  # For post-hoc calibration
 
     def _feat(self, X):
         """Return neural network features for X."""
@@ -108,6 +107,8 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         """
         import warnings
 
+        self.calibration_factor_ = 1.0
+
         # Suppress numerical warnings during training
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
@@ -143,24 +144,24 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
             print("\n⚠ WARNING: Uncertainties are near zero!")
             print(f"  Mean uncertainty: {mean_std:.2e}")
             print("  Skipping calibration (using α = 1.0)")
-            self.calibration_factor = 1.0
+            self.calibration_factor_ = 1.0
             return
 
         # Calibration factor: ratio of empirical to predicted variance
         alpha_sq = np.mean(errs**2) / np.mean(y_std**2)
-        self.calibration_factor = float(np.sqrt(alpha_sq))
+        self.calibration_factor_ = float(np.sqrt(alpha_sq))
 
         # Check for numerical issues
-        if not np.isfinite(self.calibration_factor):
-            print(f"\n⚠ WARNING: Calibration failed (α = {self.calibration_factor})")
+        if not np.isfinite(self.calibration_factor_):
+            print(f"\n⚠ WARNING: Calibration failed (α = {self.calibration_factor_})")
             print("  Skipping calibration (using α = 1.0)")
-            self.calibration_factor = 1.0
+            self.calibration_factor_ = 1.0
             return
 
-        print(f"\nCalibration factor α = {self.calibration_factor:.4f}")
-        if self.calibration_factor > 1.5:
+        print(f"\nCalibration factor α = {self.calibration_factor_:.4f}")
+        if self.calibration_factor_ > 1.5:
             print("  ⚠ Model is overconfident (α > 1.5)")
-        elif self.calibration_factor < 0.7:
+        elif self.calibration_factor_ < 0.7:
             print("  ⚠ Model is underconfident (α < 0.7)")
         else:
             print("  ✓ Model is well-calibrated")
@@ -186,8 +187,8 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         if return_std:
             y_pred, y_std = result
             # Apply calibration if available
-            if hasattr(self, "calibration_factor") and self.calibration_factor != 1.0:
-                y_std = y_std * self.calibration_factor
+            if hasattr(self, "calibration_factor_") and self.calibration_factor_ != 1.0:
+                y_std = y_std * self.calibration_factor_
             return y_pred, y_std
         else:
             return result
@@ -209,8 +210,8 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         print(f"    Alpha (precision): {self.br.alpha_:.6f}")
         print(f"    Lambda (noise): {self.br.lambda_:.6f}")
         print(f"    Scores available: {len(self.br.scores_) if hasattr(self.br, 'scores_') else 0}")
-        if hasattr(self, "calibration_factor"):
-            print(f"  Calibration: α = {self.calibration_factor:.4f}")
+        if hasattr(self, "calibration_factor_"):
+            print(f"  Calibration: α = {self.calibration_factor_:.4f}")
 
     def plot(self, X, y, ax=None):
         """Visualize predictions with uncertainty bands.
