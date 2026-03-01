@@ -393,8 +393,8 @@ class TestKANSklearnCompatibility:
         assert hasattr(model, "spline_order")
         assert hasattr(model, "optimizer")
         assert hasattr(model, "n_ensemble")
-        assert hasattr(model, "n_outputs")
-        assert hasattr(model, "calibration_factor_")
+        # n_outputs and calibration_factor_ are set during fit(), not __init__
+        assert not hasattr(model, "calibration_factor_")
 
 
 class TestKANCallInterface:
