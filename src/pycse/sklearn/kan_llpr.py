@@ -194,7 +194,7 @@ class KANLLPR(BaseEstimator, RegressorMixin):
         self.spline_order = spline_order
         self.grid_range = grid_range
         self.seed = seed
-        self.optimizer = optimizer.lower()
+        self.optimizer = optimizer
         self.l1_spline = l1_spline
         self.l1_activation = l1_activation
         self.entropy_reg = entropy_reg
@@ -586,11 +586,7 @@ class KANLLPR(BaseEstimator, RegressorMixin):
         predictions = self._denormalize_y(predictions_norm)
 
         # Denormalize uncertainties (variance scales with y_std² per output)
-        if self.y_std_ is not None:
-            # Scale each output's variance by its own y_std²
-            variances = variances_norm * (self.y_std_**2)
-        else:
-            variances = variances_norm
+        variances = variances_norm * (self.y_std_**2)
 
         # Squeeze if single output
         if self.layers[-1] == 1:

@@ -211,24 +211,17 @@ class DPOSE(BaseEstimator, RegressorMixin):
             print(f"Stage 1: MSE pre-training ({pretrain_maxiter} iterations)")
             print("         → Ensures good predictions before uncertainty calibration")
 
-            # Temporarily switch to MSE
-            original_loss = self.loss_type
-            self.loss_type = "mse"
-
             # Create kwargs for pre-training
             pretrain_kwargs = kwargs.copy()
             pretrain_kwargs["maxiter"] = pretrain_maxiter
 
-            # Pre-train with MSE
-            self._fit_internal(X, y, val_X=None, val_y=None, **pretrain_kwargs)
+            # Pre-train with MSE (pass loss_type override, don't mutate self)
+            self._fit_internal(X, y, val_X=None, val_y=None, loss_type="mse", **pretrain_kwargs)
 
             # Report pre-training results
             y_pred_pretrain = self.predict(X)
             mae_pretrain = np.mean(np.abs(y - y_pred_pretrain))
             print(f"         ✓ Pre-training complete: MAE = {mae_pretrain:.6f}")
-
-            # Restore NLL
-            self.loss_type = original_loss
 
             print("\nStage 2: NLL fine-tuning (uncertainty calibration)")
             print("         → Calibrating uncertainties while maintaining accuracy")
@@ -237,11 +230,16 @@ class DPOSE(BaseEstimator, RegressorMixin):
         # Stage 2: Main training (NLL, CRPS, or MSE)
         return self._fit_internal(X, y, val_X, val_y, **kwargs)
 
-    def _fit_internal(self, X, y, val_X=None, val_y=None, **kwargs):
+    def _fit_internal(self, X, y, val_X=None, val_y=None, loss_type=None, **kwargs):
         """Internal method for actual fitting (used by fit() for each stage).
 
         This is separated out to enable two-stage training for NLL.
+
+        Args:
+            loss_type: Override for self.loss_type (used for MSE pre-training stage).
         """
+        loss_type = loss_type or self.loss_type
+
         # Initialize or reuse parameters
         if not hasattr(self, "optpars_"):
             params = self.nn_.init(self.key_, X)  # Dummy input to init
@@ -264,13 +262,13 @@ class DPOSE(BaseEstimator, RegressorMixin):
             # Prediction errors
             errs = np.asarray(y).ravel() - py
 
-            if self.loss_type == "nll":
+            if loss_type == "nll":
                 # Negative Log-Likelihood (Kellner & Ceriotti, Eq. 6)
                 # Penalizes both prediction errors AND miscalibrated uncertainties
                 nll = 0.5 * (errs**2 / sigma**2 + np.log(2 * np.pi * sigma**2))
                 return np.mean(nll)
 
-            elif self.loss_type == "crps":
+            elif loss_type == "crps":
                 # Continuous Ranked Probability Score (Kellner & Ceriotti, Eq. 18)
                 # More robust than NLL, less sensitive to outliers
                 z = errs / sigma
@@ -279,14 +277,12 @@ class DPOSE(BaseEstimator, RegressorMixin):
                 crps = sigma * (z * (2 * Phi_z - 1) + 2 * phi_z - 1 / np.sqrt(np.pi))
                 return np.mean(crps)
 
-            elif self.loss_type == "mse":
+            elif loss_type == "mse":
                 # Simple MSE (no uncertainty training)
                 return np.mean(errs**2)
 
             else:
-                raise ValueError(
-                    f"Unknown loss_type: {self.loss_type}. Use 'nll', 'crps', or 'mse'."
-                )
+                raise ValueError(f"Unknown loss_type: {loss_type}. Use 'nll', 'crps', or 'mse'.")
 
         # Solver configuration
         maxiter = kwargs.pop("maxiter", 300)

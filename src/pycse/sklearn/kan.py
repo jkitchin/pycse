@@ -328,7 +328,7 @@ class KAN(BaseEstimator, RegressorMixin):
         self.spline_order = spline_order
         self.grid_range = grid_range
         self.seed = seed
-        self.optimizer = optimizer.lower()
+        self.optimizer = optimizer
         self.loss_type = loss_type
         self.min_sigma = min_sigma
         self.l1_spline = l1_spline
