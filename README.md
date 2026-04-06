@@ -34,7 +34,7 @@ pip install pycse
 Feeling brave? You can install the cutting edge from GitHub:
 
 ```sh
-pip install git+git://github.com/jkitchin/pycse
+pip install git+https://github.com/jkitchin/pycse
 ```
 
 ## Docker
