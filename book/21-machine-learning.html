@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Introduction to automatic differentiation" href="20-autograd-applications.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -609,7 +595,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fe211eb24ed4d8bd816026c9ef930c4fb899d026cb30890cdfbc59cfe2161b1b.png" src="../_images/fe211eb24ed4d8bd816026c9ef930c4fb899d026cb30890cdfbc59cfe2161b1b.png" />
+<img alt="../_images/54012288c319555156dba30acdd118c3354451b90d54006cea67399de81a11b4.png" src="../_images/54012288c319555156dba30acdd118c3354451b90d54006cea67399de81a11b4.png" />
 </div>
 </div>
 <p>We have to define a function for our model, and then another one for the residuals. For now, we stick with a syntax we are familiar with, and one that works with <code class="docutils literal notranslate"><span class="pre">least_squares</span></code>.</p>
@@ -663,22 +649,22 @@ least_squares<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     message: The maximum number of function evaluations is exceeded.
      success: False
       status: 0
-         fun: [-3.515e-05  5.019e-04 ...  8.603e-04  1.220e-03]
-           x: [-1.063e+02  2.079e+01  5.470e+01  2.577e+00 -4.704e+01
-               -5.091e-01 -2.347e+00 -3.978e+01 -5.331e+00 -2.952e+00]
-        cost: 1.3699819008622327e-05
-         jac: [[-1.000e+00 -9.885e-01 ... -0.000e+00  4.321e-01]
-               [-1.000e+00 -9.988e-01 ...  7.101e-03  3.480e-01]
+         fun: [-4.026e-04  3.830e-03 ... -2.934e-03 -3.820e-03]
+           x: [-7.228e+01  7.842e+01  2.518e+00  3.037e+00  6.973e+01
+                1.228e-02 -9.992e-01  4.759e+01  3.987e+01  2.909e+00]
+        cost: 0.00014859609605524042
+         jac: [[-1.000e+00 -9.954e-01 ...  0.000e+00 -5.626e-01]
+               [-1.000e+00 -9.959e-01 ... -2.267e-03 -1.111e-01]
                ...
-               [-1.000e+00 -1.000e+00 ...  1.234e-05  1.260e-05]
-               [-1.000e+00 -1.000e+00 ...  1.011e-05  1.002e-05]]
-        grad: [ 1.534e-04  1.533e-04  7.436e-09  4.303e-06 -1.514e-04
-               -5.701e-05 -1.823e-04 -1.532e-04 -7.715e-07 -1.211e-05]
-  optimality: 0.00018232956594602047
+               [-1.000e+00 -1.000e+00 ...  0.000e+00  0.000e+00]
+               [-1.000e+00 -1.000e+00 ...  0.000e+00  0.000e+00]]
+        grad: [ 6.168e-04  6.162e-04  1.658e-05  9.116e-05 -4.680e-04
+                9.114e-03  1.825e-02  6.167e-04  3.750e-08  8.750e-06]
+  optimality: 0.018247833415294845
  active_mask: [ 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00
                 0.000e+00  0.000e+00  0.000e+00  0.000e+00  0.000e+00]
         nfev: 1000
-        njev: 819
+        njev: 957
 </pre></div>
 </div>
 </div>
@@ -691,7 +677,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.3699819008622327e-05)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(0.00014859609605524042)
 </pre></div>
 </div>
 </div>
@@ -705,7 +691,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.,  0.,  0.,  0., -0., -0., -0., -0., -0., -0.])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.001,  0.001,  0.   ,  0.   , -0.   ,  0.009,  0.018,  0.001,
+        0.   ,  0.   ])
 </pre></div>
 </div>
 </div>
@@ -726,8 +713,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([532.912,  12.376,   0.627,   0.163,   0.022,   0.   ,   0.   ,
-         0.   ,   0.   ,   0.   ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([111730.311,   5981.371,      1.221,      0.317,      0.003,
+            0.   ,     -0.   ,      0.   ,      0.   ,      0.   ])
 </pre></div>
 </div>
 </div>
@@ -740,7 +727,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(9.467238718700868e-34)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(-5.171886024649984e-26)
 </pre></div>
 </div>
 </div>
@@ -757,7 +744,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8f5be94bee635b3958dfb3b4eed08e61d9f747a522bb4aa6e16461dab37ab306.png" src="../_images/8f5be94bee635b3958dfb3b4eed08e61d9f747a522bb4aa6e16461dab37ab306.png" />
+<img alt="../_images/e85be6878c41a958fbfa319c52e03a87c71d51cc9a89723a1cc6136193fb2797.png" src="../_images/e85be6878c41a958fbfa319c52e03a87c71d51cc9a89723a1cc6136193fb2797.png" />
 </div>
 </div>
 <p>Evidently, we just have not reached the required tolerances for least_squares to claim success.</p>
@@ -770,8 +757,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-106.305,   20.788,   54.697,    2.577,  -47.042,   -0.509,
-         -2.347,  -39.784,   -5.331,   -2.952])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-72.279,  78.417,   2.518,   3.037,  69.727,   0.012,  -0.999,
+        47.586,  39.865,   2.909])
 </pre></div>
 </div>
 </div>
@@ -783,8 +770,8 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-106.305,   20.788,   54.697,    2.577,  -47.042,   -0.509,
-         -2.347,  -39.784,   -5.331,   -2.952])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-72.279,  78.417,   2.518,   3.037,  69.727,   0.012,  -0.999,
+        47.586,  39.865,   2.909])
 </pre></div>
 </div>
 </div>
@@ -804,7 +791,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2eb880031cd162c6aa1dbafe15d2f259d69d65d2c7288863914d62eaf3a01871.png" src="../_images/2eb880031cd162c6aa1dbafe15d2f259d69d65d2c7288863914d62eaf3a01871.png" />
+<img alt="../_images/edddd5c0e4d8667cb397daaf471608a2ce803fca1d401f72c047ab3c12fa61b2.png" src="../_images/edddd5c0e4d8667cb397daaf471608a2ce803fca1d401f72c047ab3c12fa61b2.png" />
 </div>
 </div>
 <p>You can see that this model saturates for large <span class="math notranslate nohighlight">\(x\)</span>. That might be anticipated from knowledge of the tanh function, it also saturates at large values of <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -818,7 +805,7 @@ least_squares<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3ec3d6f69182408b3fab6042837aa0ba2aa5cab1c9d262b36c9552797af9ef68.png" src="../_images/3ec3d6f69182408b3fab6042837aa0ba2aa5cab1c9d262b36c9552797af9ef68.png" />
+<img alt="../_images/5623d82eddabf903cdcd4845adc52963d406f8320c214f10bc5dfbcbab70f2b2.png" src="../_images/5623d82eddabf903cdcd4845adc52963d406f8320c214f10bc5dfbcbab70f2b2.png" />
 </div>
 </div>
 <p>Up to here, this is mostly review for us. It is just a nonlinear regression (admittedly to a strange looking function), and analysis of the resulting model. Note that the model is very flexible, and it can be used to fit a variety of other functions.</p>
@@ -974,8 +961,8 @@ w1: (3, 1), b1: (1,)
 w1: [[ 0.711]
  [ 0.434]
  [-0.414]], b1: [-0.306]
-[-106.305   20.788   54.697    2.577  -47.042   -0.509   -2.347  -39.784
-   -5.331   -2.952]
+[-72.279  78.417   2.518   3.037  69.727   0.012  -0.999  47.586  39.865
+   2.909]
 </pre></div>
 </div>
 </div>
@@ -997,7 +984,7 @@ w1: [[ 0.711]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d6261e04748c253754d7e739229045ee695b4dd304bae276ff134670da91e0df.png" src="../_images/d6261e04748c253754d7e739229045ee695b4dd304bae276ff134670da91e0df.png" />
+<img alt="../_images/164de554dae18f4cbc17e91699d2b47808ab1447a69f79b89ba64ef8f3324298.png" src="../_images/164de554dae18f4cbc17e91699d2b47808ab1447a69f79b89ba64ef8f3324298.png" />
 </div>
 </div>
 </section>
@@ -1063,14 +1050,16 @@ w1: [[ 0.711]
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flexible-nonlinear-models-for-regression">Flexible nonlinear models for regression</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#another-interpretation-of-neural-networks">Another interpretation of neural networks</a></li>
@@ -1595,8 +1584,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

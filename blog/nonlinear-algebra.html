@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Linear algebra" href="linear-algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -631,7 +617,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/66aea2d93054128a2d8d0fcf6bfdc0da8bfee67a10893977bfd636637025b93d.png" src="../_images/66aea2d93054128a2d8d0fcf6bfdc0da8bfee67a10893977bfd636637025b93d.png" />
+<img alt="../_images/bd023fe342f20751c755676c91bd3b892fe23261677ef25dac7864e0acb35bd4.png" src="../_images/bd023fe342f20751c755676c91bd3b892fe23261677ef25dac7864e0acb35bd4.png" />
 </div>
 </div>
 <p>Now let us solve the equation. It looks like an answer is near C=500.</p>
@@ -701,7 +687,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db74804c29d9b30d66765efed638bfaa32849ed04208e70b4c44615f25e3dc88.png" src="../_images/db74804c29d9b30d66765efed638bfaa32849ed04208e70b4c44615f25e3dc88.png" />
+<img alt="../_images/ceab15dac22e8929f24d5ebfb4288ae2307487da6a5b3f7c8053249d9a1b55ea.png" src="../_images/ceab15dac22e8929f24d5ebfb4288ae2307487da6a5b3f7c8053249d9a1b55ea.png" />
 </div>
 </div>
 <p>Now we can see a zero is near Fa = 0.1, so we proceed to solve the equation.</p>
@@ -781,15 +767,15 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2646/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2570/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last ten iterations.
   (y1,) = fsolve(tmp, x0)
-/tmp/ipykernel_2646/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
+/tmp/ipykernel_2570/1220971389.py:25: RuntimeWarning: The iteration is not making good progress, as measured by the 
  improvement from the last five Jacobian evaluations.
   (y1,) = fsolve(tmp, x0)
 </pre></div>
 </div>
-<img alt="../_images/b06f5d90b456b9304c24c12b8e721a777aca559fa5299b732d5ccf9b9f607700.png" src="../_images/b06f5d90b456b9304c24c12b8e721a777aca559fa5299b732d5ccf9b9f607700.png" />
+<img alt="../_images/519e4d651e24b9cc997f5e99c3343a33e5a22b66a51098dc2ddedfd2169383b6.png" src="../_images/519e4d651e24b9cc997f5e99c3343a33e5a22b66a51098dc2ddedfd2169383b6.png" />
 </div>
 </div>
 <p>You can see there is a solution near x = -1, y = 0, because both functions equal zero there. We can even use that guess with fsolve. It is disappointly easy! But, keep in mind that in 3 or more dimensions, you cannot perform this visualization, and another method could be required.</p>
@@ -917,7 +903,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/66dfe7c64df9ea24b141cf932f564985f89ec5532ca4c35131719b5503d34187.png" src="../_images/66dfe7c64df9ea24b141cf932f564985f89ec5532ca4c35131719b5503d34187.png" />
+<img alt="../_images/85d28cf53d8077d9e63497dc68dba34dcaab897f851e23098c0fe215798ebb77.png" src="../_images/85d28cf53d8077d9e63497dc68dba34dcaab897f851e23098c0fe215798ebb77.png" />
 </div>
 </div>
 <p>We found one solution at x=2. What about the other solution? To get that we have to introduce <span class="math notranslate nohighlight">\(\lambda\)</span> into the equations in another way. We could try: <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 + \lambda(-5x + 6)\)</span>, but this leads to an ODE that is singular at the initial starting point. Another approach is <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 + 6 + \lambda(-5x)\)</span>, but now the solution at <span class="math notranslate nohighlight">\(\lambda=0\)</span> is imaginary, and we do not have a way to integrate that! What we can do instead is add and subtract a number like this: <span class="math notranslate nohighlight">\(f(x;\lambda) = x^2 - 4 + \lambda(-5x + 6 + 4)\)</span>. Now at <span class="math notranslate nohighlight">\(\lambda=0\)</span>, we have a simple equation with roots at <span class="math notranslate nohighlight">\(\pm 2\)</span>, and we already know that <span class="math notranslate nohighlight">\(x=2\)</span> is a solution. So, we create our ODE on <span class="math notranslate nohighlight">\(dx/d\lambda\)</span> with initial condition <span class="math notranslate nohighlight">\(x(0) = -2\)</span>.</p>
@@ -943,7 +929,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/472b5a5acd68c69a11069a7ca6faaf95a831a82c5c07090f98992507f6babdc9.png" src="../_images/472b5a5acd68c69a11069a7ca6faaf95a831a82c5c07090f98992507f6babdc9.png" />
+<img alt="../_images/c212ad937c154c53b170eee445f0c6d6a6bd2d1b15e9ed69915977ed1a756045.png" src="../_images/c212ad937c154c53b170eee445f0c6d6a6bd2d1b15e9ed69915977ed1a756045.png" />
 </div>
 </div>
 <p>Now we have the other solution. Note if you choose the other root, <span class="math notranslate nohighlight">\(x=2\)</span>, you find that 2 is a root, and learn nothing new. You could choose other values to add, e.g., if you chose to add and subtract 16, then you would find that one starting point leads to one root, and the other starting point leads to the other root. This method does not solve all problems associated with nonlinear root solving, namely, how many roots are there, and which one is “best” or physically reasonable? But it does give a way to solve an equation where you have no idea what an initial guess should be. You can see, however, that just like you can get different answers from different initial guesses, here you can get different answers by setting up the equations differently.</p>
@@ -984,7 +970,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/69ea0a8f4d58ffb627c5f993cbc7ac41c6abba244959bb31db247e5e4063ac44.png" src="../_images/69ea0a8f4d58ffb627c5f993cbc7ac41c6abba244959bb31db247e5e4063ac44.png" />
+<img alt="../_images/85c53236279c79fd204c706fd8566ee46191dfa4ab8f4e131b39e10ba329b3f1.png" src="../_images/85c53236279c79fd204c706fd8566ee46191dfa4ab8f4e131b39e10ba329b3f1.png" />
 </div>
 </div>
 <p>Now we consider several approaches to counting the number of roots in this interval. Visually it is pretty easy, you just look for where the function crosses zero. Computationally, it is tricker.</p>
@@ -1051,12 +1037,15 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="n">line</span> <span class="mi">17</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> 
 <span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">120</span><span class="p">,)</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> 
 <span class="ne">---&gt; </span><span class="mi">17</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> 
 <span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="n">sol</span><span class="o">.</span><span class="n">t_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># these are the found roots</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:683,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:683,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
 <span class="g g-Whitespace">    </span><span class="mi">680</span>     <span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">dense_output</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">682</span> <span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="ne">--&gt; </span><span class="mi">683</span> <span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">terminate</span> <span class="o">=</span> <span class="n">handle_events</span><span class="p">(</span>
@@ -1065,7 +1054,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">687</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">688</span>     <span class="n">t_events</span><span class="p">[</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">81</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">82</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
@@ -1078,7 +1067,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">114</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">116</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
 <span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">81</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">82</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
@@ -1091,7 +1080,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">114</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">116</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">53</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
 <span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> </span>
 <span class="g g-Whitespace">     </span><span class="mi">55</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
@@ -1101,19 +1090,19 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="ne">---&gt; </span><span class="mi">76</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">77</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
 <span class="g g-Whitespace">    </span><span class="mi">844</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rtol too small (</span><span class="si">{</span><span class="n">rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">845</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_wrap_nan_raise</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">846</span> <span class="n">r</span> <span class="o">=</span> <span class="n">_zeros</span><span class="o">.</span><span class="n">_brentq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">847</span> <span class="k">return</span> <span class="n">results_c</span><span class="p">(</span><span class="n">full_output</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s2">&quot;brentq&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
 <span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">def</span><span class="w"> </span><span class="nf">f_raise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">94</span>     <span class="n">fx</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">95</span>     <span class="n">f_raise</span><span class="o">.</span><span class="n">_function_calls</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="g g-Whitespace">     </span><span class="mi">96</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">53</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
 <span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> </span>
 <span class="g g-Whitespace">     </span><span class="mi">55</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
@@ -1123,7 +1112,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="ne">---&gt; </span><span class="mi">76</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">77</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:273,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:273,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
 <span class="g g-Whitespace">    </span><span class="mi">259</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">260</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Evaluate the interpolant.</span>
 <span class="g g-Whitespace">    </span><span class="mi">261</span><span class="sd"> </span>
@@ -1164,7 +1153,7 @@ k = 0.23 * u.L/u.mol/u.s;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/11fc7901d5c7a7d28863a228a18654cea5fc3b584b5669d4f2a688182aeb1a76.png" src="../_images/11fc7901d5c7a7d28863a228a18654cea5fc3b584b5669d4f2a688182aeb1a76.png" />
+<img alt="../_images/1cf963423511e8a6b057958fe28b0f4ce092d0f0448a66b7ccdb7972e446d8ff.png" src="../_images/1cf963423511e8a6b057958fe28b0f4ce092d0f0448a66b7ccdb7972e446d8ff.png" />
 </div>
 </div>
 <p>You can see there are many roots to this equation, and we want to be sure we get the n<sup>th</sup> root. This function is pretty well behaved, so if you make a good guess about the solution you will get an answer, but if you make a bad guess, you may get the wrong root. We examine next a way to do it without guessing the solution. What we want is the solution to <span class="math notranslate nohighlight">\(f(x) = 0\)</span>, but we want all the solutions in a given interval. We derive a new equation, <span class="math notranslate nohighlight">\(f'(x) = 0\)</span>, with initial condition <span class="math notranslate nohighlight">\(f(0) = f0\)</span>, and integrate the ODE with an event function that identifies all zeros of <span class="math notranslate nohighlight">\(f\)</span> for us. The derivative of our function is <span class="math notranslate nohighlight">\(df/dx = d/dx(x J_1(x)) - Bi J'_0(x)\)</span>. It is known (<a class="reference external" href="http://www.markrobrien.com/besselfunct.pdf">http://www.markrobrien.com/besselfunct.pdf</a>) that <span class="math notranslate nohighlight">\(d/dx(x J_1(x)) = x J_0(x)\)</span>, and <span class="math notranslate nohighlight">\(J'_0(x) = -J_1(x)\)</span>. All we have to do now is set up the problem and run it.</p>
@@ -1216,13 +1205,16 @@ k = 0.23 * u.L/u.mol/u.s;
 
 <span class="ne">SystemError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">18</span><span class="p">],</span> <span class="n">line</span> <span class="mi">29</span>
+<span class="g g-Whitespace">     </span><span class="mi">25</span> 
 <span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="n">f0</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">),)</span>
 <span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">xspan</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">28</span> 
 <span class="ne">---&gt; </span><span class="mi">29</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fprime</span><span class="p">,</span> <span class="n">xspan</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">e1</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">30</span> 
 <span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s2">&quot;.-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Numerical solution&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">32</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Analytical function&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:683,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:683,</span> in <span class="ni">solve_ivp</span><span class="nt">(fun, t_span, y0, method, t_eval, dense_output, events, vectorized, args, **options)</span>
 <span class="g g-Whitespace">    </span><span class="mi">680</span>     <span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">dense_output</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">682</span> <span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="ne">--&gt; </span><span class="mi">683</span> <span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">,</span> <span class="n">terminate</span> <span class="o">=</span> <span class="n">handle_events</span><span class="p">(</span>
@@ -1231,7 +1223,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">687</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">root_indices</span><span class="p">,</span> <span class="n">roots</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">688</span>     <span class="n">t_events</span><span class="p">[</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">handle_events</span><span class="nt">(sol, events, active_events, event_count, max_events, t_old, t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">81</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">82</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
@@ -1244,7 +1236,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">114</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">116</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:111,</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
 <span class="g g-Whitespace">     </span><span class="mi">80</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">active_events</span><span class="p">,</span> <span class="n">event_count</span><span class="p">,</span> <span class="n">max_events</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">81</span>                   <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">82</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Helper function to handle events.</span>
@@ -1257,7 +1249,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="g g-Whitespace">    </span><span class="mi">114</span>     <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">116</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">event_count</span><span class="p">[</span><span class="n">active_events</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">max_events</span><span class="p">[</span><span class="n">active_events</span><span class="p">]):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation</span><span class="nt">(event, sol, t_old, t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">53</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
 <span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> </span>
 <span class="g g-Whitespace">     </span><span class="mi">55</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
@@ -1267,19 +1259,19 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="ne">---&gt; </span><span class="mi">76</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">77</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:846,</span> in <span class="ni">brentq</span><span class="nt">(f, a, b, args, xtol, rtol, maxiter, full_output, disp)</span>
 <span class="g g-Whitespace">    </span><span class="mi">844</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rtol too small (</span><span class="si">{</span><span class="n">rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_rtol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">845</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_wrap_nan_raise</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">846</span> <span class="n">r</span> <span class="o">=</span> <span class="n">_zeros</span><span class="o">.</span><span class="n">_brentq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xtol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">full_output</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">847</span> <span class="k">return</span> <span class="n">results_c</span><span class="p">(</span><span class="n">full_output</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="s2">&quot;brentq&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py:94,</span> in <span class="ni">_wrap_nan_raise.&lt;locals&gt;.f_raise</span><span class="nt">(x, *args)</span>
 <span class="g g-Whitespace">     </span><span class="mi">93</span> <span class="k">def</span><span class="w"> </span><span class="nf">f_raise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">94</span>     <span class="n">fx</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">95</span>     <span class="n">f_raise</span><span class="o">.</span><span class="n">_function_calls</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="g g-Whitespace">     </span><span class="mi">96</span>     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/ivp.py:76,</span> in <span class="ni">solve_event_equation.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(t)</span>
 <span class="g g-Whitespace">     </span><span class="mi">53</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Solve an equation corresponding to an ODE event.</span>
 <span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd"> </span>
 <span class="g g-Whitespace">     </span><span class="mi">55</span><span class="sd"> The equation is ``event(t, y(t)) = 0``, here ``y(t)`` is known from an</span>
@@ -1289,7 +1281,7 @@ k = 0.23 * u.L/u.mol/u.s;
 <span class="ne">---&gt; </span><span class="mi">76</span> <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">event</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span> <span class="n">t_old</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">77</span>               <span class="n">xtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">EPS</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:273,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/_ivp/base.py:273,</span> in <span class="ni">DenseOutput.__call__</span><span class="nt">(self, t)</span>
 <span class="g g-Whitespace">    </span><span class="mi">259</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">260</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Evaluate the interpolant.</span>
 <span class="g g-Whitespace">    </span><span class="mi">261</span><span class="sd"> </span>
@@ -1405,14 +1397,16 @@ y &amp;=&amp; 8 - x^2
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#know-your-tolerance">Know your tolerance</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-integral-equations-with-fsolve">Solving integral equations with fsolve</a><ul class="nav section-nav flex-column">
@@ -1946,8 +1940,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

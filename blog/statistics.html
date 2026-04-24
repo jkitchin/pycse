@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Nonlinear algebra" href="nonlinear-algebra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -867,7 +853,7 @@ another way to get there</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1f828601748a3364b2488423bc2ee909742adbefe2d90567444f69ec27c50503.png" src="../_images/1f828601748a3364b2488423bc2ee909742adbefe2d90567444f69ec27c50503.png" />
+<img alt="../_images/da19d2faafcf8721b78187b183f9c3f4384a690425155b57d57e76283fb753d9.png" src="../_images/da19d2faafcf8721b78187b183f9c3f4384a690425155b57d57e76283fb753d9.png" />
 </div>
 </div>
 <p>It appears the data is roughly linear, and we know from the ideal gas law that PV = nRT, or P = nR/V*T, which says P should be linearly correlated with V. Note that the temperature data is in degC, not in K, so it is not expected that P=0 at T = 0. We will use linear algebra to compute the line coefficients.</p>
@@ -940,7 +926,7 @@ CI =  [4.76511544 0.1026405 ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/97bf29c3696b308bee999cc37c5db024c62b9d96091d68ea0f63a5b1bfc6cfbc.png" src="../_images/97bf29c3696b308bee999cc37c5db024c62b9d96091d68ea0f63a5b1bfc6cfbc.png" />
+<img alt="../_images/78019525f4ba61a1a8d8291aab52a19300cca618a402b31e3c9d054bc8e0b6bc.png" src="../_images/78019525f4ba61a1a8d8291aab52a19300cca618a402b31e3c9d054bc8e0b6bc.png" />
 </div>
 </div>
 <p>The fit looks good, and R^2 is near one, but is it a good model? There are a few ways to examine this. We want to make sure that there are no systematic trends in the errors between the fit and the data, and we want to make sure there are not hidden correlations with other variables. The residuals are the error between the fit and the data. The residuals should not show any patterns when plotted against any variables, and they do not in this case.</p>
@@ -966,7 +952,7 @@ CI =  [4.76511544 0.1026405 ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/34f4e18f0459c970baef25bd114439ff8e94bc2cce9df791c123f839d456addf.png" src="../_images/34f4e18f0459c970baef25bd114439ff8e94bc2cce9df791c123f839d456addf.png" />
+<img alt="../_images/2d1e1ba527fd333b1bd9b864c7e2352648a1cd61c1b56d4a93e1c887da759c58.png" src="../_images/2d1e1ba527fd333b1bd9b864c7e2352648a1cd61c1b56d4a93e1c887da759c58.png" />
 </div>
 </div>
 <p>There may be some correlations in the residuals with the run order. That could indicate an experimental source of error.</p>
@@ -982,7 +968,7 @@ CI =  [4.76511544 0.1026405 ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/10cb6417675a5621fc60c76819921aca8401acb43cd8d5590a91a722258e1929.png" src="../_images/10cb6417675a5621fc60c76819921aca8401acb43cd8d5590a91a722258e1929.png" />
+<img alt="../_images/b9188f3973ff7ad1502a3bfaed04156c4e7880d6638549d886ea56f4bdd0a38a.png" src="../_images/b9188f3973ff7ad1502a3bfaed04156c4e7880d6638549d886ea56f4bdd0a38a.png" />
 </div>
 </div>
 <p>It is hard to argue there is any correlation here.</p>
@@ -1077,7 +1063,7 @@ R^2 = 0.9937219694072356
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[4.056801244813359 4.123083499127842]
 </pre></div>
 </div>
-<img alt="../_images/fa84c8e35e98e8b57806ec42caeac4d802eaccd6dd90c30aac3399d19f9ac8c0.png" src="../_images/fa84c8e35e98e8b57806ec42caeac4d802eaccd6dd90c30aac3399d19f9ac8c0.png" />
+<img alt="../_images/72f779bbe9223dbbb6918836a4499e12bdfbc39a3587ba770f75d474e7c0851b.png" src="../_images/72f779bbe9223dbbb6918836a4499e12bdfbc39a3587ba770f75d474e7c0851b.png" />
 </div>
 </div>
 <p>The fit is visually still pretty good, and the R^2 value is only slightly worse. Let us examine the residuals again.</p>
@@ -1093,7 +1079,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/90d5d786e4df380fc46eb26c9cf6d8ee41201b9db2d3dc2b79eaa1504071dbb0.png" src="../_images/90d5d786e4df380fc46eb26c9cf6d8ee41201b9db2d3dc2b79eaa1504071dbb0.png" />
+<img alt="../_images/6f3b36b7557f1eff9a48db004aaad719567ba5c8098ac81af6089cdeb96a7f06.png" src="../_images/6f3b36b7557f1eff9a48db004aaad719567ba5c8098ac81af6089cdeb96a7f06.png" />
 </div>
 </div>
 <p>You can see a slight trend of decreasing value of the residuals as the Temperature increases. This may indicate a deficiency in the model with no intercept. For the ideal gas law in degC: <span class="math notranslate nohighlight">\(PV = nR(T+273)\)</span> or <span class="math notranslate nohighlight">\(P = nR/V*T + 273*nR/V\)</span>, so the intercept is expected to be non-zero in this case. Specifically, we expect the intercept to be 273*R*n/V. Since the molar density of a gas is pretty small, the intercept may be close to, but not equal to zero. That is why the fit still looks ok, but is not as good as letting the intercept be a fitting parameter. That is an example of the deficiency in our model.</p>
@@ -1136,9 +1122,9 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1f7124ebe0e7dc9db4e322e0a832f38358b8017803cb4c26f5a615b0ce61cafa.png" src="../_images/1f7124ebe0e7dc9db4e322e0a832f38358b8017803cb4c26f5a615b0ce61cafa.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.4982131987468854
-0.4969044951507132
+<img alt="../_images/16dc6913800d07c9b91ba6142a4681b28d8e00836b00b75b5d6e372dd68dd06b.png" src="../_images/16dc6913800d07c9b91ba6142a4681b28d8e00836b00b75b5d6e372dd68dd06b.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.5057483110119338
+0.4998664775332318
 0.5
 </pre></div>
 </div>
@@ -1163,7 +1149,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>11.836147752499066
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>11.769156002208396
 11.872657663724665
 </pre></div>
 </div>
@@ -1182,7 +1168,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.2926370366239245
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.2913021252914722
 0.2898598062432779
 </pre></div>
 </div>
@@ -1208,7 +1194,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.7556937344222683
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.7223469156571811
 1.7236544062149992
 </pre></div>
 </div>
@@ -1222,7 +1208,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0075322922765962644
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.007515980923980996
 0.007483647387490024
 </pre></div>
 </div>
@@ -1252,7 +1238,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3.5936019095856744
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3.6000493216209515
 3.6180105030251086
 </pre></div>
 </div>
@@ -1372,10 +1358,12 @@ R^2 = 0.9937219694072356
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">29</span><span class="p">],</span> <span class="n">line</span> <span class="mi">8</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="o">.</span><span class="n">ufloat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">ufloat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">ufloat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)])</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> 
 <span class="ne">----&gt; </span><span class="mi">8</span> <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1479,7 +1467,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ca(exit) = 0.005008738997492271+/-0.00016888477783331916
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ca(exit) = 0.005007131241883926+/-0.0001692624779618923
 </pre></div>
 </div>
 </div>
@@ -1511,7 +1499,7 @@ R^2 = 0.9937219694072356
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>n = 0.03181163162183376
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>n = 0.17415671928931165
 you lose.
 </pre></div>
 </div>
@@ -1537,10 +1525,10 @@ you lose.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>You won 5159 times (51.590000%)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>You won 5064 times (50.640000%)
 </pre></div>
 </div>
-<img alt="../_images/6179949554c8a62b532f8a9fa18a1ade34b0cbea852f2a1dbdacfe0cff80bdc6.png" src="../_images/6179949554c8a62b532f8a9fa18a1ade34b0cbea852f2a1dbdacfe0cff80bdc6.png" />
+<img alt="../_images/3c3432205593c64a1861f6e12c4c05429a9d084635b7798edfcf0ad457d84886.png" src="../_images/3c3432205593c64a1861f6e12c4c05429a9d084635b7798edfcf0ad457d84886.png" />
 </div>
 </div>
 <p>As you can see you win slightly more than you lost.</p>
@@ -1556,10 +1544,10 @@ you lose.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16
-[57 37 95]
-[[37  7]
- [58 88]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>74
+[73 69 60]
+[[49 37]
+ [ 9 28]]
 </pre></div>
 </div>
 </div>
@@ -1577,8 +1565,8 @@ you lose.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.49737839661536676
-[0.3885805  1.69520749]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.5620864452380617
+[1.29870721 0.59174124]
 </pre></div>
 </div>
 </div>
@@ -1602,7 +1590,7 @@ you lose.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9ae096d53c5f004577bf2e4c3918efb04d395ada69a72aa574f019ee98849484.png" src="../_images/9ae096d53c5f004577bf2e4c3918efb04d395ada69a72aa574f019ee98849484.png" />
+<img alt="../_images/97300ffc4d4cbe726a63d0323f2067069eeb093b048990c84b2480cd7e811cb0.png" src="../_images/97300ffc4d4cbe726a63d0323f2067069eeb093b048990c84b2480cd7e811cb0.png" />
 </div>
 </div>
 <p>What fraction of points lie between plus and minus one standard deviation of the mean?</p>
@@ -1626,8 +1614,8 @@ you lose.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>69.200000% of samples are within +- 1 standard deviations of the mean
-96.040000% of samples are within +- 2 standard deviations of the mean
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>68.680000% of samples are within +- 1 standard deviations of the mean
+95.580000% of samples are within +- 2 standard deviations of the mean
 </pre></div>
 </div>
 </div>
@@ -1694,14 +1682,16 @@ you lose.
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-statistical-data-analysis">Introduction to statistical data analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-statistics">Basic statistics</a></li>
@@ -2247,8 +2237,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

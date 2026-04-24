@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Statistics" href="statistics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -626,7 +612,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5e29fe7486d803440a55b9774a46809cb688c58a2714f2ec07544fafb6f63cba.png" src="../_images/5e29fe7486d803440a55b9774a46809cb688c58a2714f2ec07544fafb6f63cba.png" />
+<img alt="../_images/a2a6acc3045836ee49e58300ad33936fddf3857285ca65ad120b3d7db8343397.png" src="../_images/a2a6acc3045836ee49e58300ad33936fddf3857285ca65ad120b3d7db8343397.png" />
 </div>
 </div>
 </section>
@@ -674,7 +660,7 @@ etc...
 0.000624573378839699 -0.3145221843003413
 </pre></div>
 </div>
-<img alt="../_images/4333b52b199b888b066d99dbfaecfeb6580f837494083dcd950c6dcf92403b8c.png" src="../_images/4333b52b199b888b066d99dbfaecfeb6580f837494083dcd950c6dcf92403b8c.png" />
+<img alt="../_images/ddf4021f26dfa2a1e70b79828c0e80256f113b649c88423a1ccf0afea8a94441.png" src="../_images/ddf4021f26dfa2a1e70b79828c0e80256f113b649c88423a1ccf0afea8a94441.png" />
 </div>
 </div>
 <p>This method can be readily extended to fitting any polynomial model, or other linear model that is fit in a least squares sense. This method does not provide confidence intervals.</p>
@@ -774,7 +760,7 @@ etc...
 R^2 = 0.9999869672459537
 </pre></div>
 </div>
-<img alt="../_images/1cf9f16c7cd07dc18fbf986ca58685dc01c6cec8549bb086e67400214cf6bea3.png" src="../_images/1cf9f16c7cd07dc18fbf986ca58685dc01c6cec8549bb086e67400214cf6bea3.png" />
+<img alt="../_images/8f5c50454da31617a9802042a3c6842fc09085b96bd0fba6238aa34a13dc807a.png" src="../_images/8f5c50454da31617a9802042a3c6842fc09085b96bd0fba6238aa34a13dc807a.png" />
 </div>
 </div>
 <p>A fourth order polynomial fits the data well, with a good R^2 value. All of the parameters appear to be significant, i.e. zero is not included in any of the parameter confidence intervals. This does not mean this is the best model for the data, just that the model fits well.</p>
@@ -830,7 +816,7 @@ R^2 = 0.9999869672459537
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fitted parameters = [-56.46839638   0.57233163   2.74081957  16.55905541]
 </pre></div>
 </div>
-<img alt="../_images/551595dedc28b896d8ce13eca55db8dad01c77adfee9e709a090543fa31864f0.png" src="../_images/551595dedc28b896d8ce13eca55db8dad01c77adfee9e709a090543fa31864f0.png" />
+<img alt="../_images/d1dbf79d079e3af6c08b1b72f4d4f7363b5d3aeadb3cd7322f9887ca2e7d084e.png" src="../_images/d1dbf79d079e3af6c08b1b72f4d4f7363b5d3aeadb3cd7322f9887ca2e7d084e.png" />
 </div>
 </div>
 <p>See additional examples at \url{<a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html">http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html</a>}.</p>
@@ -893,7 +879,7 @@ R^2 = 0.9999869672459537
 parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
 </pre></div>
 </div>
-<img alt="../_images/4fe5402050f0790c2e038f3c1fa93abd972507e6256b723420656a12295076e6.png" src="../_images/4fe5402050f0790c2e038f3c1fa93abd972507e6256b723420656a12295076e6.png" />
+<img alt="../_images/ccfab176bfe6729e95dcc02395070b3283ba9ff7b48a9b33d253825b4e658475.png" src="../_images/ccfab176bfe6729e95dcc02395070b3283ba9ff7b48a9b33d253825b4e658475.png" />
 </div>
 </div>
 </section>
@@ -915,7 +901,7 @@ parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/acf756504344e6ca39f1c7520eb177585c8b468d6d4ca0815a6e6ae39a2cc588.png" src="../_images/acf756504344e6ca39f1c7520eb177585c8b468d6d4ca0815a6e6ae39a2cc588.png" />
+<img alt="../_images/a98cce7815f2547b1dc0695e5d802a04c058c45417051f2bf44944ef3d4a9117.png" src="../_images/a98cce7815f2547b1dc0695e5d802a04c058c45417051f2bf44944ef3d4a9117.png" />
 </div>
 </div>
 <p>We are going to fit the function <span class="math notranslate nohighlight">\(y = x^a\)</span> to the data. The best <span class="math notranslate nohighlight">\(a\)</span> will minimize the summed squared error between the model and the fit.</p>
@@ -938,7 +924,7 @@ parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/41b8f03e6531e9ceed73fd9c8b95ea74fcc6cd364b81b3dd9632f5703dfc51b6.png" src="../_images/41b8f03e6531e9ceed73fd9c8b95ea74fcc6cd364b81b3dd9632f5703dfc51b6.png" />
+<img alt="../_images/74d2e251f14bb6c011664abde6462445c4949d79a64ee265849538f2cfbe53e5.png" src="../_images/74d2e251f14bb6c011664abde6462445c4949d79a64ee265849538f2cfbe53e5.png" />
 </div>
 </div>
 <p>Based on the graph above, you can see a minimum in the summed squared error near <span class="math notranslate nohighlight">\(a = 2.1\)</span>. We use that as our initial guess. Since we know the answer is bounded, we use scipy.optimize.fminbound</p>
@@ -963,7 +949,7 @@ parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.0900483893314967
 </pre></div>
 </div>
-<img alt="../_images/d9262352a6985944ec76e26846f5662338621e6bf4aef254728ca8c02d0f85a5.png" src="../_images/d9262352a6985944ec76e26846f5662338621e6bf4aef254728ca8c02d0f85a5.png" />
+<img alt="../_images/083b4caa95cc4bd059718f29d0ffbfc2ab9f0e6241252c68e1fe5c33431dd645.png" src="../_images/083b4caa95cc4bd059718f29d0ffbfc2ab9f0e6241252c68e1fe5c33431dd645.png" />
 </div>
 </div>
 <p>We can do nonlinear fitting by directly minimizing the summed squared error between a model and data. This method lacks some of the features of other methods, notably the simple ability to get the confidence interval. However, this method is flexible and may offer more insight into how the solution depends on the parameters.</p>
@@ -1024,7 +1010,7 @@ parameters = [-56.46932645   0.59141447   1.9044796   16.59341303]
 p1: 0.02646155699281442 [0.023607653791893758  0.029315460193735085]
 </pre></div>
 </div>
-<img alt="../_images/b7161cf9aec2b9ee4d50773fd5b05a53cdacc4c525373ded137cf06da2d89a34.png" src="../_images/b7161cf9aec2b9ee4d50773fd5b05a53cdacc4c525373ded137cf06da2d89a34.png" />
+<img alt="../_images/83f395b74773548166141f40202e4fc799f1d58e546214a55b8fdb4b6a5a0831.png" src="../_images/83f395b74773548166141f40202e4fc799f1d58e546214a55b8fdb4b6a5a0831.png" />
 </div>
 </div>
 <p>You can see by inspection that the fit looks pretty reasonable. The parameter confidence intervals are not too big, so we can be pretty confident of their values.</p>
@@ -1093,7 +1079,7 @@ confidence intervals for comparison. The basic idea is to use the covariance mat
 c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
 </pre></div>
 </div>
-<img alt="../_images/865c7fea4b7fb27214b92afc5d6acc019f6b2924b2c0a6e7b72e321b1299351d.png" src="../_images/865c7fea4b7fb27214b92afc5d6acc019f6b2924b2c0a6e7b72e321b1299351d.png" />
+<img alt="../_images/09277325ad853abab5d7a62dfc06716c19b3078f31f7e0ba496397ba42e1f4f4.png" src="../_images/09277325ad853abab5d7a62dfc06716c19b3078f31f7e0ba496397ba42e1f4f4.png" />
 </div>
 </div>
 </section>
@@ -1125,7 +1111,7 @@ c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c502532a864ef6c2f7138e1822a2d9c48a2ba53e4a66a7cce997ca51c525c2d6.png" src="../_images/c502532a864ef6c2f7138e1822a2d9c48a2ba53e4a66a7cce997ca51c525c2d6.png" />
+<img alt="../_images/c406498967dd63347fcaf109386ba2565ff7937f2f985d54ad54e21d6d227a44.png" src="../_images/c406498967dd63347fcaf109386ba2565ff7937f2f985d54ad54e21d6d227a44.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1176,7 +1162,7 @@ c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
 [ 3.25873623  6.59792994 10.29473657 13.68011436 17.29161001 23.62366444]
 </pre></div>
 </div>
-<img alt="../_images/d418645566d7ff7d45a2a5eaeb1918a6134c976db1c6835b69066f6e677a7337.png" src="../_images/d418645566d7ff7d45a2a5eaeb1918a6134c976db1c6835b69066f6e677a7337.png" />
+<img alt="../_images/de3f0f37f8d2bd361b461ec4c10892a49ba2e6f50daac42cdf402d8af22dfd69.png" src="../_images/de3f0f37f8d2bd361b461ec4c10892a49ba2e6f50daac42cdf402d8af22dfd69.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1193,7 +1179,7 @@ c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fd3c32de1740993a8345c75962ca6b70379ec7badf10c5079727e2e58a3e6a68.png" src="../_images/fd3c32de1740993a8345c75962ca6b70379ec7badf10c5079727e2e58a3e6a68.png" />
+<img alt="../_images/d6619346047cdfbb6f1edaa15a36dd34775fb1248f67d116ccb0ca58cad910b7.png" src="../_images/d6619346047cdfbb6f1edaa15a36dd34775fb1248f67d116ccb0ca58cad910b7.png" />
 </div>
 </div>
 <p>It can be difficult to figure out initial guesses for nonlinear fitting problems. For one and two dimensional systems, graphical techniques may be useful to visualize how the summed squared error between the model and data depends on the parameters.</p>
@@ -1242,7 +1228,7 @@ c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.58893455]
 </pre></div>
 </div>
-<img alt="../_images/5e09f8332b1d5b2f4602c672ade67d0d1e42ea0b8e8c727d8cc20aa6fb8332eb.png" src="../_images/5e09f8332b1d5b2f4602c672ade67d0d1e42ea0b8e8c727d8cc20aa6fb8332eb.png" />
+<img alt="../_images/a40d310a1bdeda8b9b176f926b358b3801921de08ae4e4c3257cd434794ba9c0.png" src="../_images/a40d310a1bdeda8b9b176f926b358b3801921de08ae4e4c3257cd434794ba9c0.png" />
 </div>
 </div>
 </section>
@@ -1331,14 +1317,16 @@ c1: 2.109951129905276 [1.7671162290706537  2.4527860307398983]
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-a-line-to-numerical-data">Fit a line to numerical data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-least-squares-fitting-with-linear-algebra">Linear least squares fitting with linear algebra</a></li>
@@ -1869,8 +1857,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Plotting" href="plotting.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -617,10 +603,12 @@ document.write(`
 <span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">19</span>
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> 
 <span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">tguess</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> 
 <span class="ne">---&gt; </span><span class="mi">19</span> <span class="nb">print</span><span class="p">(</span><span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">))</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
 <span class="g g-Whitespace">    </span><span class="mi">161</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
@@ -631,21 +619,21 @@ document.write(`
 <span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
 <span class="g g-Whitespace">    </span><span class="mi">174</span> <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
 <span class="g g-Whitespace">    </span><span class="mi">237</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">238</span>     <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,)</span>
 <span class="ne">--&gt; </span><span class="mi">239</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">_check_func</span><span class="p">(</span><span class="s1">&#39;fsolve&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
 <span class="g g-Whitespace">    </span><span class="mi">240</span> <span class="k">if</span> <span class="n">epsfcn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">241</span>     <span class="n">epsfcn</span> <span class="o">=</span> <span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="k">def</span><span class="w"> </span><span class="nf">_check_func</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">thefunc</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">numinputs</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span>                 <span class="n">output_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">24</span>     <span class="n">res</span> <span class="o">=</span> <span class="n">atleast_1d</span><span class="p">(</span><span class="n">thefunc</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">x0</span><span class="p">[:</span><span class="n">numinputs</span><span class="p">],)</span> <span class="o">+</span> <span class="n">args</span><span class="p">)))</span>
 <span class="g g-Whitespace">     </span><span class="mi">25</span>     <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">!=</span> <span class="n">output_shape</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">26</span>         <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">154</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="sd"> Wrapped `func` to track the number of times</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> the function has been called.</span>
@@ -657,7 +645,7 @@ document.write(`
 <span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">12</span>     <span class="k">return</span> <span class="n">CA</span> <span class="o">-</span> <span class="n">CA0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/quantities/quantity.py:334,</span> in <span class="ni">Quantity.__array_wrap__</span><span class="nt">(self, obj, context, return_scalar)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/quantities/quantity.py:334,</span> in <span class="ni">Quantity.__array_wrap__</span><span class="nt">(self, obj, context, return_scalar)</span>
 <span class="g g-Whitespace">    </span><span class="mi">331</span> <span class="c1"># For NumPy &gt; 2.0 we either do the prepare or the wrap</span>
 <span class="g g-Whitespace">    </span><span class="mi">332</span> <span class="k">else</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">333</span>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
@@ -665,7 +653,7 @@ document.write(`
 <span class="g g-Whitespace">    </span><span class="mi">335</span>     <span class="k">else</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">336</span>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__array_wrap__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">return_scalar</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/quantities/quantity.py:314,</span> in <span class="ni">Quantity.__array_prepare__</span><span class="nt">(self, obj, context)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/quantities/quantity.py:314,</span> in <span class="ni">Quantity.__array_prepare__</span><span class="nt">(self, obj, context)</span>
 <span class="g g-Whitespace">    </span><span class="mi">311</span>     <span class="k">return</span> <span class="n">obj</span>
 <span class="g g-Whitespace">    </span><span class="mi">313</span> <span class="k">try</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">314</span>     <span class="n">res</span><span class="o">.</span><span class="n">_dimensionality</span> <span class="o">=</span> <span class="n">p_dict</span><span class="p">[</span><span class="n">uf</span><span class="p">](</span><span class="o">*</span><span class="n">objs</span><span class="p">)</span>
@@ -676,7 +664,7 @@ document.write(`
 <span class="g g-Whitespace">    </span><span class="mi">319</span><span class="sd">         &quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">uf</span>
 <span class="g g-Whitespace">    </span><span class="mi">320</span>         <span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/quantities/dimensionality.py:370,</span> in <span class="ni">_d_dimensionless</span><span class="nt">(q1, out)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/quantities/dimensionality.py:370,</span> in <span class="ni">_d_dimensionless</span><span class="nt">(q1, out)</span>
 <span class="g g-Whitespace">    </span><span class="mi">368</span> <span class="k">def</span><span class="w"> </span><span class="nf">_d_dimensionless</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">369</span>     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;dimensionality&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
 <span class="ne">--&gt; </span><span class="mi">370</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quantity must be dimensionless&quot;</span><span class="p">)</span>
@@ -726,17 +714,21 @@ document.write(`
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">29</span>
-<span class="g g-Whitespace">     </span><span class="mi">24</span>     <span class="k">return</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
+<span class="g g-Whitespace">     </span><span class="mi">25</span> 
+<span class="g g-Whitespace">     </span><span class="mi">26</span> 
 <span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="n">tguess</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="g g-Whitespace">     </span><span class="mi">28</span> 
 <span class="ne">---&gt; </span><span class="mi">29</span> <span class="nb">print</span><span class="p">(</span><span class="n">fsolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">tguess</span><span class="p">))</span>
 
 <span class="nn">Cell In[2], line 23,</span> in <span class="ni">fsolve</span><span class="nt">(func, t0)</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">tU</span><span class="p">))</span>
-<span class="ne">---&gt; </span><span class="mi">23</span> <span class="p">(</span><span class="n">sol</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="k">return</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span>     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>         <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span>         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">tU</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span> 
+<span class="ne">---&gt; </span><span class="mi">23</span>     <span class="p">(</span><span class="n">sol</span><span class="p">,)</span> <span class="o">=</span> <span class="n">_fsolve</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">,</span> <span class="n">t0</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span>     <span class="k">return</span> <span class="n">sol</span> <span class="o">*</span> <span class="n">tU</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
 <span class="g g-Whitespace">    </span><span class="mi">161</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
@@ -747,21 +739,21 @@ document.write(`
 <span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
 <span class="g g-Whitespace">    </span><span class="mi">174</span> <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
 <span class="g g-Whitespace">    </span><span class="mi">237</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">238</span>     <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,)</span>
 <span class="ne">--&gt; </span><span class="mi">239</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">_check_func</span><span class="p">(</span><span class="s1">&#39;fsolve&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
 <span class="g g-Whitespace">    </span><span class="mi">240</span> <span class="k">if</span> <span class="n">epsfcn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">241</span>     <span class="n">epsfcn</span> <span class="o">=</span> <span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="k">def</span><span class="w"> </span><span class="nf">_check_func</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">thefunc</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">numinputs</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span>                 <span class="n">output_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">24</span>     <span class="n">res</span> <span class="o">=</span> <span class="n">atleast_1d</span><span class="p">(</span><span class="n">thefunc</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">x0</span><span class="p">[:</span><span class="n">numinputs</span><span class="p">],)</span> <span class="o">+</span> <span class="n">args</span><span class="p">)))</span>
 <span class="g g-Whitespace">     </span><span class="mi">25</span>     <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">!=</span> <span class="n">output_shape</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">26</span>         <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">154</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="sd"> Wrapped `func` to track the number of times</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> the function has been called.</span>
@@ -770,9 +762,9 @@ document.write(`
 <span class="ne">--&gt; </span><span class="mi">159</span> <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">fargs</span><span class="p">)</span>
 
 <span class="nn">Cell In[2], line 21,</span> in <span class="ni">fsolve.&lt;locals&gt;.wrapped_func</span><span class="nt">(t)</span>
-<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
-<span class="ne">---&gt; </span><span class="mi">21</span>     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">tU</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span>     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_func</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>         <span class="s2">&quot;t will be unitless, so we add unit to it. t * tU has units.&quot;</span>
+<span class="ne">---&gt; </span><span class="mi">21</span>         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">tU</span><span class="p">))</span>
 
 <span class="ne">TypeError</span>: only 0-dimensional arrays can be converted to Python scalars
 </pre></div>
@@ -1231,8 +1223,8 @@ Test 2
 0.26330047068114865
 </pre></div>
 </div>
-<img alt="../_images/c5b1d4cddc04dd88c4fae52952adef8a887d8e4d4ed5a978153db0d2cc6fddf7.png" src="../_images/c5b1d4cddc04dd88c4fae52952adef8a887d8e4d4ed5a978153db0d2cc6fddf7.png" />
-<img alt="../_images/6e834dae8e9c28f10fb731e81556b1bff08fa944e2051f4298365f5c77279e68.png" src="../_images/6e834dae8e9c28f10fb731e81556b1bff08fa944e2051f4298365f5c77279e68.png" />
+<img alt="../_images/15eef5688ff03d004991923a2e5f67f575e955b1446540d3a228decb4475d756.png" src="../_images/15eef5688ff03d004991923a2e5f67f575e955b1446540d3a228decb4475d756.png" />
+<img alt="../_images/ec17ccf3a362e4d0a738b6fca3762efe711960a5ad1e9cbb7754dc5a4b8f7a95.png" src="../_images/ec17ccf3a362e4d0a738b6fca3762efe711960a5ad1e9cbb7754dc5a4b8f7a95.png" />
 </div>
 </div>
 <p>That is not too bad. This is another example of a function you would want to save in a module for reuse. There is one bad feature of the wrapped odeint function, and that is that it changes the solution for coupled ODEs from an ndarray to a list. That is necessary because you apparently cannot have mixed units in an ndarray. It is fine, however, to have a list of mixed units. This is not a huge problem, but it changes the syntax for plotting results for the wrapped odeint function compared to the unwrapped function without units.</p>
@@ -1400,14 +1392,16 @@ Test 2
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-units-in-python">Using units in python</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-units-with-the-quantities-module">Handling units with the quantities module</a></li>
@@ -1930,8 +1924,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

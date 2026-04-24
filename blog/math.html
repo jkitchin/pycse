@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Basic python usage" href="basic-python.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -676,12 +662,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000211 seconds
- Backward difference took 0.000200 seconds
- Centered difference took 0.000251 seconds
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Forward difference took 0.000201 seconds
+ Backward difference took 0.000189 seconds
+ Centered difference took 0.000256 seconds
 </pre></div>
 </div>
-<img alt="../_images/21df04c8ddb0f58ad81bf49260e34009678cc67d5eb567f121d5259a15ee7c8d.png" src="../_images/21df04c8ddb0f58ad81bf49260e34009678cc67d5eb567f121d5259a15ee7c8d.png" />
+<img alt="../_images/1ef3f9a1ad4ee96c08c45ac7903baac31bea336168ad5b8d381303173898fbbb.png" src="../_images/1ef3f9a1ad4ee96c08c45ac7903baac31bea336168ad5b8d381303173898fbbb.png" />
 </div>
 </div>
 </section>
@@ -725,7 +711,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/64e324b77fee09445347092feada57dfef7a1fe2d14f8ca7e4d42272c9e87ca0.png" src="../_images/64e324b77fee09445347092feada57dfef7a1fe2d14f8ca7e4d42272c9e87ca0.png" />
+<img alt="../_images/df9f17a7d2385c9206582a1affcf2e756d470e2b9b5b081f1222d15801e2549c.png" src="../_images/df9f17a7d2385c9206582a1affcf2e756d470e2b9b5b081f1222d15801e2549c.png" />
 </div>
 </div>
 </section>
@@ -778,7 +764,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5495c4cf92a7726eacb6b4bf83c3f78b8962a32bc4508d9a09c132b025c7009f.png" src="../_images/5495c4cf92a7726eacb6b4bf83c3f78b8962a32bc4508d9a09c132b025c7009f.png" />
+<img alt="../_images/50e58e2d726401873b7b4b216fec42f75f4749c91bc1cbcd67e5c1fc6991bd92.png" src="../_images/50e58e2d726401873b7b4b216fec42f75f4749c91bc1cbcd67e5c1fc6991bd92.png" />
 </div>
 </div>
 </section>
@@ -816,8 +802,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c701e03421c99d4eeec65fbe85757412cc088ddf212204801aeb2859cce74cfe.png" src="../_images/c701e03421c99d4eeec65fbe85757412cc088ddf212204801aeb2859cce74cfe.png" />
-<img alt="../_images/c75d8a6414f060de810e2548290ffcac3cbeef879276ec4d54603a94ac81d273.png" src="../_images/c75d8a6414f060de810e2548290ffcac3cbeef879276ec4d54603a94ac81d273.png" />
+<img alt="../_images/1c9d22755d572761cfa26d695286453e83c5f5405f0bd31ffb34ecec8fe1ab80.png" src="../_images/1c9d22755d572761cfa26d695286453e83c5f5405f0bd31ffb34ecec8fe1ab80.png" />
+<img alt="../_images/c9eafb14fb75d03e485cf9deff52554933748c84c57562b948b67b6e94cefbba.png" src="../_images/c9eafb14fb75d03e485cf9deff52554933748c84c57562b948b67b6e94cefbba.png" />
 </div>
 </div>
 <p>You can see a third order polynomial is a reasonable fit here. There are only 6 data points here, so any higher order risks overfitting. Here is the comparison of the numerical derivative and the fitted derivative. We have “resampled” the fitted derivative to show the actual shape. Note the derivative appears to go through a maximum near t = 0.9. In this case, that is probably unphysical as the data is related to the consumption of species A in a reaction. The derivative should increase monotonically to zero. The increase is an artefact of the fitting process. End points are especially sensitive to this kind of error.</p>
@@ -859,8 +845,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9ee47a2ee878fc7dbe036347a07924bff7b27ff48e392a14e315cf6754cb656f.png" src="../_images/9ee47a2ee878fc7dbe036347a07924bff7b27ff48e392a14e315cf6754cb656f.png" />
-<img alt="../_images/ae2e58e1545f340e791b9d0142eac2444c5c1a47eadaaa4fa80032d184c7cd45.png" src="../_images/ae2e58e1545f340e791b9d0142eac2444c5c1a47eadaaa4fa80032d184c7cd45.png" />
+<img alt="../_images/856fcc5ef3b6adeb931efd585918c47e1558664310dac93d55a63eab6f144a3e.png" src="../_images/856fcc5ef3b6adeb931efd585918c47e1558664310dac93d55a63eab6f144a3e.png" />
+<img alt="../_images/8fc7f6c50354170bfd8d7443db5e341e1802c5ec8080f207d8b708e99b31654d.png" src="../_images/8fc7f6c50354170bfd8d7443db5e341e1802c5ec8080f207d8b708e99b31654d.png" />
 </div>
 </div>
 <p>Visually this fit is about the same as a third order polynomial. Note the difference in the derivative though. We can readily extrapolate this derivative and get reasonable predictions of the derivative. That is true in this case because we fitted a physically relevant model for concentration vs. time for an irreversible, first order reaction.</p>
@@ -904,7 +890,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/832c49f3fe5c74b13414995cac6e3ded0c1425f268b1f72a880edf9012864dcf.png" src="../_images/832c49f3fe5c74b13414995cac6e3ded0c1425f268b1f72a880edf9012864dcf.png" />
+<img alt="../_images/b5c084f2821f5e154bac693674517443f33675a780cd7a8cd5565c54919846ca.png" src="../_images/b5c084f2821f5e154bac693674517443f33675a780cd7a8cd5565c54919846ca.png" />
 </div>
 </div>
 </section>
@@ -1019,7 +1005,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" src="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" />
+<img alt="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" src="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" />
 </div>
 </div>
 <p>Neither of those methods is convenient. It would be nicer if the function was vectorized, which would allow the direct notation f1([0, 1, 2, 3, 4]). A simple way to achieve this is through the use of logical arrays. We create logical arrays from comparison statements.</p>
@@ -1044,7 +1030,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0. 0. 1. 0. 0. 0.]
 </pre></div>
 </div>
-<img alt="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" src="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" />
+<img alt="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" src="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" />
 </div>
 </div>
 <p>A third approach is to use Heaviside functions. The Heaviside function is defined to be zero for x less than some value, and 0.5 for x=0, and 1 for x &gt;= 0. If you can live with y=0.5 for x=0, you can define a vectorized function in terms of Heaviside functions like this.</p>
@@ -1092,7 +1078,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" src="../_images/c6863e6e3c40b4134ccbbb90efa0860d3f959e07ea9a1e6da4b0ec95ad78f652.png" />
+<img alt="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" src="../_images/8c272d753df9616534b2fb22bb3ca2820ffdff982e028a00ed820cad208f828a.png" />
 </div>
 </div>
 <p>There are many ways to define piecewise functions, and vectorization is not always necessary. The advantages of vectorization are usually notational simplicity and speed; loops in python are usually very slow compared to vectorized functions.</p>
@@ -1152,7 +1138,7 @@ f(x) &amp;=&amp;  0, x &lt; 0 \
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a0c8667a657099dbd388c2e8a2341ccac3e88c4303fc3d02da86226550c694f0.png" src="../_images/a0c8667a657099dbd388c2e8a2341ccac3e88c4303fc3d02da86226550c694f0.png" />
+<img alt="../_images/99b2a4f90a39662faf82e6f608d346bf2f978847de00ccb049f9e64f2a68c76f.png" src="../_images/99b2a4f90a39662faf82e6f608d346bf2f978847de00ccb049f9e64f2a68c76f.png" />
 </div>
 </div>
 <p>You can see the discontinuity at Re = 3000. What we need is a method to join these two functions smoothly. We can do that with a sigmoid function.
@@ -1172,7 +1158,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a99569c6caf8a1cf3db0db40d373487118f45602758b08c31d2560848b21edbd.png" src="../_images/a99569c6caf8a1cf3db0db40d373487118f45602758b08c31d2560848b21edbd.png" />
+<img alt="../_images/c30d9a4494b322aeb00f700405c4c1f8d3e328e185a6c71a6f0d2bb3fff2680b.png" src="../_images/c30d9a4494b322aeb00f700405c4c1f8d3e328e185a6c71a6f0d2bb3fff2680b.png" />
 </div>
 </div>
 <p>If we have two functions, <span class="math notranslate nohighlight">\(f_1(x)\)</span> and <span class="math notranslate nohighlight">\(f_2(x)\)</span> we want to smoothly join, we do it like this: <span class="math notranslate nohighlight">\(f(x) = (1-\sigma(x))f_1(x) + \sigma(x)f_2(x)\)</span>. There is no formal justification for this form of joining, it is simply a mathematical convenience to get a numerically smooth function. Other functions besides the sigmoid function could also be used, as long as they smoothly transition from 0 to 1, or from 1 to zero.</p>
@@ -1199,7 +1185,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dcc07bc657e8aa6c63d54d5a5de890d971ee1c14e317a9b684e4b6b719ea1ec7.png" src="../_images/dcc07bc657e8aa6c63d54d5a5de890d971ee1c14e317a9b684e4b6b719ea1ec7.png" />
+<img alt="../_images/4946de8379554bf6c7d1ab4f40559aa3c185ec3f353b4909b06534a86d6ff43d.png" src="../_images/4946de8379554bf6c7d1ab4f40559aa3c185ec3f353b4909b06534a86d6ff43d.png" />
 </div>
 </div>
 <p>You can see that away from the transition the combined function is practically equivalent to the original two functions. That is because away from the transition the sigmoid function is 0 or 1. Near Re = 3000 is a smooth transition from one curve to the other curve.</p>
@@ -1236,7 +1222,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fb81ef250134d4035ce67b26258216bd0ae3d4755fd4697033ac20aeff4cd126.png" src="../_images/fb81ef250134d4035ce67b26258216bd0ae3d4755fd4697033ac20aeff4cd126.png" />
+<img alt="../_images/4366fb077fd74f0326bf7dddd04486d89c4d2353df9f252d955ace6f612d5cbc.png" src="../_images/4366fb077fd74f0326bf7dddd04486d89c4d2353df9f252d955ace6f612d5cbc.png" />
 </div>
 </div>
 <p>This is a nice trick to get an analytical function with continuous derivatives for a transition between two constants. You could have the transition occur at a value other than D = 1, as well by changing the argument to the exponential function.</p>
@@ -1305,13 +1291,16 @@ Sigmoid functions</p>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">20</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="ne">----&gt; </span><span class="mi">6</span> <span class="n">i2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> 
 <span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">i2</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="nb">print</span><span class="p">(</span><span class="n">i2</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> 
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1340,7 +1329,7 @@ Sigmoid functions</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8bbc148bd4f7a4ff54987978dbd9eaaa5c12c28ab55894047c0c551e65e87596.png" src="../_images/8bbc148bd4f7a4ff54987978dbd9eaaa5c12c28ab55894047c0c551e65e87596.png" />
+<img alt="../_images/f5d3bcfec2e3e10df66447bfb14eb58dd9f58633ac4d854117c85dfcf223d6fa.png" src="../_images/f5d3bcfec2e3e10df66447bfb14eb58dd9f58633ac4d854117c85dfcf223d6fa.png" />
 </div>
 </div>
 <p>The trapezoid method is overestimating the area significantly. With more points, we get much closer to the analytical value.</p>
@@ -1359,11 +1348,13 @@ Sigmoid functions</p>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">22</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">**</span><span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="ne">----&gt; </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y2</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1406,13 +1397,16 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">23</span><span class="p">],</span> <span class="n">line</span> <span class="mi">13</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> 
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="c1"># numerical trapezoid method</span>
 <span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">xfine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="n">yfine</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xfine</span><span class="p">)</span>
 <span class="ne">---&gt; </span><span class="mi">13</span> <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">yfine</span><span class="p">,</span> <span class="n">xfine</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> 
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="c1"># quadrature with interpolation</span>
 <span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="n">ans</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1572,7 +1566,7 @@ y = [0    0.1250    1.0000    3.3750    8.0000];</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1b6163b110790dd0659b87c5a5ffbe4a2a34c0bf013aaff835e7c4229c136114.png" src="../_images/1b6163b110790dd0659b87c5a5ffbe4a2a34c0bf013aaff835e7c4229c136114.png" />
+<img alt="../_images/0aa284a6c5d3ff9e3e3e76e5adbb4c5ba8b51cfbd9a4dfea42556a189b61d3cf.png" src="../_images/0aa284a6c5d3ff9e3e3e76e5adbb4c5ba8b51cfbd9a4dfea42556a189b61d3cf.png" />
 </div>
 </div>
 <p>Let us consider the expanded version of the polynomial. We will use sympy to expand the polynomial.</p>
@@ -1679,13 +1673,16 @@ Here is the polynomial evaluated at the calculated roots:
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">32</span><span class="p">],</span> <span class="n">line</span> <span class="mi">12</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> 
 <span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">P</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">poly_from_expr</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">expand</span><span class="p">())</span>
 <span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">all_coeffs</span><span class="p">()</span>
 <span class="ne">---&gt; </span><span class="mi">12</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">These are the known roots</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> 
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="c1"># evaluate the polynomial at the known roots</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:775,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:775,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">770</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
 <span class="g g-Whitespace">    </span><span class="mi">771</span>         <span class="sa">f</span><span class="s2">&quot;In the future `np.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` will be defined as the &quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">772</span>         <span class="s2">&quot;corresponding NumPy scalar.&quot;</span><span class="p">,</span> <span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -1833,7 +1830,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0007026195526123047 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.0006911754608154297 sec
 1.9999983517708524
 </pre></div>
 </div>
@@ -1854,7 +1851,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.00017380714416503906 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 0.000370025634765625 sec
 1.9999934070923728
 </pre></div>
 </div>
@@ -1873,7 +1870,7 @@ Integer                       Float                         \delta
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 7.104873657226562e-05 sec
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time elapsed = 7.033348083496094e-05 sec
 1.999993407092373
 </pre></div>
 </div>
@@ -1913,10 +1910,11 @@ Integer                       Float                         \delta
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">38</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simps</span><span class="p">,</span> <span class="n">romb</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">4.0</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
+<span class="ne">ImportError</span>: cannot import name &#39;simps&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
 </pre></div>
 </div>
 </div>
@@ -2079,11 +2077,13 @@ Integer                       Float                         \delta
 <span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">43</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span><span class="p">,</span> <span class="n">romberg</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">4.0</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;romberg&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
+<span class="ne">ImportError</span>: cannot import name &#39;romberg&#39; from &#39;scipy.integrate&#39; (/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/integrate/__init__.py)
 </pre></div>
 </div>
 </div>
@@ -2374,14 +2374,16 @@ True
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-derivatives-by-differences">Numeric derivatives by differences</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorized-numeric-derivatives">Vectorized numeric derivatives</a></li>
@@ -2941,8 +2943,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

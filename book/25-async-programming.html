@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -112,6 +115,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Parallel Processing in Python" href="24-parallel-processing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -127,19 +131,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -147,7 +140,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -155,8 +147,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -172,7 +164,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -202,21 +195,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -298,9 +287,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -496,7 +490,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -510,25 +504,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -767,7 +753,7 @@ Result: Greeted World
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Concurrent: 0.70s
-Speedup: 3.2x
+Speedup: 3.1x
 </pre></div>
 </div>
 </div>
@@ -799,11 +785,11 @@ Speedup: 3.2x
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pittsburgh: 32.8°C
-New York: 16.8°C
-Chicago: 32.1°C
-Los Angeles: 26.7°C
-Houston: 32.3°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pittsburgh: 33.7°C
+New York: 19.4°C
+Chicago: 19.5°C
+Los Angeles: 27.7°C
+Houston: 25.1°C
 </pre></div>
 </div>
 </div>
@@ -941,15 +927,15 @@ Results: Main result, Logging complete
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successful reads: 2/8
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successful reads: 1/8
   sensor_0: TIMEOUT
-  sensor_1: 26.50
-  sensor_2: TIMEOUT
+  sensor_1: TIMEOUT
+  sensor_2: 25.43
   sensor_3: TIMEOUT
   sensor_4: TIMEOUT
   sensor_5: TIMEOUT
   sensor_6: TIMEOUT
-  sensor_7: 26.69
+  sensor_7: TIMEOUT
 </pre></div>
 </div>
 </div>
@@ -1067,7 +1053,7 @@ Total time: 1.00s (2 batches of 3)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sequential fetch:
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 2.02s for 10 compounds
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 1.48s for 10 compounds
 </pre></div>
 </div>
 </div>
@@ -1100,8 +1086,8 @@ Total time: 1.00s (2 batches of 3)
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Concurrent fetch (max 5 simultaneous):
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 0.51s for 10 compounds
-  Speedup: 4.0x
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Time: 0.41s for 10 compounds
+  Speedup: 3.6x
 </pre></div>
 </div>
 </div>
@@ -1130,7 +1116,7 @@ ethanol         C2H6O           46.07        OK
 methanol        CH4O            32.042       OK
 acetone         C3H6O           58.08        OK
 benzene         C6H6            78.11        OK
-toluene         --              --           error
+toluene         C7H8            92.14        OK
 hexane          C6H14           86.18        OK
 acetic acid     --              --           error
 ammonia         --              --           error
@@ -1193,12 +1179,12 @@ glucose         C6H12O6         180.16       OK
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Connected to Spectrometer-01
-  Reading 1: 97.90
+  Reading 1: 97.10
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Reading 2: 103.26
-  Reading 3: 99.62
-Average: 100.26
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Reading 2: 102.12
+  Reading 3: 101.54
+Average: 100.25
 Disconnecting from Spectrometer-01...
 </pre></div>
 </div>
@@ -1255,19 +1241,19 @@ Disconnecting from Spectrometer-01...
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Streaming sensor data:
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [1] 24.90°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [1] 25.11°C
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [2] 25.28°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [2] 25.14°C
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [3] 25.01°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [3] 25.33°C
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [4] 25.40°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [4] 25.42°C
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [5] 25.50°C
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  [5] 25.39°C
 </pre></div>
 </div>
 </div>
@@ -1351,31 +1337,31 @@ Disconnecting from Spectrometer-01...
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 0.3s:
-  Reactor_Temp: 152.32 °C
-  Reactor_Press: 4.96 bar
-  Feed_Flow: 10.50 L/min
-  Coolant_Temp: 23.86 °C
+  Reactor_Temp: 148.88 °C
+  Reactor_Press: 5.05 bar
+  Feed_Flow: 9.42 L/min
+  Coolant_Temp: 24.51 °C
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 1.1s:
-  Reactor_Temp: 151.69 °C
-  Reactor_Press: 4.90 bar
-  Feed_Flow: 10.58 L/min
-  Coolant_Temp: 23.96 °C
+  Reactor_Temp: 149.03 °C
+  Reactor_Press: 4.93 bar
+  Feed_Flow: 9.65 L/min
+  Coolant_Temp: 22.56 °C
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 1.9s:
-  Reactor_Temp: 151.97 °C
-  Reactor_Press: 4.72 bar
-  Feed_Flow: 11.60 L/min
-  Coolant_Temp: 22.90 °C
+  Reactor_Temp: 148.83 °C
+  Reactor_Press: 4.92 bar
+  Feed_Flow: 9.68 L/min
+  Coolant_Temp: 22.29 °C
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>t = 2.7s:
-  Reactor_Temp: 151.96 °C
-  Reactor_Press: 4.93 bar
-  Feed_Flow: 11.61 L/min
-  Coolant_Temp: 22.70 °C
+  Reactor_Temp: 149.31 °C
+  Reactor_Press: 4.92 bar
+  Feed_Flow: 9.50 L/min
+  Coolant_Temp: 22.15 °C
 </pre></div>
 </div>
 </div>
@@ -1402,7 +1388,7 @@ Disconnecting from Spectrometer-01...
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bf3743a1b3d4cfdf9363f84af3b08a0697bddfbd26030f9c16627ba288189f02.png" src="../_images/bf3743a1b3d4cfdf9363f84af3b08a0697bddfbd26030f9c16627ba288189f02.png" />
+<img alt="../_images/32253e9f6c18940df1ccfd3aa68698ba3ae325199ab079729bda45c68e5a29c7.png" src="../_images/32253e9f6c18940df1ccfd3aa68698ba3ae325199ab079729bda45c68e5a29c7.png" />
 </div>
 </div>
 </section>
@@ -1562,14 +1548,14 @@ Disconnecting from Spectrometer-01...
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Step 1: Fetching parameters asynchronously...
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Fetched 8 parameter sets in 0.24s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Fetched 8 parameter sets in 0.28s
 
 Step 2: Processing in parallel...
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Processed 8 results in 0.49s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Processed 8 results in 0.48s
 
-Total time: 0.73s
+Total time: 0.76s
 </pre></div>
 </div>
 </div>
@@ -1621,7 +1607,7 @@ Total time: 0.73s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Without await: &lt;coroutine object my_coroutine at 0x7f2294bd40f0&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Without await: &lt;coroutine object my_coroutine at 0x7f2d97fecf60&gt;
 With await: 42
 </pre></div>
 </div>
@@ -1854,14 +1840,16 @@ Results with return_exceptions=True:
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-async-vs-parallel">Introduction: Async vs Parallel</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-async">When to Use Async</a></li>
@@ -2432,8 +2420,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

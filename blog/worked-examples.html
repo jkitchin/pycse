@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Programming" href="programming.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -666,11 +652,13 @@ document.write(`
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">w</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;../../data/raman.txt&quot;</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Raman shift (cm$^{-1}$)&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1381</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
 <span class="g g-Whitespace">   </span><span class="mi">1382</span>     <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 <span class="ne">-&gt; </span><span class="mi">1384</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">_read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
@@ -679,14 +667,14 @@ document.write(`
 <span class="g g-Whitespace">   </span><span class="mi">1387</span>             <span class="n">max_rows</span><span class="o">=</span><span class="n">max_rows</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1389</span> <span class="k">return</span> <span class="n">arr</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1009</span>     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1010</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 <span class="ne">-&gt; </span><span class="mi">1011</span>     <span class="n">fh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">_datasource</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1012</span>     <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">   </span><span class="mi">1013</span>         <span class="n">encoding</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s1">&#39;encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
@@ -695,7 +683,7 @@ document.write(`
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">524</span>     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;bz2&#39;</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">525</span>         <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">526</span>     <span class="k">return</span> <span class="n">_file_openers</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">found</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
@@ -729,6 +717,7 @@ document.write(`
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">&gt;</span> <span class="mi">1340</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="mi">1360</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">w1</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
 
 <span class="ne">NameError</span>: name &#39;w&#39; is not defined
 </pre></div>
@@ -755,8 +744,10 @@ document.write(`
 <span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnivariateSpline</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="c1"># s is a &quot;smoothing&quot; factor</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="s2">&quot;b. &quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">sp</span><span class="p">(</span><span class="n">w1</span><span class="p">),</span> <span class="s2">&quot;r-&quot;</span><span class="p">)</span>
 
@@ -802,9 +793,9 @@ document.write(`
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># get the first derivative evaluated at all the points</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">d1s</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">d1</span> <span class="o">=</span> <span class="n">d1s</span><span class="p">(</span><span class="n">w1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="c1"># we can get the roots directly here, which correspond to minima and</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="c1"># maxima.</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 
 <span class="ne">NameError</span>: name &#39;sp&#39; is not defined
 </pre></div>
@@ -861,20 +852,14 @@ document.write(`
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">datafile</span> <span class="o">=</span> <span class="s2">&quot;../../data/gc-data-21.txt&quot;</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="ne">----&gt; </span><span class="mi">7</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> 
 <span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/IPython/core/interactiveshell.py:344,</span> in <span class="ni">_modified_open</span><span class="nt">(file, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}:</span>
-<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span>         <span class="sa">f</span><span class="s2">&quot;IPython won&#39;t let you open fd=</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> by default &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span>         <span class="s2">&quot;as it is likely to crash IPython. If you know what you are doing, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">341</span>         <span class="s2">&quot;you can use builtins&#39; open.&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">342</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">344</span> <span class="k">return</span> <span class="n">io_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../../data/gc-data-21.txt&#39;
 </pre></div>
@@ -900,6 +885,7 @@ document.write(`
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">intensity</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">intensity</span><span class="p">[(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mf">4.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mf">4.4</span><span class="p">)])</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 
 <span class="ne">NameError</span>: name &#39;intensity&#39; is not defined
 </pre></div>
@@ -972,6 +958,7 @@ document.write(`
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">two_peaks</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">parguess</span><span class="p">),</span> <span class="s2">&quot;g-&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
 
 <span class="ne">NameError</span>: name &#39;t&#39; is not defined
 </pre></div>
@@ -1001,9 +988,11 @@ document.write(`
 <span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">two_peaks</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">parguess</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="nb">print</span><span class="p">(</span><span class="n">popt</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">two_peaks</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">parguess</span><span class="p">),</span> <span class="s2">&quot;g-&quot;</span><span class="p">)</span>
 
 <span class="ne">NameError</span>: name &#39;t&#39; is not defined
 </pre></div>
@@ -1045,6 +1034,7 @@ document.write(`
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">pars1</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">pars2</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">peak1</span> <span class="o">=</span> <span class="n">asym_peak</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">pars1</span><span class="p">)</span>
 
 <span class="ne">NameError</span>: name &#39;popt&#39; is not defined
@@ -1149,7 +1139,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/50b6a62d437d5110a7ef9013691cf95b84a67252aae96a00458685e0073cb540.png" src="../_images/50b6a62d437d5110a7ef9013691cf95b84a67252aae96a00458685e0073cb540.png" />
+<img alt="../_images/db7609c09362a1dc74dbeb96426aaed72f76d07c18b26d32e2ede14d0bbee96a.png" src="../_images/db7609c09362a1dc74dbeb96426aaed72f76d07c18b26d32e2ede14d0bbee96a.png" />
 </div>
 </div>
 <section id="summary">
@@ -1444,7 +1434,7 @@ C2H6       1.616e-07
 True
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2822/2206472356.py:7: RuntimeWarning: invalid value encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2719/2206472356.py:7: RuntimeWarning: invalid value encountered in log
   G = np.sum(nj * (Gjo / R / T + np.log(nj / Enj)))
 </pre></div>
 </div>
@@ -1562,13 +1552,13 @@ True
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2822/860182294.py:23: RuntimeWarning: divide by zero encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2719/860182294.py:23: RuntimeWarning: divide by zero encountered in log
   diffg += R * T * x1 * np.log(x2 * P / P0)
-/tmp/ipykernel_2822/860182294.py:23: RuntimeWarning: invalid value encountered in multiply
+/tmp/ipykernel_2719/860182294.py:23: RuntimeWarning: invalid value encountered in multiply
   diffg += R * T * x1 * np.log(x2 * P / P0)
 </pre></div>
 </div>
-<img alt="../_images/9dfb86b58dd075b02753b9932667616516de8144261b654535030e401c45c6c7.png" src="../_images/9dfb86b58dd075b02753b9932667616516de8144261b654535030e401c45c6c7.png" />
+<img alt="../_images/efe7655013f8763be62bf4a12785be8701c97f7ef942e877ef0854099ab3f5ee.png" src="../_images/efe7655013f8763be62bf4a12785be8701c97f7ef942e877ef0854099ab3f5ee.png" />
 </div>
 </div>
 <p>Now we simply minimize our Gwigglewiggle function. Based on the figure above, the miminum is near 0.45.</p>
@@ -1590,13 +1580,13 @@ True
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.46959618248998036
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2822/860182294.py:23: RuntimeWarning: divide by zero encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2719/860182294.py:23: RuntimeWarning: divide by zero encountered in log
   diffg += R * T * x1 * np.log(x2 * P / P0)
-/tmp/ipykernel_2822/860182294.py:23: RuntimeWarning: invalid value encountered in multiply
+/tmp/ipykernel_2719/860182294.py:23: RuntimeWarning: invalid value encountered in multiply
   diffg += R * T * x1 * np.log(x2 * P / P0)
 </pre></div>
 </div>
-<img alt="../_images/ec767410f9a725feb98dc201ce82f3d33bc4a1dee5c11d0c9ad9861eff95189c.png" src="../_images/ec767410f9a725feb98dc201ce82f3d33bc4a1dee5c11d0c9ad9861eff95189c.png" />
+<img alt="../_images/f98574a321782453bc01d922fc0aa6bf273ecfffb08f60a21dfc1ff1fd9936aa.png" src="../_images/f98574a321782453bc01d922fc0aa6bf273ecfffb08f60a21dfc1ff1fd9936aa.png" />
 </div>
 </div>
 <p>To compute equilibrium mole fractions we do this:</p>
@@ -1824,7 +1814,7 @@ deltaG = -28.62
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8b87f135c159b6bb6098329dc7915e68dd9f04ecb6af98b01114dce241306748.png" src="../_images/8b87f135c159b6bb6098329dc7915e68dd9f04ecb6af98b01114dce241306748.png" />
+<img alt="../_images/1864af01d50abb394d6850b2eb7b366dbd8781ad2bb57c86a0bfa973ec0413f0.png" src="../_images/1864af01d50abb394d6850b2eb7b366dbd8781ad2bb57c86a0bfa973ec0413f0.png" />
 </div>
 </div>
 <p>Over this temperature range the reaction is exothermic, although near 1000K it is just barely exothermic. At higher temperatures we expect the reaction to become endothermic.</p>
@@ -1845,7 +1835,7 @@ deltaG = -28.62
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9309934757cfbfe121ef0cfc74ce1c742a522ae3d9e67ac0469456aca1720400.png" src="../_images/9309934757cfbfe121ef0cfc74ce1c742a522ae3d9e67ac0469456aca1720400.png" />
+<img alt="../_images/fb94efeab4339aea22762d419d14eb7cae65cf3ee2d32f763f1f9b16084160a8.png" src="../_images/fb94efeab4339aea22762d419d14eb7cae65cf3ee2d32f763f1f9b16084160a8.png" />
 </div>
 </div>
 </section>
@@ -2051,9 +2041,9 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 -2.5086302290194507
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2822/785592754.py:25: RuntimeWarning: invalid value encountered in log
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2719/785592754.py:25: RuntimeWarning: invalid value encountered in log
   + yI * d * np.log(yI)
-/tmp/ipykernel_2822/785592754.py:26: RuntimeWarning: invalid value encountered in log
+/tmp/ipykernel_2719/785592754.py:26: RuntimeWarning: invalid value encountered in log
   + yB * d * np.log(yB)
 </pre></div>
 </div>
@@ -2118,7 +2108,7 @@ b = \left[ \begin{array}{c} 0 \ 0 \ 0.5\end{array} \right]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/63241ca8510af5dba61b0d558973eb01d48cc133c27a8c6efff1078bd118dca0.png" src="../_images/63241ca8510af5dba61b0d558973eb01d48cc133c27a8c6efff1078bd118dca0.png" />
+<img alt="../_images/e45958f5f16a01e665487d81763f7af1a5e259650c4f791b51e8346c99cf8692.png" src="../_images/e45958f5f16a01e665487d81763f7af1a5e259650c4f791b51e8346c99cf8692.png" />
 </div>
 </div>
 <p>You can see we found the minimum. We can compute the mole fractions pretty easily.</p>
@@ -2426,13 +2416,16 @@ Ni        +50.00%
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">57</span><span class="p">],</span> <span class="n">line</span> <span class="mi">41</span>
+<span class="g g-Whitespace">     </span><span class="mi">37</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Particle radius&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">38</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$C_A$&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> 
 <span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="n">r</span> <span class="o">=</span> <span class="n">rspan</span>
 <span class="ne">---&gt; </span><span class="mi">41</span> <span class="n">eta_numerical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">Ca</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">CAs</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span> 
 <span class="g g-Whitespace">     </span><span class="mi">43</span> <span class="nb">print</span><span class="p">(</span><span class="n">eta_numerical</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">45</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="n">De</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">44</span> 
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2440,7 +2433,7 @@ Ni        +50.00%
 <span class="ne">AttributeError</span>: module &#39;numpy&#39; has no attribute &#39;trapz&#39;
 </pre></div>
 </div>
-<img alt="../_images/22f2664c713fa642875bf4c22c337128b1e26ad27397bb164d832780e5996cb5.png" src="../_images/22f2664c713fa642875bf4c22c337128b1e26ad27397bb164d832780e5996cb5.png" />
+<img alt="../_images/5ddd55a210f9dda72f244ca590f39a3f2952c305e45d386ac9dd8806b41cd325.png" src="../_images/5ddd55a210f9dda72f244ca590f39a3f2952c305e45d386ac9dd8806b41cd325.png" />
 </div>
 </div>
 <p>You can see the concentration of A inside the particle is significantly lower than outside the particle. That is because it is reacting away faster than it can diffuse into the particle. Hence, the overall reaction rate in the particle is lower than it would be without the diffusion limit.</p>
@@ -2527,7 +2520,7 @@ A heat exchanger must handle 2.5 L/s of water through a smooth pipe with length 
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The minimum pipe diameter is 0.0389653369530596 m
 </pre></div>
 </div>
-<img alt="../_images/f0cd0ab4165a310e23cc7dc579960ebfde16a025e413c49f928744b41fac8908.png" src="../_images/f0cd0ab4165a310e23cc7dc579960ebfde16a025e413c49f928744b41fac8908.png" />
+<img alt="../_images/ad97a6e2bd41162420fa0c2ebcb5603071d825bbe026f7c7b2c3508967399e6d.png" src="../_images/ad97a6e2bd41162420fa0c2ebcb5603071d825bbe026f7c7b2c3508967399e6d.png" />
 </div>
 </div>
 <p>Any pipe diameter smaller than that value will result in a larger pressure drop at the same volumetric flow rate, or a smaller volumetric flowrate at the same pressure drop. Either way, it will not meet the design specification.</p>
@@ -2587,26 +2580,13 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">59</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="s2">&quot;../../data/antoine_data.dat&quot;</span><span class="p">,</span>
 <span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">dtype</span><span class="o">=</span><span class="p">[</span>
 <span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="p">(</span><span class="s2">&quot;formula&quot;</span><span class="p">,</span> <span class="s2">&quot;S8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>         <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;S28&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>         <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>         <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>         <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>         <span class="p">(</span><span class="s2">&quot;Tmin&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span>         <span class="p">(</span><span class="s2">&quot;Tmax&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span>         <span class="p">(</span><span class="s2">&quot;??&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span>         <span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span>     <span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">18</span>     <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-<span class="g g-Whitespace">     </span><span class="mi">23</span> <span class="n">acetone</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">names</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;acetone&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1381</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
 <span class="g g-Whitespace">   </span><span class="mi">1382</span>     <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 <span class="ne">-&gt; </span><span class="mi">1384</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">_read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
@@ -2615,14 +2595,14 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">   </span><span class="mi">1387</span>             <span class="n">max_rows</span><span class="o">=</span><span class="n">max_rows</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1389</span> <span class="k">return</span> <span class="n">arr</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1009</span>     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1010</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 <span class="ne">-&gt; </span><span class="mi">1011</span>     <span class="n">fh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">_datasource</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1012</span>     <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">   </span><span class="mi">1013</span>         <span class="n">encoding</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s1">&#39;encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
@@ -2631,7 +2611,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">524</span>     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;bz2&#39;</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">525</span>         <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">526</span>     <span class="k">return</span> <span class="n">_file_openers</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">found</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
@@ -2686,6 +2666,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">60</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># for readability we unpack the array into variables</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="nb">id</span><span class="p">,</span> <span class="n">formula</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">acetone</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">P</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span> <span class="o">/</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="p">))</span>
 
@@ -2774,28 +2755,16 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">61</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fsolve</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="c1"># load our thermodynamic data</span>
 <span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span>
 <span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="s2">&quot;../../data/antoine_data.dat&quot;</span><span class="p">,</span>
 <span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">dtype</span><span class="o">=</span><span class="p">[</span>
 <span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>         <span class="p">(</span><span class="s2">&quot;formula&quot;</span><span class="p">,</span> <span class="s2">&quot;S8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>         <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;S28&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>         <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>         <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>         <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span>         <span class="p">(</span><span class="s2">&quot;Tmin&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span>         <span class="p">(</span><span class="s2">&quot;Tmax&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span>         <span class="p">(</span><span class="s2">&quot;??&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span>         <span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;S4&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">18</span>     <span class="p">],</span>
-<span class="g g-Whitespace">     </span><span class="mi">19</span>     <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="n">compounds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;benzene&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">,</span> <span class="s2">&quot;chloroform&quot;</span><span class="p">,</span> <span class="s2">&quot;acetone&quot;</span><span class="p">,</span> <span class="s2">&quot;methanol&quot;</span><span class="p">]</span>
-<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="c1"># extract the data we want</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1384,</span> in <span class="ni">loadtxt</span><span class="nt">(fname, dtype, comments, delimiter, converters, skiprows, usecols, unpack, ndmin, encoding, max_rows, quotechar, like)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1381</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
 <span class="g g-Whitespace">   </span><span class="mi">1382</span>     <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 <span class="ne">-&gt; </span><span class="mi">1384</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">_read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
@@ -2804,14 +2773,14 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">   </span><span class="mi">1387</span>             <span class="n">max_rows</span><span class="o">=</span><span class="n">max_rows</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1389</span> <span class="k">return</span> <span class="n">arr</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:1011,</span> in <span class="ni">_read</span><span class="nt">(fname, delimiter, comment, quote, imaginary_unit, usecols, skiplines, max_rows, converters, ndmin, unpack, dtype, encoding)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1009</span>     <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1010</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
 <span class="ne">-&gt; </span><span class="mi">1011</span>     <span class="n">fh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">_datasource</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1012</span>     <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">   </span><span class="mi">1013</span>         <span class="n">encoding</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s1">&#39;encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;latin1&#39;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:192,</span> in <span class="ni">open</span><span class="nt">(path, mode, destpath, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> Open `path` with `mode` and return the file object.</span>
 <span class="g g-Whitespace">    </span><span class="mi">157</span><span class="sd"> </span>
@@ -2820,7 +2789,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSource</span><span class="p">(</span><span class="n">destpath</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">192</span> <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_datasource.py:526,</span> in <span class="ni">DataSource.open</span><span class="nt">(self, path, mode, encoding, newline)</span>
 <span class="g g-Whitespace">    </span><span class="mi">524</span>     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;bz2&#39;</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">525</span>         <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">526</span>     <span class="k">return</span> <span class="n">_file_openers</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">found</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
@@ -2865,7 +2834,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/64c23a08a42d3c265201fb4603a2b2ca60f16161029756a0e0c35756824f118d.png" src="../_images/64c23a08a42d3c265201fb4603a2b2ca60f16161029756a0e0c35756824f118d.png" />
+<img alt="../_images/d04512c3546a87a2f82e17048ae842354658a7b47d4215f89b4b90dcf3d723b0.png" src="../_images/d04512c3546a87a2f82e17048ae842354658a7b47d4215f89b4b90dcf3d723b0.png" />
 </div>
 </div>
 <p>The idea is to pick a Pr and draw a line through the EOS. We want the areas between the line and EOS to be equal on each side of the middle intersection. Let us draw a line on the figure at y = 0.65.</p>
@@ -2882,7 +2851,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0d3a47aeb43eb5486d100af27e60ddb99ac6393fdb1d8abaa22ad4bb3033f60f.png" src="../_images/0d3a47aeb43eb5486d100af27e60ddb99ac6393fdb1d8abaa22ad4bb3033f60f.png" />
+<img alt="../_images/e25b9162b5cc35e4e0e479c273ae22b8cb831a3a02724e12494a81662da4ec15.png" src="../_images/e25b9162b5cc35e4e0e479c273ae22b8cb831a3a02724e12494a81662da4ec15.png" />
 </div>
 </div>
 <p>To find the areas, we need to know where the intersection of the vdW eqn with the horizontal line. This is the same as asking what are the roots of the vdW equation at that Pr. We need all three intersections so we can integrate from the first root to the middle root, and then the middle root to the third root. We take advantage of the polynomial nature of the vdW equation, which allows us to use the roots command to get all the roots at once. The polynomial is <span class="math notranslate nohighlight">\(V_R^3 - \frac{1}{3}(1+8 T_R/P_R) + 3/P_R - 1/P_R = 0\)</span>. We use the coefficients t0 get the roots like this.</p>
@@ -2901,7 +2870,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.60286812 1.09743234 2.32534056]
 </pre></div>
 </div>
-<img alt="../_images/e0a6fd8c2f1b5a5b299490fe91e084a156109d7adbdbb121a1a394f1be84da8e.png" src="../_images/e0a6fd8c2f1b5a5b299490fe91e084a156109d7adbdbb121a1a394f1be84da8e.png" />
+<img alt="../_images/b4a005b342c1279d485ad9e9df123c56a60bb413b066551a5b4d28eae47af4bb.png" src="../_images/b4a005b342c1279d485ad9e9df123c56a60bb413b066551a5b4d28eae47af4bb.png" />
 </div>
 </div>
 <section id="compute-areas">
@@ -2962,11 +2931,14 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">66</span><span class="p">],</span> <span class="n">line</span> <span class="mi">14</span>
 <span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">A2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span>
 <span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="k">return</span> <span class="n">A1</span> <span class="o">-</span> <span class="n">A2</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> 
+<span class="g g-Whitespace">     </span><span class="mi">13</span> 
 <span class="ne">---&gt; </span><span class="mi">14</span> <span class="p">(</span><span class="n">y_eq</span><span class="p">,)</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">equal_area</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="nb">print</span><span class="p">(</span><span class="n">y_eq</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> 
 <span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="n">Tr</span> <span class="o">=</span> <span class="mf">0.9</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:171,</span> in <span class="ni">fsolve</span><span class="nt">(func, x0, args, fprime, full_output, col_deriv, xtol, maxfev, band, epsfcn, factor, diag)</span>
 <span class="g g-Whitespace">    </span><span class="mi">161</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="g g-Whitespace">    </span><span class="mi">163</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;col_deriv&#39;</span><span class="p">:</span> <span class="n">col_deriv</span><span class="p">,</span>
 <span class="g g-Whitespace">    </span><span class="mi">164</span>            <span class="s1">&#39;xtol&#39;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">,</span>
@@ -2977,21 +2949,21 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="n">res</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">_wrapped_func</span><span class="o">.</span><span class="n">nfev</span>
 <span class="g g-Whitespace">    </span><span class="mi">174</span> <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:239,</span> in <span class="ni">_root_hybr</span><span class="nt">(func, x0, args, jac, col_deriv, xtol, maxfev, band, eps, factor, diag, **unknown_options)</span>
 <span class="g g-Whitespace">    </span><span class="mi">237</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">238</span>     <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,)</span>
 <span class="ne">--&gt; </span><span class="mi">239</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">_check_func</span><span class="p">(</span><span class="s1">&#39;fsolve&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
 <span class="g g-Whitespace">    </span><span class="mi">240</span> <span class="k">if</span> <span class="n">epsfcn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">241</span>     <span class="n">epsfcn</span> <span class="o">=</span> <span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:24,</span> in <span class="ni">_check_func</span><span class="nt">(checker, argname, thefunc, x0, args, numinputs, output_shape)</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="k">def</span><span class="w"> </span><span class="nf">_check_func</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">thefunc</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">numinputs</span><span class="p">,</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span>                 <span class="n">output_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">24</span>     <span class="n">res</span> <span class="o">=</span> <span class="n">atleast_1d</span><span class="p">(</span><span class="n">thefunc</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">x0</span><span class="p">[:</span><span class="n">numinputs</span><span class="p">],)</span> <span class="o">+</span> <span class="n">args</span><span class="p">)))</span>
 <span class="g g-Whitespace">     </span><span class="mi">25</span>     <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">shape</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">!=</span> <span class="n">output_shape</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">26</span>         <span class="k">if</span> <span class="p">(</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:159,</span> in <span class="ni">fsolve.&lt;locals&gt;._wrapped_func</span><span class="nt">(*fargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">154</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">155</span><span class="sd"> Wrapped `func` to track the number of times</span>
 <span class="g g-Whitespace">    </span><span class="mi">156</span><span class="sd"> the function has been called.</span>
@@ -3000,13 +2972,15 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="ne">--&gt; </span><span class="mi">159</span> <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">fargs</span><span class="p">)</span>
 
 <span class="nn">Cell In[66], line 7,</span> in <span class="ni">equal_area</span><span class="nt">(y)</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">Tr</span> <span class="o">=</span> <span class="mf">0.9</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">vdWp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">Tr</span> <span class="o">/</span> <span class="n">y</span><span class="p">),</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">]</span>
-<span class="ne">----&gt; </span><span class="mi">7</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">vdWp</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">v</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span><span class="w"> </span><span class="nf">equal_area</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">Tr</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">vdWp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">Tr</span> <span class="o">/</span> <span class="n">y</span><span class="p">),</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">y</span><span class="p">]</span>
+<span class="ne">----&gt; </span><span class="mi">7</span>     <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">vdWp</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">v</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">A2</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">Prfh</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">y</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/lib/_polynomial_impl.py:228,</span> in <span class="ni">roots</span><span class="nt">(p)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/lib/_polynomial_impl.py:228,</span> in <span class="ni">roots</span><span class="nt">(p)</span>
 <span class="g g-Whitespace">    </span><span class="mi">172</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">    </span><span class="mi">173</span><span class="sd"> Return the roots of a polynomial with coefficients given in p.</span>
 <span class="g g-Whitespace">    </span><span class="mi">174</span><span class="sd"> </span>
@@ -3017,7 +2991,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="g g-Whitespace">    </span><span class="mi">229</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">230</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must be a rank-1 array.&quot;</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/_core/shape_base.py:61,</span> in <span class="ni">atleast_1d</span><span class="nt">(*arys)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/_core/shape_base.py:61,</span> in <span class="ni">atleast_1d</span><span class="nt">(*arys)</span>
 <span class="g g-Whitespace">     </span><span class="mi">21</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span><span class="sd"> Convert inputs to arrays with at least one dimension.</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span><span class="sd"> </span>
@@ -3060,15 +3034,18 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 <span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">67</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Vr</span><span class="p">,</span> <span class="n">Pr</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 <span class="ne">----&gt; </span><span class="mi">6</span> <span class="n">hline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Vr</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_eq</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> 
 <span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Vr</span><span class="p">,</span> <span class="n">hline</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">Vr</span><span class="p">,</span> <span class="n">hline</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">Vr</span> <span class="o">&gt;=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Vr</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
 
 <span class="ne">NameError</span>: name &#39;y_eq&#39; is not defined
 </pre></div>
 </div>
-<img alt="../_images/54f6f6afe4ebee2d56eedc026f06075850fde52e943a209b9bcb4c9f7301499f.png" src="../_images/54f6f6afe4ebee2d56eedc026f06075850fde52e943a209b9bcb4c9f7301499f.png" />
+<img alt="../_images/266abab68432606c577c90c8097531e447dc5f7d76bebec82d84ae9884a98ba1.png" src="../_images/266abab68432606c577c90c8097531e447dc5f7d76bebec82d84ae9884a98ba1.png" />
 </div>
 </div>
 </section>
@@ -3126,7 +3103,7 @@ ID  formula  compound name                  A       B       C     Tmin Tmax ??  
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a4a5d9a8bf38776e968d933a193d54a9d419cbd60dfc01da16e757c16723d106.png" src="../_images/a4a5d9a8bf38776e968d933a193d54a9d419cbd60dfc01da16e757c16723d106.png" />
+<img alt="../_images/7976891de3879eb50dac9657f062e538ca51f9d7c50b0436c70bf0d7262b5a74.png" src="../_images/7976891de3879eb50dac9657f062e538ca51f9d7c50b0436c70bf0d7262b5a74.png" />
 </div>
 </div>
 <p>That is it. The main difference between this and Matlab is the order of arguments in odeint is different, and the ode function has differently ordered arguments.</p>
@@ -3261,7 +3238,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/024760f96a98a034717b69fcb1526f4e833e9e3ed24889bbed2607e55c621d43.png" src="../_images/024760f96a98a034717b69fcb1526f4e833e9e3ed24889bbed2607e55c621d43.png" />
+<img alt="../_images/22b62707110b4a46e0af568a88d150dbd0f4a806652753513287979df1fb712a.png" src="../_images/22b62707110b4a46e0af568a88d150dbd0f4a806652753513287979df1fb712a.png" />
 </div>
 </div>
 <p>You can read off of this figure to find the time required to achieve a particular conversion.</p>
@@ -3310,7 +3287,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/058335bff47477d0115e229e88af73bd986a7c4ca7c50679aee2eb30a797c55d.png" src="../_images/058335bff47477d0115e229e88af73bd986a7c4ca7c50679aee2eb30a797c55d.png" />
+<img alt="../_images/3c86b1f7a2c3c02410a904a1606d4ed64d679a12b971eb6380daac3cedabb3cb.png" src="../_images/3c86b1f7a2c3c02410a904a1606d4ed64d679a12b971eb6380daac3cedabb3cb.png" />
 </div>
 </div>
 <p>See Fogler, 4th edition. page 193.</p>
@@ -3521,7 +3498,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d58a830d4037ea7cdac2d0ec3c9face2fecba569d8b08a12a9384299a7f9d817.png" src="../_images/d58a830d4037ea7cdac2d0ec3c9face2fecba569d8b08a12a9384299a7f9d817.png" />
+<img alt="../_images/df6bd2e6ea51ee38af94e0e9e0048b0935806b53aee650c7f411a198f1a75c3b.png" src="../_images/df6bd2e6ea51ee38af94e0e9e0048b0935806b53aee650c7f411a198f1a75c3b.png" />
 </div>
 </div>
 <p>We can plot our Rankine cycle path like this. We compute the entropies along the non-isentropic paths.</p>
@@ -3551,7 +3528,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bcd56d05b0086cc22031ed301a69bc65d4aa8f982e89b03262915fca1b352755.png" src="../_images/bcd56d05b0086cc22031ed301a69bc65d4aa8f982e89b03262915fca1b352755.png" />
+<img alt="../_images/a9075faa7cbd62a7c0bada4503e46ce790d478487d63fbfe42b3e5c32d1ad6a4.png" src="../_images/a9075faa7cbd62a7c0bada4503e46ce790d478487d63fbfe42b3e5c32d1ad6a4.png" />
 </div>
 </div>
 </section>
@@ -3594,7 +3571,7 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fdc96dfe3288516cdf0f848118c282683b068393c5a3e879848002992fd64ebc.png" src="../_images/fdc96dfe3288516cdf0f848118c282683b068393c5a3e879848002992fd64ebc.png" />
+<img alt="../_images/2bc27a487469b7444d6a39450a7b7769e9d2c0d43583cac25d06959ecdacb901.png" src="../_images/2bc27a487469b7444d6a39450a7b7769e9d2c0d43583cac25d06959ecdacb901.png" />
 </div>
 </div>
 <p>In this example, the boundary is complicated, and not described by a simple function. We will check for intersections of the line from the arbitrary point to the reference point with each segment defining the boundary. If there is an intersection in the boundary, we count that as a crossing. We choose the origin (0, 0) in this case for the reference point. For an arbitrary point (x1, y1), the equation of the line is therefore (provided x1 !=0):</p>
@@ -3713,13 +3690,13 @@ Estimated absolute error = 2.1220327407235617e-07
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2822/812257764.py:71: RuntimeWarning: invalid value encountered in scalar divide
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2719/812257764.py:71: RuntimeWarning: invalid value encountered in scalar divide
   m1 = y1 / x1
-/tmp/ipykernel_2822/812257764.py:71: RuntimeWarning: divide by zero encountered in scalar divide
+/tmp/ipykernel_2719/812257764.py:71: RuntimeWarning: divide by zero encountered in scalar divide
   m1 = y1 / x1
 </pre></div>
 </div>
-<img alt="../_images/0aedef4f6e5aa7b8cc84c105fd4d86980b980e321ccfef377868c5d19f8b0910.png" src="../_images/0aedef4f6e5aa7b8cc84c105fd4d86980b980e321ccfef377868c5d19f8b0910.png" />
+<img alt="../_images/767b48d87ec0f190615a81210ed6f46ccdba32f3cc8f2eafbae36985ec4dd5e5.png" src="../_images/767b48d87ec0f190615a81210ed6f46ccdba32f3cc8f2eafbae36985ec4dd5e5.png" />
 </div>
 </div>
 <p>If you look carefully, there are two blue points in the red region, which means there is some edge case we do not capture in our function. Kudos to the person who figures it out.
@@ -3783,14 +3760,16 @@ Update: It was pointed out that the points intersect a point on the line.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-finding-in-raman-spectroscopy">Peak finding in Raman spectroscopy</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-notes">Summary notes</a></li>
@@ -4385,8 +4364,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

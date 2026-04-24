@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Topics in machine learning" href="22-ml-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -638,7 +624,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cd0f1d969920f37b216fd4a0d591f44bad5b33529e2480b6f7c1506aec7b8345.png" src="../_images/cd0f1d969920f37b216fd4a0d591f44bad5b33529e2480b6f7c1506aec7b8345.png" />
+<img alt="../_images/df5823b551c3efe339e6d259e2941c84bd8a0388b1f1f2e3400e64493230086b.png" src="../_images/df5823b551c3efe339e6d259e2941c84bd8a0388b1f1f2e3400e64493230086b.png" />
 </div>
 </div>
 <p>So, what we need is a convenient way to compute the covariance between the points we know, and the points we want to estimate. To keep things simple for now, we consider a small data set. We need to be able to compute the distance from each known <span class="math notranslate nohighlight">\(x_i\)</span> to each known <span class="math notranslate nohighlight">\(x_j\)</span>. Numpy array broadcasting makes this simple. We <em>expand</em> each array, and then take the difference.</p>
@@ -783,7 +769,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.73282423, 0.74262848])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.74451636, 0.75469273])
 </pre></div>
 </div>
 </div>
@@ -799,7 +785,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/84dae84febc64b7ffc7083935bba6132c963497cf95f8d097d47d1e321cf6bd3.png" src="../_images/84dae84febc64b7ffc7083935bba6132c963497cf95f8d097d47d1e321cf6bd3.png" />
+<img alt="../_images/f294200196f3592d075419b653802885450d7ed28896e01f54e02e043b0fb302.png" src="../_images/f294200196f3592d075419b653802885450d7ed28896e01f54e02e043b0fb302.png" />
 </div>
 </div>
 <p>That is not bad, but clearly not great. With a <span class="math notranslate nohighlight">\(\lambda=0.15\)</span>, only one data point is contributing to the estimate, the other points have only small contributions because they are far from points we are estimating. This is a feature of the <em>assumption</em> we made about the covariance with <span class="math notranslate nohighlight">\(\lambda\)</span>. This means we do not have enough data to make a very good estimate. We can see this if we try this with a much more dense data set.</p>
@@ -833,7 +819,7 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Known data step size is 0.05
 </pre></div>
 </div>
-<img alt="../_images/642e9ade294863d74c72cba7c76b27dbf5c68260454f016a498ab1c26b99a609.png" src="../_images/642e9ade294863d74c72cba7c76b27dbf5c68260454f016a498ab1c26b99a609.png" />
+<img alt="../_images/5ed90ee675e2d1d75e18ac1701510af146dc5f7ad7ce5415c4587761321e1549.png" src="../_images/5ed90ee675e2d1d75e18ac1701510af146dc5f7ad7ce5415c4587761321e1549.png" />
 </div>
 </div>
 <p>Now you can see that we do very well in estimating the values. The length scale here might even be considered too short, since it is evident we are fitting trends in the noise.</p>
@@ -864,7 +850,7 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Known data step size is 0.05
 </pre></div>
 </div>
-<img alt="../_images/46b5132e327d96eb3f0b0630505062baf82da2137bacbc699c71e238b7b7e2b5.png" src="../_images/46b5132e327d96eb3f0b0630505062baf82da2137bacbc699c71e238b7b7e2b5.png" />
+<img alt="../_images/8e918973f7051e4456ed3d6ce3532b9395d4fda2800264860f97fe971b2d71b5.png" src="../_images/8e918973f7051e4456ed3d6ce3532b9395d4fda2800264860f97fe971b2d71b5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -928,7 +914,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7767a26daf5a2234febaef5520f035b6e3f96ddff4fa127c6064fad75e27f5ea.png" src="../_images/7767a26daf5a2234febaef5520f035b6e3f96ddff4fa127c6064fad75e27f5ea.png" />
+<img alt="../_images/01d89df9fc08408009cc69bb9f47a1821484611490de7c90e018688a9bd898da.png" src="../_images/01d89df9fc08408009cc69bb9f47a1821484611490de7c90e018688a9bd898da.png" />
 </div>
 </div>
 </section>
@@ -953,7 +939,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/53fa2292567ca96227101a73d81a3501de5cde851ef1074cfa136ea713e81152.png" src="../_images/53fa2292567ca96227101a73d81a3501de5cde851ef1074cfa136ea713e81152.png" />
+<img alt="../_images/ab308e43075465f90faf3da8c4bf720b733e54ccb483aacb980dc8be40c74409.png" src="../_images/ab308e43075465f90faf3da8c4bf720b733e54ccb483aacb980dc8be40c74409.png" />
 </div>
 </div>
 </section>
@@ -994,10 +980,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.       , 0.0728071])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.06723626])
 </pre></div>
 </div>
-<img alt="../_images/934188b011fca1e48300c3fa990cc64312f4af8d39fd2f9ebca8b6481e929fb4.png" src="../_images/934188b011fca1e48300c3fa990cc64312f4af8d39fd2f9ebca8b6481e929fb4.png" />
+<img alt="../_images/7e546cf16f7edeab68cf3cc19c549c67bac1e0994cc51f7bdc7350468d279a2e.png" src="../_images/7e546cf16f7edeab68cf3cc19c549c67bac1e0994cc51f7bdc7350468d279a2e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1032,10 +1018,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.        , 0.21274699, 0.19389722])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 1.        ,  0.19484689, -0.19603723])
 </pre></div>
 </div>
-<img alt="../_images/0834323fcc306acf503356cce5506dfab608b1a48bc34d12faba0b9d83e0d663.png" src="../_images/0834323fcc306acf503356cce5506dfab608b1a48bc34d12faba0b9d83e0d663.png" />
+<img alt="../_images/9da9142977beba66c786db7f2c96d113742dac0f127a00122717275cc77511af.png" src="../_images/9da9142977beba66c786db7f2c96d113742dac0f127a00122717275cc77511af.png" />
 </div>
 </div>
 <p>Note that we still see some wiggles in the fit, indicating some minor degree of overfitting with the optimal hyperparameters. That is happening because we fit to all the data, and do not use any to estimate how good our fits are. You can use train/test data splits for GPR for this purpose as well, but it is out of the scope of the lecture today.</p>
@@ -1070,7 +1056,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/912ab1d9e023756334ebbe031a885ae7579a68aac31384c40641799f322010d2.png" src="../_images/912ab1d9e023756334ebbe031a885ae7579a68aac31384c40641799f322010d2.png" />
+<img alt="../_images/3893814ad178960d91be47a239fe34bf2b2b1726fd632749f9d777a149fdbf88.png" src="../_images/3893814ad178960d91be47a239fe34bf2b2b1726fd632749f9d777a149fdbf88.png" />
 </div>
 </div>
 <p>As before, we setup a log likelihood function and maximize it to get estimates for the parameters.</p>
@@ -1093,15 +1079,15 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
   success: True
    status: 0
-      fun: 7.534088824309061
-        x: [ 1.808e-06  6.560e-01 -1.458e+00]
-      nit: 33
-      jac: [ 7.331e-06 -8.404e-06  4.768e-06]
- hess_inv: [[ 2.308e-02 -1.191e-02 -2.438e-02]
-            [-1.191e-02  7.108e-03  1.484e-02]
-            [-2.438e-02  1.484e-02  3.692e-02]]
-     nfev: 204
-     njev: 51
+      fun: 7.562220316245076
+        x: [-4.333e-06  6.376e-01 -1.503e+00]
+      nit: 29
+      jac: [-7.629e-06 -5.960e-06  2.325e-06]
+ hess_inv: [[ 2.687e+00  9.261e-03 -1.112e-01]
+            [ 9.261e-03  2.566e-02  9.893e-03]
+            [-1.112e-01  9.893e-03  5.567e-02]]
+     nfev: 156
+     njev: 39
 </pre></div>
 </div>
 </div>
@@ -1129,7 +1115,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e161f5154c402fe53437af99d40b903d7dd99f0d233243c023f4e3437260deb6.png" src="../_images/e161f5154c402fe53437af99d40b903d7dd99f0d233243c023f4e3437260deb6.png" />
+<img alt="../_images/790dbd8daf78ac175cc019a62fd963fa2db0f626873b2a1270d98d89802a7ed8.png" src="../_images/790dbd8daf78ac175cc019a62fd963fa2db0f626873b2a1270d98d89802a7ed8.png" />
 </div>
 </div>
 <p>Note that now, we get linear extrapolation, because we are using a linear kernel. Note also that the hyperparameters do not mean anything in particular to us. They do not include the slope or intercept. We can work those out pretty easily though. The intercept is just a prediction at <span class="math notranslate nohighlight">\(x=0\)</span>:</p>
@@ -1142,7 +1128,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.97712684])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.98066995])
 </pre></div>
 </div>
 </div>
@@ -1155,7 +1141,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(2.041377753684713)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(1.983584576028037)
 </pre></div>
 </div>
 </div>
@@ -1189,7 +1175,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c99db56e8ed2cf8d50924c4cf06c51471cadcd2ba7f3b233c7e8eb9591e1e054.png" src="../_images/c99db56e8ed2cf8d50924c4cf06c51471cadcd2ba7f3b233c7e8eb9591e1e054.png" />
+<img alt="../_images/f2ffc34c4fe4e5367978e357c3254689ca02939acbd9d112635a71a14d5a94bf.png" src="../_images/f2ffc34c4fe4e5367978e357c3254689ca02939acbd9d112635a71a14d5a94bf.png" />
 </div>
 </div>
 </section>
@@ -1207,7 +1193,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8c077d05dbcae92805c43dd9c4e4f21c2dcdef7b09e7ba34cb3f30d102e77750.png" src="../_images/8c077d05dbcae92805c43dd9c4e4f21c2dcdef7b09e7ba34cb3f30d102e77750.png" />
+<img alt="../_images/60b324d2c9ac68b8ab75d5817c835b33257bdccc2e3ec1e981170418bdbd12d1.png" src="../_images/60b324d2c9ac68b8ab75d5817c835b33257bdccc2e3ec1e981170418bdbd12d1.png" />
 </div>
 </div>
 <p>This looks like a sin wave superimposed on a line. A periodic kernel is defined as</p>
@@ -1229,22 +1215,22 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
-  success: True
-   status: 0
-      fun: 21.84763468634782
-        x: [ 3.746e-06  4.087e-01 -1.404e+00  6.566e-01  9.353e-01
-            -3.381e-01]
-      nit: 40
-      jac: [ 1.192e-06  7.868e-06  7.153e-06 -3.099e-06 -4.530e-06
-             2.146e-06]
- hess_inv: [[ 6.894e-01 -8.852e-03 ... -1.547e-03 -1.143e-03]
-            [-8.852e-03  1.091e-02 ...  1.719e-03 -1.811e-03]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Desired error not necessarily achieved due to precision loss.
+  success: False
+   status: 2
+      fun: 22.475473177680975
+        x: [-4.162e-05  4.179e-01 -1.418e+00  6.743e-01  2.443e+01
+             1.259e-02]
+      nit: 236
+      jac: [-2.885e-05 -8.368e-05  4.482e-05  3.099e-05 -9.537e-07
+             6.628e-04]
+ hess_inv: [[ 8.816e-01 -7.571e-03 ... -7.735e+00  3.855e-03]
+            [-7.571e-03  1.916e-02 ...  4.687e-01 -2.165e-04]
             ...
-            [-1.547e-03  1.719e-03 ...  4.721e-04 -3.451e-04]
-            [-1.143e-03 -1.811e-03 ... -3.451e-04  8.167e-03]]
-     nfev: 413
-     njev: 59
+            [-7.735e+00  4.687e-01 ...  1.652e+03 -8.496e-01]
+            [ 3.855e-03 -2.165e-04 ... -8.496e-01  4.489e-04]]
+     nfev: 2433
+     njev: 346
 </pre></div>
 </div>
 </div>
@@ -1271,7 +1257,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/058a0eaff70726646bd936dc8cb6dfe2271d262fe5be220b33fda867ed2e8af5.png" src="../_images/058a0eaff70726646bd936dc8cb6dfe2271d262fe5be220b33fda867ed2e8af5.png" />
+<img alt="../_images/37fef1c7b38ccdb1b165451342c985a56d42e0ffb517e059df18f257aa88eed8.png" src="../_images/37fef1c7b38ccdb1b165451342c985a56d42e0ffb517e059df18f257aa88eed8.png" />
 </div>
 </div>
 <p>Note that we get oscillatory + linear extrapolation behavior!</p>
@@ -1354,14 +1340,16 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regular-regression-models-with-parameters">Regular regression - models with parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning-regression-flexible-models-with-parameters">Machine learning regression - flexible models with parameters</a></li>
@@ -1901,8 +1889,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

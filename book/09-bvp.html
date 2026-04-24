@@ -16,41 +16,44 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -114,6 +117,7 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="prev" title="Polynomials in Python" href="08-nla-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -129,19 +133,8 @@ commentsRunWhenDOMLoaded(addUtterances);
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -149,7 +142,6 @@ commentsRunWhenDOMLoaded(addUtterances);
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search this book..."
          aria-label="Search this book..."
          autocomplete="off"
@@ -157,8 +149,8 @@ commentsRunWhenDOMLoaded(addUtterances);
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -174,7 +166,8 @@ commentsRunWhenDOMLoaded(addUtterances);
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -204,21 +197,17 @@ commentsRunWhenDOMLoaded(addUtterances);
     
     
     <img src="../_static/pycse.png" class="logo__image only-light" alt="pycse - Python Computations in Science and Engineering - Home"/>
-    <script>document.write(`<img src="../_static/pycse.png" class="logo__image only-dark" alt="pycse - Python Computations in Science and Engineering - Home"/>`);</script>
+    <img src="../_static/pycse.png" class="logo__image only-dark pst-js-only" alt="pycse - Python Computations in Science and Engineering - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
@@ -300,9 +289,14 @@ commentsRunWhenDOMLoaded(addUtterances);
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -498,7 +492,7 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -512,25 +506,17 @@ commentsRunWhenDOMLoaded(addUtterances);
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -709,7 +695,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f739d6d4df15cb1c7e8a4cf7d174fa9b2642fe7455c766736a3be9a8d778f8f8.png" src="../_images/f739d6d4df15cb1c7e8a4cf7d174fa9b2642fe7455c766736a3be9a8d778f8f8.png" />
+<img alt="../_images/60123e5fd9504e11a1a8b0d4a3619571c70d7b27714b625efbaede3487cd3500.png" src="../_images/60123e5fd9504e11a1a8b0d4a3619571c70d7b27714b625efbaede3487cd3500.png" />
 </div>
 </div>
 <p>We should check our residuals function. We mostly want to see that it runs, and produces the right shaped output.</p>
@@ -741,7 +727,7 @@ y_L - \beta &amp;=&amp;0
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The solution converged.
 </pre></div>
 </div>
-<img alt="../_images/ccd0be6962b500410d5678ff2e84f95f537d4e372a9e8f61b690f006a4d898cd.png" src="../_images/ccd0be6962b500410d5678ff2e84f95f537d4e372a9e8f61b690f006a4d898cd.png" />
+<img alt="../_images/a1f8d54b6885394e80ef115df8032a0db5bf88a62861274e1b1e0ef9e89864e8.png" src="../_images/a1f8d54b6885394e80ef115df8032a0db5bf88a62861274e1b1e0ef9e89864e8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -782,7 +768,7 @@ y_L - \beta &amp;=&amp;0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8409326e69f8b82ff861222f7c6f179b50ba5cce198e5a978958ea910d18e9af.png" src="../_images/8409326e69f8b82ff861222f7c6f179b50ba5cce198e5a978958ea910d18e9af.png" />
+<img alt="../_images/1f1cf7101fa423b8cafae680f2a043546a4e6b0f67dcdce337fe4c2ae5cff126.png" src="../_images/1f1cf7101fa423b8cafae680f2a043546a4e6b0f67dcdce337fe4c2ae5cff126.png" />
 </div>
 </div>
 <p>This result doesn’t look great at the origin, but remember:</p>
@@ -887,7 +873,7 @@ solve_bvp<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((50,), (50,))
 </pre></div>
 </div>
-<img alt="../_images/7698a098a1e1b573f5f0af514256b44e4fa121b099e4a980f06368eff44b107e.png" src="../_images/7698a098a1e1b573f5f0af514256b44e4fa121b099e4a980f06368eff44b107e.png" />
+<img alt="../_images/eb9c9fc2aba085a33f2d763e408ac2381ad4893f79770b562d17803ad4e3a9a7.png" src="../_images/eb9c9fc2aba085a33f2d763e408ac2381ad4893f79770b562d17803ad4e3a9a7.png" />
 </div>
 </div>
 <p>We also need a guess for U2, and in this case we know that <span class="math notranslate nohighlight">\(u2 = u1'\)</span>, so we just use that.</p>
@@ -908,7 +894,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2, 50)
 </pre></div>
 </div>
-<img alt="../_images/cd6b83f6a62737dda9ad5f90fd6dae3cf6172472f892217ba7df86efe6607cda.png" src="../_images/cd6b83f6a62737dda9ad5f90fd6dae3cf6172472f892217ba7df86efe6607cda.png" />
+<img alt="../_images/9f0aa97f74fac248684a8ce3f606e5e872fdb0d31083ef6db59f39b80543dd51.png" src="../_images/9f0aa97f74fac248684a8ce3f606e5e872fdb0d31083ef6db59f39b80543dd51.png" />
 </div>
 </div>
 <p>You should <em>always</em> visualize the guess to make sure it does what you want. It is <strong>hard</strong> to make these!</p>
@@ -928,7 +914,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2cfce8da87b39c682f8193184f6bf01d18565b803d7286b720cf5c95403823fe.png" src="../_images/2cfce8da87b39c682f8193184f6bf01d18565b803d7286b720cf5c95403823fe.png" />
+<img alt="../_images/a44bb911d12ff93dab23777447843f28d166fa0241d59123688491dd711fb7ef.png" src="../_images/a44bb911d12ff93dab23777447843f28d166fa0241d59123688491dd711fb7ef.png" />
 </div>
 </div>
 <p>Now, we are ready to solve the BVP.</p>
@@ -948,7 +934,7 @@ solve_bvp<span class="o">?</span>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The algorithm converged to the desired accuracy.
 </pre></div>
 </div>
-<img alt="../_images/7c32798c9ef8a40e3baf572d2c473f66a68eef6829f5ee5c41c862de84e04edb.png" src="../_images/7c32798c9ef8a40e3baf572d2c473f66a68eef6829f5ee5c41c862de84e04edb.png" />
+<img alt="../_images/0b760cce5a0be15e1e204c0fdcf48bd6ca9aadadd113907a18bec9aafc38c472.png" src="../_images/0b760cce5a0be15e1e204c0fdcf48bd6ca9aadadd113907a18bec9aafc38c472.png" />
 </div>
 </div>
 <p><strong>exercise</strong> Try using different guesses, e.g. lines, or triangle shapes, etc. What else looks like this shape? Half a cycle of a sin wave? A semi-circle?</p>
@@ -1005,7 +991,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8d44ccb0084cb084043d63dad627388be1cb1b9f692d9f1ca79c195f55184a99.png" src="../_images/8d44ccb0084cb084043d63dad627388be1cb1b9f692d9f1ca79c195f55184a99.png" />
+<img alt="../_images/f25f4d07d4abf94708a57d3982e2ac8439127b63109c1c352613c36a3888b1e0.png" src="../_images/f25f4d07d4abf94708a57d3982e2ac8439127b63109c1c352613c36a3888b1e0.png" />
 </div>
 </div>
 <p>Now we solve the system.</p>
@@ -1038,7 +1024,7 @@ solve_bvp<span class="o">?</span>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/34f2fe1e7429417c4d8281e83eb86eb026f0c2561bd990215dd77bd4d26b0a15.png" src="../_images/34f2fe1e7429417c4d8281e83eb86eb026f0c2561bd990215dd77bd4d26b0a15.png" />
+<img alt="../_images/eb1278a4e43d63faf2ef3845296a2c2e3c52421f6cf774316c6c5d0638fe7dba.png" src="../_images/eb1278a4e43d63faf2ef3845296a2c2e3c52421f6cf774316c6c5d0638fe7dba.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1052,7 +1038,7 @@ solve_bvp<span class="o">?</span>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>50
 </pre></div>
 </div>
-<img alt="../_images/d2c426e3aecb5773be6045ecf5cb380e5d7740532842d99079b3aa46524c240b.png" src="../_images/d2c426e3aecb5773be6045ecf5cb380e5d7740532842d99079b3aa46524c240b.png" />
+<img alt="../_images/4a8d284182650d611033eb831fcfb02ee503badea158d67034c7564798d6209d.png" src="../_images/4a8d284182650d611033eb831fcfb02ee503badea158d67034c7564798d6209d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1089,10 +1075,11 @@ solve_bvp<span class="o">?</span>
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">26</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 <span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simps</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="n">simps</span><span class="p">(</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/numpy/__init__.py:792,</span> in <span class="ni">__getattr__</span><span class="nt">(attr)</span>
 <span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.char</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">char</span>
 <span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="k">return</span> <span class="n">char</span><span class="o">.</span><span class="n">chararray</span>
 <span class="ne">--&gt; </span><span class="mi">792</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1191,14 +1178,16 @@ solve_bvp<span class="o">?</span>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-nonlinear-bvps-by-finite-differences">Solving nonlinear BVPs by finite differences</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-solve-bvp">Introduction to solve_bvp</a><ul class="nav section-nav flex-column">
@@ -1724,8 +1713,8 @@ By John Kitchin
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
