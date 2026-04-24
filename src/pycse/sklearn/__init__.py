@@ -18,6 +18,9 @@ Available estimators:
 - SISSO: Sure Independence Screening and Sparsifying Operator (TorchSISSO)
 - SISSOEnsemble: Shallow ensemble of SISSO equations with calibrated UQ
 - ActiveLearner: Model-agnostic active learning for iterative experiment selection
+- ZENNClassifier: Zentropy-Enhanced Neural Network classifier (JAX/Flax)
+- ZENNRegressor: Zentropy-Enhanced Neural Network regressor (JAX/Flax)
+- ZENNRegressorNLL: ZENN regressor with negative-log-likelihood head (JAX/Flax)
 """
 
 # Lazy imports to avoid loading all backends
@@ -36,6 +39,9 @@ __all__ = [
     "LeafModelRegressor",
     "SISSO",
     "SISSOEnsemble",
+    "ZENNClassifier",
+    "ZENNRegressor",
+    "ZENNRegressorNLL",
 ]
 
 
@@ -97,4 +103,16 @@ def __getattr__(name):
         from pycse.sklearn.sisso import SISSOEnsemble
 
         return SISSOEnsemble
+    elif name == "ZENNClassifier":
+        from pycse.sklearn.zenn import ZENNClassifier
+
+        return ZENNClassifier
+    elif name == "ZENNRegressor":
+        from pycse.sklearn.zenn import ZENNRegressor
+
+        return ZENNRegressor
+    elif name == "ZENNRegressorNLL":
+        from pycse.sklearn.zenn.estimators.regressor_nll import ZENNRegressorNLL
+
+        return ZENNRegressorNLL
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
