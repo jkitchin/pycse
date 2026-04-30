@@ -47,7 +47,7 @@ def fle(x, y, epsilon=np.spacing(1)):
 
 
 def fge(x, y, epsilon=np.spacing(1)):
-    """Fuzzy greater than or equal to .
+    """Fuzzy greater than or equal to.
 
     x >= y with tolerance
     """
