@@ -9,6 +9,8 @@ Machine Learning: Science and Technology, 5, 045018.
 This module provides an sklearn-compatible implementation using Flax/JAX.
 """
 
+import warnings
+
 import jax
 import jax.numpy as jnp
 from jax import random, jit, vmap
@@ -181,9 +183,21 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         self : object
             Fitted estimator
         """
-        # Convert to JAX arrays
-        X = jnp.array(X, dtype=jnp.float32)
-        y = jnp.array(y, dtype=jnp.float32)
+        if not jax.config.read("jax_enable_x64"):
+            warnings.warn(
+                "JAX x64 mode is not enabled; LLPR will run in float32. "
+                "The covariance inversion in LLPR is sensitive to ill-conditioning "
+                "and benefits from float64. To enable, add this BEFORE importing "
+                "pycse.sklearn.llpr_regressor (or any jax module):\n"
+                "    import jax\n"
+                "    jax.config.update('jax_enable_x64', True)",
+                stacklevel=2,
+            )
+
+        # Convert to JAX arrays (dtype inherits from JAX env: float32 by default,
+        # float64 if jax_enable_x64 is set)
+        X = jnp.array(X)
+        y = jnp.array(y)
 
         # Ensure y is 2D: (n_samples, n_outputs)
         if y.ndim == 1:
@@ -417,7 +431,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         if return_std:
             return self.predict_with_uncertainty(X, return_std=True)
 
-        X = jnp.array(X, dtype=jnp.float32)
+        X = jnp.array(X)
         predictions = self.model_.apply(self.params_, X)
 
         # Squeeze single-output to 1D for backward compatibility
@@ -444,7 +458,7 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         uncertainty : array of shape (n_samples,) or (n_samples, n_outputs)
             Predicted uncertainties (std or variance)
         """
-        X = jnp.array(X, dtype=jnp.float32)
+        X = jnp.array(X)
 
         # Get predictions and last-layer features
         predictions, features = self.model_.apply(self.params_, X, return_features=True)
