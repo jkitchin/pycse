@@ -28,7 +28,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache pytest-testmon data
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .testmondata
           key: testmon-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.run_id }}
@@ -73,7 +73,7 @@ jobs:
           pytest src/pycse/tests -v -m "not slow" --cov=src/pycse --cov-report=term-missing --cov-report=xml -n auto --durations=20
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         if: github.event_name == 'push' && matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         with:
           files: ./coverage.xml
