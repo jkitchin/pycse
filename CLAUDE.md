@@ -84,7 +84,7 @@ pytest src/pycse/tests/test_pycse.py -v
 ### CI Workflows
 
 - **pycse-tests.yaml** - Fast tests on every push/PR (~2 min)
-- **pycse-tests-slow.yaml** - Slow tests on master/nightly (~40 min)
+- **pycse-tests-slow.yaml** - Slow tests on release tags (`v*`) or manual dispatch (~40 min)
 
 ## Code Style
 

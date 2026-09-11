@@ -49,7 +49,7 @@ Tests run automatically on every push and pull request via GitHub Actions. The t
 
 #### Slow Tests (ML/Training)
 - **What**: 324 tests (40% of suite) - ML model training and neural network tests
-- **When**: Master branch pushes, nightly at 2 AM UTC, manual dispatch
+- **When**: Release tags (`v*`) and manual dispatch only
 - **Duration**: ~40 minutes
 - **Python versions**: 3.12 and 3.13
 
@@ -334,9 +334,11 @@ The test suite is split into two workflows for optimal performance:
 #### 2. Slow Tests (`.github/workflows/pycse-tests-slow.yaml`)
 
 **Triggers**:
-- Push to master branch
-- Nightly schedule (2 AM UTC)
+- Push of a release tag matching `v*` (e.g. `v2.12.0`)
 - Manual dispatch (workflow_dispatch)
+
+These do *not* run on ordinary master pushes or on PRs: at ~40-60 minutes they
+are too expensive for per-commit feedback, and they gate releases instead.
 
 **Configuration**:
 - **Tests**: Slow tests only (`-m "slow"`) - 324 tests
@@ -346,7 +348,7 @@ The test suite is split into two workflows for optimal performance:
 - **Parallelization**: Enabled (`-n auto`)
 - **Coverage**: Separate coverage report with `slow-tests` flag
 
-**Purpose**: Ensure ML/training tests remain healthy without blocking PRs.
+**Purpose**: Verify ML/training tests are healthy before a release ships.
 
 ### Pre-commit Hook
 
