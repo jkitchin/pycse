@@ -163,8 +163,8 @@ from pycse.sklearn.dpose import DPOSE
 # CRPS loss (recommended)
 dpose = DPOSE(
     layers=(n_features, 50, 32),  # (input, hidden, ensemble_size)
-    loss_type='crps',
-    optimizer='bfgs'
+    loss_type="crps",
+    optimizer="bfgs",
 )
 dpose.fit(X_train, y_train, val_X=X_cal, val_y=y_cal)
 

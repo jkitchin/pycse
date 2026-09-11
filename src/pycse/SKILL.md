@@ -58,7 +58,7 @@ pars, pint, se = nlinfit(model_func, x0, x, y)
 from pycse.sklearn.lhc import LatinSquare
 
 # Create a Latin hypercube design
-factors = {'Temperature': [20, 40, 60], 'Pressure': [1, 2, 3]}
+factors = {"Temperature": [20, 40, 60], "Pressure": [1, 2, 3]}
 ls = LatinSquare(factors)
 design = ls.design()
 ```
@@ -69,9 +69,7 @@ from pycse.sklearn.surface_response import SurfaceResponse
 
 # Design and fit a surface response model
 sr = SurfaceResponse(
-    inputs=['red', 'green', 'blue'],
-    outputs=['intensity'],
-    bounds=[[0, 1], [0, 1], [0, 1]]
+    inputs=["red", "green", "blue"], outputs=["intensity"], bounds=[[0, 1], [0, 1], [0, 1]]
 )
 design = sr.design()
 # ... run experiments ...
@@ -86,23 +84,25 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 # Create DPOSE model with uncertainty estimates
-model = Pipeline([
-    ('scaler', StandardScaler()),
-    ('dpose', DPOSE(
-        layers=(n_features, 50, 32),  # (input, hidden, ensemble)
-        loss_type='crps',              # CRPS loss (recommended)
-        activation='tanh',             # Smooth activation
-        maxiter=500
-    ))
-])
+model = Pipeline(
+    [
+        ("scaler", StandardScaler()),
+        (
+            "dpose",
+            DPOSE(
+                layers=(n_features, 50, 32),  # (input, hidden, ensemble)
+                loss_type="crps",  # CRPS loss (recommended)
+                activation="tanh",  # Smooth activation
+                maxiter=500,
+            ),
+        ),
+    ]
+)
 
 model.fit(X_train, y_train)
 
 # Get predictions with uncertainty
-y_pred, y_std = model.named_steps['dpose'].predict(
-    X_test_scaled,
-    return_std=True
-)
+y_pred, y_std = model.named_steps["dpose"].predict(X_test_scaled, return_std=True)
 ```
 
 ## MCP Server
