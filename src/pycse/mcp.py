@@ -14,9 +14,10 @@ import json
 import logging
 import re
 import pydoc
+import contextlib
 from io import StringIO
-from mcp.server.fastmcp import FastMCP, Image
 from typing import Tuple, List, Union, Dict, Any, Optional, Pattern
+
 from pydantic import BaseModel, Field
 import pandas as pd
 import pycse
@@ -33,6 +34,36 @@ import matplotlib
 
 matplotlib.use("Agg")
 
+MCP_MISSING_MESSAGE = (
+    "The pycse MCP server requires the optional 'mcp' dependency.\n"
+    'Install it with:  pip install "pycse[mcp]"'
+)
+
+try:
+    from mcp.server.fastmcp import FastMCP, Image
+
+    _MCP_IMPORT_ERROR = None
+except ImportError as _e:  # the [mcp] extra is not installed
+    _MCP_IMPORT_ERROR = _e
+    Image = None
+
+    class FastMCP:
+        """Stand-in used when the mcp package is missing.
+
+        It keeps this module importable (the tool functions remain plain
+        callables); main() reports the missing dependency.
+        """
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def tool(self, *args, **kwargs):
+            return lambda func: func
+
+        def run(self, *args, **kwargs):
+            raise ImportError(MCP_MISSING_MESSAGE) from _MCP_IMPORT_ERROR
+
+
 # Initialize FastMCP server
 mcp = FastMCP("pycse")
 
@@ -41,7 +72,10 @@ class Factor(BaseModel):
     """Represents a single experimental factor with its levels."""
 
     name: str = Field(..., description="Name of the factor (e.g., 'Red', 'Temperature')")
-    levels: List[Union[int, float]] = Field(..., description="List of factor levels")
+    levels: List[Union[int, float, str]] = Field(
+        ...,
+        description="List of factor levels; numeric or categorical (e.g., 'A', 'B', 'C')",
+    )
 
 
 class LatinSquareSpec(BaseModel):
@@ -61,8 +95,8 @@ STATE = {}
 
 
 @mcp.tool()
-def design_lhc(inputs: LatinSquareSpec) -> List[Dict[str, Any]]:
-    """Design a LatinSquare design from the inputs.
+def design_latin_square(inputs: LatinSquareSpec) -> List[Dict[str, Any]]:
+    """Design a Latin square experiment from the inputs.
 
     inputs is a list of tuples of the form: (varname, levels).
 
@@ -88,6 +122,16 @@ def design_lhc(inputs: LatinSquareSpec) -> List[Dict[str, Any]]:
     return design.to_dict(orient="records")
 
 
+@mcp.tool()
+def design_lhc(inputs: LatinSquareSpec) -> List[Dict[str, Any]]:
+    """Design a Latin square experiment (Latin square; deprecated alias).
+
+    This is NOT a Latin hypercube. Use design_latin_square instead; this name
+    is kept for backwards compatibility.
+    """
+    return design_latin_square(inputs)
+
+
 class LatinSquareResult(BaseModel):
     """Specification for a result.
 
@@ -111,8 +155,8 @@ class LatinSquareResults(BaseModel):
 
 
 @mcp.tool()
-def analyze_lhc(lsr: LatinSquareResults) -> List[Dict[str, Any]]:
-    """Analyze the LatinSquare results.
+def analyze_latin_square(lsr: LatinSquareResults) -> List[Dict[str, Any]]:
+    """Analyze the Latin square results from design_latin_square.
 
     The results have to be provided in a way that looks like a list of
     (experiment #, result) can be parsed by the LLM.
@@ -134,7 +178,19 @@ def analyze_lhc(lsr: LatinSquareResults) -> List[Dict[str, Any]]:
     y = merged["Result"]
 
     ls.fit(X, y)
-    return ls.anova().to_dict(orient="records")
+    # NaN (residual-row F/p-value) is not valid JSON
+    table = ls.anova().astype(object)
+    return table.where(table.notna(), None).to_dict(orient="records")
+
+
+@mcp.tool()
+def analyze_lhc(lsr: LatinSquareResults) -> List[Dict[str, Any]]:
+    """Analyze Latin square results (Latin square; deprecated alias).
+
+    This is NOT a Latin hypercube. Use analyze_latin_square instead; this name
+    is kept for backwards compatibility.
+    """
+    return analyze_latin_square(lsr)
 
 
 # * Surface Response tools
@@ -181,10 +237,12 @@ def design_sr(
     """
 
     b = [list(b.minmax) for b in bounds.bounds]
-    sr = SurfaceResponse(inputs=inputs.inputs, outputs=outputs.outputs, bounds=b)
+    # Box-Behnken needs >= 3 factors; use a face-centered CCD for fewer.
+    design = "bbdesign" if len(inputs.inputs) >= 3 else "ccdesign"
+    sr = SurfaceResponse(inputs=inputs.inputs, outputs=outputs.outputs, bounds=b, design=design)
 
     STATE["sr"] = sr
-    STATE["sr_design"] = sr.design(shuffle=False)
+    STATE["sr_design"] = sr.generate_design(shuffle=False)
     return STATE["sr_design"].to_dict(orient="records")
 
 
@@ -220,7 +278,7 @@ def analyze_sr(data: SurfaceResponseResults) -> str:
     """
     results = [[d.result] for d in data.results]
 
-    STATE["sr"].set_output(results)
+    STATE["sr"].set_results(results)
     STATE["sr"].fit()
     return STATE["sr"].summary()
 
@@ -259,31 +317,38 @@ def random_image(n: int = 10) -> Image:
 def pycse_help() -> str:
     """Get help about pycse functions.
 
-    This returns a dictionary of function names and docstrings.
+    This returns a string listing function names and docstrings.
     """
     func_dict = {}
-    for finder, modname, ispkg in pkgutil.walk_packages(
-        pycse.__path__, prefix=pycse.__name__ + "."
-    ):
-        # This module seems to hang the function
-        if "sandbox" in modname:
-            continue
-        try:
-            print(finder, modname)
-            module = importlib.import_module(modname)
-        except Exception:
-            # skip modules that error on import
-            continue
+    # Never write to stdout here: on the stdio transport stdout is the JSON-RPC
+    # stream. Anything printed while importing modules is sent to stderr.
+    with contextlib.redirect_stdout(sys.stderr):
+        for finder, modname, ispkg in pkgutil.walk_packages(
+            pycse.__path__, prefix=pycse.__name__ + "."
+        ):
+            # This module seems to hang the function
+            if "sandbox" in modname:
+                continue
+            try:
+                module = importlib.import_module(modname)
+            except Exception:
+                # skip modules that error on import
+                continue
 
-        for name, obj in inspect.getmembers(module, inspect.isfunction):
-            # only include functions actually defined in pycse
-            print(name)
-            if obj.__module__.startswith("pycse"):
-                qualname = f"{obj.__module__}.{obj.__name__}"
-                func_dict[qualname] = inspect.getdoc(obj) or ""
+            try:
+                members = inspect.getmembers(module, inspect.isfunction)
+            except Exception:
+                # e.g. lazy attributes whose optional dependency is missing
+                continue
+
+            for name, obj in members:
+                # only include functions actually defined in pycse
+                if obj.__module__.startswith("pycse"):
+                    qualname = f"{obj.__module__}.{obj.__name__}"
+                    func_dict[qualname] = inspect.getdoc(obj) or ""
 
     s = """The following list of functions are available. They are formatted
-    as function : docstring"""
+    as function : docstring\n\n"""
     for fq, doc in func_dict.items():
         s += f"{fq} : {doc if doc else '<no doc>'}\n\n"
 
@@ -741,22 +806,56 @@ z_std = z_ensemble.std(axis=1)
 # * Run / install / uninstall the server
 
 
-def main():
-    """Install, uninstall, or run the server.
+def claude_desktop_config_path():
+    """Return the Claude Desktop config file path, or None if unsupported.
 
-    This is the cli. If you call it with install or uninstall as an argument, it
-    will do that in the Claude Desktop. With no arguments it just runs the
-    server.
+    Claude Desktop (and hence install/uninstall) only exists on macOS and
+    Windows. Running the server itself works on any platform.
     """
     if platform.system() == "Darwin":
         cfgfile = "~/Library/Application Support/Claude/claude_desktop_config.json"
     elif platform.system() == "Windows":
         cfgfile = r"%APPDATA%\Claude\claude_desktop_config.json"
     else:
-        raise Exception("Only Mac and Windows are supported for the pycse mcp server")
+        return None
 
     cfgfile = os.path.expandvars(cfgfile)
-    cfgfile = os.path.expanduser(cfgfile)
+    return os.path.expanduser(cfgfile)
+
+
+def main():
+    """Install, uninstall, or run the server.
+
+    This is the cli. If you call it with install or uninstall as an argument, it
+    will do that in the Claude Desktop. With no arguments it just runs the
+    server (on any platform).
+    """
+    if _MCP_IMPORT_ERROR is not None:
+        print(MCP_MISSING_MESSAGE, file=sys.stderr)
+        sys.exit(1)
+
+    # Called with no arguments just run the server. Nothing may be written to
+    # stdout on this path: it is the JSON-RPC stream.
+    if len(sys.argv) == 1:
+        mcp.run(transport="stdio")
+        return
+
+    if sys.argv[1] not in ("install", "uninstall"):
+        print(
+            "I am not sure what you are trying to do. Please use install or uninstall.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    cfgfile = claude_desktop_config_path()
+    if cfgfile is None:
+        print(
+            "Error: install/uninstall configure Claude Desktop, which is only available on "
+            "macOS and Windows. On other platforms, register the `pycse_mcp` command with "
+            "your MCP client directly.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     if os.path.exists(cfgfile):
         with open(cfgfile, "r") as f:
@@ -764,26 +863,24 @@ def main():
     else:
         cfg = {}
 
-    # Called with no arguments just run the server
-    if len(sys.argv) == 1:
-        mcp.run(transport="stdio")
-
-    elif sys.argv[1] == "install":
+    if sys.argv[1] == "install":
         setup = {"command": shutil.which("pycse_mcp")}
 
         if "mcpServers" not in cfg:
             cfg["mcpServers"] = {}
 
         cfg["mcpServers"]["pycse"] = setup
+        os.makedirs(os.path.dirname(cfgfile), exist_ok=True)
         with open(cfgfile, "w") as f:
             f.write(json.dumps(cfg, indent=4))
 
         print(
-            f"\n\nInstalled litdb. Here is your current {cfgfile}. Please restart Claude Desktop."
+            "\n\nInstalled the pycse MCP server. "
+            f"Here is your current {cfgfile}. Please restart Claude Desktop."
         )
         print(json.dumps(cfg, indent=4))
 
-    elif sys.argv[1] == "uninstall":
+    else:  # uninstall
         if "mcpServers" not in cfg:
             cfg["mcpServers"] = {}
 
@@ -792,8 +889,5 @@ def main():
             with open(cfgfile, "w") as f:
                 f.write(json.dumps(cfg, indent=4))
 
-        print(f"Uninstalled litdb. Here is your current {cfgfile}.")
+        print(f"Uninstalled the pycse MCP server. Here is your current {cfgfile}.")
         print(json.dumps(cfg, indent=4))
-
-    else:
-        print("I am not sure what you are trying to do. Please use install or uninstall.")

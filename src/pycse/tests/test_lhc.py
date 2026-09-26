@@ -1,7 +1,7 @@
 """Comprehensive tests for LatinSquare class.
 
-This module tests the LatinSquare class for Latin Hypercube (Latin Square)
-design of experiments with ANOVA analysis.
+This module tests the LatinSquare class for Latin Square design of
+experiments with ANOVA analysis.
 """
 
 import numpy as np
@@ -121,12 +121,8 @@ class TestLatinSquareDesign:
         vars_dict = {"A": [1, 2, 3], "B": [10, 20, 30], "C": ["X", "Y", "Z"]}
         ls = LatinSquare(vars=vars_dict)
 
-        # Reset seed for reproducibility
-        np.random.seed(42)
+        # Successive shuffles draw from the instance's private generator
         design1 = ls.design(shuffle=True)
-
-        # Different seed
-        np.random.seed(99)
         design2 = ls.design(shuffle=True)
 
         # Should have different order
@@ -514,7 +510,6 @@ class TestLatinSquareIntegration:
         ls = LatinSquare(vars=vars_dict)
 
         # Shuffled design
-        np.random.seed(42)
         design = ls.design(shuffle=True)
 
         y = pd.Series([45, 52, 58, 50, 55, 60, 53, 58, 62], name="Response")
@@ -586,3 +581,82 @@ class TestLatinSquareEdgeCases:
         assert ls.effects["A"].abs().max() < 1e-10
         assert ls.effects["B"].abs().max() < 1e-10
         assert ls.effects["C"].abs().max() < 1e-10
+
+
+class TestLatinSquareRegressions:
+    """Regression tests for RNG handling and the ANOVA table."""
+
+    VARS = {"A": [1, 2, 3, 4], "B": [10, 20, 30, 40], "C": ["W", "X", "Y", "Z"]}
+
+    def _data(self):
+        ls = LatinSquare(vars=self.VARS)
+        design = ls.design()
+        rng = np.random.default_rng(1)
+        y = pd.Series(rng.normal(size=16) + np.repeat([0.0, 1.0, 2.0, 3.0], 4), name="Response")
+        ls.fit(design, y)
+        return ls, design, y
+
+    def test_init_does_not_touch_global_rng(self):
+        """__init__ used to call np.random.seed(42)."""
+        np.random.seed(0)
+        expected = np.random.rand(3)
+        np.random.seed(0)
+        ls = LatinSquare(vars=self.VARS)
+        ls.design(shuffle=True)
+        np.testing.assert_array_equal(np.random.rand(3), expected)
+
+    def test_shuffle_reproducible(self):
+        """Same random_state gives the same shuffled design; default is reproducible."""
+        d1 = LatinSquare(vars=self.VARS).design(shuffle=True)
+        d2 = LatinSquare(vars=self.VARS).design(shuffle=True)
+        pd.testing.assert_frame_equal(d1, d2)
+        d3 = LatinSquare(vars=self.VARS, random_state=7).design(shuffle=True)
+        d4 = LatinSquare(vars=self.VARS, random_state=7).design(shuffle=True)
+        pd.testing.assert_frame_equal(d3, d4)
+
+    def test_shuffled_design_is_latin_square(self):
+        """Shuffling keeps the Latin square property (also for ndarray levels)."""
+        vars_dict = {k: np.array(v) for k, v in self.VARS.items()}
+        design = LatinSquare(vars=vars_dict, random_state=3).design(shuffle=True)
+        assert (design.groupby("A")["C"].nunique() == 4).all()
+        assert (design.groupby("B")["C"].nunique() == 4).all()
+
+    def test_anova_numeric_dtypes_and_pvalues(self):
+        """anova() used to return an object-dtype table without p-values."""
+        ls, _, _ = self._data()
+        table = ls.anova()
+        assert "p-value" in table.columns
+        for col in ["df", "sum_sq", "mean_sq", "p-value"]:
+            assert pd.api.types.is_numeric_dtype(table[col])
+        fcol = next(c for c in table.columns if c.startswith("F-score"))
+        assert pd.api.types.is_float_dtype(table[fcol])
+        assert table["Significant"].dtype == bool
+        assert list(table["df"]) == [3, 3, 3, 6]
+        assert np.isnan(table[fcol].iloc[-1])
+
+    def test_anova_matches_regression_f_test(self):
+        """F and p agree with an extra-sum-of-squares test on a dummy-coded OLS fit."""
+        from scipy import stats
+
+        ls, design, y = self._data()
+        table = ls.anova()
+        fcol = next(c for c in table.columns if c.startswith("F-score"))
+
+        X = pd.get_dummies(design.astype(str), drop_first=True).astype(float)
+        X.insert(0, "const", 1.0)
+
+        def rss(M):
+            beta = np.linalg.lstsq(M, y.values, rcond=None)[0]
+            r = y.values - M @ beta
+            return r @ r
+
+        rss_full = rss(X.values)
+        df_resid = len(y) - X.shape[1]
+        assert df_resid == 6
+        for i, factor in enumerate("ABC"):
+            reduced = X[[c for c in X.columns if not c.startswith(f"{factor}_")]].values
+            F = ((rss(reduced) - rss_full) / 3) / (rss_full / df_resid)
+            assert table[fcol].iloc[i] == pytest.approx(F)
+            assert table["p-value"].iloc[i] == pytest.approx(stats.f.sf(F, 3, df_resid))
+        assert table["sum_sq"].iloc[-1] == pytest.approx(rss_full)
+        assert list(table["Significant"]) == [True, False, False, False]

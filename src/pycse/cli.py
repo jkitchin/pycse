@@ -47,7 +47,7 @@ def version_cmd():
     help="Working directory to mount (defaults to current directory)",
 )
 def launch(working_dir):
-    """Launch Jupyter Lab in a Docker container (default command)."""
+    """Launch Jupyter Lab in a Docker container."""
     if shutil.which("docker") is None:
         click.secho(
             "Error: docker was not found. Please install it from https://www.docker.com/",
@@ -175,7 +175,10 @@ def rm(force):
 
 @pycse.group()
 def mcp():
-    """Manage pycse MCP server for Claude Desktop."""
+    """Manage pycse MCP server for Claude Desktop.
+
+    Use `pycse mcp install` / `pycse mcp uninstall`.
+    """
     pass
 
 
@@ -198,7 +201,7 @@ def get_mcp_config_path():
     return cfgfile
 
 
-@mcp.command()
+@mcp.command(name="install")
 def install_mcp():
     """Install pycse MCP server in Claude Desktop."""
     cfgfile = get_mcp_config_path()
@@ -231,7 +234,7 @@ def install_mcp():
     click.echo("\n" + click.style("Please restart Claude Desktop.", fg="yellow", bold=True))
 
 
-@mcp.command()
+@mcp.command(name="uninstall")
 def uninstall_mcp():
     """Uninstall pycse MCP server from Claude Desktop."""
     cfgfile = get_mcp_config_path()
@@ -259,11 +262,14 @@ def uninstall_mcp():
 
 @pycse.group()
 def skill():
-    """Manage pycse skill for Claude Code."""
+    """Manage pycse skill for Claude Code.
+
+    Use `pycse skill install` / `pycse skill uninstall`.
+    """
     pass
 
 
-@skill.command()
+@skill.command(name="install")
 def install_skill():
     """Install pycse skill in Claude Code (~/.claude/skills/pycse/)."""
     # Get the path to the SKILL.md file in the package
@@ -296,7 +302,7 @@ def install_skill():
     click.echo("\n" + click.style("Restart Claude Code to use the skill.", fg="yellow", bold=True))
 
 
-@skill.command()
+@skill.command(name="uninstall")
 def uninstall_skill():
     """Uninstall pycse skill from Claude Code."""
     import pathlib
@@ -313,6 +319,26 @@ def uninstall_skill():
 
     shutil.rmtree(skills_dir)
     click.secho("\nSuccessfully uninstalled pycse skill!", fg="green")
+
+
+def _add_hidden_alias(group, command, alias):
+    """Register `command` under the old name `alias`, hidden from --help."""
+    group.add_command(
+        click.Command(
+            alias,
+            callback=command.callback,
+            params=command.params,
+            help=f"Deprecated alias for '{command.name}'.",
+            hidden=True,
+        )
+    )
+
+
+# Backwards-compatible names from before the commands were renamed.
+_add_hidden_alias(mcp, install_mcp, "install-mcp")
+_add_hidden_alias(mcp, uninstall_mcp, "uninstall-mcp")
+_add_hidden_alias(skill, install_skill, "install-skill")
+_add_hidden_alias(skill, uninstall_skill, "uninstall-skill")
 
 
 if __name__ == "__main__":

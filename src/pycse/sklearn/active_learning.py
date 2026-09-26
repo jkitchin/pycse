@@ -12,20 +12,31 @@ Example
 >>> from pycse.sklearn import DPOSE
 >>> from pycse.sklearn.active_learning import ActiveLearner, ExpectedImprovement
 >>>
->>> model = DPOSE()
->>> model.fit(X_init, y_init)
->>>
 >>> learner = ActiveLearner(
-...     model=model,
+...     model=DPOSE(),
 ...     bounds=[(0, 1), (0, 1)],
 ...     acquisition=ExpectedImprovement(minimize=True),
+...     X_init=X_init,
+...     y_init=y_init,  # model is fitted on these if it is not fitted yet
 ... )
 >>> result = learner.suggest(n_points=5)
 >>> # Run experiments at result.points, get y_new
->>> learner.update(result.points, y_new)
+>>> learner.update(result.points, y_new)  # refits on X_init + all new data
+
+Optimization direction
+----------------------
+The default convention in this module is **minimization**: ``ExpectedImprovement``,
+``ProbabilityOfImprovement`` and ``ThompsonSampling`` default to ``minimize=True``
+and ``ActiveLearner.best_y`` is the smallest observed value. Pass ``minimize=False``
+to those acquisitions (and/or to ``ActiveLearner``) to maximize. The incumbent used
+by EI/PI follows each acquisition's own ``minimize`` flag.
+
+Note that :class:`pycse.pyroxy.ActiveSurrogate` uses the opposite convention: its
+``ei``/``pi`` acquisitions *maximize* (they improve on ``y_train.max()``).
 """
 
 import abc
+import warnings
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -136,7 +147,10 @@ class Composite(AcquisitionFunction):
     def score(self, X_candidates, model):
         total = np.zeros(len(X_candidates))
         for w, func in zip(self.weights, self.functions):
-            func._y_best = self._y_best
+            # Components whose incumbent was set by ActiveLearner (according to
+            # their own direction) keep it; otherwise inherit the composite's.
+            if func._y_best is None:
+                func._y_best = self._y_best
             raw = func.score(X_candidates, model)
             # Min-max normalize
             rmin, rmax = raw.min(), raw.max()
@@ -242,7 +256,8 @@ class ExpectedImprovement(AcquisitionFunction):
         If True, seek improvements below y_best. If False, above.
     y_best : float or None, default=None
         Override the best observed value. If None, ActiveLearner sets
-        it from training data.
+        it from training data: ``min(y_train)`` if ``minimize`` else
+        ``max(y_train)``.
     """
 
     def __init__(self, xi=0.01, minimize=True, y_best=None):
@@ -278,9 +293,11 @@ class ProbabilityOfImprovement(AcquisitionFunction):
     xi : float, default=0.01
         Jitter for exploration.
     minimize : bool, default=True
-        If True, seek improvements below y_best.
+        If True, seek improvements below y_best. If False, above.
     y_best : float or None, default=None
-        Override the best observed value.
+        Override the best observed value. If None, ActiveLearner sets
+        it from training data: ``min(y_train)`` if ``minimize`` else
+        ``max(y_train)``.
     """
 
     def __init__(self, xi=0.01, minimize=True, y_best=None):
@@ -357,8 +374,9 @@ class ThompsonSampling(AcquisitionFunction):
     ----------
     minimize : bool, default=True
         If True, lower sampled values get higher scores.
-    random_state : int or np.random.RandomState or None, default=None
-        Random state for reproducibility.
+    random_state : int, np.random.Generator, np.random.RandomState or None
+        Seed for reproducibility. With an int, every call to ``score`` uses the
+        same seed (so identical inputs give identical scores).
     """
 
     def __init__(self, minimize=True, random_state=None):
@@ -366,7 +384,7 @@ class ThompsonSampling(AcquisitionFunction):
         self.random_state = random_state
 
     def score(self, X_candidates, model):
-        rng = np.random.RandomState(self.random_state)
+        rng = _check_rng(self.random_state)
         mu, std = model.predict(X_candidates, return_std=True)
         samples = rng.normal(mu, np.maximum(std, 1e-10))
         if self.minimize:
@@ -377,6 +395,45 @@ class ThompsonSampling(AcquisitionFunction):
 # ---------------------------------------------------------------------------
 # ActiveLearner
 # ---------------------------------------------------------------------------
+
+
+def _check_rng(random_state):
+    """Return a ``np.random.Generator`` from a seed, Generator or RandomState."""
+    if isinstance(random_state, np.random.Generator):
+        return random_state
+    if isinstance(random_state, np.random.RandomState):
+        # Legacy RandomState: derive a Generator seed from it (reproducible)
+        return np.random.default_rng(random_state.randint(0, 2**31 - 1))
+    return np.random.default_rng(random_state)
+
+
+def _acquisition_direction(acquisition):
+    """Return the optimization direction declared by an acquisition function.
+
+    Returns True (minimize), False (maximize) or None if the acquisition does
+    not declare a direction (e.g. PredictionVariance, UCB) or its components
+    disagree.
+    """
+    if isinstance(acquisition, Composite):
+        dirs = {_acquisition_direction(f) for f in acquisition.functions} - {None}
+        return dirs.pop() if len(dirs) == 1 else None
+    minimize = getattr(acquisition, "minimize", None)
+    return None if minimize is None else bool(minimize)
+
+
+def _set_incumbents(acquisition, y, default_minimize):
+    """Set ``_y_best`` on an acquisition (and its components) from data ``y``.
+
+    Each function uses its own ``minimize`` flag when it has one, otherwise
+    ``default_minimize``.
+    """
+    if isinstance(acquisition, Composite):
+        for f in acquisition.functions:
+            _set_incumbents(f, y, default_minimize)
+    minimize = getattr(acquisition, "minimize", None)
+    if minimize is None:
+        minimize = default_minimize
+    acquisition._y_best = float(np.min(y) if minimize else np.max(y))
 
 
 def _generate_candidates(bounds, n_candidates, method, rng):
@@ -390,8 +447,8 @@ def _generate_candidates(bounds, n_candidates, method, rng):
         Number of candidates to generate.
     method : str
         One of "lhs", "sobol", "halton", "random".
-    rng : np.random.RandomState
-        Random state.
+    rng : np.random.Generator
+        Random number generator.
 
     Returns
     -------
@@ -404,13 +461,13 @@ def _generate_candidates(bounds, n_candidates, method, rng):
     upper = np.array([b[1] for b in bounds])
 
     if method == "lhs":
-        sampler = qmc.LatinHypercube(d=d, seed=rng.randint(0, 2**31))
+        sampler = qmc.LatinHypercube(d=d, seed=int(rng.integers(0, 2**31)))
         unit = sampler.random(n=n_candidates)
     elif method == "sobol":
-        sampler = qmc.Sobol(d=d, seed=rng.randint(0, 2**31))
+        sampler = qmc.Sobol(d=d, seed=int(rng.integers(0, 2**31)))
         unit = sampler.random(n=n_candidates)
     elif method == "halton":
-        sampler = qmc.Halton(d=d, seed=rng.randint(0, 2**31))
+        sampler = qmc.Halton(d=d, seed=int(rng.integers(0, 2**31)))
         unit = sampler.random(n=n_candidates)
     elif method == "random":
         unit = rng.uniform(size=(n_candidates, d))
@@ -434,9 +491,10 @@ class ActiveLearner:
     Parameters
     ----------
     model : estimator
-        A fitted sklearn-compatible model. Must support
+        An sklearn-compatible model. Must support
         ``predict(X, return_std=True)`` returning ``(y_pred, y_std)``.
-        Must support ``fit(X, y)`` if ``update(refit=True)`` is used.
+        Must support ``fit(X, y)`` if ``update(refit=True)`` is used or if it
+        is not yet fitted when ``X_init``/``y_init`` are given.
     bounds : list of (low, high) tuples
         Parameter bounds for each feature dimension.
     acquisition : AcquisitionFunction
@@ -445,24 +503,40 @@ class ActiveLearner:
         Number of candidate points to generate for each suggestion.
     candidate_method : str, default="lhs"
         Method for generating candidates: "lhs", "sobol", "halton", "random".
-    random_state : int or None, default=None
-        Random state for reproducibility.
+    random_state : int, np.random.Generator or None, default=None
+        Seed for candidate generation and Thompson batches (reproducible).
+    X_init, y_init : array-like or None, default=None
+        Data the model is (or should be) trained on. They seed ``X_train`` /
+        ``y_train`` so that ``update(refit=True)`` refits on the initial data
+        *plus* all new observations. If the model is not fitted yet, it is fitted
+        on them at construction.
+    minimize : bool or None, default=None
+        Optimization direction used for ``best_y`` / ``best_X``, for the
+        incumbent of acquisitions without their own ``minimize`` flag and for
+        Thompson batches of non-Thompson acquisitions. If None, it is taken from
+        the acquisition's ``minimize`` attribute (``ExpectedImprovement``,
+        ``ProbabilityOfImprovement``, ``ThompsonSampling``, or a ``Composite``
+        whose such components agree) and otherwise defaults to True. Pass
+        ``minimize=False`` explicitly when maximizing with ``UCB``/``ModelMax``.
+        EI/PI always use an incumbent consistent with their own ``minimize``.
 
     Attributes
     ----------
     X_train : np.ndarray or None
-        Accumulated training inputs.
+        Accumulated training inputs (including ``X_init``).
     y_train : np.ndarray or None
-        Accumulated training targets.
+        Accumulated training targets (including ``y_init``).
     iteration : int
         Number of update cycles completed.
 
     Examples
     --------
     >>> learner = ActiveLearner(
-    ...     model=fitted_model,
+    ...     model=model,
     ...     bounds=[(0, 1), (0, 1)],
     ...     acquisition=ExpectedImprovement(minimize=True),
+    ...     X_init=X_init,
+    ...     y_init=y_init,
     ... )
     >>> result = learner.suggest(n_points=5)
     >>> y_new = run_experiment(result.points)
@@ -477,6 +551,9 @@ class ActiveLearner:
         n_candidates=1000,
         candidate_method="lhs",
         random_state=None,
+        X_init=None,
+        y_init=None,
+        minimize=None,
     ):
         self.model = model
         self.bounds = list(bounds)
@@ -484,11 +561,44 @@ class ActiveLearner:
         self.n_candidates = n_candidates
         self.candidate_method = candidate_method
         self.random_state = random_state
+        self.minimize = minimize
+
+        acq_dir = _acquisition_direction(acquisition)
+        if minimize is not None and acq_dir is not None and bool(minimize) != acq_dir:
+            warnings.warn(
+                f"ActiveLearner(minimize={minimize}) disagrees with the acquisition "
+                f"({acquisition.name}, minimize={acq_dir}). The acquisition's direction "
+                "is used for its incumbent; best_y/best_X use the learner's.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         self.X_train = None
         self.y_train = None
         self.iteration = 0
-        self._rng = np.random.RandomState(random_state)
+        self._rng = _check_rng(random_state)
+
+        if (X_init is None) != (y_init is None):
+            raise ValueError("X_init and y_init must be given together.")
+        if X_init is not None:
+            X_init = np.atleast_2d(np.asarray(X_init, dtype=float))
+            y_init = np.atleast_1d(np.asarray(y_init, dtype=float)).ravel()
+            if len(X_init) != len(y_init):
+                raise ValueError(
+                    f"X_init and y_init have inconsistent lengths: {len(X_init)} != {len(y_init)}"
+                )
+            self.X_train = X_init.copy()
+            self.y_train = y_init.copy()
+            if not _is_fitted(model):
+                self.model.fit(self.X_train, self.y_train)
+
+    @property
+    def minimize_(self):
+        """Resolved optimization direction (True = minimize)."""
+        if self.minimize is not None:
+            return bool(self.minimize)
+        acq_dir = _acquisition_direction(self.acquisition)
+        return True if acq_dir is None else acq_dir
 
     @property
     def n_observations(self):
@@ -499,17 +609,17 @@ class ActiveLearner:
 
     @property
     def best_y(self):
-        """Best observed target value (minimum)."""
+        """Best observed target value (minimum, or maximum if not ``minimize_``)."""
         if self.y_train is None:
             return None
-        return float(np.min(self.y_train))
+        return float(np.min(self.y_train) if self.minimize_ else np.max(self.y_train))
 
     @property
     def best_X(self):
         """Input corresponding to the best observed target value."""
         if self.y_train is None:
             return None
-        idx = np.argmin(self.y_train)
+        idx = np.argmin(self.y_train) if self.minimize_ else np.argmax(self.y_train)
         return self.X_train[idx]
 
     def get_params(self):
@@ -519,6 +629,7 @@ class ActiveLearner:
             "candidate_method": self.candidate_method,
             "random_state": self.random_state,
             "bounds": self.bounds,
+            "minimize": self.minimize,
         }
 
     def set_params(self, **params):
@@ -527,6 +638,8 @@ class ActiveLearner:
             if not hasattr(self, key):
                 raise ValueError(f"Invalid parameter {key!r}")
             setattr(self, key, value)
+            if key == "random_state":
+                self._rng = _check_rng(value)
         return self
 
     def suggest(self, n_points=5, batch_strategy="greedy", candidates=None):
@@ -557,9 +670,10 @@ class ActiveLearner:
 
         candidates = np.asarray(candidates)
 
-        # Set y_best on acquisition from training data
-        if self.y_train is not None:
-            self.acquisition._y_best = float(np.min(self.y_train))
+        # Set the incumbent (y_best) on the acquisition from training data,
+        # following each acquisition's own direction (min or max).
+        if self.y_train is not None and len(self.y_train) > 0:
+            _set_incumbents(self.acquisition, self.y_train, self.minimize_)
 
         if batch_strategy == "greedy":
             return self._suggest_greedy(candidates, n_points)
@@ -620,14 +734,13 @@ class ActiveLearner:
 
         for _ in range(min(n_points, len(candidates))):
             samples = self._rng.normal(mu, np.maximum(std, 1e-10))
-            # Use acquisition's minimize preference if it's ThompsonSampling
-            if isinstance(self.acquisition, ThompsonSampling) and self.acquisition.minimize:
-                scores = -samples
-            elif isinstance(self.acquisition, ThompsonSampling):
-                scores = samples
+            # Use the acquisition's minimize preference if it's ThompsonSampling,
+            # otherwise the learner's direction (default: minimize)
+            if isinstance(self.acquisition, ThompsonSampling):
+                minimize = self.acquisition.minimize
             else:
-                # Default: minimize
-                scores = -samples
+                minimize = self.minimize_
+            scores = -samples if minimize else samples
 
             idx = np.argmax(scores)
             selected_idx.append(idx)
@@ -652,10 +765,20 @@ class ActiveLearner:
         y_new : np.ndarray, shape (n_new,) or scalar
             New target values.
         refit : bool, default=True
-            If True, refit the model on all accumulated data.
+            If True, refit the model on all accumulated data (``X_init``/``y_init``
+            plus every point passed to ``update``).
         """
         X_new = np.atleast_2d(X_new)
         y_new = np.atleast_1d(y_new).ravel()
+
+        if self.X_train is None and refit and _is_fitted(self.model):
+            warnings.warn(
+                "ActiveLearner does not know the data the model was fitted on, so "
+                "update(refit=True) refits on the new points only. Pass X_init/y_init "
+                "to ActiveLearner to keep the initial data.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         if self.X_train is None:
             self.X_train = X_new.copy()
@@ -668,3 +791,21 @@ class ActiveLearner:
 
         if refit:
             self.model.fit(self.X_train, self.y_train)
+
+
+def _is_fitted(model):
+    """Best-effort check whether ``model`` has been fitted.
+
+    Mirrors sklearn's ``check_is_fitted`` convention (``__sklearn_is_fitted__``
+    or public attributes ending in ``_``) without requiring a BaseEstimator.
+    """
+    if hasattr(model, "__sklearn_is_fitted__"):
+        try:
+            return bool(model.__sklearn_is_fitted__())
+        except Exception:
+            return False
+    try:
+        attrs = vars(model)
+    except TypeError:
+        return False
+    return any(k.endswith("_") and not k.startswith("__") for k in attrs)

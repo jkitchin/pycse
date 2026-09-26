@@ -1,7 +1,7 @@
 """Provides utility functions in pycse.
 
 1. Fuzzy comparisons for float numbers.
-2. An ignore exception decorator
+2. An ignore exception context manager
 3. A handy function to read a google sheet.
 """
 
@@ -14,61 +14,83 @@ import numpy as np
 import pandas as pd
 
 
-def feq(x, y, epsilon=np.spacing(1)):
+def _tol(x, y, epsilon, rtol):
+    """Return the comparison tolerance epsilon + rtol * max(|x|, |y|)."""
+    if rtol:
+        return epsilon + rtol * np.maximum(np.abs(x), np.abs(y))
+    return epsilon
+
+
+def _result(r):
+    """Return a Python bool for scalar results, else a boolean array."""
+    if np.ndim(r) == 0:
+        return bool(r)
+    return r
+
+
+def feq(x, y, epsilon=np.spacing(1), rtol=0):
     """Fuzzy equals.
 
-    x == y with tolerance
+    x == y with tolerance epsilon + rtol * max(|x|, |y|).
+
+    epsilon is an absolute tolerance, rtol is an optional relative tolerance.
+    Works elementwise on arrays; returns a bool for scalar inputs.
     """
-    return not ((x < (y - epsilon)) or (y < (x - epsilon)))
+    tol = _tol(x, y, epsilon, rtol)
+    return _result(np.logical_not(np.logical_or(x < (y - tol), y < (x - tol))))
 
 
-def flt(x, y, epsilon=np.spacing(1)):
+def flt(x, y, epsilon=np.spacing(1), rtol=0):
     """Fuzzy less than.
 
-    x < y with tolerance
+    x < y with tolerance epsilon + rtol * max(|x|, |y|).
+    Works elementwise on arrays; returns a bool for scalar inputs.
     """
-    return x < (y - epsilon)
+    return _result(x < (y - _tol(x, y, epsilon, rtol)))
 
 
-def fgt(x, y, epsilon=np.spacing(1)):
+def fgt(x, y, epsilon=np.spacing(1), rtol=0):
     """Fuzzy greater than.
 
-    x > y with tolerance
+    x > y with tolerance epsilon + rtol * max(|x|, |y|).
+    Works elementwise on arrays; returns a bool for scalar inputs.
     """
-    return y < (x - epsilon)
+    return _result(y < (x - _tol(x, y, epsilon, rtol)))
 
 
-def fle(x, y, epsilon=np.spacing(1)):
+def fle(x, y, epsilon=np.spacing(1), rtol=0):
     """Fuzzy less than or equal to.
 
-    x <= y with tolerance
+    x <= y with tolerance epsilon + rtol * max(|x|, |y|).
+    Works elementwise on arrays; returns a bool for scalar inputs.
     """
-    return not (y < (x - epsilon))
+    return _result(np.logical_not(y < (x - _tol(x, y, epsilon, rtol))))
 
 
-def fge(x, y, epsilon=np.spacing(1)):
+def fge(x, y, epsilon=np.spacing(1), rtol=0):
     """Fuzzy greater than or equal to.
 
-    x >= y with tolerance
+    x >= y with tolerance epsilon + rtol * max(|x|, |y|).
+    Works elementwise on arrays; returns a bool for scalar inputs.
     """
-    return not (x < (y - epsilon))
+    return _result(np.logical_not(x < (y - _tol(x, y, epsilon, rtol))))
 
 
 @contextmanager
 def ignore_exception(*exceptions):
-    """Ignore exceptions on decorated function.
+    """Context manager to ignore EXCEPTIONS raised in its body.
+
+    A message is printed when an exception is caught.
 
     >>> with ignore_exception(ZeroDivisionError):
     ...     print(1/0)
+    caught division by zero
 
     """
     try:
         yield
     except exceptions as e:
         print("caught {}".format(e))
-        return
-    finally:
-        print("done")
 
 
 def read_gsheet(url, *args, **kwargs):

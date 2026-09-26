@@ -1,5 +1,6 @@
 """Tests for utils module."""
 
+import numpy as np
 import pytest
 import pandas as pd
 from unittest.mock import patch
@@ -45,6 +46,55 @@ def test_ie():
     with ignore_exception(ZeroDivisionError):
         print(1 / 0)
     assert True
+
+
+def test_ie_no_done_print(capsys):
+    """ignore_exception should not print unconditionally."""
+    with ignore_exception(ZeroDivisionError):
+        pass
+    assert capsys.readouterr().out == ""
+
+    with ignore_exception(ZeroDivisionError):
+        1 / 0
+    assert capsys.readouterr().out == "caught division by zero\n"
+
+
+def test_ie_other_exceptions_propagate():
+    """Exceptions not listed are not ignored."""
+    with pytest.raises(ValueError):
+        with ignore_exception(ZeroDivisionError):
+            raise ValueError("no")
+
+
+def test_fuzzy_scalar_returns_bool():
+    """Scalar comparisons return Python bools."""
+    for f in (feq, flt, fgt, fle, fge):
+        assert type(f(1.0, 2.0)) is bool
+        assert type(f(np.float64(1.0), np.float64(1.0))) is bool
+
+
+def test_fuzzy_arrays():
+    """Fuzzy comparisons work elementwise on arrays."""
+    x = np.array([1.0, 2.0, 3.0])
+    y = np.array([1.0, 3.0, 2.0])
+    np.testing.assert_array_equal(feq(x, y), [True, False, False])
+    np.testing.assert_array_equal(flt(x, y), [False, True, False])
+    np.testing.assert_array_equal(fgt(x, y), [False, False, True])
+    np.testing.assert_array_equal(fle(x, y), [True, True, False])
+    np.testing.assert_array_equal(fge(x, y), [True, False, True])
+
+
+def test_fuzzy_rtol():
+    """Relative tolerance allows comparing large numbers."""
+    a, b = 1e6, 1e6 * (1 + 1e-15)
+    # default absolute tolerance is unchanged
+    assert not feq(a, b)
+    assert feq(a, b, rtol=1e-12)
+    assert fle(b, a, rtol=1e-12)
+    assert fge(a, b, rtol=1e-12)
+    assert not flt(a, b, rtol=1e-12)
+    assert not fgt(b, a, rtol=1e-12)
+    assert flt(1e6, 2e6, rtol=1e-12)
 
 
 # Tests for read_gsheet

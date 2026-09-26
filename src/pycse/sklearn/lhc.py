@@ -1,8 +1,12 @@
-"""Latin Hypercube (Latin Square) Design of Experiments.
+"""Latin Square Design of Experiments.
 
-This module provides sklearn-compatible classes for creating and analyzing
-Latin Square experimental designs. A Latin Square is a square array filled with
-different symbols such that each symbol occurs exactly once in each row and column.
+Despite the module name (``lhc``), this module implements **Latin square**
+designs, not Latin hypercube sampling. For Latin hypercube sampling use
+``SurfaceResponse(..., design="lhs")`` or ``pyDOE3.lhs``.
+
+This module provides classes for creating and analyzing Latin Square
+experimental designs. A Latin Square is a square array filled with different
+symbols such that each symbol occurs exactly once in each row and column.
 
 This is particularly useful for experiments with three factors where you want to
 efficiently explore the factor space while controlling for row and column effects.
@@ -47,6 +51,9 @@ class LatinSquare:
     each factor has the same number of levels. The design ensures that each
     level of each factor appears exactly once with each level of the other factors.
 
+    This is a Latin *square* (three categorical factors, p levels each,
+    p**2 runs), not Latin hypercube sampling.
+
     Parameters
     ----------
     vars : dict
@@ -55,6 +62,10 @@ class LatinSquare:
         - First entry: row factor
         - Second entry: column factor
         - Third entry: cell factor (Latin Square values)
+    random_state : int, numpy.random.Generator, or None, default=None
+        Seed or generator used when ``design(shuffle=True)`` randomizes the
+        design. If None, the class attribute ``seed`` (42) is used, so results are
+        reproducible by default. The global NumPy random state is never modified.
 
     Attributes
     ----------
@@ -97,14 +108,15 @@ class LatinSquare:
 
     Notes
     -----
-    The class uses a fixed random seed (42) for reproducibility when shuffle=True.
-    This can be changed by modifying the class-level `seed` attribute before
-    instantiation.
+    Shuffling uses a private ``numpy.random.Generator`` created from
+    ``random_state`` (default: the class-level ``seed`` attribute, 42), so
+    ``design(shuffle=True)`` is reproducible for a given seed and does not touch
+    the global NumPy random state.
     """
 
     seed = 42
 
-    def __init__(self, vars=None):
+    def __init__(self, vars=None, random_state=None):
         """Initialize the LatinSquare class.
 
         Parameters
@@ -112,6 +124,8 @@ class LatinSquare:
         vars : dict
             Dictionary mapping factor names to lists of factor levels.
             Must contain exactly 3 factors with equal numbers of levels.
+        random_state : int, numpy.random.Generator, or None, default=None
+            Seed for shuffling. None uses the class attribute ``seed``.
 
         Raises
         ------
@@ -157,7 +171,8 @@ class LatinSquare:
 
         self.vars = vars
         self.labels = list(vars.keys())
-        np.random.seed(self.seed)
+        self.random_state = random_state
+        self._rng = np.random.default_rng(self.seed if random_state is None else random_state)
 
     def design(self, shuffle=False):
         """Generate the Latin Square experimental design matrix.
@@ -193,10 +208,10 @@ class LatinSquare:
         """
         # Setup the Latin Square using cyclic permutation
         lhs = []
-        levels = self.vars[self.labels[2]].copy()
+        levels = list(self.vars[self.labels[2]])
 
         if shuffle:
-            np.random.shuffle(levels)
+            levels = [levels[i] for i in self._rng.permutation(len(levels))]
 
         lhs.append(levels)
 
@@ -214,7 +229,7 @@ class LatinSquare:
         df = pd.DataFrame(expts, columns=self.labels)
 
         if shuffle:
-            return df.sample(frac=1).reset_index(drop=True)
+            return df.iloc[self._rng.permutation(len(df))].reset_index(drop=True)
         else:
             return df
 
@@ -335,19 +350,32 @@ class LatinSquare:
         self.y = y.name
         return self.results
 
-    def anova(self):
+    def anova(self, alpha=0.05):
         """Perform ANOVA to test significance of factor effects.
 
-        Computes F-statistics for each factor effect and determines
-        statistical significance at the 95% confidence level.
+        Uses the standard Latin square ANOVA: with p levels and N = p**2 runs,
+        each factor has p - 1 degrees of freedom and the residual has
+        (p - 1)(p - 2). F = MS_factor / MS_residual and the p-value is
+        ``scipy.stats.f.sf(F, p - 1, (p - 1)(p - 2))``.
+
+        Parameters
+        ----------
+        alpha : float, default=0.05
+            Significance level used for the critical F value and the
+            ``Significant`` column.
 
         Returns
         -------
         DataFrame
-            ANOVA table with columns:
-            - Effect name
-            - F-score
-            - Significance (True/False)
+            ANOVA table with one row per factor effect plus the residuals, and
+            numeric columns:
+            - ``"<y> effect"``: effect name (str)
+            - ``"df"``: degrees of freedom (int)
+            - ``"sum_sq"``: sum of squares
+            - ``"mean_sq"``: mean square
+            - ``"F-score (fc=...)"``: F statistic (NaN for residuals)
+            - ``"p-value"``: P(F > F-score) (NaN for residuals)
+            - ``"Significant"``: bool, p-value < alpha
 
         Raises
         ------
@@ -358,17 +386,11 @@ class LatinSquare:
         --------
         >>> # After fitting the model
         >>> anova_results = ls.anova()
-        >>> print(anova_results)
-                Effect  F-score (fc=...)  Significant
-        0      A_effect              8.5         True
-        1      B_effect              2.3        False
-        2      C_effect              12.1        True
 
         Notes
         -----
-        The F-statistic compares the variance explained by each factor
-        to the residual variance. Effects with F > F_critical are
-        considered statistically significant.
+        With only 2 levels there are no residual degrees of freedom, so F and
+        p-values are NaN.
         """
         if not hasattr(self, "results"):
             raise AttributeError(
@@ -376,38 +398,39 @@ class LatinSquare:
             )
 
         df = self.results
-        N = len(df)
-        n0 = len(self.vars[self.labels[0]]) - 1
-        n1 = len(self.vars[self.labels[1]]) - 1
-        n2 = len(self.vars[self.labels[2]]) - 1
+        p = len(self.vars[self.labels[0]])
+        df_effect = p - 1
+        df_resid = len(df) - 1 - 3 * df_effect  # (p - 1)(p - 2) for a full square
 
-        # Degrees of freedom for each effect and residuals
-        dof = np.array([n0, n1, n2, N - 1 - n0 - n1 - n2])
+        effect_cols = [f"{label}_effect" for label in self.labels] + ["residuals"]
+        dofs = np.array([df_effect] * 3 + [df_resid])
 
-        # Correction factor for sample variance
-        ddof_correction = N / (N - dof)
+        # Each observation carries its level's effect, so summing effect**2 over all
+        # runs gives the usual sum of squares p * sum(effect_level**2).
+        sum_sq = (df[effect_cols].astype(float) ** 2).sum().to_numpy()
 
-        # Compute variances for each effect
-        effect_cols = [
-            f"{self.labels[0]}_effect",
-            f"{self.labels[1]}_effect",
-            f"{self.labels[2]}_effect",
-            "residuals",
-        ]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            mean_sq = np.where(dofs > 0, sum_sq / np.where(dofs > 0, dofs, 1), np.nan)
+            f_scores = mean_sq / mean_sq[-1]
+        f_scores[-1] = np.nan
 
-        S2 = df[effect_cols].var(ddof=0) * ddof_correction
-
-        # Compute F-scores (variance ratio)
-        f_scores = S2 / S2.loc["residuals"]
-
-        # Critical F-value at 95% confidence
-        fc = stats.f.ppf(0.95, dof[0], dof[-1])
-
-        # Build ANOVA table
-        table = np.vstack([f_scores.index.values, f_scores.values, f_scores > fc]).T
+        if df_resid > 0:
+            p_values = stats.f.sf(f_scores, df_effect, df_resid)
+            fc = stats.f.ppf(1 - alpha, df_effect, df_resid)
+        else:
+            p_values = np.full(4, np.nan)
+            fc = np.nan
 
         return pd.DataFrame(
-            table, columns=[f"{self.y} effect", f"F-score (fc={fc:1.1f})", "Significant"]
+            {
+                f"{self.y} effect": effect_cols,
+                "df": dofs.astype(int),
+                "sum_sq": sum_sq,
+                "mean_sq": mean_sq,
+                f"F-score (fc={fc:1.1f})": f_scores,
+                "p-value": p_values,
+                "Significant": np.nan_to_num(p_values, nan=1.0) < alpha,
+            }
         )
 
     def predict(self, args):

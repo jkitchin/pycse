@@ -128,6 +128,68 @@ class TestHashCache:
         # Different args should produce different hash
         assert hash1 != hash3
 
+    def test_hash_depends_on_constants(self, temp_cache_dir):
+        """Changing a constant in the function must not return stale results."""
+
+        @HashCache
+        def f(x):
+            return x * 2
+
+        assert f(5) == 10
+
+        @HashCache
+        def f(x):  # noqa: F811
+            return x * 3
+
+        assert f(5) == 15
+
+    def test_hash_depends_on_names(self, temp_cache_dir):
+        """Calling a different function with identical bytecode changes the hash."""
+        import math
+
+        @HashCache
+        def f(x):
+            return math.sin(x)
+
+        h1 = f.get_hash((1.0,), {})
+
+        @HashCache
+        def f(x):  # noqa: F811
+            return math.cos(x)
+
+        assert f.get_hash((1.0,), {}) != h1
+        assert f(1.0) == math.cos(1.0)
+
+    def test_hash_nested_code_deterministic(self, temp_cache_dir):
+        """Nested code objects are hashed by content, not by memory address."""
+
+        def make(k):
+            ns = {}
+            exec(f"def q(x):\n    g = lambda y: y * {k}\n    return g(x)\n", ns)
+            return HashCache(ns["q"])
+
+        assert make(2).get_hash((5,), {}) == make(2).get_hash((5,), {})
+        assert make(2).get_hash((5,), {}) != make(3).get_hash((5,), {})
+        assert make(2)(5) == 10
+        assert make(3)(5) == 15
+
+    def test_hash_ignores_docstring(self, temp_cache_dir):
+        """Docstring changes do not change the hash."""
+
+        @HashCache
+        def f(x):
+            """Doc one."""
+            return x
+
+        h1 = f.get_hash((1,), {})
+
+        @HashCache
+        def f(x):  # noqa: F811
+            """Doc two, different."""
+            return x
+
+        assert f.get_hash((1,), {}) == h1
+
     def test_cache_file_created(self, temp_cache_dir):
         """Test that cache files are created in correct location."""
 
@@ -211,6 +273,21 @@ class TestSqlCache:
         SqlCache.cache = original_cache
         if os.path.exists(temp_file.name):
             os.unlink(temp_file.name)
+
+    def test_sqlcache_hash_depends_on_constants(self, temp_db_path):
+        """SqlCache shares the HashCache hash, so constants matter."""
+
+        @SqlCache
+        def f(x):
+            return x * 2
+
+        assert f(5) == 10
+
+        @SqlCache
+        def f(x):  # noqa: F811
+            return x * 3
+
+        assert f(5) == 15
 
     def test_sqlcache_basic_caching(self, temp_db_path):
         """Test SqlCache basic caching functionality."""

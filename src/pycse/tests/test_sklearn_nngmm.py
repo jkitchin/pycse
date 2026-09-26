@@ -1,20 +1,10 @@
 """Tests for NNGMM (Neural Network Gaussian Mixture Model) module."""
 
-import sys
 import numpy as np
 import pytest
 
 # Skip all tests in this module if gmr is not installed
 pytest.importorskip("gmr", reason="gmr not installed")
-
-# Skip all tests on Python 3.12+ - GMR library has compatibility issues
-# with NumPy 2.x scalar conversion that causes errors in CI environments
-# Tests pass locally but fail in GitHub Actions on both 3.12 and 3.13
-if sys.version_info >= (3, 12):
-    pytest.skip(
-        "NNGMM tests skipped on Python 3.12+ due to GMR library compatibility issues in CI",
-        allow_module_level=True,
-    )
 
 from sklearn.model_selection import train_test_split  # noqa: E402
 from sklearn.neural_network import MLPRegressor  # noqa: E402
@@ -508,6 +498,57 @@ class TestNNGMMComparison:
         assert np.allclose(np.mean(y_std1), np.mean(y_std2), rtol=0.5), (
             "Uncertainty estimates should be reasonably consistent"
         )
+
+
+class TestNNGMMReproducibleStd:
+    """Regression tests: std is analytic (law of total variance) and reproducible."""
+
+    @staticmethod
+    def _model(random_state=0, n_components=2):
+        nn = MLPRegressor(hidden_layer_sizes=(8,), solver="lbfgs", max_iter=300, random_state=1)
+        return NeuralNetworkGMM(nn, n_components=n_components, random_state=random_state)
+
+    @staticmethod
+    def _data():
+        rng = np.random.default_rng(0)
+        X = np.linspace(0, 1, 40)[:, None]
+        y = X.ravel() ** (1 / 3) + 0.05 * rng.standard_normal(40)
+        return X, y
+
+    def test_random_state_param(self):
+        """random_state is a proper sklearn hyperparameter."""
+        model = self._model(random_state=3)
+        assert model.get_params()["random_state"] == 3
+
+    def test_std_is_deterministic(self):
+        """Repeated predict(return_std=True) gives identical std."""
+        X, y = self._data()
+        model = self._model().fit(X, y)
+        _, s1 = model.predict(X[:5], return_std=True)
+        _, s2 = model.predict(X[:5], return_std=True)
+        np.testing.assert_array_equal(s1, s2)
+
+    def test_fit_reproducible_with_random_state(self):
+        """Two fits with the same random_state give the same predictions and std."""
+        X, y = self._data()
+        p1, s1 = self._model().fit(X, y).predict(X[:5], return_std=True)
+        p2, s2 = self._model().fit(X, y).predict(X[:5], return_std=True)
+        np.testing.assert_allclose(p1, p2)
+        np.testing.assert_allclose(s1, s2)
+
+    # gmr's per-sample GMM.condition relies on a deprecated NumPy scalar conversion
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+    def test_std_matches_monte_carlo(self):
+        """Analytic std agrees with a large Monte-Carlo sample of gmr's p(y|x)."""
+        X, y = self._data()
+        model = self._model().fit(X, y)
+        _, s = model.predict(X[:3], return_std=True)
+        feat = model._feat(X[:3])
+        for f, s_analytic in zip(feat, s):
+            g = model.gmm_.condition(np.arange(len(f)), f)
+            g.random_state = np.random.RandomState(0)
+            s_mc = np.std(g.sample(100_000))
+            assert abs(s_mc - s_analytic) / s_analytic < 0.02
 
 
 @pytest.mark.slow

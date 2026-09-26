@@ -20,6 +20,26 @@ from scipy.integrate import solve_ivp
 
 import numdifftools as nd
 
+
+def _hessian_shift(H, ub=1e-5, ef=1.05):
+    """Return the diagonal shift used to regularize a Hessian-like matrix H.
+
+    No shift (0.0) is returned when the smallest eigenvalue of H is at least
+    ``ub``, so a well-conditioned matrix is inverted exactly and the textbook
+    intervals are recovered. When the smallest eigenvalue is below ``ub``
+    (near-singular or indefinite), the shift is ``max(ub, ub - ef * lambda_min)``,
+    which makes the smallest eigenvalue of ``H + shift * I`` at least ``ub``.
+
+    Note that ``ub`` is an absolute threshold, so it depends on the scale of the
+    data (or of the loss function).
+    """
+    H = np.asarray(H, dtype=float)
+    lmin = np.linalg.eigvalsh(0.5 * (H + H.T)).min()
+    if lmin >= ub:
+        return 0.0
+    return max(ub, ub - ef * lmin)
+
+
 # * Linear regression
 
 
@@ -64,15 +84,19 @@ def polyval(p, x, X, y, alpha=0.05, ub=1e-5, ef=1.05):
     y: array-like, shape (N,)
       the original y-data that p was fitted from.
 
-        alpha : confidence level, 95% = 0.05
-    ub : upper bound for smallest allowed Hessian eigenvalue
-    ef : eigenvalue factor for scaling Hessian
+    alpha : 100*(1 - alpha) is the prediction interval level, 95% = 0.05
+    ub : smallest allowed eigenvalue of X^T X. The matrix is regularized only
+      if its smallest eigenvalue is below ub (see `predict`).
+    ef : eigenvalue factor used when regularizing (see `predict`).
 
     Returns
     -------
     y, yint, pred_se
     y : the predicted values
-    yint: confidence interval
+    yint: prediction interval (for a new observation), shape (M, 2);
+      yint[:, 0] is the lower bound and yint[:, 1] the upper bound.
+    pred_se: standard error of prediction for a new observation,
+      sqrt(sigma^2 + se_mean^2), shape (M,).
     """
     deg = len(p) - 1
     _x = np.vander(x, deg + 1)  # to predict at
@@ -112,8 +136,11 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
     >>> x = np.array([0, 1, 2])
     >>> y = np.array([0, 2, 4])
     >>> X = np.column_stack([x**0, x])
-    >>> regress(X, y)
-    (array([ -5.12790050e-16,   2.00000000e+00]), None, None)
+    >>> b, bint, se = regress(X, y)
+    >>> np.allclose(b, [0, 2])
+    True
+    >>> regress(X, y, alpha=None)[1:]
+    (None, None)
 
     Returns
     -------
@@ -121,6 +148,7 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
       b is a vector of the fitted parameters
       bint is an array of confidence intervals. The ith row is for the ith parameter.
       se is an array of standard error for each parameter.
+      If alpha is None, bint and se are None.
 
     """
     # This is to silence an annoying FutureWarning.
@@ -171,9 +199,9 @@ def regress(A, y, alpha=0.05, *args, **kwargs):
         CI = sT * se
 
         # bint is a little tricky, and depends on the shape of the output.
-        bint = np.array([(b - CI, b + CI)]).T
+        bint = np.array([(b - CI, b + CI)]).T.squeeze()
 
-    return (b, bint.squeeze(), se)
+    return (b, bint, se)
 
 
 def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
@@ -187,17 +215,26 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     y : known y-value array
     pars : fitted parameters
     XX : x-value array to make predictions for
-    alpha : confidence level, 95% = 0.05
-    ub : upper bound for smallest allowed Hessian eigenvalue
-    ef : eigenvalue factor for scaling Hessian
+    alpha : 100*(1 - alpha) is the prediction interval level, 95% = 0.05
+    ub : smallest allowed eigenvalue of X^T X (absolute, default 1e-5). If the
+      smallest eigenvalue of X^T X is at least ub, no regularization is applied
+      and the exact textbook prediction interval is returned. Otherwise
+      (near-singular X^T X), X^T X + eps * I is inverted instead, with
+      eps = max(ub, ub - ef * lambda_min).
+    ef : eigenvalue factor used when regularizing (see ub).
 
     See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance
 
     Returns
+    -------
     y, yint, pred_se
     y : the predicted values
-    yint: confidence interval
-    pred_se: std error on predictions.
+    yint: prediction interval (for a new observation), shape (n, 2) for a
+      single output (yint[:, 0] is the lower bound, yint[:, 1] the upper
+      bound), or (n, k, 2) for k outputs. Same layout as `nlpredict`.
+    pred_se: standard error of prediction for a new observation,
+      sqrt(sigma^2 + se_mean^2), where se_mean is the standard error of the
+      fitted mean. Note `nlpredict` returns se_mean instead.
     """
     n = len(X)
     npars = len(pars)
@@ -219,7 +256,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
     # Therefore: Cov(β) = I⁻¹ = σ² × (X'X)⁻¹ (factor of 2 cancels)
     # This matches what regress() correctly uses (line 142)
     hat = X.T @ X  # Was: 2 * X.T @ X
-    eps = max(ub, ef * np.linalg.eigvals(hat).min())
+    # Only regularize if X'X is near-singular; otherwise use the exact inverse.
+    eps = _hessian_shift(hat, ub, ef)
 
     # Parameter covariance matrix
     I_fisher = np.linalg.pinv(hat + np.eye(npars) * eps)
@@ -249,13 +287,8 @@ def predict(X, y, pars, XX, alpha=0.05, ub=1e-5, ef=1.05):
 
     yy = XX @ pars
 
-    # Prediction intervals using total uncertainty
-    yint = np.array(
-        [
-            yy - tval * total_se,
-            yy + tval * total_se,
-        ]
-    )
+    # Prediction intervals using total uncertainty; last axis is (lower, upper)
+    yint = np.stack([yy - tval * total_se, yy + tval * total_se], axis=-1)
 
     return (yy, yint, total_se)
 
@@ -287,11 +320,12 @@ def nlinfit(model, x, y, p0, alpha=0.05, **kwargs):
     ...
     >>> X = np.array([0, 1, 2])
     >>> y = np.array([0, 2, 4])
-    >>> nlinfit(f, X, y, [0, 1])
-    (array([  2.00000000e+00,  -2.18062024e-12]),
-     array([[  2.00000000e+00,   2.00000000e+00],
-           [ -2.18315458e-12,  -2.17808591e-12]]),
-     array([  1.21903752e-12,   1.99456367e-16]))
+    >>> p, pint, se = nlinfit(f, X, y, [0, 1])
+    >>> np.round(p, 6)
+    array([2., 0.])
+    >>> np.round(pint, 6)
+    array([[2., 2.],
+           [0., 0.]])
 
     Returns
     -------
@@ -341,12 +375,18 @@ def nlpredict(X, y, model, popt, xnew, loss=None, alpha=0.05, ub=1e-5, ef=1.05):
         constructs the correct loss function: loss = 0.5 * sum((y - model(X, *p))**2).
         This is the ½SSE convention used by scipy's least_squares optimizer.
         If you used a different optimizer or loss function, provide it explicitly.
+        The loss must be proportional to the sum of squared residuals (e.g. ½SSE,
+        SSE or MSE); the parameter covariance 2 * loss / (n - p) * H^-1 (H is the
+        Hessian of the loss) is then independent of the proportionality constant.
     alpha : float, optional
-        Confidence level (default: 0.05 for 95% confidence intervals)
+        100*(1 - alpha) is the prediction interval level (default: 0.05 for 95%)
     ub : float, optional
-        Upper bound for smallest allowed Hessian eigenvalue (default: 1e-5)
+        Smallest allowed eigenvalue of the Hessian of the loss (absolute, default
+        1e-5). If the smallest eigenvalue is at least ub, no regularization is
+        applied. Otherwise H + eps * I is inverted, with
+        eps = max(ub, ub - ef * lambda_min).
     ef : float, optional
-        Eigenvalue factor for scaling Hessian (default: 1.05)
+        Eigenvalue factor used when regularizing (default: 1.05, see ub)
 
     This function uses numdifftools for the Hessian and Jacobian.
 
@@ -355,15 +395,20 @@ def nlpredict(X, y, model, popt, xnew, loss=None, alpha=0.05, ub=1e-5, ef=1.05):
     y : array
         Predicted values at xnew
     yint : array
-        Prediction intervals at alpha confidence level, shape (n, 2)
+        Prediction intervals (for a new observation) at alpha confidence level,
+        shape (n, 2); yint[:, 0] is the lower bound and yint[:, 1] the upper bound.
+        Same layout as `predict`.
     se : array
-        Standard error of predictions
+        Standard error of the fitted mean at xnew, sqrt(diag(J cov J^T)). This is
+        NOT the prediction standard error used for yint, which is
+        sqrt(se**2 + sigma**2). Note `predict` returns the prediction standard error.
 
     Notes
     -----
     The default loss function (½SSE) matches the convention used by scipy.optimize.curve_fit,
     which internally minimizes 0.5 * sum(residuals**2). If you provide a custom loss function,
-    ensure it uses the same convention as your fitting procedure.
+    ensure it uses the same convention as your fitting procedure. The noise variance
+    sigma**2 is estimated from the residuals as SSE / (n - p).
     """
     # If no loss function provided, assume curve_fit was used (½SSE convention)
     if loss is None:
@@ -374,18 +419,29 @@ def nlpredict(X, y, model, popt, xnew, loss=None, alpha=0.05, ub=1e-5, ef=1.05):
     ypred = model(xnew, *popt)
 
     hessp = nd.Hessian(lambda p: loss(*p))(popt)
-    # for making the Hessian better conditioned.
-    eps = max(ub, ef * np.linalg.eigvals(hessp).min())
+    # Only regularize if the Hessian is near-singular or indefinite.
+    eps = _hessian_shift(hessp, ub, ef)
 
-    sse = loss(*popt)
     n = len(y)
     p = len(popt)
-    mse = sse / (n - p)  # Use unbiased estimator
+    # Noise variance sigma^2 from the residuals (unbiased estimator).
+    sse = np.sum((y - model(X, *popt)) ** 2)
+    mse = sse / (n - p)
+    # For loss = c * SSE, the Hessian is H = 2c J^T J, so the parameter covariance
+    # sigma^2 (J^T J)^-1 = [2 * loss / (n - p)] * H^-1, independent of c.
+    # (For the default ½SSE loss, 2 * loss / (n - p) == mse.)
+    cov_scale = 2 * loss(*popt) / (n - p)
     I_fisher = np.linalg.pinv(hessp + np.eye(len(popt)) * eps)
 
-    gprime = nd.Jacobian(lambda p: model(xnew, *p))(popt)
+    # nd.Jacobian fails for a length-1 output, so use nd.Gradient there.
+    m = np.size(ypred)
+    if m == 1:
+        gprime = nd.Gradient(lambda p: np.ravel(model(xnew, *p))[0])(popt)
+    else:
+        gprime = nd.Jacobian(lambda p: np.ravel(model(xnew, *p)))(popt)
+    gprime = np.reshape(gprime, (m, len(popt)))
 
-    sigmas = np.sqrt(mse * np.diag(gprime @ I_fisher @ gprime.T))
+    sigmas = np.sqrt(cov_scale * np.diag(gprime @ I_fisher @ gprime.T))
     tval = t.ppf(1 - alpha / 2, len(y) - len(popt))
 
     return [
@@ -479,7 +535,8 @@ def ivp(f, tspan, y0, *args, **kwargs):
     Initial conditions
 
     *args : type
-    arbitrary positional arguments to pass to solve_ivp
+    extra arguments passed to f, i.e. f(t, y, *args). They are passed to
+    solve_ivp as ``args=args``. Do not also pass ``args=`` as a keyword.
 
     **kwargs : type arbitrary kwargs to pass to solve_ivp.
     max_step is set to be the min diff of tspan. dense_output is set to True.
@@ -502,7 +559,13 @@ def ivp(f, tspan, y0, *args, **kwargs):
     if "t_eval" not in kwargs:
         kwargs["t_eval"] = tspan
 
-    sol = solve_ivp(f, (t0, tf), y0, *args, **kwargs)
+    # Extra positional arguments are arguments for f, not for solve_ivp.
+    if args:
+        if kwargs.get("args") is not None:
+            raise TypeError("ivp got extra arguments for f both positionally and via args=")
+        kwargs["args"] = args
+
+    sol = solve_ivp(f, (t0, tf), y0, **kwargs)
 
     if sol.status != 0:
         print(sol.message)

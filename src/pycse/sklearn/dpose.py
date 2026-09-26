@@ -27,7 +27,7 @@ Example usage:
     from sklearn.model_selection import train_test_split
     x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2, random_state=42)
 
-    # Train with DPOSE (uses CRPS loss and BFGS optimizer by default)
+    # Train with DPOSE (uses CRPS loss and L-BFGS by default)
     from pycse.sklearn.dpose import DPOSE
     model = DPOSE(layers=(1, 15, 32))
     model.fit(x_train, y_train, val_X=x_val, val_y=y_val)
@@ -148,14 +148,18 @@ class DPOSE(BaseEstimator, RegressorMixin):
             min_sigma: Minimum standard deviation for numerical stability (default: 1e-3).
                       Prevents division by zero when ensemble members are nearly identical.
             optimizer: Optimization algorithm (default: 'bfgs'). Options:
-                      - 'bfgs': BFGS (quasi-Newton, recommended for smooth objectives)
-                      - 'lbfgs': Limited-memory BFGS (for larger problems)
+                      - 'bfgs', 'lbfgs': L-BFGS with a line search
+                        (see pycse.sklearn.optimizers.run_lbfgs)
+                      - 'adam_cosine': Adam with a cosine-decay schedule (what
+                        'bfgs' used to run)
                       - 'adam': Adam (adaptive learning rate)
+                      - 'adamw': AdamW (Adam with weight decay)
                       - 'sgd': Stochastic gradient descent
                       - 'muon': Muon (orthogonalized momentum, state-of-the-art 2024)
-                      - 'lbfgsb': L-BFGS-B (with box constraints)
-                      - 'nonlinear_cg': Nonlinear conjugate gradient
                       - 'gradient_descent': Basic gradient descent
+                      - 'lbfgsb', 'nonlinear_cg': legacy jaxopt names, run as
+                        L-BFGS (with a UserWarning); no box constraints or
+                        conjugate gradient.
         """
         self.layers = layers
         self.activation = activation

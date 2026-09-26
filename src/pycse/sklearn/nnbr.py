@@ -119,6 +119,10 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
             # Stage 2: Bayesian linear regression on features
             self.br.fit(self._feat(X), y)
 
+        # Number of training samples, needed for the intercept variance term
+        # in _predict_std when the Bayesian regressor fits an intercept.
+        self.n_train_ = int(np.asarray(X).shape[0])
+
         # Stage 3: Post-hoc calibration if validation data provided
         if val_X is not None and val_y is not None:
             self._calibrate(val_X, val_y)
@@ -182,16 +186,55 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
         # Suppress numerical warnings during prediction
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
-            result = self.br.predict(self._feat(X), return_std=return_std)
+            feat = self._feat(X)
+            result = self.br.predict(feat, return_std=return_std)
 
         if return_std:
-            y_pred, y_std = result
+            y_pred, _ = result
+            y_std = self._predict_std(feat)
             # Apply calibration if available
             if hasattr(self, "calibration_factor_") and self.calibration_factor_ != 1.0:
                 y_std = y_std * self.calibration_factor_
             return y_pred, y_std
         else:
             return result
+
+    def _predict_std(self, feat):
+        """Posterior predictive standard deviation of the Bayesian last layer.
+
+        sklearn's ``BayesianRidge`` / ``ARDRegression`` compute the posterior
+        covariance ``sigma_`` of the coefficients on *centered* features when
+        ``fit_intercept=True``, but ``predict(return_std=True)`` applies it to
+        the *uncentered* features, ``x @ sigma_ @ x``. Neural-network features
+        (e.g. ReLU/tanh activations) have large non-zero means, so that term is
+        dominated by the feature offset and the returned std is inflated and
+        nearly constant. Here we use the centered features and add the variance
+        of the fitted intercept (the mean of y, ``1 / (alpha_ * n)``) instead:
+
+            var(x) = (x - x_off) @ sigma_ @ (x - x_off) + 1 / (alpha_ n) + 1 / alpha_
+
+        With ``fit_intercept=False`` this reduces to sklearn's formula. Estimators
+        that do not expose ``sigma_``/``alpha_`` fall back to their own
+        ``predict(return_std=True)``.
+        """
+        br = self.br
+        if not (hasattr(br, "sigma_") and hasattr(br, "alpha_")):
+            return br.predict(feat, return_std=True)[1]
+
+        feat = np.asarray(feat, dtype=float)
+        fit_intercept = getattr(br, "fit_intercept", False)
+        if fit_intercept and hasattr(br, "X_offset_"):
+            feat = feat - br.X_offset_
+        if hasattr(br, "threshold_lambda") and br.sigma_.shape[0] != feat.shape[1]:
+            # ARDRegression keeps sigma_ only for the non-pruned features
+            feat = feat[:, br.lambda_ < br.threshold_lambda]
+
+        var = np.einsum("ij,jk,ik->i", feat, br.sigma_, feat) + 1.0 / br.alpha_
+        if fit_intercept:
+            n = getattr(self, "n_train_", None)
+            if n:
+                var = var + 1.0 / (br.alpha_ * n)
+        return np.sqrt(np.maximum(var, 0.0))
 
     def report(self):
         """Print model diagnostics."""
