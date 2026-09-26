@@ -124,6 +124,16 @@ def test_design_latin_square_and_alias():
     assert m.design_lhc(spec) == records
 
 
+def test_server_uses_installed_mcp_api():
+    """mcp 1.x provides FastMCP; mcp 2.x renamed it MCPServer. Both must work."""
+    pytest.importorskip("mcp")
+    from importlib.metadata import version
+
+    assert m._MCP_IMPORT_ERROR is None
+    major = int(version("mcp").split(".")[0])
+    assert type(m.mcp).__name__ == ("MCPServer" if major >= 2 else "FastMCP")
+
+
 def test_latin_square_tools_registered():
     pytest.importorskip("mcp")
     tools = {t.name: t for t in asyncio.run(m.mcp.list_tools())}

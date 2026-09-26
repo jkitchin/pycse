@@ -40,7 +40,12 @@ MCP_MISSING_MESSAGE = (
 )
 
 try:
-    from mcp.server.fastmcp import FastMCP, Image
+    try:
+        # mcp 2.x renamed FastMCP to MCPServer; tool(), run() and Image are unchanged.
+        from mcp.server.mcpserver import MCPServer as FastMCP, Image
+    except ImportError:
+        # mcp 1.x
+        from mcp.server.fastmcp import FastMCP, Image
 
     _MCP_IMPORT_ERROR = None
 except ImportError as _e:  # the [mcp] extra is not installed
@@ -64,7 +69,7 @@ except ImportError as _e:  # the [mcp] extra is not installed
             raise ImportError(MCP_MISSING_MESSAGE) from _MCP_IMPORT_ERROR
 
 
-# Initialize FastMCP server
+# Initialize the MCP server (FastMCP in mcp 1.x, MCPServer in 2.x)
 mcp = FastMCP("pycse")
 
 
