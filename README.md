@@ -8,7 +8,7 @@
 
 If you want to cite this project, use this doi:10.5281/zenodo.19111.
 
-[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.19111.svg)](http://dx.doi.org/10.5281/zenodo.19111)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19111.svg)](https://doi.org/10.5281/zenodo.19111)
 
 ```bibtex
 @misc{john_kitchin_2015_19111,
@@ -17,7 +17,7 @@ If you want to cite this project, use this doi:10.5281/zenodo.19111.
   month        = jun,
   year         = 2015,
   doi          = {10.5281/zenodo.19111},
-  url          = {http://dx.doi.org/10.5281/zenodo.19111}
+  url          = {https://doi.org/10.5281/zenodo.19111}
 }
 ```
 
