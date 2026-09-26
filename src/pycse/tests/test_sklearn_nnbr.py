@@ -510,5 +510,66 @@ class TestNNBRComparison:
         np.testing.assert_allclose(y_std1, y_std2)
 
 
+class TestNNBRInterceptStd:
+    """Regression tests for std with BayesianRidge(fit_intercept=True) (the default).
+
+    sklearn's BayesianRidge.predict(return_std=True) applies the posterior
+    covariance (computed on centered features) to uncentered features, which
+    gave a flat, inflated std for NN features. NNBR now centers the features.
+    """
+
+    @staticmethod
+    def _fit(br):
+        rng = np.random.default_rng(0)
+        X = np.linspace(0, 1, 60)[:, None]
+        y = X.ravel() ** (1 / 3) + 0.02 * rng.standard_normal(60)
+        nn = MLPRegressor(hidden_layer_sizes=(20,), solver="lbfgs", max_iter=2000, random_state=1)
+        return NeuralNetworkBLR(nn, br).fit(X, y)
+
+    def test_default_br_std_is_sensible(self):
+        """Default BayesianRidge gives small, varying std (not ~2 everywhere)."""
+        model = self._fit(BayesianRidge())
+        Xt = np.linspace(-0.2, 1.4, 9)[:, None]
+        _, s = model.predict(Xt, return_std=True)
+        # In-distribution std is close to the noise level (0.02), not O(1)
+        assert np.all(s[2:6] < 0.05)
+        # Extrapolation is more uncertain than interpolation
+        assert s[0] > 3 * s[3]
+        assert s[-1] > 2 * s[3]
+
+    def test_fit_intercept_matches_no_intercept(self):
+        """fit_intercept=True and False give comparable std on NN features."""
+        Xt = np.linspace(-0.2, 1.4, 9)[:, None]
+        _, s_true = self._fit(BayesianRidge(fit_intercept=True)).predict(Xt, return_std=True)
+        _, s_false = self._fit(BayesianRidge(fit_intercept=False)).predict(Xt, return_std=True)
+        np.testing.assert_allclose(s_true, s_false, rtol=0.2)
+
+    def test_no_intercept_std_matches_sklearn(self):
+        """With fit_intercept=False the std equals sklearn's own std."""
+        model = self._fit(BayesianRidge(fit_intercept=False))
+        Xt = np.linspace(0, 1, 7)[:, None]
+        _, s = model.predict(Xt, return_std=True)
+        _, s_sk = model.br.predict(model._feat(Xt), return_std=True)
+        np.testing.assert_allclose(s, s_sk, rtol=1e-10)
+
+    def test_mean_prediction_unchanged(self):
+        """Mean predictions are still exactly the BayesianRidge predictions."""
+        model = self._fit(BayesianRidge())
+        Xt = np.linspace(0, 1, 7)[:, None]
+        y_pred, _ = model.predict(Xt, return_std=True)
+        np.testing.assert_allclose(y_pred, model.br.predict(model._feat(Xt)))
+
+    def test_ard_regression_supported(self):
+        """ARDRegression (pruned sigma_) works with the corrected std."""
+        from sklearn.linear_model import ARDRegression
+
+        model = self._fit(ARDRegression())
+        Xt = np.linspace(0, 1, 7)[:, None]
+        _, s = model.predict(Xt, return_std=True)
+        assert s.shape == (7,)
+        assert np.all(np.isfinite(s)) and np.all(s > 0)
+        assert np.all(s < 0.1)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

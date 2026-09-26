@@ -47,6 +47,7 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.neural_network._base import ACTIVATIONS
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.linalg import cholesky, pinvh, solve_triangular
 from gmr import GMM
 
 
@@ -59,17 +60,23 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
     The GMM can capture complex, multimodal uncertainty distributions.
     """
 
-    def __init__(self, nn, n_components=1, n_samples=500):
+    def __init__(self, nn, n_components=1, n_samples=500, random_state=None):
         """Initialize the Neural Network GMM Regressor.
 
         Args:
             nn: An sklearn.neural_network.MLPRegressor instance
             n_components: Number of GMM components (default: 1)
-            n_samples: Number of samples for uncertainty estimation (default: 500)
+            n_samples: Retained for backward compatibility. The predictive
+                standard deviation is now computed analytically from the
+                conditional mixture, so this is no longer used.
+            random_state: Seed (int), ``np.random.RandomState`` or None, passed to
+                the ``gmr.GMM`` so the mixture fit (and any sampling from it) is
+                reproducible.
         """
         self.nn = nn
         self.n_components = n_components
         self.n_samples = n_samples
+        self.random_state = random_state
 
     def _feat(self, X):
         """Return neural network features for X.
@@ -128,7 +135,7 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             self.nn.fit(X, y)
 
             # Create GMM from features and targets
-            self.gmm_ = GMM(n_components=self.n_components)
+            self.gmm_ = GMM(n_components=self.n_components, random_state=self.random_state)
             features = self._feat(X)
             self.gmm_.from_samples(np.hstack([features, y[:, None]]))
 
@@ -211,19 +218,63 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
             y = self.gmm_.predict(inds, feat)
 
             if return_std:
-                se = []
-                for f in feat:
-                    # Condition GMM on the features
-                    g = self.gmm_.condition(np.arange(len(f)), f)
-                    # Sample from conditional distribution
-                    samples = g.sample(self.n_samples)
-                    # Compute standard deviation
-                    se.append(np.std(samples))
+                se = self._conditional_std(feat, inds)
 
                 # Apply calibration factor
-                return y, self.calibration_factor_ * np.array(se)
+                return y, self.calibration_factor_ * se
             else:
                 return y
+
+    def _conditional_std(self, F, inds):
+        """Analytic std of p(y | features=f) for each row f of F.
+
+        Conditioning each Gaussian component k on the features gives
+        weights w_k, means m_k and variances v_k in closed form. By the law of
+        total variance,
+
+            Var[y] = sum_k w_k (v_k + m_k^2) - (sum_k w_k m_k)^2
+
+        This is exact and deterministic (no Monte-Carlo sampling). It is
+        computed here rather than with ``gmr.GMM.condition``, which is
+        per-sample and relies on a NumPy scalar conversion that is deprecated.
+        """
+        F = np.atleast_2d(F)
+        inds = np.asarray(inds, dtype=int)
+        out = np.setdiff1d(np.arange(self.gmm_.means.shape[1]), inds)[0]
+
+        log_w = np.empty((len(F), self.n_components))
+        m = np.empty_like(log_w)
+        v = np.empty(self.n_components)
+        # Same numerics as gmr (pinvh, regularized Cholesky), so the result
+        # matches gmr's conditional GMM, also for degenerate NN features.
+        for k in range(self.n_components):
+            mu, cov = self.gmm_.means[k], self.gmm_.covariances[k]
+            S_ii = cov[np.ix_(inds, inds)]
+            S_oi = cov[out, inds]
+            gain = pinvh(S_ii) @ S_oi
+            d = F - mu[inds]
+            m[:, k] = mu[out] + d @ gain
+            v[k] = cov[out, out] - S_oi @ gain
+            # log of pi_k N(f; mu_i, S_ii), for the component responsibilities
+            try:
+                L = cholesky(S_ii, lower=True)
+            except np.linalg.LinAlgError:
+                L = cholesky(S_ii + 1e-3 * np.eye(len(inds)), lower=True)
+            z = solve_triangular(L, d.T, lower=True)
+            log_det_L = np.log(max(np.linalg.det(L), np.finfo(L.dtype).eps))
+            log_w[:, k] = (
+                np.log(self.gmm_.priors[k])
+                - log_det_L
+                - 0.5 * len(inds) * np.log(2 * np.pi)
+                - 0.5 * np.sum(z**2, axis=0)
+            )
+
+        log_w -= log_w.max(axis=1, keepdims=True)
+        w = np.exp(log_w)
+        w /= w.sum(axis=1, keepdims=True)
+        mean = np.sum(w * m, axis=1)
+        var = np.sum(w * (v + m**2), axis=1) - mean**2
+        return np.sqrt(np.maximum(var, 0.0))
 
     def report(self):
         """Print model diagnostics and configuration."""
@@ -237,7 +288,7 @@ class NeuralNetworkGMM(BaseEstimator, RegressorMixin):
         print(f"  Iterations: {self.nn.n_iter_}")
         print("\nGMM Configuration:")
         print(f"  Components: {self.n_components}")
-        print(f"  Samples for UQ: {self.n_samples}")
+        print("  Uncertainty: analytic (law of total variance)")
         print("\nCalibration:")
         print(f"  Calibration factor α: {self.calibration_factor_:.4f}")
         print("=" * 50 + "\n")

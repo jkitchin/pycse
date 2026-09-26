@@ -16,6 +16,14 @@ from scipy.optimize import fsolve as _fsolve
 from scipy.integrate import quad
 
 
+class NsolveError(RuntimeError):
+    """Raised when nsolve does not finish cleanly."""
+
+
+class IntegrateError(RuntimeError):
+    """Raised when the integrate error estimate is too large."""
+
+
 def first(x):
     """Return the first element of x if it is iterable, else return x."""
     if not isinstance(x, collections.abc.Iterable):
@@ -129,11 +137,13 @@ def nsolve(objective, x0, *args, **kwargs):
 
     A Wrapped version of scipy.optimize.fsolve.
 
-    objective: a callable function f(x) = 0
+    objective: a callable function f(x, *args) = 0
     x0: the initial guess for the solution.
+    args: extra positional arguments are passed to the objective function.
+    kwargs: passed to scipy.optimize.fsolve.
 
-    This version warns you if the call did not finish cleanly and prints the
-    message.
+    This version raises an NsolveError (a subclass of RuntimeError) if the call
+    did not finish cleanly, and includes the message from fsolve.
 
     Returns: If there is only one result it returns a float, otherwise it
        returns an array.
@@ -142,10 +152,15 @@ def nsolve(objective, x0, *args, **kwargs):
     if "full_output" not in kwargs:
         kwargs["full_output"] = 1
 
-    ans, _, flag, msg = _fsolve(objective, x0, *args, **kwargs)
+    if args:
+        # extra positional args are for the objective, not fsolve's positional
+        # parameters (args, fprime, ...).
+        kwargs["args"] = tuple(args)
+
+    ans, _, flag, msg = _fsolve(objective, x0, **kwargs)
 
     if flag != 1:
-        raise Exception("nsolve did not finish cleanly: {}".format(msg))
+        raise NsolveError("nsolve did not finish cleanly: {}".format(msg))
 
     if len(ans) == 1:
         # Use item() for NumPy 2.x compatibility (Python 3.13+)
@@ -165,20 +180,36 @@ def integrate(f, a, b, *args, **kwargs):
     This wraps scipy.integrate.quad to eliminate the error estimate and provide
     better debugging information.
 
-    If the error estimate is greater than the tolerance argument, an exception
-    is raised.
+    Extra positional args are passed to f, i.e. f(x, *args). Other kwargs are
+    passed to scipy.integrate.quad, except for these two:
+
+    tolerance: absolute error tolerance (default 1e-6).
+    rtol: relative error tolerance (default 1e-6).
+
+    If the error estimate is greater than max(tolerance, rtol * abs(integral)),
+    an IntegrateError (a subclass of RuntimeError) is raised.
 
     """
+    tolerance = kwargs.pop("tolerance", 1e-6)
+    rtol = kwargs.pop("rtol", 1e-6)
+
     if "full_output" not in kwargs:
         kwargs["full_output"] = 1
-    results = quad(f, a, b, *args, **kwargs)
 
-    tolerance = kwargs.get("tolerance", 1e-6)
+    if args:
+        # extra positional args are for f, not quad's positional parameters.
+        kwargs["args"] = tuple(args)
 
-    if second(results) > tolerance:
-        raise Exception(
-            "Your integral error {} is too large. ".format(second(results))
-            + "{} ".format(fourth(results))
+    results = quad(f, a, b, **kwargs)
+
+    value, err = first(results), second(results)
+
+    if err > max(tolerance, rtol * abs(value)):
+        # quad only includes a message (4th element) when there was a problem.
+        msg = "{} ".format(results[3]) if len(results) > 3 else ""
+        raise IntegrateError(
+            "Your integral error {} is too large. ".format(err)
+            + msg
             + "See your instructor for help"
         )
-    return first(results)
+    return value

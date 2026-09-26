@@ -120,14 +120,14 @@ def test_polyval_linear():
     np.testing.assert_allclose(ypred, expected, rtol=1e-10)
 
     # Check confidence intervals have correct shape
-    assert yint.shape == (2, len(xnew))
+    assert yint.shape == (len(xnew), 2)
 
     # Check prediction standard errors are positive
     assert np.all(pred_se > 0)
 
     # Check confidence intervals contain predicted values
-    assert np.all(yint[0] <= ypred)
-    assert np.all(ypred <= yint[1])
+    assert np.all(yint[:, 0] <= ypred)
+    assert np.all(ypred <= yint[:, 1])
 
 
 def test_polyval_quadratic():
@@ -175,9 +175,9 @@ def test_predict_linear():
     np.testing.assert_allclose(ypred, expected, rtol=1e-10)
 
     # Check confidence intervals
-    assert yint.shape == (2, len(xnew))
-    assert np.all(yint[0] <= ypred)
-    assert np.all(ypred <= yint[1])
+    assert yint.shape == (len(xnew), 2)
+    assert np.all(yint[:, 0] <= ypred)
+    assert np.all(ypred <= yint[:, 1])
 
     # Check standard errors are positive
     assert np.all(pred_se > 0)
@@ -203,7 +203,7 @@ def test_predict_with_noise():
     np.testing.assert_allclose(ypred, expected, rtol=0.1)
 
     # Confidence intervals should be wider with noisy data
-    ci_width = yint[1] - yint[0]
+    ci_width = yint[:, 1] - yint[:, 0]
     assert np.all(ci_width > 0)
 
 

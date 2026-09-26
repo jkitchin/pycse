@@ -12,8 +12,8 @@ This file provides context for Claude and other AI assistants working with this 
 - JAX-based neural networks
 - Design of experiments utilities
 
-**Version**: 2.7.0
-**Python**: >=3.10
+**Version**: see `version` in `pyproject.toml` (single source of truth; `pycse.__version__` reads the installed metadata)
+**Python**: >=3.12
 **License**: GPL-3.0-or-later
 
 ## Directory Structure
@@ -90,7 +90,7 @@ pytest src/pycse/tests/test_pycse.py -v
 
 - **Linter**: Ruff (configured in pyproject.toml)
 - **Line length**: 100 characters
-- **Target**: Python 3.10+
+- **Target**: Python 3.12+
 
 ```bash
 # Run linter

@@ -260,6 +260,16 @@ class ActiveSurrogate:
     This class provides methods to automatically build surrogate models by
     iteratively sampling an input domain using acquisition functions to select
     informative points.
+
+    Optimization direction: the ``'ei'``, ``'pi'`` and ``'ucb'`` acquisitions
+    here **maximize** the function -- EI/PI measure improvement over
+    ``y_train.max()`` and UCB is ``mu + kappa * sigma``, so sampling is steered
+    toward large values of ``func``. To steer toward a minimum, wrap the
+    function, e.g. ``build(lambda X: -f(X), ...)``, or use ``'variance'`` for
+    pure uncertainty reduction. Note this is the opposite of the default in
+    :class:`pycse.sklearn.active_learning.ActiveLearner`, whose
+    ``ExpectedImprovement``/``ProbabilityOfImprovement`` default to
+    ``minimize=True``.
     """
 
     @staticmethod
@@ -291,7 +301,10 @@ class ActiveSurrogate:
 
     @staticmethod
     def _acquisition_ei(X_candidates, model, y_best):
-        """Expected Improvement acquisition function.
+        """Expected Improvement acquisition function (maximization).
+
+        EI(x) = E[max(mu(x) - y_best, 0)], i.e. improvement *above* y_best,
+        where y_best is the largest observed value.
 
         Parameters
         ----------
@@ -300,7 +313,7 @@ class ActiveSurrogate:
         model : sklearn model
             Fitted model with predict(return_std=True).
         y_best : float
-            Current best observed value.
+            Current best (largest) observed value.
 
         Returns
         -------
@@ -341,7 +354,9 @@ class ActiveSurrogate:
 
     @staticmethod
     def _acquisition_pi(X_candidates, model, y_best):
-        """Probability of Improvement acquisition function.
+        """Probability of Improvement acquisition function (maximization).
+
+        PI(x) = P(f(x) > y_best), where y_best is the largest observed value.
 
         Parameters
         ----------
@@ -350,7 +365,7 @@ class ActiveSurrogate:
         model : sklearn model
             Fitted model with predict(return_std=True).
         y_best : float
-            Current best observed value.
+            Current best (largest) observed value.
 
         Returns
         -------
@@ -568,7 +583,10 @@ class ActiveSurrogate:
             Model with predict(X, return_std=True) interface.
 
         acquisition : str, default='ei'
-            Acquisition function: 'ei', 'ucb', 'pi', 'variance'.
+            Acquisition function: 'ei', 'ucb', 'pi', 'variance'. 'ei', 'pi' and
+            'ucb' seek *large* values of ``func`` (maximization; EI/PI improve on
+            ``y_train.max()``). Negate ``func`` to target a minimum. 'variance'
+            is direction-free (pure exploration).
 
         stopping_criterion : str, default='mean_ratio'
             Stopping criterion: 'mean_ratio', 'percentile', 'absolute', 'convergence'.

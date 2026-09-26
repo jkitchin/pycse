@@ -155,6 +155,20 @@ class TestAcquisitionFunctions:
         assert np.all(pi >= 0)
         assert np.all(pi <= 1)
 
+    def test_ei_pi_convention_is_maximization(self):
+        """Documented convention: EI/PI reward predictions *above* y_best."""
+
+        class ConstStd:
+            def predict(self, X, return_std=False):
+                mu = np.asarray(X, dtype=float)[:, 0]
+                return (mu, 0.1 * np.ones(len(mu))) if return_std else mu
+
+        X_candidates = np.array([[0.0], [1.0]])
+        ei = ActiveSurrogate._acquisition_ei(X_candidates, ConstStd(), 0.5)
+        pi = ActiveSurrogate._acquisition_pi(X_candidates, ConstStd(), 0.5)
+        assert ei[1] > ei[0]
+        assert pi[1] > pi[0]
+
     def test_acquisition_variance(self, fitted_model):
         """Test Maximum Variance acquisition."""
         model, _ = fitted_model

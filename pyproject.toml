@@ -28,7 +28,7 @@ description = "python computations in science and engineering"
 readme = {file = "README.md", content-type = "text/markdown"}
 authors = [{ name = "John Kitchin", email = "jkitchin@andrew.cmu.edu" }]
 license = {text = "GPL-3.0-or-later"}
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = ["numpy",
 "scipy",
 "matplotlib",
@@ -39,10 +39,10 @@ dependencies = ["numpy",
 "requests",
 "orjson",
 "pyDOE3",
-"jax>=0.4.0",
-"jaxlib>=0.4.0",
-"optax>=0.1.0",
-"flax>=0.7.0",
+"jax>=0.10.0",
+"jaxlib>=0.10.0",
+"optax>=0.2.5",  # optax.lbfgs and value_and_grad_from_state
+"flax>=0.12.7",  # first flax that works with jax 0.11 (jax.core.get_opaque_trace_state removed)
 "scikit-learn>=1.0.0",
 "gmr",
 "dill",
@@ -77,7 +77,7 @@ colab = [
   "nbformat>=5.0",
 ]
 mcp = [
-  "mcp>=1.0",
+  "mcp>=1.0,<2",  # 2.x renamed FastMCP -> MCPServer; pycse.mcp uses the 1.x API
   "pydantic>=2.0",
 ]
 nflows = [
@@ -93,7 +93,7 @@ sisso = [
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py312"
 # Vendored upstream code — kept as-is to minimize divergence from upstream
 # (see src/pycse/sklearn/zenn/NOTICE). Excluded from both lint and format.
 extend-exclude = ["src/pycse/sklearn/zenn"]

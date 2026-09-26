@@ -1,6 +1,6 @@
 ---
 name: pycse
-description: Python computations in science and engineering (pycse) - helps with scientific computing tasks including nonlinear regression, uncertainty quantification, design of experiments (DOE), Latin hypercube sampling, surface response modeling, and neural network-based UQ with DPOSE. Use when working with numerical optimization, data fitting, experimental design, or uncertainty analysis.
+description: Python computations in science and engineering (pycse) - helps with scientific computing tasks including nonlinear regression, uncertainty quantification, design of experiments (DOE), Latin square designs, surface response modeling, and neural network-based UQ with DPOSE. Use when working with numerical optimization, data fitting, experimental design, or uncertainty analysis.
 ---
 
 # pycse - Python Computations in Science and Engineering
@@ -15,7 +15,8 @@ pycse is a comprehensive library for scientific computing, data analysis, and un
 - Supports parameter uncertainty estimation and confidence intervals
 
 ### 2. Design of Experiments (DOE)
-- **Latin Hypercube Sampling (LHC)**: Space-filling designs for efficient parameter exploration
+- **Latin square designs** (`LatinSquare`): three factors at equal numbers of levels (numeric or
+  categorical) in n x n runs instead of a full n^3 factorial, analyzed with ANOVA
 - **Surface Response Modeling**: Fit polynomial response surfaces to experimental data
 - Useful for optimizing experimental conditions with minimal trials
 
@@ -37,7 +38,7 @@ Use this skill when the user asks about:
 - Fitting experimental data to nonlinear models
 - Estimating parameter uncertainties
 - Designing experiments or sampling parameter spaces
-- Latin squares or Latin hypercube designs
+- Latin square designs
 - Surface response methodology
 - Uncertainty quantification in predictions
 - Neural network-based surrogate models with uncertainty
@@ -53,12 +54,12 @@ from pycse import nlinfit
 pars, pint, se = nlinfit(model_func, x0, x, y)
 ```
 
-### Latin Hypercube Design
+### Latin Square Design
 ```python
 from pycse.sklearn.lhc import LatinSquare
 
-# Create a Latin hypercube design
-factors = {"Temperature": [20, 40, 60], "Pressure": [1, 2, 3]}
+# Create a Latin square design (exactly 3 factors, same number of levels each)
+factors = {"Temperature": [20, 40, 60], "Pressure": [1, 2, 3], "Catalyst": ["A", "B", "C"]}
 ls = LatinSquare(factors)
 design = ls.design()
 ```
@@ -71,9 +72,9 @@ from pycse.sklearn.surface_response import SurfaceResponse
 sr = SurfaceResponse(
     inputs=["red", "green", "blue"], outputs=["intensity"], bounds=[[0, 1], [0, 1], [0, 1]]
 )
-design = sr.design()
+design = sr.generate_design()
 # ... run experiments ...
-sr.set_output(results)
+sr.set_results(results)
 sr.fit()
 ```
 
@@ -108,14 +109,27 @@ y_pred, y_std = model.named_steps["dpose"].predict(X_test_scaled, return_std=Tru
 ## MCP Server
 
 pycse provides an MCP server for Claude Desktop with tools for:
-- Design of experiments (Latin squares, surface response)
+- Design of experiments (Latin squares: `design_latin_square`/`analyze_latin_square`;
+  surface response: `design_sr`/`analyze_sr`/`sr_parity`)
 - Function documentation lookup
 - DPOSE model information and examples
 - Python documentation search
 
-To install the MCP server:
+The MCP server needs the optional extra: `pip install "pycse[mcp]"`.
+
+To register it with Claude Desktop (macOS/Windows):
 ```bash
 pycse mcp install
+pycse mcp uninstall
+```
+
+On other platforms, or with other MCP clients, register the `pycse_mcp` command
+(it runs the server over stdio).
+
+To install this skill in Claude Code:
+```bash
+pycse skill install
+pycse skill uninstall
 ```
 
 ## Docker-based Jupyter Lab
@@ -135,7 +149,7 @@ For detailed documentation, see the pycse repository at: https://github.com/jkit
 
 1. **Always use StandardScaler** with DPOSE for better convergence
 2. **CRPS loss** is recommended for DPOSE - more robust than NLL
-3. **Latin hypercube designs** are more efficient than grid searches
+3. **Latin square designs** need far fewer runs than a full factorial grid
 4. **Surface response models** are useful when experiments are expensive
 5. For uncertainty propagation, use `predict_ensemble()` to get all ensemble members
 

@@ -432,3 +432,84 @@ class TestIntegration:
         result = solve()
         assert abs(result - 3.14159) < 0.01
         assert iterations["count"] > 1
+
+
+# Regression tests
+class TestRegressions:
+    """Regression tests for max_errors=-1 and multiple exception handlers."""
+
+    @pytest.mark.parametrize("max_errors", [-1, None])
+    def test_supervisor_unlimited(self, max_errors):
+        """max_errors=-1 (or None) means try forever, not never."""
+        calls = []
+
+        def check(args, kwargs, result):
+            if result < 10:
+                return (args[0] + 1,), kwargs
+            return None
+
+        @supervisor(check_funcs=(check,), max_errors=max_errors)
+        def f(x):
+            calls.append(x)
+            return x
+
+        assert f(0) == 10
+        assert len(calls) == 11
+
+    @pytest.mark.parametrize("max_errors", [-1, None])
+    def test_manager_unlimited(self, max_errors):
+        """max_errors=-1 (or None) means try forever, not never."""
+
+        @check_result
+        def check(arguments, result):
+            if result < 10:
+                return {"x": arguments["x"] + 1}
+            return None
+
+        @manager(checkers=(check,), max_errors=max_errors)
+        def f(x):
+            return x
+
+        assert f(0) == 10
+
+    def test_manager_no_arguments(self):
+        """A managed function with no arguments is still called."""
+
+        @manager()
+        def f():
+            return 7
+
+        assert f() == 7
+
+    def test_supervisor_falsy_fix_does_not_return_none(self):
+        """A check returning a falsy non-None value means no fix, not None."""
+
+        def check(args, kwargs, result):
+            return False
+
+        @supervisor(check_funcs=(check,))
+        def f(x):
+            return x
+
+        assert f(3) == 3
+
+    def test_supervisor_second_exception_handler(self):
+        """If the first exception handler returns None, the next one still works."""
+        seen = []
+
+        def no_fix(args, kwargs, exc):
+            seen.append(("no_fix", args, kwargs))
+            return None
+
+        def fix(args, kwargs, exc):
+            seen.append(("fix", args, kwargs))
+            return (1,), kwargs
+
+        @supervisor(exception_funcs=(no_fix, fix))
+        def f(x, y=2):
+            if x == 0:
+                raise ValueError("x is 0")
+            return x + y
+
+        assert f(0) == 3
+        assert seen == [("no_fix", (0,), {}), ("fix", (0,), {})]

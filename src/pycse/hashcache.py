@@ -13,10 +13,11 @@ like whitespace, docstrings and comments change the hash.
 
 This library aims to provide a simpler version of what I wish joblib did for me.
 
-Results are cached based on a hash of the function name, argnames, bytecode, arg
-values and kwarg values. I use joblib.hash for this. This means any two
-functions with the same bytecode, even if they have different names, will cache
-to the same result.
+Results are cached based on a hash of the function name, bytecode, constants
+(e.g. numeric literals, recursively including nested functions), referenced
+names, arg values and kwarg values. I use joblib.hash for this. The values of
+global variables used by the function are NOT part of the hash, so changing a
+global will not invalidate the cache.
 
 The cache location is set as a class attribute:
 
@@ -77,16 +78,35 @@ simply provide new functions for this.
 
 [2024-06-18 Tue] Changed from function to class decorator (breaking change).
 
+[2026-09-26 Sat] The hash now includes the code constants and names (breaking
+change, old caches will not be found). Previously a change like x * 2 -> x * 3
+did not change the hash, and stale results were returned.
+
 """
 
 import inspect
 import joblib
+import types
 import os
 from pathlib import Path
 import pprint
 import socket
 import sqlite3
 import time
+
+
+def _code_signature(code):
+    """Return a deterministic, hashable signature for a code object.
+
+    This includes the name, bytecode, constants and referenced names. Nested
+    code objects in the constants (e.g. lambdas or inner functions) are replaced
+    by their own signatures, since their repr contains memory addresses.
+
+    """
+    consts = tuple(
+        _code_signature(c) if isinstance(c, types.CodeType) else c for c in code.co_consts
+    )
+    return (code.co_name, code.co_code, consts, code.co_names)
 
 
 def hashcache(*args, **kwargs):
@@ -139,21 +159,31 @@ class HashCache:
         store and look up results later. You should think carefully before
         changing this function, it breaks past caches.
 
-        FUNC should be as pure as reasonable. This hash is insensitive to global
-        variables.
+        FUNC should be as pure as reasonable. This hash is insensitive to the
+        values of global variables the function uses; if you change a global,
+        the cached result will still be returned.
 
-        The hash is on the function name, bytecode, and a standardized kwargs
-        including defaults. We use bytecode because it is insensitive to things
+        The hash is on the function name, bytecode, constants (recursively
+        including nested code objects), referenced names, and a standardized
+        kwargs including defaults. The docstring is not included. We use bytecode because it is insensitive to things
         like whitespace, comments, docstrings, and variable name changes that
         don't affect results. It is assumed that two functions with the same
         name and bytecode will evaluate to the same result. However, this makes
         the hash fragile to changes in Python version that affect bytecode.
 
         """
+        name, bytecode, consts, names = _code_signature(self.function.__code__)
+        # Drop the docstring so documentation changes do not change the hash.
+        doc = self.function.__doc__
+        if consts and doc is not None and isinstance(consts[0], str) and consts[0] == doc:
+            consts = consts[1:]
+
         return joblib.hash(
             [
-                self.function.__code__.co_name,  # This is the function name
-                self.function.__code__.co_code,  # this is the function bytecode
+                name,  # This is the function name
+                bytecode,  # this is the function bytecode
+                consts,  # constants, e.g. numbers, so x * 2 != x * 3
+                names,  # global/attribute names used, e.g. np.sin vs np.cos
                 # The args used, including defaults
                 self.get_standardized_args(args, kwargs),
             ],

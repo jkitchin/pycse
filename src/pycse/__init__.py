@@ -1,10 +1,15 @@
 """Python calculations in Science and Engineering.
 
-Pycse is compatible with Python 3.6+.
+Pycse requires Python 3.10+.
 
 """
 
-__version__ = "2.3.5"
+from importlib.metadata import version as _version, PackageNotFoundError as _PNFE
+
+try:
+    __version__ = _version("pycse")
+except _PNFE:  # running from a source tree that is not installed
+    __version__ = "unknown"
 
 # * Setup inline images for IPython
 # Make inline figures the default
@@ -19,6 +24,7 @@ from .PYCSE import (
     Rsquared,
     bic,
     lbic,
+    ivp,
 )
 from .utils import feq, flt, fgt, fle, fge, read_gsheet
 
@@ -26,13 +32,6 @@ from .hashcache import hashcache
 
 # from .beginner import *
 
-
-from IPython import get_ipython
-from IPython.core.magic import (
-    register_line_magic,
-    register_cell_magic,
-    register_line_cell_magic,
-)
 
 # * load some common libraries
 # The goal here is to make it easy for beginners to get started with a minimal
@@ -45,7 +44,6 @@ from IPython.core.magic import (
 import pycse
 import numpy
 import matplotlib
-import IPython
 import scipy
 
 # import numpy as np
@@ -84,6 +82,8 @@ import scipy
 # http://ipython.readthedocs.io/en/stable/config/custommagics.html
 
 try:
+    import IPython
+    from IPython.core.magic import register_line_magic
 
     @register_line_magic
     def pycse_test(line):

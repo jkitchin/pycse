@@ -26,6 +26,11 @@ class TooManyErrorsException(Exception):
     pass
 
 
+def _unlimited(max_errors):
+    """Return True if MAX_ERRORS means try forever (None or negative)."""
+    return max_errors is None or max_errors < 0
+
+
 def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
     """Decorator to supervise a function. After the function is run, each
     function in CHECK_FUNCS is run on the result. Each checker function has the
@@ -40,7 +45,8 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
     which indicates there is no fix.
 
     MAX_ERRORS is the maximum number of issues to try to fix. A value of -1
-    means try forever.
+    (or None) means try forever. If the limit is reached a
+    TooManyErrorsException is raised.
     """
 
     def decorator(func):
@@ -49,7 +55,7 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
             nerrors = 0
             run = args, kwargs
 
-            while run and (nerrors < max_errors):
+            while run and (_unlimited(max_errors) or nerrors < max_errors):
                 try:
                     args, kwargs = run
                     result = func(*args, **kwargs)
@@ -70,7 +76,7 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
                             break
                     # After all the checks, run is None if they all passed, that
                     # means we should return
-                    if not check_funcs or run is None:
+                    if not check_funcs or not run:
                         return result
                     # Now should be returning to the while loop with new params
                     # in run
@@ -79,7 +85,8 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
                         raise e  # no fixer funcs defined, so we re-raise
 
                     for exc in exception_funcs:
-                        run = exc(run[0], run[1], e)
+                        # each handler gets the (args, kwargs) that failed
+                        run = exc(args, kwargs, e)
                         if run:
                             if verbose:
                                 s = getattr(exc, "__name__", exc)
@@ -87,16 +94,15 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
                             nerrors += 1
                             break  # break out as soon as we get a fix
 
-                    if run is None:
+                    if not run:
                         # no new thing to try, reraise
                         raise e
 
                     # if run is not None, this goes back to the while loop with
                     # new params in run
 
-            # after the loop, we should raise if we got too many errors
-            if nerrors == max_errors:
-                raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
+            # We only get here if we ran out of attempts without a result.
+            raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
 
         return wrapper
 
@@ -173,7 +179,8 @@ def manager(checkers=(), max_errors=5, verbose=False):
     check_exception to indicate which one they handle.
 
     MAX_ERRORS is the maximum number of issues to try to fix. A value of -1
-    means try forever.
+    (or None) means try forever. If the limit is reached a
+    TooManyErrorsException is raised.
 
     """
 
@@ -189,7 +196,7 @@ def manager(checkers=(), max_errors=5, verbose=False):
             normalized_args.apply_defaults()
             runargs = normalized_args.arguments
 
-            while runargs and (nerrors < max_errors):
+            while _unlimited(max_errors) or nerrors < max_errors:
                 try:
                     result = func(**runargs)
                     rerun_args = None
@@ -210,7 +217,7 @@ def manager(checkers=(), max_errors=5, verbose=False):
                             break
                     # After all the checks, rerun_args is None if they all passed,
                     # that means we should return
-                    if not checkers or rerun_args is None:
+                    if not checkers or not rerun_args:
                         return result
                     # Now should be returning to the while loop with new params
                     # in runargs
@@ -227,7 +234,7 @@ def manager(checkers=(), max_errors=5, verbose=False):
                             nerrors += 1
                             break  # break out as soon as we get a fix
 
-                    if rerun_args is None:
+                    if not rerun_args:
                         # no new arguments to rerun with were found
                         # so nothing can be fixed.
                         raise e
@@ -235,9 +242,8 @@ def manager(checkers=(), max_errors=5, verbose=False):
                     # if runargs is not None, this goes back to the while loop
                     # with new params in runargs
 
-            # after the loop, we should raise if we got too many errors
-            if nerrors == max_errors:
-                raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
+            # We only get here if we ran out of attempts without a result.
+            raise TooManyErrorsException(f"Maximum number of errors ({max_errors}) reached")
 
         return wrapper
 
