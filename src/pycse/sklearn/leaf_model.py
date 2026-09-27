@@ -5,6 +5,15 @@ first uses a DecisionTreeRegressor to divide the data set into leaves, then fits
 your model to each leaf. You can request uncertainty that is computed from the
 model fitted on each leaf.
 
+By default the splits come from a standard (constant-leaf) regression tree,
+which chooses split positions by variance reduction as if each leaf predicted a
+constant. Those positions are generally not the ones that suit the leaf model:
+for piecewise-linear data with a LinearRegression leaf model, the breakpoint can
+be far from the true one. Pass ``refine_splits=True`` to re-choose each split
+threshold (top down, keeping the tree's split features) by scanning candidate
+thresholds and minimizing the combined squared error of the leaf models fitted
+on the two sides, as in M5-style model trees.
+
 This is not as rigorous as linear decision tree models, but it is conceptually
 simple. I consider it a proof of concept model.
 
@@ -15,7 +24,8 @@ Features:
 - Diagnostics: plot(), report(), uncertainty_metrics()
 
 Limitations:
-- Tree splits are based on MSE, not leaf model performance (non-optimal)
+- By default, tree splits are chosen for constant leaves, not for the leaf
+  model (use refine_splits=True to re-choose the thresholds with the leaf model)
 - Extrapolation outside training bounds may be unreliable
 - Requires sufficient samples per leaf for complex leaf models
 
@@ -61,6 +71,7 @@ plt.plot(f, pf.squeeze() + se, f, pf.squeeze() - se)
 
 """
 
+import math
 import warnings
 import numpy as np
 from sklearn.tree import DecisionTreeRegressor
@@ -69,15 +80,94 @@ from sklearn import clone
 
 
 class LeafModelRegressor(DecisionTreeRegressor):
-    """An sklearn Leaf Model class."""
+    """An sklearn Leaf Model class.
 
-    def __init__(self, leaf_model, **kwargs):
+    Parameters
+    ----------
+    leaf_model : estimator
+        sklearn estimator fitted to the data in each leaf.
+    refine_splits : bool, default=False
+        If False, the split thresholds are those of a standard regression tree,
+        which are chosen for constant leaves and can be misplaced for the leaf
+        model (e.g. the breakpoint of piecewise-linear data). If True, after the
+        tree is grown each split threshold is re-chosen, from the root down, to
+        minimize the sum of squared residuals of the leaf model fitted on each
+        side of the split (the split features and tree shape are kept).
+    n_refine_candidates : int, default=100
+        Maximum number of candidate thresholds scanned per split when
+        ``refine_splits=True``.
+    **kwargs
+        Passed to DecisionTreeRegressor (max_depth, min_samples_leaf, ...).
+    """
+
+    def __init__(self, leaf_model, refine_splits=False, n_refine_candidates=100, **kwargs):
         """Initialize a LeafModel.
 
         LEAF_MODEL is an sklearn estimator.
         """
         self.leaf_model = leaf_model
+        self.refine_splits = refine_splits
+        self.n_refine_candidates = n_refine_candidates
         super().__init__(**kwargs)
+
+    @classmethod
+    def _get_param_names(cls):
+        """Include the DecisionTreeRegressor parameters passed through **kwargs."""
+        names = set(DecisionTreeRegressor._get_param_names())
+        names |= {"leaf_model", "refine_splits", "n_refine_candidates"}
+        return sorted(names)
+
+    def _sse(self, X, y):
+        """Sum of squared residuals of the leaf model fitted to (X, y)."""
+        model = clone(self.leaf_model)
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                model.fit(X, y)
+                return float(np.sum((y - np.ravel(model.predict(X))) ** 2))
+        except Exception:
+            return np.inf
+
+    def _refine_node(self, node, idx, X, X32, y, min_leaf):
+        """Re-choose the threshold of NODE using the samples IDX that reach it."""
+        tree = self.tree_
+        left, right = tree.children_left[node], tree.children_right[node]
+        if left == -1:
+            return
+
+        f = tree.feature[node]
+        xs = X32[idx, f]
+        uniq = np.unique(xs)
+        candidates = (uniq[:-1] + uniq[1:]) / 2
+        if len(candidates) > 0:
+            n_left = np.searchsorted(np.sort(xs), candidates, side="right")
+            ok = (n_left >= min_leaf) & (len(xs) - n_left >= min_leaf)
+            candidates = candidates[ok]
+
+        if len(candidates) > 0:
+            if len(candidates) > self.n_refine_candidates:
+                pick = np.linspace(0, len(candidates) - 1, self.n_refine_candidates)
+                candidates = candidates[np.unique(np.round(pick).astype(int))]
+            losses = [
+                self._sse(X[idx[xs <= c]], y[idx[xs <= c]])
+                + self._sse(X[idx[xs > c]], y[idx[xs > c]])
+                for c in candidates
+            ]
+            if np.isfinite(np.min(losses)):
+                tree.threshold[node] = candidates[int(np.argmin(losses))]
+
+        t = tree.threshold[node]
+        self._refine_node(left, idx[xs <= t], X, X32, y, min_leaf)
+        self._refine_node(right, idx[xs > t], X, X32, y, min_leaf)
+
+    def _refine_thresholds(self, X, y):
+        """Re-choose all split thresholds to suit the leaf model."""
+        msl = self.min_samples_leaf
+        min_leaf = math.ceil(msl * len(y)) if isinstance(msl, float) else int(msl)
+        min_leaf = max(min_leaf, 1)
+        # The tree compares features in float32, so we do too.
+        X32 = np.asarray(X, dtype=np.float32).astype(np.float64)
+        self._refine_node(0, np.arange(len(y)), X, X32, y, min_leaf)
 
     def fit(self, X, y, val_X=None, val_y=None):
         """Fit the model.
@@ -103,10 +193,14 @@ class LeafModelRegressor(DecisionTreeRegressor):
 
         Notes
         -----
-        This is not an optimal fit. The decision tree splits are based on MSE,
-        not the leaf model's performance. It works reasonably well for many
-        applications.
+        By default this is not an optimal fit: the decision tree splits are
+        chosen for constant leaves, not for the leaf model. With
+        ``refine_splits=True`` the thresholds are re-chosen to minimize the leaf
+        models' squared error (greedily, from the root down).
         """
+        X = np.asarray(X)
+        y = np.asarray(y)
+
         # Store input bounds for extrapolation detection
         self.X_min_ = np.min(X, axis=0)
         self.X_max_ = np.max(X, axis=0)
@@ -114,14 +208,31 @@ class LeafModelRegressor(DecisionTreeRegressor):
         # Fit the decision tree
         super().fit(X, y)
 
-        # Now train the leaf models
+        if self.refine_splits:
+            self._refine_thresholds(X, y)
+
+        # Now train the leaf models. Every leaf gets a model; a leaf that no
+        # training sample reaches (possible after refinement) uses the data of
+        # its nearest non-empty ancestor.
         leaves = self.apply(X)
+        paths = self.decision_path(X).tocsc()
+        tree = self.tree_
+        parent = np.full(tree.node_count, -1)
+        for n in range(tree.node_count):
+            for child in (tree.children_left[n], tree.children_right[n]):
+                if child != -1:
+                    parent[child] = n
         self.leaf_models_ = {}
         self.leaf_stats_ = {}
 
-        for leaf in set(leaves):
+        for leaf in np.flatnonzero(tree.children_left == -1):
             # Get the x,y-points for this leaf
             ind = leaves == leaf
+            node = leaf
+            while not ind.any() and parent[node] != -1:
+                node = parent[node]
+                ind = np.zeros(len(y), dtype=bool)
+                ind[paths[:, node].indices] = True
             _X = X[ind]
             _y = y[ind]
 
