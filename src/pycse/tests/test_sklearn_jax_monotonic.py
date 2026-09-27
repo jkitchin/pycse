@@ -705,3 +705,44 @@ class TestJAXMonotonicValidation:
 
         with pytest.raises(ValueError, match="has 3 elements but X has 2"):
             model.fit(X, y)
+
+
+class TestConvexity:
+    """The default model is monotone only, not also convex (#98)."""
+
+    @staticmethod
+    def _fit(y, convexity):
+        x = np.linspace(0, 1, 60)[:, None]
+        m = JAXMonotonicRegressor(
+            hidden_dims=(16, 16),
+            epochs=400,
+            learning_rate=1e-2,
+            batch_size=60,
+            val_size=0,
+            random_state=0,
+            convexity=convexity,
+        ).fit(x, y)
+        return np.ravel(m.predict(x))
+
+    def test_default_fits_concave_monotone_data(self):
+        x = np.linspace(0, 1, 60)
+        y = np.sqrt(x)
+        p = self._fit(y, None)
+        assert np.all(np.diff(p) >= -1e-9)
+        assert np.sqrt(np.mean((p - y) ** 2)) < 0.03
+
+    def test_convex_option_is_convex(self):
+        x = np.linspace(0, 1, 60)
+        p = self._fit(np.sqrt(x), "convex")
+        assert np.all(np.diff(p, 2) > -1e-6)
+
+    def test_concave_option_is_concave(self):
+        x = np.linspace(0, 1, 60)
+        p = self._fit(x**2, "concave")
+        assert np.all(np.diff(p, 2) < 1e-6)
+
+    def test_invalid_convexity(self):
+        with pytest.raises(ValueError, match="convexity"):
+            JAXMonotonicRegressor(convexity="wiggly", epochs=1).fit(
+                np.linspace(0, 1, 20)[:, None], np.linspace(0, 1, 20)
+            )
