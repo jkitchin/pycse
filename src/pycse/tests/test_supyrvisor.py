@@ -513,3 +513,26 @@ class TestRegressions:
 
         assert f(0) == 3
         assert seen == [("no_fix", (0,), {}), ("fix", (0,), {})]
+
+
+def test_check_decorators_preserve_name():
+    """check_result/check_exception keep the checker's name (issue #97)."""
+    from pycse.supyrvisor import check_exception, check_result
+
+    @check_result
+    def positive(args, result):
+        """Doc."""
+        return None
+
+    @check_exception
+    def fix_zero(args, exc):
+        return None
+
+    class Fixer:
+        def __call__(self, args, result):
+            return None
+
+    assert positive.__name__ == "positive"
+    assert positive.__doc__ == "Doc."
+    assert fix_zero.__name__ == "fix_zero"
+    assert check_result(Fixer()).__name__ == "Fixer"
