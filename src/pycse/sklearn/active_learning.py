@@ -375,18 +375,28 @@ class ThompsonSampling(AcquisitionFunction):
     minimize : bool, default=True
         If True, lower sampled values get higher scores.
     random_state : int, np.random.Generator, np.random.RandomState or None
-        Seed for reproducibility. With an int, every call to ``score`` uses the
-        same seed (so identical inputs give identical scores).
+        Seed for reproducibility. The generator is built once, so successive
+        calls to ``score`` give different draws, while two instances with the
+        same integer seed give the same sequence of draws. Assigning a new
+        ``random_state`` resets the generator.
     """
 
     def __init__(self, minimize=True, random_state=None):
         self.minimize = minimize
         self.random_state = random_state
 
+    @property
+    def random_state(self):
+        return self._random_state
+
+    @random_state.setter
+    def random_state(self, value):
+        self._random_state = value
+        self._rng = _check_rng(value)
+
     def score(self, X_candidates, model):
-        rng = _check_rng(self.random_state)
         mu, std = model.predict(X_candidates, return_std=True)
-        samples = rng.normal(mu, np.maximum(std, 1e-10))
+        samples = self._rng.normal(mu, np.maximum(std, 1e-10))
         if self.minimize:
             return -samples
         return samples
@@ -642,7 +652,7 @@ class ActiveLearner:
                 self._rng = _check_rng(value)
         return self
 
-    def suggest(self, n_points=5, batch_strategy="greedy", candidates=None):
+    def suggest(self, n_points=5, batch_strategy="greedy", candidates=None, penalty_scale=0.1):
         """Suggest the next points to evaluate.
 
         Parameters
@@ -657,6 +667,10 @@ class ActiveLearner:
         candidates : np.ndarray or None, default=None
             Custom candidate points. If None, generates candidates using
             ``candidate_method``.
+        penalty_scale : float, default=0.1
+            Width of the Gaussian penalty used by the "penalized" strategy, as a
+            fraction of each dimension's range. Larger values spread a batch
+            out more.
 
         Returns
         -------
@@ -678,7 +692,7 @@ class ActiveLearner:
         if batch_strategy == "greedy":
             return self._suggest_greedy(candidates, n_points)
         elif batch_strategy == "penalized":
-            return self._suggest_penalized(candidates, n_points)
+            return self._suggest_penalized(candidates, n_points, penalty_scale)
         elif batch_strategy == "thompson":
             return self._suggest_thompson(candidates, n_points)
         else:
@@ -699,24 +713,40 @@ class ActiveLearner:
             metadata={"batch_strategy": "greedy"},
         )
 
-    def _suggest_penalized(self, candidates, n_points):
-        """Sequential greedy with Gaussian distance penalty."""
-        scores = self.acquisition.score(candidates, self.model)
-        selected_idx = []
-        penalty = np.zeros(len(candidates))
+    def _suggest_penalized(self, candidates, n_points, penalty_scale=0.1):
+        """Sequential greedy with a multiplicative Gaussian distance penalty.
 
-        # Determine length scale from bounds
-        ranges = np.array([b[1] - b[0] for b in self.bounds])
-        length_scale = np.mean(ranges) / np.sqrt(len(self.bounds))
+        Scores are shifted to be non-negative, and each selected point
+        multiplies the scores of its neighbors by ``1 - exp(-d**2 / 2 s**2)``
+        (``d`` is the distance in range-normalized units and ``s`` is
+        ``penalty_scale``). Selected points are masked so they are never chosen
+        twice.
+        """
+        scores = np.asarray(self.acquisition.score(candidates, self.model), dtype=float)
+        if penalty_scale <= 0:
+            raise ValueError("penalty_scale must be positive.")
+        selected_idx = []
+
+        ranges = np.array([b[1] - b[0] for b in self.bounds], dtype=float)
+        ranges[ranges == 0] = 1.0
+
+        finite = np.isfinite(scores)
+        base = scores - (scores[finite].min() if finite.any() else 0.0)
+        # A small offset keeps ties broken by the score when all shifted
+        # scores near a selection are zero.
+        base = np.where(finite, base, 0.0) + 1e-12
+        weight = np.ones(len(candidates))
+        available = np.ones(len(candidates), dtype=bool)
 
         for _ in range(min(n_points, len(candidates))):
-            penalized_scores = scores - penalty
-            idx = np.argmax(penalized_scores)
+            penalized_scores = np.where(available, base * weight, -np.inf)
+            idx = int(np.argmax(penalized_scores))
             selected_idx.append(idx)
+            available[idx] = False
 
-            # Add Gaussian penalty around selected point
+            # Down-weight the neighbors of the selected point
             dists = np.linalg.norm((candidates - candidates[idx]) / ranges, axis=1)
-            penalty += scores[idx] * np.exp(-0.5 * (dists / (length_scale / np.mean(ranges))) ** 2)
+            weight *= 1.0 - np.exp(-0.5 * (dists / penalty_scale) ** 2)
 
         selected_idx = np.array(selected_idx)
         return AcquisitionResult(
