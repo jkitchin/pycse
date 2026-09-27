@@ -458,3 +458,55 @@ class TestJsonCache:
         capsys.readouterr()
 
         JsonCache.verbose = False  # Reset
+
+
+class TestRoundTripTypes:
+    """SqlCache/JsonCache return the same types on a hit as on a miss (#94)."""
+
+    @staticmethod
+    def _value(x):
+        import numpy as np
+
+        return np.array([x, 2 * x]), (x, x), np.float32(1.5), {"t": (1, [2, (3,)])}
+
+    def _check(self, a, b):
+        import numpy as np
+
+        assert type(a) is type(b) is tuple
+        assert isinstance(b[0], np.ndarray) and b[0].dtype == a[0].dtype
+        np.testing.assert_array_equal(a[0], b[0])
+        assert b[1] == (1, 1) and isinstance(b[1], tuple)
+        assert type(b[2]) is type(a[2])
+        assert b[3] == {"t": (1, [2, (3,)])}
+
+    def test_sqlcache(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(SqlCache, "cache", str(tmp_path / "c.sqlite"))
+
+        @SqlCache
+        def h(x):
+            return TestRoundTripTypes._value(x)
+
+        self._check(h(1), h(1))
+
+    def test_jsoncache(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(JsonCache, "cache", str(tmp_path / "jc"))
+
+        @JsonCache
+        def h(x):
+            return TestRoundTripTypes._value(x)
+
+        self._check(h(1), h(1))
+
+
+def test_hashcache_dump_load_use_configured_cache(tmp_path, monkeypatch):
+    """HashCache.dump/load default to HashCache.cache (#94)."""
+    cache = tmp_path / "configured"
+    work = tmp_path / "work"
+    work.mkdir()
+    monkeypatch.setattr(HashCache, "cache", str(cache))
+    monkeypatch.chdir(work)
+
+    hsh = HashCache.dump(a=1)
+    assert not (work / "cache").exists()
+    assert cache.is_dir()
+    assert HashCache.load(hsh) == {"a": 1}
