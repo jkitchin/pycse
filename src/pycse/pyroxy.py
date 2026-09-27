@@ -22,6 +22,24 @@ class MaxCallsExceededException(Exception):
     """Raised when maximum number of function calls is exceeded."""
 
 
+def _model_is_fitted(model):
+    """Return True if MODEL appears to have been fitted.
+
+    Some sklearn models (e.g. GaussianProcessRegressor) predict from their prior
+    instead of raising NotFittedError, and even declare that they do not
+    require fitting, so we cannot rely on predict or check_is_fitted. We use
+    sklearn's convention: a fitted model has an attribute ending in "_" (or
+    defines __sklearn_is_fitted__).
+    """
+    if hasattr(model, "__sklearn_is_fitted__"):
+        return bool(model.__sklearn_is_fitted__())
+    try:
+        attrs = vars(model)
+    except TypeError:
+        return True
+    return any(k.endswith("_") and not k.startswith("__") for k in attrs)
+
+
 class _Surrogate:
     def __init__(self, func, model, tol=1, max_calls=-1, verbose=False):
         """Initialize a Surrogate function.
@@ -128,6 +146,13 @@ class _Surrogate:
         # Ensure X is 2D for sklearn compatibility
         X = np.atleast_2d(X)
 
+        # With no training data and an unfitted model, any prediction would come
+        # from the model's prior (or fail), so always run the true function.
+        if self.xtrain is None and not _model_is_fitted(self.model):
+            if self.verbose:
+                print(f"Running {X} to initialize the model.")
+            return self.add(X)
+
         try:
             pf, se = self.model.predict(X, return_std=True)
 
@@ -166,15 +191,7 @@ class _Surrogate:
         except (AttributeError, NotFittedError):
             if self.verbose:
                 print(f"Running {X} to initialize the model.")
-            y = self.func(X)
-            self.func_calls += 1
-
-            self.xtrain = X
-            self.ytrain = y
-
-            self.model.fit(X, y)
-            self.ntrain += 1
-            return y
+            return self.add(X)
 
     def plot(self):
         """Generate a parity plot of the surrogate.
@@ -273,7 +290,7 @@ class ActiveSurrogate:
     """
 
     @staticmethod
-    def _generate_lhs_samples(bounds, n_samples):
+    def _generate_lhs_samples(bounds, n_samples, rng=None):
         """Generate Latin Hypercube samples within bounds.
 
         Parameters
@@ -282,6 +299,8 @@ class ActiveSurrogate:
             Domain bounds as [(low1, high1), (low2, high2), ...].
         n_samples : int
             Number of samples to generate.
+        rng : int, np.random.Generator or None
+            Random state for the sampler.
 
         Returns
         -------
@@ -289,7 +308,7 @@ class ActiveSurrogate:
             LHS samples scaled to bounds.
         """
         n_dims = len(bounds)
-        sampler = LatinHypercube(d=n_dims)
+        sampler = LatinHypercube(d=n_dims, seed=rng)
         unit_samples = sampler.random(n=n_samples)
 
         # Scale from [0,1] to actual bounds
@@ -568,6 +587,7 @@ class ActiveSurrogate:
         verbose=False,
         callback=None,
         tol=1.0,
+        random_state=None,
     ):
         """Build a surrogate model using active learning.
 
@@ -618,6 +638,11 @@ class ActiveSurrogate:
         tol : float, default=1.0
             Tolerance for returned _Surrogate object.
 
+        random_state : int, np.random.Generator or None, default=None
+            Seed for the initial design, test points and candidates. One
+            generator is used for every draw, so the same seed (with a
+            deterministic ``func`` and ``model``) reproduces the same build.
+
         Returns
         -------
         surrogate : _Surrogate
@@ -662,8 +687,10 @@ class ActiveSurrogate:
             "X_sampled": [],
         }
 
+        rng = np.random.default_rng(random_state)
+
         # Generate initial samples via LHS
-        X_train = cls._generate_lhs_samples(bounds, n_initial)
+        X_train = cls._generate_lhs_samples(bounds, n_initial, rng)
         y_train = func(X_train)
 
         # Fit initial model
@@ -675,7 +702,7 @@ class ActiveSurrogate:
         # Active learning loop
         for iteration in range(max_iterations):
             # Generate test points for uncertainty estimation
-            X_test = cls._generate_lhs_samples(bounds, n_test_points)
+            X_test = cls._generate_lhs_samples(bounds, n_test_points, rng)
             _, test_uncertainties = model.predict(X_test, return_std=True)
 
             # Get training uncertainties
@@ -704,7 +731,7 @@ class ActiveSurrogate:
                 break
 
             # Generate candidate points
-            X_candidates = cls._generate_lhs_samples(bounds, n_candidates)
+            X_candidates = cls._generate_lhs_samples(bounds, n_candidates, rng)
 
             # Select next batch
             X_new = cls._select_batch(X_candidates, model, y_train, acquisition, batch_size)

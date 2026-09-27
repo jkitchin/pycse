@@ -437,3 +437,41 @@ class TestLeafModelPerformance:
         assert 0.5 < metrics["std_z_score"] < 1.5
         assert metrics["within_1std"] > 0.5
         assert metrics["within_2std"] > 0.8
+
+
+def _piecewise_linear():
+    rng = np.random.default_rng(0)
+    x = np.linspace(0, 5, 200)
+    y = np.where(x < 2.5, 1 + 2 * x, 6 - (x - 2.5)) + 0.02 * rng.standard_normal(x.size)
+    return x[:, None], y
+
+
+def test_refine_splits_finds_breakpoint():
+    """refine_splits=True places splits for the leaf model (#99)."""
+    X, y = _piecewise_linear()
+    m = LeafModelRegressor(
+        LinearRegression(), max_depth=1, min_samples_leaf=10, refine_splits=True
+    ).fit(X, y)
+    assert abs(m.tree_.threshold[0] - 2.5) < 0.1
+    assert m.score(X, y) > 0.999
+
+
+def test_refine_splits_deep_tree_has_model_for_every_leaf():
+    X, y = _piecewise_linear()
+    m = LeafModelRegressor(
+        LinearRegression(), max_depth=3, min_samples_leaf=5, refine_splits=True
+    ).fit(X, y)
+    assert len(m.leaf_models_) == m.get_n_leaves()
+    assert m.score(X, y) > 0.999
+    Xt = np.linspace(0, 5, 37)[:, None]
+    assert np.all(np.isfinite(m.predict(Xt)))
+
+
+def test_clone_keeps_tree_params():
+    from sklearn.base import clone
+
+    m = LeafModelRegressor(LinearRegression(), max_depth=2, min_samples_leaf=7, refine_splits=True)
+    c = clone(m)
+    assert c.max_depth == 2
+    assert c.min_samples_leaf == 7
+    assert c.refine_splits is True

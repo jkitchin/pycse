@@ -486,3 +486,39 @@ class TestIntegration:
         result = learner.suggest(n_points=3)
         # EI should be non-negative
         assert np.all(result.scores >= -1e-10)
+
+
+def test_penalized_batches_have_no_duplicates():
+    """Penalized batches never repeat a point (#95)."""
+    from sklearn.gaussian_process import GaussianProcessRegressor
+
+    rng = np.random.default_rng(0)
+
+    def f(X):
+        return np.sum((X - 0.3) ** 2, axis=1)
+
+    for seed in range(5):
+        X0 = rng.uniform(0, 1, (6, 2))
+        al = ActiveLearner(
+            GaussianProcessRegressor(normalize_y=True),
+            [(0, 1), (0, 1)],
+            ExpectedImprovement(),
+            X_init=X0,
+            y_init=f(X0),
+            random_state=seed,
+        )
+        pts = np.asarray(al.suggest(n_points=6, batch_strategy="penalized").points)
+        assert len({tuple(p) for p in pts}) == len(pts)
+
+
+def test_thompson_sampling_int_seed_varies_between_calls():
+    """ThompsonSampling(random_state=int) draws differently on each call (#95)."""
+    from sklearn.gaussian_process import GaussianProcessRegressor
+
+    gp = GaussianProcessRegressor().fit(np.array([[0.0], [1.0]]), np.array([0.0, 1.0]))
+    Xc = np.linspace(0, 1, 11)[:, None]
+    ts = ThompsonSampling(random_state=0)
+    first = ts.score(Xc, gp)
+    assert not np.allclose(first, ts.score(Xc, gp))
+    # Same seed on a new instance reproduces the sequence
+    np.testing.assert_allclose(first, ThompsonSampling(random_state=0).score(Xc, gp))

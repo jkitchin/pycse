@@ -12,7 +12,8 @@ The network computes:
     f(x) = a^T @ z_L + c^T @ x_signed + b
 
 where:
-    - phi is a nondecreasing activation (softplus or relu)
+    - phi is a nondecreasing activation (softplus or relu), or its concave
+      reflection -phi(-x) (see "Shape" below)
     - x_signed = x * sign(monotonicity), where sign is +1 for increasing,
       -1 for decreasing, and x is unchanged for unconstrained features
     - Wx_k are constrained to be elementwise nonnegative for monotonic features
@@ -25,6 +26,21 @@ Monotonicity is guaranteed because:
 2. Nonnegative weights with nondecreasing activations = monotonically increasing
 3. Sign flipping of inputs converts decreasing to increasing constraint
 4. Unconstrained features have unconstrained weights (no monotonicity guarantee)
+
+Shape (convexity):
+------------------
+softplus and relu are convex, and nonnegative combinations of convex,
+nondecreasing functions are convex. So a network that only uses phi is an
+input-convex network: every fitted function is monotone *and convex* in the
+monotonic features, and cannot fit concave (e.g. saturating) or S-shaped data.
+
+The ``convexity`` parameter controls this:
+    - None (default): monotone only. Half of the units in each hidden layer use
+      phi (convex) and half use -phi(-x) (concave). Both are nondecreasing, so
+      monotonicity is preserved, and composing them lets the network represent
+      convex, concave and S-shaped monotone functions.
+    - "convex": every unit uses phi, so f is monotone and convex.
+    - "concave": every unit uses -phi(-x), so f is monotone and concave.
 
 LLPR Uncertainty Quantification:
 -------------------------------
@@ -173,6 +189,16 @@ def _init_params(
     return params
 
 
+def _concave_mask(n_units: int, convexity: Union[str, None]) -> jnp.ndarray:
+    """Return a boolean mask of which hidden units use the concave activation."""
+    if convexity == "convex":
+        return jnp.zeros(n_units, dtype=bool)
+    if convexity == "concave":
+        return jnp.ones(n_units, dtype=bool)
+    # Monotone only: the second half of the units are concave.
+    return jnp.arange(n_units) >= (n_units + 1) // 2
+
+
 def _forward(
     params: Dict[str, Any],
     x: jnp.ndarray,
@@ -180,6 +206,7 @@ def _forward(
     activation: str = "softplus",
     nonneg_param: str = "softplus",
     return_features: bool = False,
+    convexity: Union[str, None] = None,
 ) -> Union[jnp.ndarray, Tuple[jnp.ndarray, jnp.ndarray]]:
     """Forward pass through the monotonic network.
 
@@ -190,6 +217,7 @@ def _forward(
         activation: Activation function.
         nonneg_param: Parameterization for nonnegative weights.
         return_features: If True, also return last-layer features for LLPR.
+        convexity: None (monotone only), "convex" or "concave".
 
     Returns:
         Scalar output f(x), or (output, features) if return_features=True.
@@ -226,8 +254,10 @@ def _forward(
             Wz = make_nonneg(Wz_raw)
             pre_act = pre_act + z @ Wz
 
-        # Apply activation
-        z = phi(pre_act)
+        # Apply activation. Concave units use -phi(-x), which is also
+        # nondecreasing, so monotonicity is preserved.
+        concave = _concave_mask(pre_act.shape[-1], convexity)
+        z = jnp.where(concave, -phi(-pre_act), phi(pre_act))
 
     # Store last-layer features before output
     features = z
@@ -259,6 +289,7 @@ def _forward_batch(
     activation: str = "softplus",
     nonneg_param: str = "softplus",
     return_features: bool = False,
+    convexity: Union[str, None] = None,
 ) -> Union[jnp.ndarray, Tuple[jnp.ndarray, jnp.ndarray]]:
     """Batched forward pass using vmap.
 
@@ -269,13 +300,16 @@ def _forward_batch(
         activation: Activation function.
         nonneg_param: Parameterization for nonnegative weights.
         return_features: If True, also return features.
+        convexity: None (monotone only), "convex" or "concave".
 
     Returns:
         Output array of shape (n_samples,), or (outputs, features).
     """
 
     def forward_single(x):
-        return _forward(params, x, monotonicity, activation, nonneg_param, return_features)
+        return _forward(
+            params, x, monotonicity, activation, nonneg_param, return_features, convexity
+        )
 
     if return_features:
         outputs, features = vmap(forward_single)(X)
@@ -296,6 +330,13 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
     - Nonnegative output weights
     - Nondecreasing activation functions
 
+    With only convex activations (softplus, relu) this construction is an
+    input-convex network, so the fit would also be *convex*. By default
+    (``convexity=None``) half of the hidden units use the concave reflection
+    ``-phi(-x)`` instead, so the model is monotone only and can fit concave
+    (saturating) and S-shaped monotone data. Use ``convexity="convex"`` or
+    ``"concave"`` to impose a shape as well.
+
     Parameters
     ----------
     hidden_dims : tuple of int, default=(32, 32)
@@ -312,6 +353,14 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
     activation : str, default="softplus"
         Activation function. Must be nondecreasing.
         Options: "softplus", "relu".
+
+    convexity : {None, "convex", "concave"}, default=None
+        Shape constraint in addition to monotonicity.
+        - None: monotone only (mix of convex and concave hidden units).
+        - "convex": monotone and convex (the behavior before this option
+          existed; an input-convex network).
+        - "concave": monotone and concave.
+        Shape constraints hold in every input feature.
 
     nonneg_param : str, default="softplus"
         Parameterization for enforcing nonnegativity.
@@ -405,6 +454,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
         hidden_dims: Tuple[int, ...] = (32, 32),
         monotonicity: Union[int, list, np.ndarray] = 1,
         activation: str = "softplus",
+        convexity: Union[str, None] = None,
         nonneg_param: str = "softplus",
         learning_rate: float = 5e-3,
         weight_decay: float = 0.0,
@@ -421,6 +471,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
         self.hidden_dims = hidden_dims
         self.monotonicity = monotonicity
         self.activation = activation
+        self.convexity = convexity
         self.nonneg_param = nonneg_param
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -506,6 +557,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
             self.monotonicity_,
             self.activation,
             self.nonneg_param,
+            convexity=self.convexity,
             return_features=True,
         )
 
@@ -538,6 +590,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
                 self.monotonicity_,
                 self.activation,
                 self.nonneg_param,
+                convexity=self.convexity,
             )
         )
         _, features = _forward_batch(
@@ -546,6 +599,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
             self.monotonicity_,
             self.activation,
             self.nonneg_param,
+            convexity=self.convexity,
             return_features=True,
         )
 
@@ -609,6 +663,10 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
 
         # Validate and store monotonicity
         self.monotonicity_ = self._validate_monotonicity(self.n_features_in_)
+        if self.convexity not in (None, "convex", "concave"):
+            raise ValueError(
+                f"convexity must be None, 'convex' or 'concave', got {self.convexity!r}"
+            )
 
         X_proc = self._preprocess_X(X, fit=True)
         y_proc = self._preprocess_y(y, fit=True)
@@ -656,11 +714,14 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
         # JIT-compiled functions
         activation = self.activation
         nonneg_param = self.nonneg_param
+        convexity = self.convexity
         monotonicity = self.monotonicity_
 
         @jit
         def loss_fn(params, X_batch, y_batch):
-            preds = _forward_batch(params, X_batch, monotonicity, activation, nonneg_param)
+            preds = _forward_batch(
+                params, X_batch, monotonicity, activation, nonneg_param, convexity=convexity
+            )
             return jnp.mean((preds - y_batch) ** 2)
 
         @jit
@@ -741,6 +802,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
             self.monotonicity_,
             self.activation,
             self.nonneg_param,
+            convexity=self.convexity,
         )
 
         return self._postprocess_y(preds)
@@ -775,6 +837,7 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
             self.monotonicity_,
             self.activation,
             self.nonneg_param,
+            convexity=self.convexity,
             return_features=True,
         )
 
@@ -813,8 +876,12 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
         monotonicity = self.monotonicity_
         params = self.params_
 
+        convexity = self.convexity
+
         def forward_single(x_std):
-            return _forward(params, x_std, monotonicity, activation, nonneg_param)
+            return _forward(
+                params, x_std, monotonicity, activation, nonneg_param, convexity=convexity
+            )
 
         grad_fn = vmap(grad(forward_single))
         grads_std = grad_fn(X_proc)

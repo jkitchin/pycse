@@ -336,3 +336,33 @@ class TestEdgeCases:
 
         assert len(y) == 2
         assert surr.func_calls == 1
+
+
+def test_unfitted_prior_model_calls_function():
+    """An unfitted GP must not answer from its prior (#96)."""
+    calls = []
+
+    def f(X):
+        calls.append(1)
+        return np.sum(X, axis=1)
+
+    s = _Surrogate(f, GaussianProcessRegressor(), tol=2.0)
+    y = s(np.array([[0.3, 0.4]]))
+    assert len(calls) == 1
+    assert np.allclose(y, 0.7)
+
+
+def test_active_surrogate_random_state():
+    """ActiveSurrogate.build is reproducible with random_state (#96)."""
+    from pycse.pyroxy import ActiveSurrogate
+
+    def g(X):
+        return np.sin(3 * X[:, 0])
+
+    runs = [
+        ActiveSurrogate.build(
+            g, [(0.0, 2.0)], GaussianProcessRegressor(), random_state=1, max_iterations=3
+        )[0].xtrain
+        for _ in range(2)
+    ]
+    np.testing.assert_array_equal(runs[0], runs[1])

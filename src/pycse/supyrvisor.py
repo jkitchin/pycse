@@ -112,59 +112,41 @@ def supervisor(check_funcs=(), exception_funcs=(), max_errors=5, verbose=False):
 # The manager version
 
 
+def _wraps_checker(func, wrapper):
+    """Copy FUNC's name and docstring onto WRAPPER.
+
+    Works for plain functions and for callable instances (which have no
+    __name__ of their own, so the class name is used instead).
+    """
+    functools.update_wrapper(wrapper, func, updated=())
+    if not hasattr(func, "__name__"):
+        wrapper.__name__ = type(func).__name__
+        wrapper.__qualname__ = type(func).__qualname__
+    return wrapper
+
+
 def check_result(func):
     """Decorator for functions to check the function result."""
 
-    # This code defines a wrapper for a callable class, or a function. It feels
-    # weird, but I could not find a way to inspect the func to see if it is a
-    # class method any other way. inspect.ismethod did not work here.
-    # Check if this is a callable instance (has __call__ but isn't a function)
-    is_callable_instance = (
-        hasattr(func, "__call__") and not inspect.isfunction(func) and not inspect.ismethod(func)
-    )
+    def wrapper(arguments, result):
+        if isinstance(result, Exception):
+            return None
+        else:
+            return func(arguments, result)
 
-    if is_callable_instance:
-
-        def wrapper(arguments, result):
-            if isinstance(result, Exception):
-                return None
-            else:
-                return func(arguments, result)
-
-    else:
-
-        def wrapper(arguments, result):
-            if isinstance(result, Exception):
-                return None
-            else:
-                return func(arguments, result)
-
-    return wrapper
+    return _wraps_checker(func, wrapper)
 
 
 def check_exception(func):
     """Decorator for functions to fix exceptions."""
-    is_callable_instance = (
-        hasattr(func, "__call__") and not inspect.isfunction(func) and not inspect.ismethod(func)
-    )
 
-    if is_callable_instance:
+    def wrapper(arguments, result):
+        if isinstance(result, Exception):
+            return func(arguments, result)
+        else:
+            return None
 
-        def wrapper(arguments, result):
-            if isinstance(result, Exception):
-                return func(arguments, result)
-            else:
-                return None
-
-    else:
-
-        def wrapper(arguments, result):
-            if isinstance(result, Exception):
-                return func(arguments, result)
-            else:
-                return None
-
-    return wrapper
+    return _wraps_checker(func, wrapper)
 
 
 def manager(checkers=(), max_errors=5, verbose=False):
