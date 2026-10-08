@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curvature and Tc</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="justify-content: space-between">
+    <div class="legend">
+      <span><i class="dash" style="color:#e8e6df"></i>truth</span>
+      <span><i style="background:#d95926"></i>ZENN</span>
+      <span><i style="background:#3987e5"></i>regular NN</span>
+      <span><i style="background:#e8e6df;width:3px;height:14px"></i>training T</span>
+    </div>
+    <div class="row">
+      <span class="pill" id="tcs"></span>
+    </div>
+  </div>
+  <div class="grow"><svg id="main"></svg></div>
+  <div class="controls">
+    <button id="play">▶ Draw</button>
+    <button id="zoom">Zoom to Tc</button>
+    <span style="flex:1"></span>
+    <span class="readout" style="min-width:auto;color:var(--ink-2)">F″(x=0) &lt; 0: barrier between two wells.  F″(0) = 0 defines T<sub>c</sub>.</span>
+  </div>
+  <div class="tip" id="tip"></div>
+  <input id="n" type="range" min="1" max="38" value="38" hidden>
+</div>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+const Ts = ZD.T, d2 = ZD.d2F0, Tc = ZD.Tc;
+const lims = { full: [-26, 4], zoom: [-3, 2.5] };
+let mode = "full";
+const plot = new Plot(document.getElementById("main"), {
+  id: "c", w: 1100, h: 450, xlim: [0.1, 2.05], ylim: lims.full, m: { l: 70, r: 24, t: 14, b: 50 },
+  xlabel: "temperature T", ylabel: "curvature  ∂²F/∂x² at x = 0", xticks: 8,
+});
+const n = document.getElementById("n");
+document.getElementById("tcs").textContent =
+  `Tc  truth ${Tc.true.toFixed(3)} · ZENN ${Tc.zenn.toFixed(3)} · NN ${Tc.mlp.toFixed(3)}`;
+function draw() {
+  const k = +n.value;
+  plot.items = {}; plot.data.innerHTML = ""; plot.over.querySelectorAll("g").forEach(g => g.remove());
+  plot.band("hot", 1.0, 2.05, { color: "#3987e5", opacity: 0.08 });
+  plot.band("cold", 0.1, 0.3, { color: "#3987e5", opacity: 0.08 });
+  plot.line("zero", [0.1, 2.05], [0, 0], { color: "#6b6a66", width: 1.5 });
+  const lab = el("g", {}, plot.over);
+  const [y0, y1] = plot.ylim, yl = y0 + (y1 - y0) * (mode === "zoom" ? 0.12 : 0.35);
+  el("text", { x: plot.sx(plot.xlim[1]) - 12, y: plot.sy(yl), class: "note", fill: "#c4c2ba", "text-anchor": "end" }, lab)
+    .textContent = "below 0: two wells (ordered)  ·  above 0: one well (disordered)";
+  ZD.T_train.forEach((t, i) => plot.line("tr" + i, [t, t], [plot.ylim[0], plot.ylim[0] + (plot.ylim[1] - plot.ylim[0]) * 0.04], { color: COLORS.truth, width: 3 }));
+  const T = Ts.slice(0, k);
+  plot.line("t", T, d2.true.slice(0, k), { color: COLORS.truth, width: 3, dash: "8 7" });
+  plot.line("m", T, d2.mlp.slice(0, k), { color: COLORS.mlp, width: 3 });
+  plot.line("z", T, d2.zenn.slice(0, k), { color: COLORS.zenn, width: 3 });
+  if (k === Ts.length && mode === "zoom") {
+    plot.vline("vt", Tc.true, { color: "#e8e6df", label: "" });
+    plot.vline("vz", Tc.zenn, { color: COLORS.zenn });
+    plot.vline("vm", Tc.mlp, { color: COLORS.mlp });
+  }
+}
+plot.hover(document.getElementById("tip"), (tv) => {
+  const j = nearest(Ts, tv);
+  return {
+    x: Ts[j], title: `T = ${Ts[j].toFixed(2)}`,
+    rows: [["truth", "true", COLORS.truth], ["ZENN", "zenn", COLORS.zenn], ["NN", "mlp", COLORS.mlp]]
+      .map(([nm, key, c]) => ({ name: nm, color: c, value: d2[key][j].toFixed(2) })),
+  };
+});
+const zb = document.getElementById("zoom");
+zb.onclick = () => {
+  mode = mode === "full" ? "zoom" : "full";
+  plot.setLim(mode === "zoom" ? [0.3, 1.1] : [0.1, 2.05], lims[mode]);
+  zb.textContent = mode === "zoom" ? "Full range" : "Zoom to Tc";
+  draw();
+};
+const toggle = player(n, document.getElementById("play"), draw, { fps: 10 });
+keys(n, toggle, draw);
+draw();
+</script>
+</body>
+</html>

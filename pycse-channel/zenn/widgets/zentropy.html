@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zentropy Explainer</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="justify-content: space-between">
+    <div class="legend">
+      <span><i style="background:#199e70"></i>F<sub>L</sub> ordered, x = −1</span>
+      <span><i style="background:#c98500"></i>F<sub>R</sub> ordered, x = +1</span>
+      <span><i style="background:#9085e9"></i>F<sub>D</sub> disordered (high S)</span>
+      <span><i style="background:#e8e6df;height:5px"></i>total F = −kT ln Z</span>
+    </div>
+    <span class="pill" id="phase"></span>
+  </div>
+  <div class="grow" style="flex: 2.1"><svg id="top"></svg></div>
+  <div class="panel-title">which configuration is "in charge": p<sub>k</sub>(x) = e<sup>−F<sub>k</sub>/kT</sup> / Z</div>
+  <div class="grow" style="flex: 1"><svg id="bot"></svg></div>
+  <div class="controls">
+    <button id="play">▶ Play</button>
+    <span>T</span>
+    <input id="T" type="range" min="0" max="190" value="10">
+    <span class="readout" id="Tval"></span>
+  </div>
+  <div class="tip" id="tip"></div>
+</div>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+const D = ZD.fine, x = ZD.x, Tc = ZD.Tc.true;
+const cols = [COLORS.L, COLORS.R, COLORS.D];
+const names = ["F_L", "F_R", "F_D"];
+const ptop = new Plot(document.getElementById("top"), {
+  id: "t", w: 1100, h: 360, xlim: [-1.8, 1.8], ylim: [-4.5, 4], m: { l: 64, r: 20, t: 10, b: 30 },
+  ylabel: "free energy F",
+});
+const pbot = new Plot(document.getElementById("bot"), {
+  id: "b", w: 1100, h: 170, xlim: [-1.8, 1.8], ylim: [0, 1], yticks: 2, m: { l: 64, r: 20, t: 6, b: 46 },
+  xlabel: "order parameter x",
+});
+const slider = document.getElementById("T");
+
+function draw() {
+  const i = +slider.value, T = D.T[i];
+  D.Fk[i].forEach((fk, k) => ptop.line("k" + k, x, fk, { color: cols[k], width: 2.5, opacity: 0.9 }));
+  ptop.line("F", x, D.F[i], { color: COLORS.truth, width: 5 });
+  pbot.stack("p", x, D.p[i], cols);
+  document.getElementById("Tval").textContent = `T = ${T.toFixed(2)}   (T/Tc = ${(T / Tc).toFixed(2)})`;
+  const f = D.F[i], m = Math.floor(f.length / 2);
+  const dbl = f[m] > Math.min(...f) + 1e-3;
+  document.getElementById("phase").textContent = dbl ? "ordered: double well" : "disordered: single well";
+}
+ptop.hover(document.getElementById("tip"), (xv) => {
+  const i = +slider.value, j = nearest(x, xv);
+  return {
+    x: x[j], title: `x = ${x[j].toFixed(2)}, T = ${D.T[i].toFixed(2)}`,
+    rows: D.Fk[i].map((fk, k) => ({ name: names[k], color: cols[k], value: fk[j].toFixed(2) + `  (p ${D.p[i][k][j].toFixed(2)})` }))
+      .concat([{ name: "F total", color: COLORS.truth, value: D.F[i][j].toFixed(2) }]),
+  };
+});
+slider.addEventListener("input", draw);
+const toggle = player(slider, document.getElementById("play"), draw, { fps: 24 });
+keys(slider, toggle, draw);
+draw();
+</script>
+</body>
+</html>
