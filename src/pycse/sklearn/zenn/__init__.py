@@ -15,8 +15,9 @@ Reference:
     "ZENN: A thermodynamics-inspired computational framework for
     heterogeneous data-driven modeling." PNAS 123(1): e2511227122.
 
-Upstream: https://github.com/WilliamMoriaty/ZENN (MIT License).
-Vendored into pycse.sklearn — see NOTICE in this directory for attribution.
+This is an independent JAX/Flax implementation of the method in the paper, not a
+copy of the authors' reference code (https://github.com/WilliamMoriaty/ZENN).
+See NOTICE in this directory for the differences.
 """
 
 from pycse.sklearn.zenn.estimators import ZENNClassifier, ZENNRegressor

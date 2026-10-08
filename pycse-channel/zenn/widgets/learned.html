@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learned Configurations</title>
+<link rel="stylesheet" href="common.css">
+<style>.cols { display: flex; gap: 18px; } .cols > div { flex: 1; display: flex; flex-direction: column; min-height: 0; }</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="legend">
+    <span><i class="dot" style="background:#199e70"></i>left-well configuration</span>
+    <span><i class="dot" style="background:#c98500"></i>right-well configuration</span>
+    <span><i class="dot" style="background:#9085e9"></i>disordered configuration (truth only)</span>
+    <span><i class="dot" style="background:#6b6a66"></i>other ZENN configurations</span>
+  </div>
+  <div class="cols grow">
+    <div><div class="panel-title">true p<sub>k</sub>(x)</div><div class="grow"><svg id="a"></svg></div></div>
+    <div><div class="panel-title">ZENN's learned p<sub>k</sub>(x), K = 4 (never told the truth)</div><div class="grow"><svg id="b"></svg></div></div>
+  </div>
+  <div class="controls">
+    <button id="play">▶ Play</button>
+    <span>T</span>
+    <input id="T" type="range" min="0" max="37" value="1">
+    <span class="readout" id="Tval"></span>
+  </div>
+</div>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+const x = ZD.x, Ts = ZD.T;
+const opts = (id) => ({ id, w: 540, h: 400, xlim: [-1.8, 1.8], ylim: [0, 1], yticks: 4, m: { l: 56, r: 12, t: 8, b: 50 },
+  xlabel: "order parameter x", ylabel: id === "a" ? "probability" : "" });
+const pa = new Plot(document.getElementById("a"), opts("a"));
+const pb = new Plot(document.getElementById("b"), opts("b"));
+// Match learned configurations to the true ones by where they dominate at low T
+const P0 = ZD.learned.p[1];
+const iL = nearest(x, -1), iR = nearest(x, 1);
+const kL = P0.map(r => r[iL]).indexOf(Math.max(...P0.map(r => r[iL])));
+const kR = P0.map(r => r[iR]).indexOf(Math.max(...P0.map(r => r[iR])));
+const others = P0.map((_, k) => k).filter(k => k !== kL && k !== kR);
+const slider = document.getElementById("T");
+function draw() {
+  const i = +slider.value;
+  pa.stack("p", x, ZD.truth.p[i], [COLORS.L, COLORS.R, COLORS.D]);
+  const P = ZD.learned.p[i];
+  const other = x.map((_, j) => others.reduce((s, k) => s + P[k][j], 0));
+  pb.stack("p", x, [P[kL], P[kR], other], [COLORS.L, COLORS.R, COLORS.other]);
+  [pa, pb].forEach(p => p.vline("tc", null));
+  document.getElementById("Tval").textContent = `T = ${Ts[i].toFixed(2)}  ${ZD.T_train.some(t => Math.abs(t - Ts[i]) < 1e-6) ? "(training T)" : ""}`;
+}
+slider.addEventListener("input", draw);
+const toggle = player(slider, document.getElementById("play"), draw, { fps: 4 });
+keys(slider, toggle, draw);
+draw();
+</script>
+</body>
+</html>

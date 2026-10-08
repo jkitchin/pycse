@@ -1,0 +1,29 @@
+#+title: ZENN video: presentation and example
+
+Slides: =zenn.md= (Marp) builds to =zenn.html=. Open =zenn.html= in a browser to present; the
+interactive slides are iframes into =widgets/=. Click inside a widget to use its keys (Space =
+play/next, Up/Down = nudge the slider), then click outside it so the arrow keys move slides again.
+
+#+BEGIN_SRC sh
+# 1. ground truth + ZENN vs MLP experiment (seed 0 feeds the widgets; ~30 s each)
+PYTHONPATH=../../src python experiment.py
+for s in 1 2 3; do PYTHONPATH=../../src python experiment.py $s; done
+python seeds_table.py          # numbers on the "four random seeds" slide
+
+# 2. bundle results for the widgets
+python make_data.py            # writes widgets/data.js
+
+# 3. build the deck (.marprc.yml turns on html)
+npx @marp-team/marp-cli@latest --html --allow-local-files --bespoke.osc=false zenn.md -o zenn.html < /dev/null
+#+END_SRC
+
+| file                     | what it is                                                         |
+|--------------------------+--------------------------------------------------------------------|
+| truth.py                 | 3-configuration zentropy free energy, Tc = 0.642                   |
+| experiment.py            | trains ZENNRegressor and sklearn MLPRegressor, writes results*.json |
+| widgets/zentropy.html    | T slider: configurations, total F, and p_k(x)                      |
+| widgets/architecture.html| step-through ZENN data flow vs a plain NN                          |
+| widgets/compare.html     | F(x) at any T: truth vs ZENN vs NN, live RMSE                      |
+| widgets/curvature.html   | d2F/dx2 at x = 0 vs T, critical temperature                        |
+| widgets/learned.html     | true vs ZENN-learned configuration probabilities                   |
+| widgets/timeline.html    | click-to-reveal history of zentropy and ZENN                       |

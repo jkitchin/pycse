@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZENN Timeline</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  .tl { position: relative; margin-top: 40px; }
+  .rail { position: absolute; left: 0; right: 0; top: 66px; height: 3px; background: #3a3a37; }
+  .fill { position: absolute; left: 0; top: 66px; height: 3px; background: var(--accent); width: 0; transition: width .7s ease-out; }
+  ol { list-style: none; display: flex; gap: 22px; padding: 0; margin: 0; position: relative; }
+  li { flex: 1; font-size: 21px; line-height: 1.35; color: var(--ink-2); opacity: .18; transform: translateY(10px);
+       transition: opacity .6s, transform .6s; }
+  li.on { opacity: 1; transform: none; }
+  li b { display: block; color: var(--ink); font-size: 36px; margin-bottom: 44px; position: relative; }
+  li b::after { content: ""; position: absolute; left: 0; top: 58px; width: 18px; height: 18px; border-radius: 50%;
+    background: #6b6a66; border: 4px solid var(--bg); }
+  li.on b::after { background: var(--ink-2); }
+  li.hot.on b::after { background: var(--accent); }
+  li em { color: var(--accent); font-style: normal; }
+  .hint { position: absolute; bottom: 8px; left: 10px; font-size: 15px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tl">
+    <div class="rail"></div><div class="fill" id="fill"></div>
+    <ol id="items">
+      <li><b>2014</b>Liu, Wang, Shang: anomalous thermal expansion explained by entropy <em>among</em> configurations</li>
+      <li><b>2022</b><em>Zentropy theory</em> formalized: entropy inside + entropy among configurations</li>
+      <li><b>2024</b><em>Zentropy</em> book collects the theory (Z.-K. Liu, Penn State)</li>
+      <li class="hot"><b>2025</b>Wang, Shang, Liu, Hao put zentropy <em>inside a neural network</em> (arXiv + GitHub)</li>
+      <li class="hot"><b>2026</b>Published in PNAS; now in <em>pycse.sklearn.zenn</em></li>
+    </ol>
+  </div>
+  <div class="hint">click or Space: next · Backspace: back</div>
+</div>
+<script>
+const li = [...document.querySelectorAll("li")];
+let n = 0;
+function show() {
+  li.forEach((e, i) => e.classList.toggle("on", i < n));
+  document.getElementById("fill").style.width = n ? `${Math.min(100, (n - 0.5) / li.length * 100)}%` : "0";
+}
+const next = () => { n = Math.min(li.length, n + 1); show(); };
+document.addEventListener("click", next);
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" || e.code === "ArrowRight") { e.preventDefault(); next(); }
+  if (e.code === "Backspace" || e.code === "ArrowLeft") { e.preventDefault(); n = Math.max(0, n - 1); show(); }
+});
+show();
+</script>
+</body>
+</html>

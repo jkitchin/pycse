@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZENN vs NN</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  .score { display: flex; gap: 22px; font-size: 18px; color: var(--ink-2); }
+  .score b { color: var(--ink); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="justify-content: space-between">
+    <div class="legend">
+      <span><i class="dash" style="color:#e8e6df"></i>truth</span>
+      <span><i style="background:#d95926"></i>ZENN</span>
+      <span><i style="background:#3987e5"></i>regular NN</span>
+      <span><i class="dot" style="background:#e8e6df"></i>training data</span>
+    </div>
+    <span class="pill" id="region"></span>
+  </div>
+  <div class="grow"><svg id="main"></svg></div>
+  <div class="row" style="justify-content: space-between">
+    <div class="score">RMSE vs truth at this T:
+      <span><i style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#d95926"></i> ZENN <b id="rz"></b></span>
+      <span><i style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#3987e5"></i> NN <b id="rm"></b></span>
+    </div>
+  </div>
+  <div style="height: 64px"><svg id="strip"></svg></div>
+  <div class="controls">
+    <button id="play">▶ Play</button>
+    <span>T</span>
+    <input id="T" type="range" min="0" max="37" value="3">
+    <span class="readout" id="Tval"></span>
+  </div>
+  <div class="tip" id="tip"></div>
+</div>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+const x = ZD.x, Ts = ZD.T, Ttr = ZD.T_train;
+const main = new Plot(document.getElementById("main"), {
+  id: "m", w: 1100, h: 380, xlim: [-1.8, 1.8], ylim: [-5, 4], m: { l: 64, r: 20, t: 10, b: 48 },
+  xlabel: "order parameter x", ylabel: "free energy F",
+});
+const strip = new Plot(document.getElementById("strip"), {
+  id: "s", w: 1100, h: 64, xlim: [0.1, 2.05], ylim: [0, 1], yticks: 1, xticks: 8, m: { l: 64, r: 20, t: 4, b: 26 },
+});
+strip.axes.querySelectorAll(".grid, text[text-anchor=end]").forEach(n => n.remove());
+strip.band("cold", 0.1, 0.3, { color: "#3987e5", opacity: 0.10 });
+strip.band("hot", 1.0, 2.05, { color: "#3987e5", opacity: 0.10 });
+Ttr.forEach((t, i) => strip.vline("tr" + i, t, { color: "#e8e6df", dash: "", width: 3 }));
+strip.vline("tc", ZD.Tc.true, { color: "#9a988f", dash: "3 3", label: "Tc" });
+const marker = el("polygon", { fill: "#d95926" }, strip.over);
+
+const slider = document.getElementById("T");
+const rmse = (a, b) => Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0) / a.length);
+function draw() {
+  const i = +slider.value, T = Ts[i];
+  main.line("t", x, ZD.F.true[i], { color: COLORS.truth, width: 3, dash: "8 7" });
+  main.line("m", x, ZD.F.mlp[i], { color: COLORS.mlp, width: 3 });
+  main.line("z", x, ZD.F.zenn[i], { color: COLORS.zenn, width: 3 });
+  const onTrain = Ttr.some(t => Math.abs(t - T) < 1e-6);
+  const xs = [], ys = [];
+  if (onTrain) ZD.train.T.forEach((t, j) => { if (Math.abs(t - T) < 1e-6) { xs.push(ZD.train.x[j]); ys.push(ZD.train.y[j]); } });
+  main.points("d", xs, ys, { color: COLORS.truth, r: 4.5 });
+  const region = onTrain ? "training temperature"
+    : T < Math.min(...Ttr) ? "extrapolation: colder than any data"
+    : T > Math.max(...Ttr) ? "extrapolation: hotter than any data" : "interpolation: between training T";
+  document.getElementById("region").textContent = region;
+  document.getElementById("rz").textContent = rmse(ZD.F.zenn[i], ZD.F.true[i]).toFixed(3);
+  document.getElementById("rm").textContent = rmse(ZD.F.mlp[i], ZD.F.true[i]).toFixed(3);
+  document.getElementById("Tval").textContent = `T = ${T.toFixed(2)}`;
+  const px = strip.sx(T);
+  marker.setAttribute("points", `${px - 9},${strip.ph + 2} ${px + 9},${strip.ph + 2} ${px},${strip.ph - 14}`);
+}
+main.hover(document.getElementById("tip"), (xv) => {
+  const i = +slider.value, j = nearest(x, xv);
+  return {
+    x: x[j], title: `x = ${x[j].toFixed(2)}, T = ${Ts[i].toFixed(2)}`,
+    rows: [["truth", "true", COLORS.truth], ["ZENN", "zenn", COLORS.zenn], ["NN", "mlp", COLORS.mlp]]
+      .map(([n, k, c]) => ({ name: n, color: c, value: ZD.F[k][i][j].toFixed(3) })),
+  };
+});
+slider.addEventListener("input", draw);
+const toggle = player(slider, document.getElementById("play"), draw, { fps: 4 });
+keys(slider, toggle, draw);
+draw();
+</script>
+</body>
+</html>
