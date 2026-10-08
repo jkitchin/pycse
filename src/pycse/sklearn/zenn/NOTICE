@@ -1,14 +1,13 @@
-This subpackage (pycse.sklearn.zenn) is a vendored copy of the ZENN project.
-
-Upstream:  https://github.com/WilliamMoriaty/ZENN
-License:   MIT
-Authors:   ZENN Contributors
+This subpackage (pycse.sklearn.zenn) is an independent JAX/Flax implementation
+of ZENN (Zentropy-Enhanced Neural Network), written for pycse from the
+method described in the paper below. It is not a copy of the authors' code.
 
 Paper:
   Wang, S.; Shang, S.-L.; Liu, Z.-K.; Hao, W. (2026).
   "ZENN: A thermodynamics-inspired computational framework for
   heterogeneous data-driven modeling."
   Proceedings of the National Academy of Sciences 123(1): e2511227122.
+  doi:10.1073/pnas.2511227122
 
 BibTeX:
   @article{wang2026zenn,
@@ -19,31 +18,26 @@ BibTeX:
     volume={123},
     number={1},
     pages={e2511227122},
-    year={2026}
+    year={2026},
+    doi={10.1073/pnas.2511227122}
   }
 
-Local modifications relative to upstream:
-  - Package namespace changed from `zenn.*` to `pycse.sklearn.zenn.*`
-    so it composes with the rest of pycse.sklearn.
-  - No algorithmic changes.
+The authors' reference code (PyTorch research scripts and notebooks for the
+paper's experiments) is at https://github.com/WilliamMoriaty/ZENN.
 
-MIT License
-===========
+Differences from the authors' reference code:
+  - Packaged as sklearn-compatible estimators (ZENNClassifier, ZENNRegressor,
+    ZENNRegressorNLL) built on JAX/Flax instead of per-experiment PyTorch
+    scripts.
+  - Configuration entropy is kept non-negative with softplus(net) rather
+    than net**2.
+  - ZENNRegressor defaults to a negative log-likelihood (NLL) loss in which
+    sigma^2 = sum_k p_k S_k, so the entropy networks also act as a noise
+    model. This is an addition, not part of the paper. MSE, hybrid, and
+    Jensen-Shannon losses are also available.
+  - Adds uncertainty tools (aleatoric/epistemic decomposition, prediction
+    intervals, calibration metrics, OOD scores, selective prediction), a
+    Chebyshev KAN backbone option, and critical-point/bifurcation analysis.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+This code is part of pycse and is distributed under pycse's license
+(GPL-3.0-or-later).
