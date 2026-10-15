@@ -22,14 +22,18 @@ This file provides context for Claude and other AI assistants working with this 
 pycse/
 ├── src/pycse/           # Main source code
 │   ├── PYCSE.py         # Core regression functions (regress, nlinfit, etc.)
+│   ├── cli.py           # `pycse` CLI (launch, mcp, skill)
+│   ├── skill/           # Claude Code skill: SKILL.md + reference/*.md
 │   ├── beginner.py      # Beginner-friendly utilities
 │   ├── utils.py         # General utilities
 │   ├── sklearn/         # sklearn-compatible ML models
 │   │   ├── kan.py       # Kolmogorov-Arnold Networks
 │   │   ├── jax_*.py     # JAX-based neural networks
-│   │   ├── dpose.py     # Deep ensemble models
+│   │   ├── dpose.py     # Shallow ensemble with uncertainty
+│   │   ├── zenn/        # Zentropy-enhanced neural networks
+│   │   ├── tests/       # Older tests, NOT collected (testpaths = src/pycse/tests)
 │   │   └── ...
-│   ├── tests/           # All tests live here
+│   ├── tests/           # Main test suite
 │   └── examples/        # Example notebooks
 ├── pycse-jb/            # Jupyter Book documentation (primary docs)
 ├── pycse-channel/       # YouTube companion materials
@@ -104,22 +108,37 @@ ruff check --fix src/pycse
 
 ### Core (`src/pycse/PYCSE.py`)
 - `regress()` - Linear regression with confidence intervals
+- `polyfit()` / `polyval()` - Polynomial fits with intervals
+- `predict()` - Prediction intervals for linear fits
 - `nlinfit()` - Nonlinear curve fitting
-- `odelay()` - ODE solving with event detection
+- `nlpredict()` - Prediction intervals for nonlinear fits
+- `ivp()` - ODE initial value problems (`solve_ivp` with defaults)
+- Prediction intervals (`yint`) have shape `(n, 2)`: lower, upper
 
 ### sklearn Models (`src/pycse/sklearn/`)
-All models follow sklearn's estimator API (fit/predict/score).
+All models follow sklearn's estimator API (fit/predict/score). Public names are
+lazily exported from `pycse.sklearn` (the `_LAZY` table in `sklearn/__init__.py`).
 
-- `KANRegressor` - Kolmogorov-Arnold Networks
-- `MonotonicNN` - Monotonic neural networks (JAX)
-- `PeriodicNN` - Periodic neural networks (JAX)
-- `ICNN` - Input-convex neural networks (JAX)
-- `DPOSE` - Deep ensemble with uncertainty
-- `KFoldNN` - K-fold neural network ensemble
+- `KAN`, `KANLLPR` - Kolmogorov-Arnold Networks
+- `JAXMonotonicRegressor` - Monotonic neural networks (JAX)
+- `JAXPeriodicRegressor` - Periodic neural networks (JAX)
+- `JAXICNNRegressor` - Input-convex neural networks (JAX)
+- `DPOSE` - Shallow ensemble with uncertainty
+- `KfoldNN` - K-fold neural network ensemble
+- `LLPRRegressor`, `NNBR`, `NNGMM`, `LeafModelRegressor`, `LinearRegressionUQ`
+- `SISSO`, `SISSOEnsemble` - Symbolic regression (optional `sisso` extra)
+- `ZENNRegressor`, `ZENNClassifier` - Zentropy-enhanced neural networks
+- `ActiveLearner` - Active learning loop (`active_learning.py`)
 
 ### Utilities
 - `hashcache.py` - Disk caching for expensive computations
 - `beginner.py` - Simplified interfaces for teaching
+- `mcp.py` - MCP server (`pycse_mcp`, optional `mcp` extra)
+
+### Claude Code skill (`src/pycse/skill/`)
+`pycse skill install` copies this directory to `~/.claude/skills/pycse/`. Keep the
+examples in it in sync with the API when signatures change; `test_cli.py` checks
+the frontmatter and that its links resolve.
 
 ## Important Notes
 
@@ -133,7 +152,7 @@ All models follow sklearn's estimator API (fit/predict/score).
 - Follow sklearn estimator conventions
 - Implement `fit()`, `predict()`, `score()`
 - Add `get_params()` and `set_params()` for hyperparameters
-- Include tests in `src/pycse/sklearn/tests/`
+- Include tests in `src/pycse/tests/` (`test_sklearn_<model>.py`)
 
 ### Pre-commit Hooks
 Pre-commit runs fast tests only. Ensure `pytest -m "not slow"` passes before committing.
