@@ -3,7 +3,7 @@
 Notable changes to pycse. Earlier releases are described on the
 [GitHub releases page](https://github.com/jkitchin/pycse/releases).
 
-## 2.12.0 (unreleased)
+## 2.12.0 (2026-10-15)
 
 ### Breaking changes
 
