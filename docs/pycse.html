@@ -685,7 +685,8 @@ solve_ivp.</p>
 <dt><strong>y0</strong><span class="classifier">array</span></dt><dd></dd>
 <dt><strong>Initial conditions</strong></dt><dd></dd>
 <dt><strong>*args</strong><span class="classifier">type</span></dt><dd></dd>
-<dt><strong>arbitrary positional arguments to pass to solve_ivp</strong></dt><dd></dd>
+<dt><strong>extra arguments passed to f, i.e. f(t, y, *args). They are passed to</strong></dt><dd></dd>
+<dt><strong>solve_ivp as ``args=args``. Do not also pass ``args=`` as a keyword.</strong></dt><dd></dd>
 <dt><strong>**kwargs</strong><span class="classifier">type arbitrary kwargs to pass to solve_ivp.</span></dt><dd></dd>
 <dt><strong>max_step is set to be the min diff of tspan. dense_output is set to True.</strong></dt><dd></dd>
 <dt><strong>t_eval is set to the array specified in tspan.</strong></dt><dd></dd>
@@ -760,13 +761,19 @@ SE is an array of standard errors for the parameters.</p>
 If None (default), assumes scipy.optimize.curve_fit was used and automatically
 constructs the correct loss function: loss = 0.5 * sum((y - model(X, <a href="#id3"><span class="problematic" id="id4">*</span></a>p))**2).
 This is the ½SSE convention used by scipy’s least_squares optimizer.
-If you used a different optimizer or loss function, provide it explicitly.</p>
+If you used a different optimizer or loss function, provide it explicitly.
+The loss must be proportional to the sum of squared residuals (e.g. ½SSE,
+SSE or MSE); the parameter covariance 2 * loss / (n - p) * H^-1 (H is the
+Hessian of the loss) is then independent of the proportionality constant.</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>Confidence level (default: 0.05 for 95% confidence intervals)</p>
+<dt><strong>alpha</strong><span class="classifier">float, optional</span></dt><dd><p>100*(1 - alpha) is the prediction interval level (default: 0.05 for 95%)</p>
 </dd>
-<dt><strong>ub</strong><span class="classifier">float, optional</span></dt><dd><p>Upper bound for smallest allowed Hessian eigenvalue (default: 1e-5)</p>
+<dt><strong>ub</strong><span class="classifier">float, optional</span></dt><dd><p>Smallest allowed eigenvalue of the Hessian of the loss (absolute, default
+1e-5). If the smallest eigenvalue is at least ub, no regularization is
+applied. Otherwise H + eps * I is inverted, with
+eps = max(ub, ub - ef * lambda_min).</p>
 </dd>
-<dt><strong>ef</strong><span class="classifier">float, optional</span></dt><dd><p>Eigenvalue factor for scaling Hessian (default: 1.05)</p>
+<dt><strong>ef</strong><span class="classifier">float, optional</span></dt><dd><p>Eigenvalue factor used when regularizing (default: 1.05, see ub)</p>
 </dd>
 <dt><strong>This function uses numdifftools for the Hessian and Jacobian.</strong></dt><dd></dd>
 </dl>
@@ -775,9 +782,13 @@ If you used a different optimizer or loss function, provide it explicitly.</p>
 <dd class="field-even"><dl class="simple">
 <dt><strong>y</strong><span class="classifier">array</span></dt><dd><p>Predicted values at xnew</p>
 </dd>
-<dt><strong>yint</strong><span class="classifier">array</span></dt><dd><p>Prediction intervals at alpha confidence level, shape (n, 2)</p>
+<dt><strong>yint</strong><span class="classifier">array</span></dt><dd><p>Prediction intervals (for a new observation) at alpha confidence level,
+shape (n, 2); yint[:, 0] is the lower bound and yint[:, 1] the upper bound.
+Same layout as <cite>predict</cite>.</p>
 </dd>
-<dt><strong>se</strong><span class="classifier">array</span></dt><dd><p>Standard error of predictions</p>
+<dt><strong>se</strong><span class="classifier">array</span></dt><dd><p>Standard error of the fitted mean at xnew, sqrt(diag(J cov J^T)). This is
+NOT the prediction standard error used for yint, which is
+sqrt(se**2 + sigma**2). Note <cite>predict</cite> returns the prediction standard error.</p>
 </dd>
 </dl>
 </dd>
@@ -785,7 +796,8 @@ If you used a different optimizer or loss function, provide it explicitly.</p>
 <p class="rubric">Notes</p>
 <p>The default loss function (½SSE) matches the convention used by scipy.optimize.curve_fit,
 which internally minimizes 0.5 * sum(residuals**2). If you provide a custom loss function,
-ensure it uses the same convention as your fitting procedure.</p>
+ensure it uses the same convention as your fitting procedure. The noise variance
+sigma**2 is estimated from the residuals as SSE / (n - p).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -830,19 +842,21 @@ passing in a 2D-array that contains one dataset per column.</p>
 <dt><strong>X: array_like, shape (N,)</strong></dt><dd><p>the original x-data that p was fitted from.</p>
 </dd>
 <dt><strong>y: array-like, shape (N,)</strong></dt><dd><p>the original y-data that p was fitted from.</p>
-<blockquote>
-<div><p>alpha : confidence level, 95% = 0.05</p>
-</div></blockquote>
 </dd>
-<dt><strong>ub</strong><span class="classifier">upper bound for smallest allowed Hessian eigenvalue</span></dt><dd></dd>
-<dt><strong>ef</strong><span class="classifier">eigenvalue factor for scaling Hessian</span></dt><dd></dd>
+<dt><strong>alpha</strong><span class="classifier">100*(1 - alpha) is the prediction interval level, 95% = 0.05</span></dt><dd></dd>
+<dt><strong>ub</strong><span class="classifier">smallest allowed eigenvalue of X^T X. The matrix is regularized only</span></dt><dd><p>if its smallest eigenvalue is below ub (see <cite>predict</cite>).</p>
+</dd>
+<dt><strong>ef</strong><span class="classifier">eigenvalue factor used when regularizing (see <cite>predict</cite>).</span></dt><dd></dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>y, yint, pred_se</dt><dd></dd>
 <dt><strong>y</strong><span class="classifier">the predicted values</span></dt><dd></dd>
-<dt>yint: confidence interval</dt><dd></dd>
+<dt>yint: prediction interval (for a new observation), shape (M, 2);</dt><dd><p>yint[:, 0] is the lower bound and yint[:, 1] the upper bound.</p>
+</dd>
+<dt>pred_se: standard error of prediction for a new observation,</dt><dd><p>sqrt(sigma^2 + se_mean^2), shape (M,).</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -860,15 +874,26 @@ passing in a 2D-array that contains one dataset per column.</p>
 <dt><strong>y</strong><span class="classifier">known y-value array</span></dt><dd></dd>
 <dt><strong>pars</strong><span class="classifier">fitted parameters</span></dt><dd></dd>
 <dt><strong>XX</strong><span class="classifier">x-value array to make predictions for</span></dt><dd></dd>
-<dt><strong>alpha</strong><span class="classifier">confidence level, 95% = 0.05</span></dt><dd></dd>
-<dt><strong>ub</strong><span class="classifier">upper bound for smallest allowed Hessian eigenvalue</span></dt><dd></dd>
-<dt><strong>ef</strong><span class="classifier">eigenvalue factor for scaling Hessian</span></dt><dd></dd>
+<dt><strong>alpha</strong><span class="classifier">100*(1 - alpha) is the prediction interval level, 95% = 0.05</span></dt><dd></dd>
+<dt><strong>ub</strong><span class="classifier">smallest allowed eigenvalue of X^T X (absolute, default 1e-5). If the</span></dt><dd><p>smallest eigenvalue of X^T X is at least ub, no regularization is applied
+and the exact textbook prediction interval is returned. Otherwise
+(near-singular X^T X), X^T X + eps * I is inverted instead, with
+eps = max(ub, ub - ef * lambda_min).</p>
+</dd>
+<dt><strong>ef</strong><span class="classifier">eigenvalue factor used when regularizing (see ub).</span></dt><dd></dd>
 <dt><strong>See https://en.wikipedia.org/wiki/Prediction_interval#Unknown_mean,_unknown_variance</strong></dt><dd></dd>
-<dt><strong>Returns</strong></dt><dd></dd>
-<dt><strong>y, yint, pred_se</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>y, yint, pred_se</dt><dd></dd>
 <dt><strong>y</strong><span class="classifier">the predicted values</span></dt><dd></dd>
-<dt><strong>yint: confidence interval</strong></dt><dd></dd>
-<dt><strong>pred_se: std error on predictions.</strong></dt><dd></dd>
+<dt>yint: prediction interval (for a new observation), shape (n, 2) for a</dt><dd><p>single output (yint[:, 0] is the lower bound, yint[:, 1] the upper
+bound), or (n, k, 2) for k outputs. Same layout as <cite>nlpredict</cite>.</p>
+</dd>
+<dt>pred_se: standard error of prediction for a new observation,</dt><dd><p>sqrt(sigma^2 + se_mean^2), where se_mean is the standard error of the
+fitted mean. Note <cite>nlpredict</cite> returns se_mean instead.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -901,6 +926,7 @@ and
 <dt>b is a vector of the fitted parameters</dt><dd></dd>
 <dt>bint is an array of confidence intervals. The ith row is for the ith parameter.</dt><dd></dd>
 <dt>se is an array of standard error for each parameter.</dt><dd></dd>
+<dt>If alpha is None, bint and se are None.</dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -912,50 +938,58 @@ and
 <p>Provides utility functions in pycse.</p>
 <ol class="arabic simple">
 <li><p>Fuzzy comparisons for float numbers.</p></li>
-<li><p>An ignore exception decorator</p></li>
+<li><p>An ignore exception context manager</p></li>
 <li><p>A handy function to read a google sheet.</p></li>
 </ol>
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.feq">
-<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">feq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.feq" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">feq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.feq" title="Link to this definition">#</a></dt>
 <dd><p>Fuzzy equals.</p>
-<p>x == y with tolerance</p>
+<p>x == y with tolerance epsilon + rtol * max(<a href="#id5"><span class="problematic" id="id6">|x|</span></a>, <a href="#id7"><span class="problematic" id="id8">|y|</span></a>).</p>
+<p>epsilon is an absolute tolerance, rtol is an optional relative tolerance.
+Works elementwise on arrays; returns a bool for scalar inputs.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.fge">
-<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fge" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fge" title="Link to this definition">#</a></dt>
 <dd><p>Fuzzy greater than or equal to.</p>
-<p>x &gt;= y with tolerance</p>
+<p>x &gt;= y with tolerance epsilon + rtol * max(<a href="#id9"><span class="problematic" id="id10">|x|</span></a>, <a href="#id11"><span class="problematic" id="id12">|y|</span></a>).
+Works elementwise on arrays; returns a bool for scalar inputs.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.fgt">
-<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fgt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fgt" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fgt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fgt" title="Link to this definition">#</a></dt>
 <dd><p>Fuzzy greater than.</p>
-<p>x &gt; y with tolerance</p>
+<p>x &gt; y with tolerance epsilon + rtol * max(<a href="#id13"><span class="problematic" id="id14">|x|</span></a>, <a href="#id15"><span class="problematic" id="id16">|y|</span></a>).
+Works elementwise on arrays; returns a bool for scalar inputs.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.fle">
-<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fle" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">fle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.fle" title="Link to this definition">#</a></dt>
 <dd><p>Fuzzy less than or equal to.</p>
-<p>x &lt;= y with tolerance</p>
+<p>x &lt;= y with tolerance epsilon + rtol * max(<a href="#id17"><span class="problematic" id="id18">|x|</span></a>, <a href="#id19"><span class="problematic" id="id20">|y|</span></a>).
+Works elementwise on arrays; returns a bool for scalar inputs.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.flt">
-<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">flt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.flt" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">flt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(2.220446049250313e-16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.flt" title="Link to this definition">#</a></dt>
 <dd><p>Fuzzy less than.</p>
-<p>x &lt; y with tolerance</p>
+<p>x &lt; y with tolerance epsilon + rtol * max(<a href="#id21"><span class="problematic" id="id22">|x|</span></a>, <a href="#id23"><span class="problematic" id="id24">|y|</span></a>).
+Works elementwise on arrays; returns a bool for scalar inputs.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pycse.utils.ignore_exception">
 <span class="sig-prename descclassname"><span class="pre">pycse.utils.</span></span><span class="sig-name descname"><span class="pre">ignore_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">exceptions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.utils.ignore_exception" title="Link to this definition">#</a></dt>
-<dd><p>Ignore exceptions on decorated function.</p>
+<dd><p>Context manager to ignore EXCEPTIONS raised in its body.</p>
+<p>A message is printed when an exception is caught.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ignore_exception</span><span class="p">(</span><span class="ne">ZeroDivisionError</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">caught division by zero</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1017,10 +1051,11 @@ involved. I could not figure out how to change those in joblib.</p>
 <p>2. joblib uses the function source code in the hash, so inconsequential changes
 like whitespace, docstrings and comments change the hash.</p>
 <p>This library aims to provide a simpler version of what I wish joblib did for me.</p>
-<p>Results are cached based on a hash of the function name, argnames, bytecode, arg
-values and kwarg values. I use joblib.hash for this. This means any two
-functions with the same bytecode, even if they have different names, will cache
-to the same result.</p>
+<p>Results are cached based on a hash of the function name, bytecode, constants
+(e.g. numeric literals, recursively including nested functions), referenced
+names, arg values and kwarg values. I use joblib.hash for this. The values of
+global variables used by the function are NOT part of the hash, so changing a
+global will not invalidate the cache.</p>
 <p>The cache location is set as a class attribute:</p>
 <blockquote>
 <div><p>HashCache.cache = ‘./cache’</p>
@@ -1028,6 +1063,10 @@ to the same result.</p>
 <p>SqlCache - stores orjson serialized data in a sqlite3 database by hash key</p>
 <p>JsonCache - stores orjson serialized data in json files, compatible with maggma</p>
 </div></blockquote>
+<p>SqlCache and JsonCache tag numpy arrays, numpy scalars and tuples when they are
+serialized, so a cache hit returns the same types as the miss that stored it.
+Other objects must be JSON serializable by orjson (or by the <cite>default</cite>
+function you set on the class).</p>
 <p>This is still alpha, proof of concept code. Test it a lot for your use case. The
 API is not stable, and subject to change.</p>
 <p>Pros:</p>
@@ -1061,6 +1100,9 @@ unimportant variable name changes.</p>
 enabling other backends like lmdb or sqlite instead of files. You can then
 simply provide new functions for this.</p>
 <p>[2024-06-18 Tue] Changed from function to class decorator (breaking change).</p>
+<p>[2026-09-26 Sat] The hash now includes the code constants and names (breaking
+change, old caches will not be found). Previously a change like x * 2 -&gt; x * 3
+did not change the hash, and stale results were returned.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache">
@@ -1102,7 +1144,8 @@ simply provide new functions for this.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.dump" title="Link to this definition">#</a></dt>
 <dd><p>Dump KWARGS to the cache.</p>
 <p>Returns a hash string for future lookup.</p>
-<p>cache is a special kwarg that is not saved</p>
+<p>cache is a special kwarg that is not saved. It defaults to
+HashCache.cache, the same directory the decorator uses.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1118,10 +1161,12 @@ simply provide new functions for this.</p>
 <p>This is the most critical feature of hashcache as it provides a key to
 store and look up results later. You should think carefully before
 changing this function, it breaks past caches.</p>
-<p>FUNC should be as pure as reasonable. This hash is insensitive to global
-variables.</p>
-<p>The hash is on the function name, bytecode, and a standardized kwargs
-including defaults. We use bytecode because it is insensitive to things
+<p>FUNC should be as pure as reasonable. This hash is insensitive to the
+values of global variables the function uses; if you change a global,
+the cached result will still be returned.</p>
+<p>The hash is on the function name, bytecode, constants (recursively
+including nested code objects), referenced names, and a standardized
+kwargs including defaults. The docstring is not included. We use bytecode because it is insensitive to things
 like whitespace, comments, docstrings, and variable name changes that
 don’t affect results. It is assumed that two functions with the same
 name and bytecode will evaluate to the same result. However, this makes
@@ -1143,8 +1188,9 @@ the hash fragile to changes in Python version that affect bytecode.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pycse.hashcache.HashCache.load">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cache'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.load" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycse.hashcache.HashCache.load" title="Link to this definition">#</a></dt>
 <dd><p>Load saved variables from HSH.</p>
+<p>CACHE defaults to HashCache.cache, the same directory the decorator uses.</p>
 </dd></dl>
 
 <dl class="py method">
