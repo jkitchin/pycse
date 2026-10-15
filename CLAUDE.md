@@ -31,7 +31,7 @@ pycse/
 │   │   ├── jax_*.py     # JAX-based neural networks
 │   │   ├── dpose.py     # Shallow ensemble with uncertainty
 │   │   ├── zenn/        # Zentropy-enhanced neural networks
-│   │   ├── tests/       # Older tests, NOT collected (testpaths = src/pycse/tests)
+│   │   ├── tests/       # active_learning and zenn tests (also in testpaths)
 │   │   └── ...
 │   ├── tests/           # Main test suite
 │   └── examples/        # Example notebooks
@@ -152,7 +152,8 @@ the frontmatter and that its links resolve.
 - Follow sklearn estimator conventions
 - Implement `fit()`, `predict()`, `score()`
 - Add `get_params()` and `set_params()` for hyperparameters
-- Include tests in `src/pycse/tests/` (`test_sklearn_<model>.py`)
+- Include tests in `src/pycse/tests/` (`test_sklearn_<model>.py`); both test
+  directories are in `testpaths` in pyproject.toml
 
 ### Pre-commit Hooks
 Pre-commit runs fast tests only. Ensure `pytest -m "not slow"` passes before committing.
