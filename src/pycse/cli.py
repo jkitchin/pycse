@@ -272,33 +272,30 @@ def skill():
 @skill.command(name="install")
 def install_skill():
     """Install pycse skill in Claude Code (~/.claude/skills/pycse/)."""
-    # Get the path to the SKILL.md file in the package
+    # The skill is a directory: SKILL.md plus the reference files it links to
     import pycse
     import pathlib
 
-    skill_source = pathlib.Path(pycse.__file__).parent / "SKILL.md"
+    skill_source = pathlib.Path(pycse.__file__).parent / "skill"
 
-    if not skill_source.exists():
-        click.secho(f"Error: SKILL.md not found at {skill_source}", fg="red", err=True)
+    if not (skill_source / "SKILL.md").exists():
+        click.secho(f"Error: SKILL.md not found in {skill_source}", fg="red", err=True)
         sys.exit(1)
 
-    # Create the skills directory
     skills_dir = pathlib.Path.home() / ".claude" / "skills" / "pycse"
-    skills_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy the SKILL.md file
-    skill_dest = skills_dir / "SKILL.md"
-
-    if skill_dest.exists():
+    if skills_dir.exists():
         click.secho("Warning: pycse skill is already installed.", fg="yellow")
         if not click.confirm("Overwrite the existing skill?"):
             click.echo("Cancelled.")
             return
+        # Remove the old copy so files dropped from the skill do not linger
+        shutil.rmtree(skills_dir)
 
-    shutil.copy2(skill_source, skill_dest)
+    shutil.copytree(skill_source, skills_dir, ignore=shutil.ignore_patterns("__pycache__"))
 
     click.secho("\nSuccessfully installed pycse skill in Claude Code!", fg="green")
-    click.echo(f"\nSkill location: {skill_dest}")
+    click.echo(f"\nSkill location: {skills_dir}")
     click.echo("\n" + click.style("Restart Claude Code to use the skill.", fg="yellow", bold=True))
 
 

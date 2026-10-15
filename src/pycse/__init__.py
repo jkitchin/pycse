@@ -1,6 +1,6 @@
 """Python calculations in Science and Engineering.
 
-Pycse requires Python 3.10+.
+Pycse requires Python 3.12+.
 
 """
 

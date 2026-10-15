@@ -597,11 +597,63 @@ class TestCLICommandNames:
         import pycse as pkg
         from pycse.cli import pycse
 
-        text = (pathlib.Path(pkg.__file__).parent / "SKILL.md").read_text()
+        text = (pathlib.Path(pkg.__file__).parent / "skill" / "SKILL.md").read_text()
         found = re.findall(r"^pycse (mcp|skill) (\S+)", text, flags=re.M)
         assert found
         for group, name in found:
             assert name in pycse.commands[group].commands, (group, name)
+
+    def test_skill_install_copies_directory(self, tmp_path):
+        """`pycse skill install` copies SKILL.md and its reference files, replacing old ones."""
+        from pycse import cli
+
+        dest = tmp_path / ".claude" / "skills" / "pycse"
+        with patch("pathlib.Path.home", return_value=tmp_path):
+            result = CliRunner().invoke(cli.pycse, ["skill", "install"])
+            assert result.exit_code == 0, result.output
+            assert (dest / "SKILL.md").exists()
+            assert (dest / "reference" / "regression.md").exists()
+
+            stale = dest / "stale.md"
+            stale.write_text("old")
+            result = CliRunner().invoke(cli.pycse, ["skill", "install"], input="y\n")
+            assert result.exit_code == 0, result.output
+            assert not stale.exists()
+            assert (dest / "SKILL.md").exists()
+
+
+class TestSkillContent:
+    """SKILL.md must be a valid skill whose links resolve."""
+
+    @staticmethod
+    def _skill_dir():
+        import pathlib
+        import pycse as pkg
+
+        return pathlib.Path(pkg.__file__).parent / "skill"
+
+    def test_frontmatter(self):
+        """name and description meet the Agent Skills limits."""
+        import re
+
+        text = (self._skill_dir() / "SKILL.md").read_text()
+        m = re.match(r"---\nname: (.+)\ndescription: (.+)\n---\n", text)
+        assert m, "SKILL.md must start with name/description frontmatter"
+        name, description = m.groups()
+        assert re.fullmatch(r"[a-z0-9-]{1,64}", name)
+        assert 0 < len(description) <= 1024
+        assert len(text.splitlines()) < 500
+
+    def test_reference_links_resolve(self):
+        """Every relative markdown link in the skill points to an existing file."""
+        import re
+
+        skill_dir = self._skill_dir()
+        for md in skill_dir.rglob("*.md"):
+            for target in re.findall(r"\]\(([^)#]+)\)", md.read_text()):
+                if "://" in target:
+                    continue
+                assert (md.parent / target).exists(), (md.name, target)
 
     def test_launch_help_does_not_claim_default(self):
         """Bare `pycse` shows help; launch must not claim to be the default."""
