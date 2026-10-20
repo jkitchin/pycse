@@ -6,18 +6,19 @@
 [![PyPI version](https://badge.fury.io/py/pycse.svg)](https://badge.fury.io/py/pycse)
 [![Deploy](https://github.com/jkitchin/pycse/actions/workflows/deploy.yml/badge.svg)](https://github.com/jkitchin/pycse/actions/workflows/deploy.yml)
 
-If you want to cite this project, use this doi:10.5281/zenodo.19111.
+If you want to cite this project, use this doi:10.5281/zenodo.23396321 (pycse 2.12.0). All releases are archived at [zenodo.org/records/591754](https://zenodo.org/records/591754), which always redirects to the latest version; see [CITATION.cff](CITATION.cff) for full metadata.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19111.svg)](https://doi.org/10.5281/zenodo.19111)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23396321.svg)](https://doi.org/10.5281/zenodo.23396321)
 
 ```bibtex
-@misc{john_kitchin_2015_19111,
+@software{kitchin_pycse_2026,
   author       = {John R. Kitchin},
-  title        = {pycse: First release},
-  month        = jun,
-  year         = 2015,
-  doi          = {10.5281/zenodo.19111},
-  url          = {https://doi.org/10.5281/zenodo.19111}
+  title        = {pycse: Python Computations in Science and Engineering},
+  version      = {2.12.0},
+  year         = 2026,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.23396321},
+  url          = {https://doi.org/10.5281/zenodo.23396321}
 }
 ```
 
