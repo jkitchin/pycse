@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/jkitchin/pycse/actions/workflows/pycse-tests.yaml/badge.svg)](https://github.com/jkitchin/pycse/actions/workflows/pycse-tests.yaml)
 [![codecov](https://codecov.io/gh/jkitchin/pycse/branch/master/graph/badge.svg)](https://codecov.io/gh/jkitchin/pycse)
-![PyPI Downloads](https://img.shields.io/pypi/dm/pycse.svg)
+[![PyPI Downloads](https://static.pepy.tech/badge/pycse)](https://pepy.tech/projects/pycse)
 [![PyPI version](https://badge.fury.io/py/pycse.svg)](https://badge.fury.io/py/pycse)
 [![Deploy](https://github.com/jkitchin/pycse/actions/workflows/deploy.yml/badge.svg)](https://github.com/jkitchin/pycse/actions/workflows/deploy.yml)
 
