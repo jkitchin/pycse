@@ -577,11 +577,10 @@ class JAXMonotonicRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
         reg_cov = self.cov_matrix_ + zeta_squared * jnp.eye(self.n_llpr_features_)
         inv_cov = jnp.linalg.inv(reg_cov)
 
-        @jit
-        def compute_single_uncertainty(f):
-            return alpha_squared * f.T @ inv_cov @ f
-
-        return vmap(compute_single_uncertainty)(features)
+        # alpha^2 f^T inv_cov f for every row. A single vectorized expression: a jitted
+        # closure defined here would be recompiled on every call (once per candidate in
+        # the calibration grid search).
+        return alpha_squared * jnp.einsum("ij,jk,ik->i", features, inv_cov, features)
 
     def _calibrate_uncertainty(self, X_val: jnp.ndarray, y_val: jnp.ndarray) -> None:
         """Calibrate alpha_squared and zeta_squared on validation set."""

@@ -32,7 +32,7 @@ Requires: flax, optax, jax, scikit-learn
 import os
 
 import jax
-from jax import jit, vmap
+from jax import jit
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -507,14 +507,10 @@ class KANLLPR(MIPExportMixin, BaseEstimator, RegressorMixin):
         reg_cov = self.cov_matrix_ + zeta_squared * jnp.eye(self.n_features_)
         inv_cov = jnp.linalg.inv(reg_cov)
 
-        # Vectorized computation
-        @jit
-        def compute_single_uncertainty(f):
-            return alpha_squared * f.T @ inv_cov @ f
-
-        uncertainties = vmap(compute_single_uncertainty)(features)
-
-        return uncertainties
+        # alpha^2 f^T inv_cov f for every row. A single vectorized expression: a jitted
+        # closure defined here would be recompiled on every call (once per candidate in
+        # the calibration grid search).
+        return alpha_squared * jnp.einsum("ij,jk,ik->i", features, inv_cov, features)
 
     def mip_network(self):
         """Return the trained model as a ``MIPNetwork`` for MIP export.
