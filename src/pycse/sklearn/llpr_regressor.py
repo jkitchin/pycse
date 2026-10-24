@@ -22,7 +22,7 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, std_from_covariance
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, llpr_std
 
 
 class MLP(nn.Module):
@@ -438,12 +438,9 @@ class LLPRRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
 
         std = None
         if hasattr(self, "cov_matrix_"):
-            cov = np.asarray(self.cov_matrix_, dtype=float)
-            tap = len(layers) - 2  # the last ReLU, or the inputs if there are no hidden layers
-            std = []
-            for alpha2, zeta2 in zip(self.alpha_squared_, self.zeta_squared_):
-                inv = np.linalg.inv(cov + float(zeta2) * np.eye(cov.shape[0]))
-                std.append(std_from_covariance(inv, tap, scale=np.sqrt(float(alpha2))))
+            # Features are the last ReLU output, or the inputs if there are no hidden layers.
+            tap = len(layers) - 2
+            std = llpr_std(self.cov_matrix_, self.alpha_squared_, self.zeta_squared_, tap)
         return MIPNetwork(layers, std=std)
 
     def predict(self, X, return_std=False):

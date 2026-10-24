@@ -134,8 +134,9 @@ lazily exported from `pycse.sklearn` (the `_LAZY` table in `sklearn/__init__.py`
 - `hashcache.py` - Disk caching for expensive computations
 - `beginner.py` - Simplified interfaces for teaching
 - `mcp.py` - MCP server (`pycse_mcp`, optional `mcp` extra)
-- `sklearn/mip.py` - MIP export of ReLU networks to Pyomo (optional `mip` extra). Models
-  implement `mip_network()` and get `to_pyomo()` from `MIPExportMixin`
+- `sklearn/mip.py` - MIP export of piecewise-linear models to Pyomo (optional `mip` extra).
+  Models implement `mip_network()` (a `MIPNetwork` or `TreeModel`) and get `to_pyomo()` from
+  `MIPExportMixin`; tests in `test_sklearn_mip.py` solve with HiGHS and compare to `predict()`
 
 ### Claude Code skill (`src/pycse/skill/`)
 `pycse skill install` copies this directory to `~/.claude/skills/pycse/`. Keep the

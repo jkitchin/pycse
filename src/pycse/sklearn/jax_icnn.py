@@ -54,6 +54,8 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 from typing import Tuple, Dict, Any
 
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU
+
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
 
@@ -72,6 +74,13 @@ def _relu(x: jnp.ndarray) -> jnp.ndarray:
     Convex and nondecreasing, suitable for ICNN hidden layers.
     """
     return jnp.maximum(x, 0.0)
+
+
+def _numpy_nonneg(nonneg_param):
+    """The nonnegative weight map as a numpy function (for MIP export)."""
+    if nonneg_param == "softplus":
+        return lambda w: np.logaddexp(np.asarray(w, dtype=float), 0.0)
+    return lambda w: np.asarray(w, dtype=float) ** 2
 
 
 def _init_params(
@@ -244,7 +253,7 @@ def _forward_batch(
     return vmap(forward_single)(X)
 
 
-class JAXICNNRegressor(BaseEstimator, RegressorMixin):
+class JAXICNNRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
     """Input Convex Neural Network (ICNN) Regressor with sklearn API.
 
     This regressor's prediction function f(x) is guaranteed to be convex
@@ -514,6 +523,48 @@ class JAXICNNRegressor(BaseEstimator, RegressorMixin):
 
         self.params_ = params
         return self
+
+    def mip_network(self):
+        """Return the trained ICNN as a ``MIPNetwork`` for MIP export.
+
+        Requires ``activation="relu"`` and ``strong_convexity_mu=0`` (the quadratic
+        term is not piecewise linear). The network is input-convex, so
+        ``to_pyomo(formulation="convex")`` gives an LP without binaries when the
+        output is minimized or bounded above. See ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self, "params_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires JAXICNNRegressor(activation='relu') (piecewise linear); "
+                f"got activation={self.activation!r}."
+            )
+        if self.strong_convexity_mu > 0:
+            raise ValueError(
+                "MIP export requires strong_convexity_mu=0: the (mu/2)||x||^2 term is "
+                "quadratic, not piecewise linear."
+            )
+
+        p = self.params_
+        nonneg = _numpy_nonneg(self.nonneg_param)
+        layers = []
+        for i in range(len(p["Wx"])):
+            Wx, b = np.asarray(p["Wx"][i], dtype=float), np.asarray(p["b"][i], dtype=float)
+            if i == 0:
+                layers.append(Affine(Wx, b))
+            else:
+                layers.append(Affine(nonneg(p["Wz_raw"][i]), b, Wx=Wx))
+            layers.append(ReLU())
+        a = nonneg(p["a_raw"])
+        c = np.asarray(p["c"], dtype=float)
+        layers.append(Affine(a[:, None], [float(p["b_out"])], Wx=c[:, None]))
+
+        net = MIPNetwork(layers)
+        if self.scaler_X_ is not None:
+            net = net.scale_inputs(self.scaler_X_.mean_, self.scaler_X_.scale_)
+        if self.scaler_y_ is not None:
+            net = net.scale_outputs(self.scaler_y_.mean_, self.scaler_y_.scale_)
+        return net
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Predict using the fitted ICNN.

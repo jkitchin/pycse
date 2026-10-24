@@ -68,7 +68,7 @@ These models train one network, then estimate uncertainty from the last-layer fe
 - **`KAN(layers, grid_size=5, spline_order=3, n_ensemble=1, loss_type="mse", ...)`**:
   Kolmogorov-Arnold network. Set `n_ensemble > 1` with `loss_type="crps"` for uncertainty.
   `plot_activations()` shows the learned functions. With `spline_order=1` and
-  `base_activation="linear"`, `to_pyomo(input_bounds=...)` exports a MILP model.
+  `base_activation="linear"`, `to_pyomo(input_bounds=...)` exports a MILP model (see MIP export).
 - **`SISSO(operators=None, n_expansion=2, n_term=2, k=20)`**: symbolic regression; the formula is
   in `model.equation_`. Needs `pip install "pycse[sisso]"`.
 - **`SISSOEnsemble(n_models=5, n_terms_range=(1, 3), loss_type="crps", ...)`**: an ensemble of
@@ -108,10 +108,22 @@ negative-log-likelihood head. This is an independent JAX implementation, not the
 
 ## MIP export (`to_pyomo`)
 
-A trained ReLU network is piecewise linear, so it can be embedded in an optimization problem
-as mixed-integer linear constraints. `DPOSE` (default `activation=nn.relu`),
-`LLPRRegressor(activation="relu")` and `NNBR` with `MLPRegressor(activation="relu")` have
-`to_pyomo()`; other activations raise `ValueError`. Needs `pip install "pycse[mip]"`.
+A piecewise-linear model can be embedded in an optimization problem as mixed-integer linear
+constraints with `to_pyomo()`. Needs `pip install "pycse[mip]"`. Supported configurations
+(others raise `ValueError`):
+
+| Model | Requirement | Exports std |
+|---|---|---|
+| `DPOSE` | `activation=nn.relu` (default) | yes |
+| `LLPRRegressor` | `activation="relu"` | yes |
+| `NNBR` | `MLPRegressor(activation="relu")` | yes |
+| `JAXICNNRegressor` | `activation="relu"`, `strong_convexity_mu=0` | no |
+| `JAXMonotonicRegressor` | `activation="relu"` | yes |
+| `KAN` | `spline_order=1, base_activation="linear"` | with `n_ensemble > 1` |
+| `KANLLPR` | `spline_order=1, base_activation="linear"` | yes |
+| `LeafModelRegressor` | linear `leaf_model` (optionally after a scaler) | no |
+| `LinearRegressionUQ` | none (no binaries) | yes |
+
 Every input needs finite bounds; tighter bounds solve faster.
 
 ```python
@@ -129,7 +141,12 @@ pyo.SolverFactory("highs").solve(m)
 `m.nn.y[j]` is the prediction and `m.nn.variance[j]` the predictive variance (a convex
 quadratic). `to_pyomo(include_std=True)` adds `m.nn.std[j]` with a second-order cone
 constraint, for objectives such as `y - 2 * std` (needs a MISOCP solver such as Gurobi).
-`model.mip_network()` returns the layers as numpy arrays (`pycse.sklearn.mip.MIPNetwork`).
+`model.mip_network()` returns the layers as numpy arrays (`pycse.sklearn.mip.MIPNetwork`, or
+`TreeModel` for `LeafModelRegressor`).
+
+For an input-convex network (`JAXICNNRegressor`, or `JAXMonotonicRegressor(convexity="convex")`)
+whose output is minimized or bounded above, `to_pyomo(formulation="convex")` is an LP with no
+binaries.
 
 ## Optimizers
 

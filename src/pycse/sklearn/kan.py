@@ -46,6 +46,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
 
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, PiecewiseLinear, StdSpec
 from pycse.sklearn.optimizers import run_optimizer
 
 os.environ["JAX_ENABLE_X64"] = "True"
@@ -254,7 +255,7 @@ class _KANN(nn.Module):
         return x
 
 
-class KAN(BaseEstimator, RegressorMixin):
+class KAN(MIPExportMixin, BaseEstimator, RegressorMixin):
     """KAN: Kolmogorov-Arnold Network regressor.
 
     A neural network that uses learnable activation functions (B-splines)
@@ -1155,270 +1156,97 @@ class KAN(BaseEstimator, RegressorMixin):
         plt.tight_layout()
         return fig
 
-    def to_pyomo(self, input_bounds=None):
-        """Export trained KAN to a Pyomo optimization model.
+    def mip_network(self):
+        """Return the trained KAN as a ``MIPNetwork`` for MIP export.
 
-        This method creates a Pyomo model representing the trained KAN,
-        enabling global optimization over the neural network using MIP solvers.
-
-        Requirements for MIP export:
-        - spline_order=1 (linear splines for piecewise linear activations)
-        - base_activation='linear' (SiLU is not piecewise linear)
-        - n_ensemble=1 (ensemble models cannot be exported to MIP)
-
-        Supports multi-output models - each output becomes model.y[i].
-
-        Args:
-            input_bounds: List of (lower, upper) tuples for each input dimension.
-                         If None, uses the grid_range for all inputs.
-
-        Returns:
-            pyomo.ConcreteModel: A Pyomo model with:
-                - model.x[i]: Input variables
-                - model.y[j]: Output variables (one per target)
-                - model.obj: Objective (minimizes y[0] by default, user can modify)
-
-        Raises:
-            ValueError: If model is not MIP-compatible (wrong spline_order,
-                       base_activation, or n_ensemble)
-            ImportError: If pyomo is not installed
-
-        Example:
-            >>> # Train MIP-compatible KAN
-            >>> kan = KAN(layers=(2, 4, 1), spline_order=1, grid_size=5,
-            ...           base_activation='linear', n_ensemble=1)
-            >>> kan.fit(X_train, y_train)
-            >>>
-            >>> # Export to Pyomo
-            >>> model = kan.to_pyomo(input_bounds=[(0, 1), (0, 1)])
-            >>>
-            >>> # Solve for minimum
-            >>> from pyomo.environ import SolverFactory
-            >>> solver = SolverFactory('glpk')
-            >>> result = solver.solve(model)
-            >>> print(f"Optimal x: {[model.x[i].value for i in model.x]}")
-            >>> print(f"Optimal y: {model.y[0].value}")
-            >>>
-            >>> # For multi-output, optimize a different output or combination:
-            >>> model.obj.deactivate()
-            >>> model.obj2 = pyo.Objective(expr=model.y[1], sense=pyo.maximize)
+        Requires ``spline_order=1`` and ``base_activation="linear"``, which make every
+        edge function piecewise linear. Each layer becomes a ``PiecewiseLinear`` layer
+        that shares one set of segment binaries per input across its edges. With
+        ``n_ensemble > 1`` the prediction is the ensemble mean and the std is
+        ``calibration_factor * y_std * sqrt(var(members) + min_sigma**2)``.
+        See ``pycse.sklearn.mip`` and ``to_pyomo()``.
         """
-        if self.spline_order != 1:
-            raise ValueError(
-                f"to_pyomo() requires spline_order=1 (linear splines) for MIP representation. "
-                f"Current spline_order={self.spline_order}. "
-                f"Cubic splines (order 3) are not piecewise linear and cannot be exactly "
-                f"represented as mixed-integer constraints."
-            )
-
-        if self.base_activation != "linear":
-            raise ValueError(
-                f"to_pyomo() requires base_activation='linear' for exact MIP representation. "
-                f"Current base_activation='{self.base_activation}'. "
-                f"The SiLU activation is not piecewise linear. Use KAN(..., base_activation='linear') "
-                f"for MIP-compatible models."
-            )
-
-        if self.n_ensemble != 1:
-            raise ValueError(
-                f"to_pyomo() requires n_ensemble=1 for MIP export. "
-                f"Current n_ensemble={self.n_ensemble}. "
-                f"Ensemble models cannot be directly exported to MIP. "
-                f"Train with n_ensemble=1 for MIP-compatible models."
-            )
-
         if not hasattr(self, "optpars_"):
-            raise ValueError("Model must be fitted before exporting to Pyomo.")
+            raise ValueError("Fit the model before exporting it.")
+        layers = kan_mip_layers(
+            self.optpars_, self.grid_size, self.spline_order, self.grid_range, self.base_activation
+        )
 
-        try:
-            import pyomo.environ as pyo
-        except ImportError:
-            raise ImportError("Pyomo is required for MIP export. Install with: pip install pyomo")
+        n_out, m = self.layers[-1], self.n_ensemble
+        if m > 1:
+            # Members of output o are columns o * m ... o * m + m - 1; average them.
+            avg = np.zeros((n_out * m, n_out))
+            for o in range(n_out):
+                avg[o * m : (o + 1) * m, o] = 1.0 / m
+            layers.append(Affine(avg, np.zeros(n_out)))
 
-        # Get network dimensions
-        n_inputs = self.layers[0]
-        n_outputs = self.layers[-1]
+        net = MIPNetwork(layers)
+        net = net.scale_inputs(np.asarray(self.X_mean_), np.asarray(self.X_std_) + 1e-8)
+        y_std = np.asarray(self.y_std_, dtype=float).reshape(-1)
+        net = net.scale_outputs(np.asarray(self.y_mean_), y_std)
 
-        # Set default input bounds
-        if input_bounds is None:
-            input_bounds = [self.grid_range] * n_inputs
+        if m > 1:
+            cf = float(getattr(self, "calibration_factor_", 1.0))
+            center = (np.eye(m) - np.full((m, m), 1.0 / m)) / np.sqrt(m)
+            net.std = []
+            for o in range(n_out):
+                A = np.zeros((m, n_out * m))
+                A[:, o * m : (o + 1) * m] = cf * y_std[o] * center
+                d = (cf * y_std[o] * self.min_sigma) ** 2
+                net.std.append(StdSpec(tap=len(layers) - 2, A=A, d=d))
+        return net
 
-        # Create Pyomo model
-        model = pyo.ConcreteModel(name="KAN_MIP")
+    def _mip_default_input_bounds(self):
+        """The input range covered by the first layer's spline grid."""
+        return kan_default_input_bounds(self.X_mean_, self.X_std_, self.grid_range)
 
-        # Input variables (in original space)
-        model.x = pyo.Var(range(n_inputs), bounds=lambda m, i: input_bounds[i])
 
-        # Normalized input variables
-        model.x_norm = pyo.Var(range(n_inputs), within=pyo.Reals)
+def kan_default_input_bounds(X_mean, X_std, grid_range):
+    """Raw input bounds that map onto ``grid_range`` after standardization."""
+    mean = np.asarray(X_mean, dtype=float)
+    scale = np.asarray(X_std, dtype=float) + 1e-8
+    return np.column_stack([grid_range[0] * scale + mean, grid_range[1] * scale + mean])
 
-        # Normalization constraints
-        model.norm_constraints = pyo.ConstraintList()
-        for i in range(n_inputs):
-            x_mean = float(self.X_mean_[i]) if self.X_mean_ is not None else 0.0
-            x_std = float(self.X_std_[i]) if self.X_std_ is not None else 1.0
-            # x_norm = (x - x_mean) / x_std
-            model.norm_constraints.add(model.x_norm[i] == (model.x[i] - x_mean) / x_std)
 
-        # Get breakpoints for piecewise linear formulation (in normalized space)
-        n_segments = self.grid_size
-        breakpoints = np.linspace(self.grid_range[0], self.grid_range[1], n_segments + 1)
+def kan_mip_layers(params, grid_size, spline_order, grid_range, base_activation):
+    """``PiecewiseLinear`` layers for a KAN with linear splines and a linear base.
 
-        # Extract parameters
-        params = self.optpars_["params"]
-        layer_keys = sorted([k for k in params.keys() if k.startswith("KANLayer_")])
+    Each edge is ``spline_scale * spline(clip(x, grid_range)) + base_weight * x``; with
+    ``spline_order=1`` the spline is linear between the grid points and constant
+    outside ``grid_range`` (the clip), so it is exactly a ``PiecewiseLinear`` edge.
+    """
+    if spline_order != 1:
+        raise ValueError(
+            "MIP export requires spline_order=1 (linear splines); "
+            f"got spline_order={spline_order}. Higher-order splines are not piecewise linear."
+        )
+    if base_activation != "linear":
+        raise ValueError(
+            "MIP export requires base_activation='linear'; "
+            f"got base_activation={base_activation!r}. SiLU is not piecewise linear."
+        )
 
-        # Track intermediate variables for each layer
-        # First layer uses normalized inputs
-        layer_outputs = {-1: {i: model.x_norm[i] for i in range(n_inputs)}}
+    k = spline_order
+    h = (grid_range[1] - grid_range[0]) / grid_size
+    knots = jnp.linspace(
+        grid_range[0] - k * h, grid_range[1] + k * h, grid_size + 1 + 2 * k
+    )  # the same knots as KANLayer.setup
+    bp = np.linspace(grid_range[0], grid_range[1], grid_size + 1)
+    basis = np.asarray(b_spline_basis(jnp.asarray(bp), knots, k=k), dtype=float)
 
-        # Big-M for constraints
-        big_M = 100.0
-
-        # Counter for unique constraint names
-        constraint_counter = [0]
-
-        def add_piecewise_constraint(model, output_var, input_var, breakpoints, values):
-            """Add piecewise linear constraint using big-M formulation.
-
-            For each segment k, we have:
-                output = slope_k * input + intercept_k  when  breakpoint[k] <= input <= breakpoint[k+1]
-
-            We use binary variables delta_k to select the active segment.
-            """
-            n_segs = len(breakpoints) - 1
-            idx = constraint_counter[0]
-            constraint_counter[0] += 1
-
-            # Binary variables for segment selection
-            delta_name = f"delta_{idx}"
-            setattr(model, delta_name, pyo.Var(range(n_segs), within=pyo.Binary))
-            delta = getattr(model, delta_name)
-
-            # Lambda variables for convex combination (SOS2-like formulation)
-            lam_name = f"lam_{idx}"
-            setattr(
-                model,
-                lam_name,
-                pyo.Var(range(n_segs + 1), within=pyo.NonNegativeReals, bounds=(0, 1)),
+    params = params["params"]
+    layers = []
+    for i in range(len(params)):
+        p = params[f"KANLayer_{i}"]
+        spline_weight = np.asarray(p["spline_weight"], dtype=float)  # (in, out, n_basis)
+        spline_scale = np.asarray(p["spline_scale"], dtype=float)  # (in, out)
+        values = np.einsum("kb,iob->iko", basis, spline_weight) * spline_scale[:, None, :]
+        n_in = spline_weight.shape[0]
+        layers.append(
+            PiecewiseLinear(
+                breakpoints=np.tile(bp, (n_in, 1)),
+                values=values,
+                W=np.asarray(p["base_weight"], dtype=float),
             )
-            lam = getattr(model, lam_name)
-
-            # Constraints
-            constraints_name = f"pw_constraints_{idx}"
-            setattr(model, constraints_name, pyo.ConstraintList())
-            cons = getattr(model, constraints_name)
-
-            # Sum of lambdas = 1
-            cons.add(sum(lam[k] for k in range(n_segs + 1)) == 1)
-
-            # Sum of deltas = 1 (exactly one segment active)
-            cons.add(sum(delta[k] for k in range(n_segs)) == 1)
-
-            # Lambda adjacency: lam[k] > 0 implies delta[k-1] or delta[k] is active
-            # lam[0] <= delta[0]
-            cons.add(lam[0] <= delta[0])
-            # lam[n_segs] <= delta[n_segs-1]
-            cons.add(lam[n_segs] <= delta[n_segs - 1])
-            # lam[k] <= delta[k-1] + delta[k] for k in 1..n_segs-1
-            for k in range(1, n_segs):
-                cons.add(lam[k] <= delta[k - 1] + delta[k])
-
-            # Input = sum of lambda * breakpoints
-            cons.add(input_var == sum(lam[k] * breakpoints[k] for k in range(n_segs + 1)))
-
-            # Output = sum of lambda * values
-            cons.add(output_var == sum(lam[k] * values[k] for k in range(n_segs + 1)))
-
-        for layer_idx, layer_key in enumerate(layer_keys):
-            layer_params = params[layer_key]
-            spline_weight = np.asarray(layer_params["spline_weight"])
-            base_weight = np.asarray(layer_params["base_weight"])
-            spline_scale = np.asarray(layer_params["spline_scale"])
-
-            in_features, out_features, n_basis = spline_weight.shape
-
-            # Create output variables for this layer
-            layer_outputs[layer_idx] = {}
-
-            for j in range(out_features):
-                # Create variable for this neuron's output
-                var_name = f"z_{layer_idx}_{j}"
-                setattr(model, var_name, pyo.Var(within=pyo.Reals, bounds=(-big_M, big_M)))
-                neuron_var = getattr(model, var_name)
-                layer_outputs[layer_idx][j] = neuron_var
-
-                # Sum contributions from all input edges
-                edge_contributions = []
-
-                for i in range(in_features):
-                    input_var = layer_outputs[layer_idx - 1][i]
-
-                    # Compute the piecewise linear function values at breakpoints
-                    pw_values = []
-                    for bp in breakpoints:
-                        # Compute basis functions at this breakpoint
-                        n_knots = self.grid_size + 1 + 2 * self.spline_order
-                        grid = np.linspace(
-                            self.grid_range[0]
-                            - self.spline_order
-                            * (self.grid_range[1] - self.grid_range[0])
-                            / self.grid_size,
-                            self.grid_range[1]
-                            + self.spline_order
-                            * (self.grid_range[1] - self.grid_range[0])
-                            / self.grid_size,
-                            n_knots,
-                        )
-                        basis = np.asarray(
-                            b_spline_basis(jnp.array([bp]), jnp.array(grid), k=self.spline_order)
-                        )
-
-                        # Spline contribution
-                        spline_val = float(np.dot(basis[0], spline_weight[i, j, :]))
-
-                        # Base contribution (for linear splines, use linear base)
-                        base_val = float(bp * base_weight[i, j])
-
-                        # Combined value
-                        combined = float(spline_scale[i, j]) * spline_val + base_val
-                        pw_values.append(combined)
-
-                    # Create edge output variable
-                    edge_var_name = f"edge_{layer_idx}_{i}_{j}"
-                    edge_lb = min(pw_values) - 1.0
-                    edge_ub = max(pw_values) + 1.0
-                    setattr(
-                        model, edge_var_name, pyo.Var(within=pyo.Reals, bounds=(edge_lb, edge_ub))
-                    )
-                    edge_var = getattr(model, edge_var_name)
-                    edge_contributions.append(edge_var)
-
-                    # Add piecewise linear constraint
-                    add_piecewise_constraint(model, edge_var, input_var, breakpoints, pw_values)
-
-                # Sum all edge contributions for this neuron
-                sum_constraint_name = f"sum_{layer_idx}_{j}"
-                setattr(
-                    model,
-                    sum_constraint_name,
-                    pyo.Constraint(expr=neuron_var == sum(edge_contributions)),
-                )
-
-        # Output variables (denormalized) - one per output
-        model.y = pyo.Var(range(n_outputs), within=pyo.Reals)
-
-        # Denormalization constraints for each output
-        model.denorm_constraints = pyo.ConstraintList()
-        for j in range(n_outputs):
-            final_output = layer_outputs[len(layer_keys) - 1][j]
-
-            # Denormalization: y = y_norm * y_std + y_mean
-            y_mean = float(self.y_mean_[j]) if self.y_mean_ is not None else 0.0
-            y_std = float(self.y_std_[j]) if self.y_std_ is not None else 1.0
-            model.denorm_constraints.add(model.y[j] == final_output * y_std + y_mean)
-
-        # Default objective: minimize first output (user can modify)
-        model.obj = pyo.Objective(expr=model.y[0], sense=pyo.minimize)
-
-        return model
+        )
+    return layers

@@ -78,8 +78,10 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn import clone
 
+from pycse.sklearn.mip import Leaf, MIPExportMixin, TreeModel, affine_from_predict
 
-class LeafModelRegressor(DecisionTreeRegressor):
+
+class LeafModelRegressor(MIPExportMixin, DecisionTreeRegressor):
     """An sklearn Leaf Model class.
 
     Parameters
@@ -276,6 +278,48 @@ class LeafModelRegressor(DecisionTreeRegressor):
             self.calibration_factor_ = self._calibrate(val_X, val_y)
 
         return self
+
+    def mip_network(self):
+        """Return the fitted model as a ``TreeModel`` for MIP export.
+
+        Each leaf becomes a box with its leaf model's affine prediction, read off by
+        probing the leaf model. Requires a linear ``leaf_model`` (e.g.
+        ``LinearRegression``, ``BayesianRidge``, optionally after a scaler); others
+        raise ``ValueError``. Only the prediction is exported, not the std. Points
+        on a split threshold may be assigned to either side. See
+        ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self, "leaf_models_"):
+            raise ValueError("Fit the model before exporting it.")
+        tree = self.tree_
+        n = self.n_features_in_
+        leaves = []
+        stack = [(0, np.full(n, -np.inf), np.full(n, np.inf))]
+        while stack:
+            node, lower, upper = stack.pop()
+            left, right = tree.children_left[node], tree.children_right[node]
+            if left == -1:
+                stats = self.leaf_stats_[node]
+                model = self.leaf_models_[node]
+                if model is None:
+                    w, c = np.zeros(n), stats["y_mean"]
+                else:
+                    step = np.where(stats["X_std"] > 0, stats["X_std"], 1.0)
+                    try:
+                        w, c = affine_from_predict(model.predict, stats["X_mean"], step)
+                    except ValueError as err:
+                        raise ValueError(
+                            f"Leaf {node}: {err} Use a linear leaf_model for MIP export."
+                        ) from None
+                leaves.append(Leaf(lower, upper, w, c))
+                continue
+            f, t = tree.feature[node], tree.threshold[node]
+            left_upper, right_lower = upper.copy(), lower.copy()
+            left_upper[f] = min(upper[f], t)  # x[f] <= t goes left
+            right_lower[f] = max(lower[f], t)
+            stack.append((left, lower, left_upper))
+            stack.append((right, right_lower, upper))
+        return TreeModel(leaves)
 
     def predict(self, X, return_std=False, warn_extrapolation=True):
         """Predict values for X.

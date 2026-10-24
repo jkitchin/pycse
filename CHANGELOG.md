@@ -7,12 +7,24 @@ Notable changes to pycse. Earlier releases are described on the
 
 ### New
 
-- `pycse.sklearn.mip`: export trained ReLU networks as mixed-integer linear constraints in
-  Pyomo, to use them as surrogates inside an optimization problem. `DPOSE`, `LLPRRegressor`
-  and `NNBR` get `to_pyomo(input_bounds=..., block=..., inputs=...)` when they use the ReLU
-  activation. The block also holds the predictive variance as a second-order cone expression,
-  so `mean + k * std` can be optimized with a MISOCP solver. Install with
-  `pip install "pycse[mip]"`.
+- `pycse.sklearn.mip`: export trained piecewise-linear models as mixed-integer linear
+  constraints in Pyomo, to use them as surrogates inside an optimization problem.
+  `to_pyomo(input_bounds=..., block=..., inputs=...)` is available on `DPOSE`,
+  `LLPRRegressor`, `NNBR`, `JAXICNNRegressor` and `JAXMonotonicRegressor` (with the ReLU
+  activation), `KAN` and `KANLLPR` (with `spline_order=1, base_activation="linear"`),
+  `LeafModelRegressor` (with a linear leaf model) and `LinearRegressionUQ`. Models with
+  uncertainty also export the predictive variance as a second-order cone, so `mean + k * std`
+  can be optimized with a MISOCP solver. `to_pyomo(formulation="convex")` exports an
+  input-convex network (ICNN, or `JAXMonotonicRegressor(convexity="convex")`) as an LP
+  without binaries, for minimization. Install with `pip install "pycse[mip]"`.
+
+### Changed
+
+- `KAN.to_pyomo()` uses the shared MIP module. The exported model is exact outside the spline
+  grid (the grid clipping was not represented before), needs one set of segment binaries per
+  input instead of per edge, and supports `n_ensemble > 1` (the ensemble mean, with its std).
+  Without `input_bounds`, the inputs are bounded by the range the spline grid covers in data
+  units instead of by `grid_range` itself.
 
 ## 2.12.0 (2026-10-15)
 
