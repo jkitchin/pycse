@@ -17,6 +17,19 @@ Notable changes to pycse. Earlier releases are described on the
   can be optimized with a MISOCP solver. `to_pyomo(formulation="convex")` exports an
   input-convex network (ICNN, or `JAXMonotonicRegressor(convexity="convex")`) as an LP
   without binaries, for minimization. Install with `pip install "pycse[mip]"`.
+  - `include_std=True` adds `block.std` as a second-order cone (exact when the objective
+    penalizes the std, e.g. robust design); `include_std="exact"` makes it an equality for
+    objectives that reward it (e.g. exploration).
+  - `JAXPeriodicRegressor(activation="relu")` exports approximately: its sin/cos features
+    are interpolated (`to_pyomo(points_per_period=...)`), with a bound on the error
+    (`mip_network().max_feature_error(bounds)`).
+  - `SISSO` and `SISSOEnsemble` export their equations as exact nonlinear Pyomo
+    expressions, for a global MINLP solver.
+  - `LeafModelRegressor.to_pyomo(split_gap=...)` keeps points on a split in the left leaf.
+  - A new page in the documentation, "Optimizing over machine-learned models with MIP",
+    walks through all of these.
+- `KfoldNN(activation=...)` chooses the hidden activation (`"swish"`, the default,
+  `"relu"` or `"tanh"`).
 
 ### Changed
 

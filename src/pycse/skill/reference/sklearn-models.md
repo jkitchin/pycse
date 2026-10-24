@@ -121,8 +121,11 @@ constraints with `to_pyomo()`. Needs `pip install "pycse[mip]"`. Supported confi
 | `JAXMonotonicRegressor` | `activation="relu"` | yes |
 | `KAN` | `spline_order=1, base_activation="linear"` | with `n_ensemble > 1` |
 | `KANLLPR` | `spline_order=1, base_activation="linear"` | yes |
+| `KfoldNN` | `activation="relu"` | yes |
 | `LeafModelRegressor` | linear `leaf_model` (optionally after a scaler) | no |
 | `LinearRegressionUQ` | none (no binaries) | yes |
+| `JAXPeriodicRegressor` | `activation="relu"`; approximate (sin/cos interpolated) | yes |
+| `SISSO`, `SISSOEnsemble` | none; exact nonlinear expressions (needs a MINLP solver) | yes |
 
 Every input needs finite bounds; tighter bounds solve faster.
 
@@ -138,9 +141,17 @@ m.obj = pyo.Objective(expr=m.nn.y[0], sense=pyo.maximize)
 pyo.SolverFactory("highs").solve(m)
 ```
 
-`m.nn.y[j]` is the prediction and `m.nn.variance[j]` the predictive variance (a convex
-quadratic). `to_pyomo(include_std=True)` adds `m.nn.std[j]` with a second-order cone
-constraint, for objectives such as `y - 2 * std` (needs a MISOCP solver such as Gurobi).
+`m.nn.y[j]` is the prediction and `m.nn.variance[j]` the predictive variance.
+`to_pyomo(include_std=True)` adds `m.nn.std[j]` as a second-order cone, exact when the
+objective penalizes the std (minimize `y + 2 * std`); `include_std="exact"` is needed when
+it rewards the std (minimize `y - 2 * std`). Both need a solver for quadratic constraints
+such as Gurobi (`pyo.SolverFactory("gurobi_direct")`).
+
+Model-specific options go through `to_pyomo(**options)`:
+`JAXPeriodicRegressor.to_pyomo(points_per_period=32)` sets the interpolation grid of the
+sin/cos features (feature error at most `(2 pi / points_per_period)**2 / 8`), and
+`LeafModelRegressor.to_pyomo(split_gap=1e-4)` keeps points on a split in the left leaf.
+SISSO models need a nonlinear solver, e.g. `pyo.SolverFactory("gurobi_direct_minlp")`.
 `model.mip_network()` returns the layers as numpy arrays (`pycse.sklearn.mip.MIPNetwork`, or
 `TreeModel` for `LeafModelRegressor`).
 
