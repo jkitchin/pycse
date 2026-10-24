@@ -798,7 +798,7 @@ is two-dimensional; the MIP approach does not need it.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/49beec7d6aced134dd336bce5dc3a7cf6cd8bd208ee2ef9230d7ba11ccd71817.png" src="../_images/49beec7d6aced134dd336bce5dc3a7cf6cd8bd208ee2ef9230d7ba11ccd71817.png" />
+<img alt="../_images/76edcc74bad8d8d5606cbfa85328edd19e0a33074eae40e51a85b8fdcf558696.png" src="../_images/76edcc74bad8d8d5606cbfa85328edd19e0a33074eae40e51a85b8fdcf558696.png" />
 </div>
 </div>
 </section>
@@ -832,19 +832,16 @@ give smaller constants and faster solves.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pycse.sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPOSE</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> 
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">dpose</span> <span class="o">=</span> <span class="n">DPOSE</span><span class="p">(</span><span class="n">layers</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> 
-<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dpose</span><span class="o">.</span><span class="n">to_pyomo</span><span class="p">(</span><span class="n">input_bounds</span><span class="o">=</span><span class="n">BOUNDS</span><span class="p">)</span>
-<span class="nn">      6 n_binary = sum(1 for v</span> in <span class="ni">m.component_data_objects(pyo.Var) if v.is_binary</span><span class="nt">())</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n_binary</span><span class="si">}</span><span class="s2"> binary variables, </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">nconstraints</span><span class="p">()</span><span class="si">}</span><span class="s2"> constraints"</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> 
-
-<span class="ne">AttributeError</span>: 'DPOSE' object has no attribute 'to_pyomo'
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>30 binary variables, 157 constraints
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>optimal at x = [-0.5129  1.2494] y = -1.7826
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>grid search:          x = [-0.52    1.2533] y = -1.78
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>model at the MIP x:   y = -1.7826
 </pre></div>
 </div>
 </div>
@@ -876,17 +873,13 @@ finds units that are always on or always off over the box.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">net</span> <span class="o">=</span> <span class="n">dpose</span><span class="o">.</span><span class="n">mip_network</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">shape</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">" W </span><span class="si">{</span><span class="n">layer</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">)</span> <span class="k">else</span> <span class="s2">""</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="ne">AttributeError</span>: 'DPOSE' object has no attribute 'mip_network'
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Affine W (2, 32)
+ReLU
+Affine W (32, 16)
+Affine W (16, 1)
 </pre></div>
 </div>
+<img alt="../_images/7f5f2cb52490037b589bb005c7702d05cf6998bcc134ab41e72eaaf7b6d94dc0.png" src="../_images/7f5f2cb52490037b589bb005c7702d05cf6998bcc134ab41e72eaaf7b6d94dc0.png" />
 </div>
 </div>
 </section>
@@ -918,19 +911,10 @@ variables as the model inputs; their bounds are used if you do not give <code cl
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">model</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">Var</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">model</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">Constraint</span><span class="p">(</span><span class="n">expr</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">a</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">b</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> 
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">model</span><span class="o">.</span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">Block</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">7</span> <span class="n">dpose</span><span class="o">.</span><span class="n">to_pyomo</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">b</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> 
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="n">model</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">Objective</span><span class="p">(</span><span class="n">expr</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">surrogate</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">HIGHS</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-
-<span class="ne">AttributeError</span>: 'DPOSE' object has no attribute 'to_pyomo'
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>a = -0.4940, b = 1.4940, objective = -1.6779
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>grid search over the feasible points: -1.6779
 </pre></div>
 </div>
 </div>
@@ -990,28 +974,59 @@ minimize <span class="math notranslate nohighlight">\(\mu(x) - k\,\sigma(x)\)</s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">14</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="k">if</span> <span class="n">HAVE_GUROBI</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="n">rows</span><span class="p">,</span> <span class="n">points</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">{}</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"mean"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">"cone"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"robust: mean + 2 std"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">"cone"</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>                            <span class="p">(</span><span class="s2">"explore: mean - 2 std"</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="s2">"exact"</span><span class="p">)]:</span>
-<span class="ne">---&gt; </span><span class="mi">14</span>         <span class="n">x_opt</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="n">solve_with_std</span><span class="p">(</span><span class="n">dpose</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span>         <span class="n">mu</span><span class="p">,</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">dpose</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">GRID</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span>         <span class="n">grid_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">sd</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span>         <span class="n">mu_x</span><span class="p">,</span> <span class="n">sd_x</span> <span class="o">=</span> <span class="n">dpose</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_opt</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="nn">Cell In[6], line 2,</span> in <span class="ni">solve_with_std</span><span class="nt">(model, k, mode)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span><span class="w"> </span><span class="nf">solve_with_std</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-<span class="ne">----&gt; </span><span class="mi">2</span>     <span class="n">m</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_pyomo</span><span class="p">(</span><span class="n">input_bounds</span><span class="o">=</span><span class="n">BOUNDS</span><span class="p">,</span> <span class="n">include_std</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">m</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">Objective</span><span class="p">(</span><span class="n">expr</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">m</span><span class="o">.</span><span class="n">std</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">GUROBI</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-
-<span class="ne">AttributeError</span>: 'DPOSE' object has no attribute 'to_pyomo'
-</pre></div>
-</div>
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_b0dcf">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th id="T_b0dcf_level0_col0" class="col_heading level0 col0" >objective</th>
+      <th id="T_b0dcf_level0_col1" class="col_heading level0 col1" >x1</th>
+      <th id="T_b0dcf_level0_col2" class="col_heading level0 col2" >x2</th>
+      <th id="T_b0dcf_level0_col3" class="col_heading level0 col3" >mean at x</th>
+      <th id="T_b0dcf_level0_col4" class="col_heading level0 col4" >std at x</th>
+      <th id="T_b0dcf_level0_col5" class="col_heading level0 col5" >MIP objective</th>
+      <th id="T_b0dcf_level0_col6" class="col_heading level0 col6" >grid objective</th>
+      <th id="T_b0dcf_level0_col7" class="col_heading level0 col7" >seconds</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_b0dcf_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_b0dcf_row0_col0" class="data row0 col0" >mean</td>
+      <td id="T_b0dcf_row0_col1" class="data row0 col1" >-0.5129</td>
+      <td id="T_b0dcf_row0_col2" class="data row0 col2" >1.2494</td>
+      <td id="T_b0dcf_row0_col3" class="data row0 col3" >-1.7826</td>
+      <td id="T_b0dcf_row0_col4" class="data row0 col4" >0.1024</td>
+      <td id="T_b0dcf_row0_col5" class="data row0 col5" >-1.7826</td>
+      <td id="T_b0dcf_row0_col6" class="data row0 col6" >-1.7800</td>
+      <td id="T_b0dcf_row0_col7" class="data row0 col7" >0.36</td>
+    </tr>
+    <tr>
+      <th id="T_b0dcf_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_b0dcf_row1_col0" class="data row1 col0" >robust: mean + 2 std</td>
+      <td id="T_b0dcf_row1_col1" class="data row1 col1" >-0.4783</td>
+      <td id="T_b0dcf_row1_col2" class="data row1 col2" >1.2453</td>
+      <td id="T_b0dcf_row1_col3" class="data row1 col3" >-1.7693</td>
+      <td id="T_b0dcf_row1_col4" class="data row1 col4" >0.0932</td>
+      <td id="T_b0dcf_row1_col5" class="data row1 col5" >-1.5830</td>
+      <td id="T_b0dcf_row1_col6" class="data row1 col6" >-1.5792</td>
+      <td id="T_b0dcf_row1_col7" class="data row1 col7" >0.21</td>
+    </tr>
+    <tr>
+      <th id="T_b0dcf_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_b0dcf_row2_col0" class="data row2 col0" >explore: mean - 2 std</td>
+      <td id="T_b0dcf_row2_col1" class="data row2 col1" >-0.5193</td>
+      <td id="T_b0dcf_row2_col2" class="data row2 col2" >1.2766</td>
+      <td id="T_b0dcf_row2_col3" class="data row2 col3" >-1.7769</td>
+      <td id="T_b0dcf_row2_col4" class="data row2 col4" >0.1076</td>
+      <td id="T_b0dcf_row2_col5" class="data row2 col5" >-1.9923</td>
+      <td id="T_b0dcf_row2_col6" class="data row2 col6" >-1.9900</td>
+      <td id="T_b0dcf_row2_col7" class="data row2 col7" >4.21</td>
+    </tr>
+  </tbody>
+</table>
+</div><img alt="../_images/0eaecda0c2e40611d61f6e695b792227d3c09769bc066b65c9eb5d23755a01a8.png" src="../_images/0eaecda0c2e40611d61f6e695b792227d3c09769bc066b65c9eb5d23755a01a8.png" />
 </div>
 </div>
 <p>In each row the MIP objective is at or below the best grid point. Penalizing the std
@@ -1087,303 +1102,111 @@ of each MIP and checks the optimum against the grid search on the same model.</p
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">14</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> 
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">with</span> <span class="n">QUIET</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()):</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>     <span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>         <span class="s2">"DPOSE"</span><span class="p">:</span> <span class="n">dpose</span><span class="p">,</span>
-<span class="ne">---&gt; </span><span class="mi">14</span>         <span class="s2">"LLPRRegressor"</span><span class="p">:</span> <span class="n">LLPRRegressor</span><span class="p">(</span><span class="n">hidden_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span> <span class="n">n_epochs</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span>         <span class="s2">"NNBR"</span><span class="p">:</span> <span class="n">NNBR</span><span class="p">(</span><span class="n">MLPRegressor</span><span class="p">(</span><span class="n">hidden_layer_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span>                      <span class="n">BayesianRidge</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span>         <span class="s2">"KfoldNN"</span><span class="p">:</span> <span class="n">KfoldNN</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="n">xtrain</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/pycse/sklearn/llpr_regressor.py:273,</span> in <span class="ni">LLPRRegressor.fit</span><span class="nt">(self, X, y)</span>
-<span class="g g-Whitespace">    </span><span class="mi">271</span> <span class="c1"># Calibrate uncertainty parameters if needed</span>
-<span class="g g-Whitespace">    </span><span class="mi">272</span> <span class="k">if</span> <span class="n">X_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_squared</span> <span class="o">==</span> <span class="s2">"auto"</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta_squared</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">273</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_calibrate_uncertainty</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">274</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">275</span>     <span class="c1"># Set default values as arrays (one per output)</span>
-<span class="g g-Whitespace">    </span><span class="mi">276</span>     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_squared</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/pycse/sklearn/llpr_regressor.py:348,</span> in <span class="ni">LLPRRegressor._calibrate_uncertainty</span><span class="nt">(self, X_val, y_val)</span>
-<span class="g g-Whitespace">    </span><span class="mi">345</span> <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">alpha_candidates</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">346</span>     <span class="k">for</span> <span class="n">zeta</span> <span class="ow">in</span> <span class="n">zeta_candidates</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">347</span>         <span class="c1"># Compute uncertainties</span>
-<span class="ne">--&gt; </span><span class="mi">348</span>         <span class="n">variances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_uncertainties_batch</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">zeta</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">350</span>         <span class="c1"># Skip if any variance is non-positive or NaN</span>
-<span class="g g-Whitespace">    </span><span class="mi">351</span>         <span class="k">if</span> <span class="n">jnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">variances</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">jnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">variances</span><span class="p">)):</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/pycse/sklearn/llpr_regressor.py:409,</span> in <span class="ni">LLPRRegressor._compute_uncertainties_batch</span><span class="nt">(self, features, alpha_squared, zeta_squared)</span>
-<span class="g g-Whitespace">    </span><span class="mi">405</span> <span class="nd">@jit</span>
-<span class="g g-Whitespace">    </span><span class="mi">406</span> <span class="k">def</span><span class="w"> </span><span class="nf">compute_single_uncertainty</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span>     <span class="k">return</span> <span class="n">alpha_squared</span> <span class="o">*</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">inv_cov</span> <span class="o">@</span> <span class="n">f</span>
-<span class="ne">--&gt; </span><span class="mi">409</span> <span class="n">uncertainties</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">compute_single_uncertainty</span><span class="p">)(</span><span class="n">features</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">411</span> <span class="k">return</span> <span class="n">uncertainties</span>
-
-    <span class="p">[</span><span class="o">...</span> <span class="n">skipping</span> <span class="n">hidden</span> <span class="mi">1</span> <span class="n">frame</span><span class="p">]</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/api.py:1241,</span> in <span class="ni">vmap.&lt;locals&gt;.vmap_f</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1238</span> <span class="k">try</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1239</span>   <span class="n">axis_data</span> <span class="o">=</span> <span class="n">batching</span><span class="o">.</span><span class="n">AxisData</span><span class="p">(</span><span class="n">axis_name</span><span class="p">,</span> <span class="n">axis_size_</span><span class="p">,</span> <span class="n">spmd_axis_name</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1240</span>                                 <span class="n">explicit_mesh_axis</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1241</span>   <span class="n">out_flat</span><span class="p">,</span> <span class="n">inferred_out_axes</span> <span class="o">=</span> <span class="n">batching</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1242</span>       <span class="n">flat_fun</span><span class="p">,</span> <span class="n">axis_data</span><span class="p">,</span> <span class="n">in_axes_flat</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1243</span>       <span class="k">lambda</span><span class="p">:</span> <span class="n">flatten_axes</span><span class="p">(</span><span class="s2">"vmap out_axes"</span><span class="p">,</span> <span class="n">out_tree</span><span class="p">(),</span> <span class="n">out_axes</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1244</span>       <span class="n">sum_match</span><span class="o">=</span><span class="n">sum_match</span>
-<span class="g g-Whitespace">   </span><span class="mi">1245</span>   <span class="p">)</span><span class="o">.</span><span class="n">call_wrapped</span><span class="p">(</span><span class="o">*</span><span class="n">args_flat</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1246</span> <span class="k">except</span> <span class="n">batching</span><span class="o">.</span><span class="n">SpecMatchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1247</span>   <span class="n">out_axes_flat</span> <span class="o">=</span> <span class="n">flatten_axes</span><span class="p">(</span><span class="s2">"vmap out_axes"</span><span class="p">,</span> <span class="n">out_tree</span><span class="p">(),</span> <span class="n">out_axes</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/linear_util.py:212,</span> in <span class="ni">WrappedFun.call_wrapped</span><span class="nt">(self, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">210</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">211</span><span class="w">   </span><span class="sd">"""Calls the transformed function"""</span>
-<span class="ne">--&gt; </span><span class="mi">212</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_transformed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/batching.py:328,</span> in <span class="ni">_batch_outer</span><span class="nt">(f, axis_data, in_dims, *in_vals)</span>
-<span class="g g-Whitespace">    </span><span class="mi">326</span> <span class="n">tag</span> <span class="o">=</span> <span class="n">TraceTag</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">327</span> <span class="k">with</span> <span class="n">source_info_util</span><span class="o">.</span><span class="n">transform_name_stack</span><span class="p">(</span><span class="s1">'vmap'</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">328</span>   <span class="n">outs</span><span class="p">,</span> <span class="n">out_dim_srcs</span><span class="p">,</span> <span class="n">trace</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">,</span> <span class="o">*</span><span class="n">in_vals</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">329</span> <span class="k">with</span> <span class="n">core</span><span class="o">.</span><span class="n">ensure_no_leaks</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span> <span class="k">del</span> <span class="n">trace</span>
-<span class="g g-Whitespace">    </span><span class="mi">330</span> <span class="k">return</span> <span class="n">outs</span><span class="p">,</span> <span class="n">out_dim_srcs</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/batching.py:347,</span> in <span class="ni">_batch_inner</span><span class="nt">(f, axis_data, out_dim_dests, sum_match, tag, in_dims, *in_vals)</span>
-<span class="g g-Whitespace">    </span><span class="mi">341</span> <span class="c1"># TODO(yashkatariya): Instead of `add_explicit_mesh_axis_names`, we should</span>
-<span class="g g-Whitespace">    </span><span class="mi">342</span> <span class="c1"># create a new mesh by removing the axis_data.explicit_mesh_axis from it.</span>
-<span class="g g-Whitespace">    </span><span class="mi">343</span> <span class="k">with</span> <span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">344</span>       <span class="n">core</span><span class="o">.</span><span class="n">extend_axis_env_nd</span><span class="p">([(</span><span class="n">axis_data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">axis_data</span><span class="o">.</span><span class="n">size</span><span class="p">)]),</span>
-<span class="g g-Whitespace">    </span><span class="mi">345</span>       <span class="n">core</span><span class="o">.</span><span class="n">add_spmd_axis_names</span><span class="p">(</span><span class="n">axis_data</span><span class="o">.</span><span class="n">spmd_name</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">346</span>       <span class="n">core</span><span class="o">.</span><span class="n">add_explicit_mesh_axis_names</span><span class="p">(</span><span class="n">axis_data</span><span class="o">.</span><span class="n">explicit_mesh_axis</span><span class="p">)):</span>
-<span class="ne">--&gt; </span><span class="mi">347</span>   <span class="n">outs</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">in_tracers</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">348</span>   <span class="n">out_dim_dests</span> <span class="o">=</span> <span class="n">out_dim_dests</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">out_dim_dests</span><span class="p">)</span> <span class="k">else</span> <span class="n">out_dim_dests</span>
-<span class="g g-Whitespace">    </span><span class="mi">349</span>   <span class="n">out_vals</span><span class="p">,</span> <span class="n">out_dim_srcs</span> <span class="o">=</span> <span class="n">unzip2</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">350</span>       <span class="nb">map</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">from_elt</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">axis_data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis_data</span><span class="o">.</span><span class="n">explicit_mesh_axis</span><span class="p">,</span> <span class="n">sum_match</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">351</span>           <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outs</span><span class="p">)),</span> <span class="n">outs</span><span class="p">,</span> <span class="n">out_dim_dests</span><span class="p">))</span>  <span class="c1"># pyrefly: ignore[bad-argument-type]  # pyrefly#2385</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/batching.py:122,</span> in <span class="ni">flatten_fun_for_vmap</span><span class="nt">(f, store, in_tree, *args_flat)</span>
-<span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="nd">@lu</span><span class="o">.</span><span class="n">transformation_with_aux2</span>
-<span class="g g-Whitespace">    </span><span class="mi">119</span> <span class="k">def</span><span class="w"> </span><span class="nf">flatten_fun_for_vmap</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">120</span>                          <span class="n">store</span><span class="p">:</span> <span class="n">lu</span><span class="o">.</span><span class="n">Store</span><span class="p">,</span> <span class="n">in_tree</span><span class="p">:</span> <span class="n">PyTreeDef</span><span class="p">,</span> <span class="o">*</span><span class="n">args_flat</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">121</span>   <span class="n">py_args</span><span class="p">,</span> <span class="n">py_kwargs</span> <span class="o">=</span> <span class="n">tree_unflatten</span><span class="p">(</span><span class="n">in_tree</span><span class="p">,</span> <span class="n">args_flat</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">122</span>   <span class="n">ans</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">py_args</span><span class="p">,</span> <span class="o">**</span><span class="n">py_kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">123</span>   <span class="n">ans</span><span class="p">,</span> <span class="n">out_tree</span> <span class="o">=</span> <span class="n">tree_flatten</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span> <span class="n">is_leaf</span><span class="o">=</span><span class="n">is_vmappable</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">124</span>   <span class="n">store</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">out_tree</span><span class="p">)</span>
-
-    <span class="p">[</span><span class="o">...</span> <span class="n">skipping</span> <span class="n">hidden</span> <span class="mi">1</span> <span class="n">frame</span><span class="p">]</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:272,</span> in <span class="ni">_cpp_pjit.&lt;locals&gt;.cache_miss</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">268</span>   <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"re-tracing function </span><span class="si">{</span><span class="n">jit_info</span><span class="o">.</span><span class="n">fun_sourceinfo</span><span class="si">}</span><span class="s2"> for "</span>
-<span class="g g-Whitespace">    </span><span class="mi">269</span>                      <span class="s2">"`jit`, but 'no_tracing' is set"</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">270</span> <span class="n">p</span><span class="p">,</span> <span class="n">args_flat</span> <span class="o">=</span> <span class="n">_infer_params</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">jit_info</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">271</span> <span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="n">out_flat</span><span class="p">,</span> <span class="n">out_tree</span><span class="p">,</span> <span class="n">args_flat</span><span class="p">,</span> <span class="n">jaxpr</span><span class="p">,</span>
-<span class="ne">--&gt; </span><span class="mi">272</span>  <span class="n">executable</span><span class="p">,</span> <span class="n">pgle_profiler</span><span class="p">,</span> <span class="n">const_args</span><span class="p">)</span> <span class="o">=</span> <span class="n">_run_python_pjit</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">273</span>      <span class="n">p</span><span class="p">,</span> <span class="n">args_flat</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">275</span> <span class="n">maybe_fastpath_data</span> <span class="o">=</span> <span class="n">_get_fastpath_data</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">276</span>     <span class="n">executable</span><span class="p">,</span> <span class="n">out_tree</span><span class="p">,</span> <span class="n">args_flat</span><span class="p">,</span> <span class="n">out_flat</span><span class="p">,</span> <span class="n">jaxpr</span><span class="o">.</span><span class="n">effects</span><span class="p">,</span> <span class="n">jaxpr</span><span class="o">.</span><span class="n">consts</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">277</span>     <span class="n">pgle_profiler</span><span class="p">,</span> <span class="n">const_args</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">279</span> <span class="k">return</span> <span class="n">outs</span><span class="p">,</span> <span class="n">maybe_fastpath_data</span><span class="p">,</span> <span class="n">_need_to_rebuild_with_fdo</span><span class="p">(</span><span class="n">pgle_profiler</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:152,</span> in <span class="ni">_run_python_pjit</span><span class="nt">(p, args_flat, fun, args, kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">149</span>   <span class="n">out_flat</span><span class="p">,</span> <span class="n">compiled</span><span class="p">,</span> <span class="n">profiler</span><span class="p">,</span> <span class="n">const_args</span> <span class="o">=</span> <span class="n">_pjit_call_impl_python</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">150</span>       <span class="o">*</span><span class="n">args_flat</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">151</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">152</span>   <span class="n">out_flat</span> <span class="o">=</span> <span class="n">jit_p</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">args_flat</span><span class="p">,</span> <span class="o">**</span><span class="n">p</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">153</span>   <span class="n">compiled</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">154</span>   <span class="n">profiler</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/core.py:732,</span> in <span class="ni">Primitive.bind</span><span class="nt">(self, *args, **params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">730</span> <span class="n">trace_ctx</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">731</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">732</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind_with_trace</span><span class="p">(</span><span class="n">prev_trace</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">avals</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">733</span> <span class="k">finally</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">734</span>   <span class="n">trace_ctx</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">prev_trace</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/core.py:740,</span> in <span class="ni">Primitive.bind_with_trace</span><span class="nt">(self, trace, args, avals, params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">738</span>   <span class="k">with</span> <span class="n">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">739</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_lojax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">740</span> <span class="k">return</span> <span class="n">trace</span><span class="o">.</span><span class="n">process_primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/batching.py:261,</span> in <span class="ni">BatchTrace.process_primitive</span><span class="nt">(self, p, tracers, params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">256</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fancy_primitive_batchers</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">257</span>   <span class="c1"># TODO(yashkatariya): Remove remove_explicit_mesh_axis_names when vmap</span>
-<span class="g g-Whitespace">    </span><span class="mi">258</span>   <span class="c1"># mesh ctx is correctly set.</span>
-<span class="g g-Whitespace">    </span><span class="mi">259</span>   <span class="k">with</span> <span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">set_current_trace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_trace</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">260</span>         <span class="n">core</span><span class="o">.</span><span class="n">remove_explicit_mesh_axis_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis_data</span><span class="o">.</span><span class="n">explicit_mesh_axis</span><span class="p">)):</span>
-<span class="ne">--&gt; </span><span class="mi">261</span>     <span class="n">val_out</span><span class="p">,</span> <span class="n">dim_out</span> <span class="o">=</span> <span class="n">fancy_primitive_batchers</span><span class="p">[</span><span class="n">p</span><span class="p">](</span>
-<span class="g g-Whitespace">    </span><span class="mi">262</span>         <span class="bp">self</span><span class="o">.</span><span class="n">axis_data</span><span class="p">,</span> <span class="n">vals_in</span><span class="p">,</span> <span class="n">dims_in</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">263</span>     <span class="n">src</span> <span class="o">=</span> <span class="n">source_info_util</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">264</span>     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">multiple_results</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:1462,</span> in <span class="ni">_pjit_batcher</span><span class="nt">(axis_data, vals_in, dims_in, jaxpr, in_shardings, out_shardings, in_layouts, out_layouts, donated_invars, ctx_mesh, name, keep_unused, inline, compiler_options_kvs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1457</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">l</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">in_layouts</span><span class="p">)</span> <span class="ow">and</span>
-<span class="g g-Whitespace">   </span><span class="mi">1458</span>         <span class="nb">all</span><span class="p">(</span><span class="n">l</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">out_layouts</span><span class="p">)):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1459</span>   <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1460</span>       <span class="s1">'Concrete layouts are not supported for vmap(jit).'</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1462</span> <span class="n">vals_out</span> <span class="o">=</span> <span class="n">jit_p</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1463</span>   <span class="o">*</span><span class="n">vals_in</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1464</span>   <span class="n">jaxpr</span><span class="o">=</span><span class="n">new_jaxpr</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1465</span>   <span class="n">in_shardings</span><span class="o">=</span><span class="n">in_shardings</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1466</span>   <span class="n">out_shardings</span><span class="o">=</span><span class="n">out_shardings</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1467</span>   <span class="n">in_layouts</span><span class="o">=</span><span class="n">in_layouts</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1468</span>   <span class="n">out_layouts</span><span class="o">=</span><span class="n">out_layouts</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1469</span>   <span class="n">donated_invars</span><span class="o">=</span><span class="n">donated_invars</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1470</span>   <span class="n">ctx_mesh</span><span class="o">=</span><span class="n">ctx_mesh</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1471</span>   <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1472</span>   <span class="n">keep_unused</span><span class="o">=</span><span class="n">keep_unused</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1473</span>   <span class="n">inline</span><span class="o">=</span><span class="n">inline</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1474</span>   <span class="n">compiler_options_kvs</span><span class="o">=</span><span class="n">compiler_options_kvs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1476</span> <span class="k">return</span> <span class="n">vals_out</span><span class="p">,</span> <span class="n">axes_out</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/core.py:732,</span> in <span class="ni">Primitive.bind</span><span class="nt">(self, *args, **params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">730</span> <span class="n">trace_ctx</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">731</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">732</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind_with_trace</span><span class="p">(</span><span class="n">prev_trace</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">avals</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">733</span> <span class="k">finally</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">734</span>   <span class="n">trace_ctx</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">prev_trace</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/core.py:740,</span> in <span class="ni">Primitive.bind_with_trace</span><span class="nt">(self, trace, args, avals, params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">738</span>   <span class="k">with</span> <span class="n">set_current_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">739</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_lojax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">740</span> <span class="k">return</span> <span class="n">trace</span><span class="o">.</span><span class="n">process_primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/core.py:1321,</span> in <span class="ni">EvalTrace.process_primitive</span><span class="nt">(self, primitive, args, params)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1319</span> <span class="n">args</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">full_lower</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1320</span> <span class="n">check_eval_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1321</span> <span class="k">return</span> <span class="n">primitive</span><span class="o">.</span><span class="n">impl</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:1221,</span> in <span class="ni">_pjit_call_impl</span><span class="nt">(jaxpr, in_shardings, out_shardings, in_layouts, out_layouts, donated_invars, ctx_mesh, name, keep_unused, inline, compiler_options_kvs, *args)</span>
-<span class="nn">   1213 donated_argnums = tuple(i for i, d</span> in <span class="ni">enumerate</span><span class="nt">(donated_invars) if d)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1214</span> <span class="n">cache_key</span> <span class="o">=</span> <span class="n">pxla</span><span class="o">.</span><span class="n">JitGlobalCppCacheKeys</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1215</span>     <span class="n">donate_argnums</span><span class="o">=</span><span class="n">donated_argnums</span><span class="p">,</span> <span class="n">donate_argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1216</span>     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>   <span class="mi">1219</span>     <span class="n">in_layouts_treedef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_layouts_leaves</span><span class="o">=</span><span class="n">in_layouts</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1220</span>     <span class="n">out_layouts_treedef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_layouts_leaves</span><span class="o">=</span><span class="n">out_layouts</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1221</span> <span class="k">return</span> <span class="n">_jax</span><span class="o">.</span><span class="n">pjit</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1222</span>     <span class="n">name</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">call_impl_cache_miss</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">cache_key</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1223</span>     <span class="n">tree_util</span><span class="o">.</span><span class="n">dispatch_registry</span><span class="p">,</span> <span class="n">pxla</span><span class="o">.</span><span class="n">cc_shard_arg</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1224</span>     <span class="n">_get_cpp_global_cache</span><span class="p">(</span><span class="n">cache_key</span><span class="o">.</span><span class="n">contains_explicit_attributes</span><span class="p">))(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:1197,</span> in <span class="ni">_pjit_call_impl.&lt;locals&gt;.call_impl_cache_miss</span><span class="nt">(*args_, **kwargs_)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1193</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_impl_cache_miss</span><span class="p">(</span><span class="o">*</span><span class="n">args_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1194</span>   <span class="c1"># args_ do not include the const args</span>
-<span class="g g-Whitespace">   </span><span class="mi">1195</span>   <span class="c1"># See https://docs.jax.dev/en/latest/internals/constants.html.</span>
-<span class="g g-Whitespace">   </span><span class="mi">1196</span>   <span class="c1"># TODO(necula): remove num_const_args when fixing the C++ path</span>
-<span class="ne">-&gt; </span><span class="mi">1197</span>   <span class="n">out_flat</span><span class="p">,</span> <span class="n">compiled</span><span class="p">,</span> <span class="n">pgle_profiler</span><span class="p">,</span> <span class="n">const_args</span> <span class="o">=</span> <span class="n">_pjit_call_impl_python</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1198</span>       <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">jaxpr</span><span class="o">=</span><span class="n">jaxpr</span><span class="p">,</span> <span class="n">in_shardings</span><span class="o">=</span><span class="n">in_shardings</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1199</span>       <span class="n">out_shardings</span><span class="o">=</span><span class="n">out_shardings</span><span class="p">,</span> <span class="n">in_layouts</span><span class="o">=</span><span class="n">in_layouts</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1200</span>       <span class="n">out_layouts</span><span class="o">=</span><span class="n">out_layouts</span><span class="p">,</span> <span class="n">donated_invars</span><span class="o">=</span><span class="n">donated_invars</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1201</span>       <span class="n">ctx_mesh</span><span class="o">=</span><span class="n">ctx_mesh</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">keep_unused</span><span class="o">=</span><span class="n">keep_unused</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1202</span>       <span class="n">inline</span><span class="o">=</span><span class="n">inline</span><span class="p">,</span> <span class="n">compiler_options_kvs</span><span class="o">=</span><span class="n">compiler_options_kvs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1203</span>   <span class="n">fastpath_data</span> <span class="o">=</span> <span class="n">_get_fastpath_data</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1204</span>       <span class="n">compiled</span><span class="p">,</span> <span class="n">tree_structure</span><span class="p">(</span><span class="n">out_flat</span><span class="p">),</span> <span class="n">args</span><span class="p">,</span> <span class="n">out_flat</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1205</span>       <span class="n">jaxpr</span><span class="o">.</span><span class="n">effects</span><span class="p">,</span> <span class="n">jaxpr</span><span class="o">.</span><span class="n">consts</span><span class="p">,</span> <span class="n">pgle_profiler</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1206</span>       <span class="n">const_args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1207</span>   <span class="k">return</span> <span class="n">out_flat</span><span class="p">,</span> <span class="n">fastpath_data</span><span class="p">,</span> <span class="n">_need_to_rebuild_with_fdo</span><span class="p">(</span><span class="n">pgle_profiler</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/pjit.py:1157,</span> in <span class="ni">_pjit_call_impl_python</span><span class="nt">(jaxpr, in_shardings, out_shardings, in_layouts, out_layouts, donated_invars, ctx_mesh, name, keep_unused, inline, compiler_options_kvs, *args)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1146</span> <span class="n">arg_types</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">convert_to_metaty</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1147</span> <span class="n">computation</span> <span class="o">=</span> <span class="n">_resolve_and_lower</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1148</span>     <span class="n">arg_types</span><span class="p">,</span> <span class="n">jaxpr</span><span class="o">=</span><span class="n">jaxpr</span><span class="p">,</span> <span class="n">in_shardings</span><span class="o">=</span><span class="n">in_shardings</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1149</span>     <span class="n">out_shardings</span><span class="o">=</span><span class="n">out_shardings</span><span class="p">,</span> <span class="n">in_layouts</span><span class="o">=</span><span class="n">in_layouts</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>   <span class="mi">1155</span>     <span class="n">compiler_options_kvs</span><span class="o">=</span><span class="n">compiler_options_kvs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1156</span> <span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1157</span> <span class="n">compiled</span> <span class="o">=</span> <span class="n">computation</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1158</span> <span class="n">sharded_const_args</span> <span class="o">=</span> <span class="n">compiled</span><span class="o">.</span><span class="n">shard_const_args</span><span class="p">(</span><span class="n">computation</span><span class="o">.</span><span class="n">const_args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1160</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">distributed_debug</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1161</span>   <span class="c1"># Defensively only perform fingerprint logic if debug logging is enabled</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/pxla.py:1259,</span> in <span class="ni">MeshComputation.compile</span><span class="nt">(self, compiler_options, device_assignment)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1256</span> <span class="k">if</span> <span class="n">use_cache</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1257</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executable</span>
-<span class="ne">-&gt; </span><span class="mi">1259</span> <span class="n">executable</span> <span class="o">=</span> <span class="n">UnloadedMeshExecutable</span><span class="o">.</span><span class="n">from_hlo</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1260</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hlo</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">compile_args</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1261</span>     <span class="n">compiler_options_kvs</span><span class="o">=</span><span class="n">compiler_options_kvs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1262</span>     <span class="n">device_list</span><span class="o">=</span><span class="n">compilation_device_list</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1263</span> <span class="k">if</span> <span class="n">use_cache</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1264</span>   <span class="bp">self</span><span class="o">.</span><span class="n">_executable</span> <span class="o">=</span> <span class="n">executable</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/pxla.py:1756,</span> in <span class="ni">UnloadedMeshExecutable.from_hlo</span><span class="nt">(name, hlo, global_in_avals, global_out_avals, in_shardings, out_shardings, tuple_args, unordered_effects, ordered_effects, host_callbacks, keepalive, kept_var_idx, backend, device_list, committed, in_layouts, out_layouts, compiler_options_kvs, num_devices, mut, shape_poly_state, all_args_info, pgle_profiler, intermediate_shardings, context_mesh)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1752</span> <span class="n">allow_prop_to_inputs</span><span class="p">,</span> <span class="n">allow_prop_to_outputs</span> <span class="o">=</span> <span class="n">get_prop_to_input_output</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1753</span>     <span class="n">in_shardings</span><span class="p">,</span> <span class="n">out_shardings</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordered_effects</span><span class="p">))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1755</span> <span class="n">util</span><span class="o">.</span><span class="n">test_event</span><span class="p">(</span><span class="s2">"pxla_cached_compilation"</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1756</span> <span class="n">xla_executable</span> <span class="o">=</span> <span class="n">_cached_compilation</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1757</span>     <span class="n">hlo</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tuple_args</span><span class="p">,</span> <span class="n">allow_prop_to_inputs</span><span class="p">,</span> <span class="n">allow_prop_to_outputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1758</span>     <span class="nb">tuple</span><span class="p">(</span><span class="n">host_callbacks</span><span class="p">),</span> <span class="n">backend</span><span class="p">,</span> <span class="n">device_list</span><span class="p">,</span> <span class="n">compiler_options_kvs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1759</span>     <span class="n">pgle_profiler</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1761</span> <span class="n">in_shardings</span> <span class="o">=</span> <span class="n">_maybe_get_and_check_in_shardings</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1762</span>     <span class="n">xla_executable</span><span class="p">,</span> <span class="n">in_shardings</span><span class="p">,</span> <span class="n">device_list</span><span class="p">,</span> <span class="n">global_in_avals</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1763</span>     <span class="nb">len</span><span class="p">(</span><span class="n">ordered_effects</span><span class="p">))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1764</span> <span class="n">out_shardings</span> <span class="o">=</span> <span class="n">_maybe_get_and_check_out_shardings</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1765</span>     <span class="n">xla_executable</span><span class="p">,</span> <span class="n">out_shardings</span><span class="p">,</span> <span class="n">device_list</span><span class="p">,</span> <span class="n">global_out_avals</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1766</span>     <span class="nb">len</span><span class="p">(</span><span class="n">ordered_effects</span><span class="p">))</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/interpreters/pxla.py:1536,</span> in <span class="ni">_cached_compilation</span><span class="nt">(computation, name, tuple_args, allow_prop_to_inputs, allow_prop_to_outputs, host_callbacks, backend, da, compiler_options_kvs, pgle_profiler)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1529</span> <span class="n">compile_options</span> <span class="o">=</span> <span class="n">create_compile_options</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1530</span>     <span class="n">computation</span><span class="p">,</span> <span class="n">tuple_args</span><span class="p">,</span> <span class="n">allow_prop_to_inputs</span><span class="p">,</span> <span class="n">allow_prop_to_outputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1531</span>     <span class="n">backend</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">compiler_options</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1533</span> <span class="k">with</span> <span class="n">dispatch</span><span class="o">.</span><span class="n">log_elapsed_time</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1534</span>     <span class="s2">"Finished XLA compilation of </span><span class="si">{fun_name}</span><span class="s2"> in </span><span class="si">{elapsed_time:.9f}</span><span class="s2"> sec"</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1535</span>     <span class="n">fun_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="n">dispatch</span><span class="o">.</span><span class="n">BACKEND_COMPILE_EVENT</span><span class="p">):</span>
-<span class="ne">-&gt; </span><span class="mi">1536</span>   <span class="n">xla_executable</span> <span class="o">=</span> <span class="n">compiler</span><span class="o">.</span><span class="n">compile_or_get_cached</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1537</span>       <span class="n">backend</span><span class="p">,</span> <span class="n">computation</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">compile_options</span><span class="p">,</span> <span class="n">host_callbacks</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1538</span>       <span class="n">da</span><span class="p">,</span> <span class="n">pgle_profiler</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1539</span> <span class="k">return</span> <span class="n">xla_executable</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/compiler.py:516,</span> in <span class="ni">compile_or_get_cached</span><span class="nt">(backend, computation, devices, compile_options, host_callbacks, executable_devices, pgle_profiler)</span>
-<span class="g g-Whitespace">    </span><span class="mi">514</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">515</span>   <span class="n">log_persistent_cache_miss</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">516</span>   <span class="k">return</span> <span class="n">_compile_and_write_cache</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">517</span>       <span class="n">backend</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">518</span>       <span class="n">computation</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">519</span>       <span class="n">executable_devices</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">520</span>       <span class="n">compile_options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">521</span>       <span class="n">host_callbacks</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">522</span>       <span class="n">module_name</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">523</span>       <span class="n">cache_key</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">524</span>   <span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/compiler.py:781,</span> in <span class="ni">_compile_and_write_cache</span><span class="nt">(backend, computation, executable_devices, compile_options, host_callbacks, module_name, cache_key)</span>
-<span class="g g-Whitespace">    </span><span class="mi">771</span> <span class="k">def</span><span class="w"> </span><span class="nf">_compile_and_write_cache</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">772</span>     <span class="n">backend</span><span class="p">:</span> <span class="n">xc</span><span class="o">.</span><span class="n">Client</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">773</span>     <span class="n">computation</span><span class="p">:</span> <span class="n">ir</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">778</span>     <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">779</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xc</span><span class="o">.</span><span class="n">LoadedExecutable</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">780</span>   <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
-<span class="ne">--&gt; </span><span class="mi">781</span>   <span class="n">executable</span> <span class="o">=</span> <span class="n">backend_compile_and_load</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">782</span>       <span class="n">backend</span><span class="p">,</span> <span class="n">computation</span><span class="p">,</span> <span class="n">executable_devices</span><span class="p">,</span> <span class="n">compile_options</span><span class="p">,</span> <span class="n">host_callbacks</span>
-<span class="g g-Whitespace">    </span><span class="mi">783</span>   <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">784</span>   <span class="n">compile_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-<span class="g g-Whitespace">    </span><span class="mi">785</span>   <span class="n">_cache_write</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="n">compile_time</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">executable</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/profiler.py:588,</span> in <span class="ni">annotate_function.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">585</span> <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">586</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">587</span>   <span class="k">with</span> <span class="n">TraceAnnotation</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">decorator_kwargs</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">588</span>     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/jax/_src/compiler.py:402,</span> in <span class="ni">backend_compile_and_load</span><span class="nt">(backend, module, executable_devices, options, host_callbacks)</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span>       <span class="k">return</span> <span class="n">backend</span><span class="o">.</span><span class="n">compile_and_load</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">394</span>           <span class="n">module</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">395</span>           <span class="n">executable_devices</span><span class="o">=</span><span class="n">executable_devices</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">396</span>           <span class="n">compile_options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">397</span>           <span class="n">host_callbacks</span><span class="o">=</span><span class="n">host_callbacks</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">398</span>       <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">399</span>     <span class="c1"># Some backends don't have `host_callbacks` option yet</span>
-<span class="g g-Whitespace">    </span><span class="mi">400</span>     <span class="c1"># TODO(sharadmv): remove this fallback when all backends allow `compile`</span>
-<span class="g g-Whitespace">    </span><span class="mi">401</span>     <span class="c1"># to take in `host_callbacks`</span>
-<span class="ne">--&gt; </span><span class="mi">402</span>     <span class="k">return</span> <span class="n">backend</span><span class="o">.</span><span class="n">compile_and_load</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">403</span>         <span class="n">module</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">404</span>         <span class="n">executable_devices</span><span class="o">=</span><span class="n">executable_devices</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">405</span>         <span class="n">compile_options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">406</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span> <span class="k">except</span> <span class="n">_jax</span><span class="o">.</span><span class="n">JaxRuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">408</span>   <span class="k">for</span> <span class="n">error_handler</span> <span class="ow">in</span> <span class="n">_XLA_RUNTIME_ERROR_HANDLERS</span><span class="p">:</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-</div>
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_27676">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th id="T_27676_level0_col0" class="col_heading level0 col0" >model</th>
+      <th id="T_27676_level0_col1" class="col_heading level0 col1" >binaries</th>
+      <th id="T_27676_level0_col2" class="col_heading level0 col2" >constraints</th>
+      <th id="T_27676_level0_col3" class="col_heading level0 col3" >build s</th>
+      <th id="T_27676_level0_col4" class="col_heading level0 col4" >solve s</th>
+      <th id="T_27676_level0_col5" class="col_heading level0 col5" >MIP min</th>
+      <th id="T_27676_level0_col6" class="col_heading level0 col6" >grid min</th>
+      <th id="T_27676_level0_col7" class="col_heading level0 col7" >|MIP - predict(x*)|</th>
+      <th id="T_27676_level0_col8" class="col_heading level0 col8" >test RMSE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_27676_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_27676_row0_col0" class="data row0 col0" >DPOSE</td>
+      <td id="T_27676_row0_col1" class="data row0 col1" >30</td>
+      <td id="T_27676_row0_col2" class="data row0 col2" >157</td>
+      <td id="T_27676_row0_col3" class="data row0 col3" >0.01</td>
+      <td id="T_27676_row0_col4" class="data row0 col4" >0.15</td>
+      <td id="T_27676_row0_col5" class="data row0 col5" >-1.7826</td>
+      <td id="T_27676_row0_col6" class="data row0 col6" >-1.7800</td>
+      <td id="T_27676_row0_col7" class="data row0 col7" >6.4e-15</td>
+      <td id="T_27676_row0_col8" class="data row0 col8" >0.137</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_27676_row1_col0" class="data row1 col0" >LLPRRegressor</td>
+      <td id="T_27676_row1_col1" class="data row1 col1" >63</td>
+      <td id="T_27676_row1_col2" class="data row1 col2" >288</td>
+      <td id="T_27676_row1_col3" class="data row1 col3" >0.19</td>
+      <td id="T_27676_row1_col4" class="data row1 col4" >18.14</td>
+      <td id="T_27676_row1_col5" class="data row1 col5" >-1.5799</td>
+      <td id="T_27676_row1_col6" class="data row1 col6" >-1.5799</td>
+      <td id="T_27676_row1_col7" class="data row1 col7" >4.4e-16</td>
+      <td id="T_27676_row1_col8" class="data row1 col8" >0.424</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_27676_row2_col0" class="data row2 col0" >NNBR</td>
+      <td id="T_27676_row2_col1" class="data row2 col1" >61</td>
+      <td id="T_27676_row2_col2" class="data row2 col2" >283</td>
+      <td id="T_27676_row2_col3" class="data row2 col3" >0.02</td>
+      <td id="T_27676_row2_col4" class="data row2 col4" >6.32</td>
+      <td id="T_27676_row2_col5" class="data row2 col5" >-1.4487</td>
+      <td id="T_27676_row2_col6" class="data row2 col6" >-1.4469</td>
+      <td id="T_27676_row2_col7" class="data row2 col7" >0.0e+00</td>
+      <td id="T_27676_row2_col8" class="data row2 col8" >0.294</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_27676_row3_col0" class="data row3 col0" >KfoldNN</td>
+      <td id="T_27676_row3_col1" class="data row3 col1" >31</td>
+      <td id="T_27676_row3_col2" class="data row3 col2" >159</td>
+      <td id="T_27676_row3_col3" class="data row3 col3" >0.01</td>
+      <td id="T_27676_row3_col4" class="data row3 col4" >0.32</td>
+      <td id="T_27676_row3_col5" class="data row3 col5" >-1.7040</td>
+      <td id="T_27676_row3_col6" class="data row3 col6" >-1.6993</td>
+      <td id="T_27676_row3_col7" class="data row3 col7" >0.0e+00</td>
+      <td id="T_27676_row3_col8" class="data row3 col8" >0.434</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_27676_row4_col0" class="data row4 col0" >KAN</td>
+      <td id="T_27676_row4_col1" class="data row4 col1" >65</td>
+      <td id="T_27676_row4_col2" class="data row4 col2" >94</td>
+      <td id="T_27676_row4_col3" class="data row4 col3" >0.75</td>
+      <td id="T_27676_row4_col4" class="data row4 col4" >0.86</td>
+      <td id="T_27676_row4_col5" class="data row4 col5" >-1.6489</td>
+      <td id="T_27676_row4_col6" class="data row4 col6" >-1.6341</td>
+      <td id="T_27676_row4_col7" class="data row4 col7" >6.2e-15</td>
+      <td id="T_27676_row4_col8" class="data row4 col8" >0.139</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_27676_row5_col0" class="data row5 col0" >KANLLPR</td>
+      <td id="T_27676_row5_col1" class="data row5 col1" >68</td>
+      <td id="T_27676_row5_col2" class="data row5 col2" >101</td>
+      <td id="T_27676_row5_col3" class="data row5 col3" >0.02</td>
+      <td id="T_27676_row5_col4" class="data row5 col4" >1.66</td>
+      <td id="T_27676_row5_col5" class="data row5 col5" >-1.6776</td>
+      <td id="T_27676_row5_col6" class="data row5 col6" >-1.6699</td>
+      <td id="T_27676_row5_col7" class="data row5 col7" >1.6e-15</td>
+      <td id="T_27676_row5_col8" class="data row5 col8" >0.135</td>
+    </tr>
+    <tr>
+      <th id="T_27676_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_27676_row6_col0" class="data row6 col0" >LeafModelRegressor</td>
+      <td id="T_27676_row6_col1" class="data row6 col1" >20</td>
+      <td id="T_27676_row6_col2" class="data row6 col2" >146</td>
+      <td id="T_27676_row6_col3" class="data row6 col3" >0.02</td>
+      <td id="T_27676_row6_col4" class="data row6 col4" >0.03</td>
+      <td id="T_27676_row6_col5" class="data row6 col5" >-1.3605</td>
+      <td id="T_27676_row6_col6" class="data row6 col6" >-1.3599</td>
+      <td id="T_27676_row6_col7" class="data row6 col7" >4.4e-16</td>
+      <td id="T_27676_row6_col8" class="data row6 col8" >0.452</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 </div>
 <p>In every row the MIP minimum is at or below the grid minimum, and the model evaluated at
 the MIP solution agrees with the MIP value to solver precision: the exports are exact.
