@@ -19,4 +19,9 @@ pycse.plotly
 pycse.hashcache
 ###############
 .. automodule:: pycse.hashcache
+   :members:
+
+pycse.sklearn.mip
+#################
+.. automodule:: pycse.sklearn.mip
    :members:      
