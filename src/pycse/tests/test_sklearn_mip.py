@@ -842,3 +842,356 @@ class TestTrainedPiecewiseModels:
         model = KAN(layers=(2, 3, 1), spline_order=1, base_activation="linear", grid_size=4)
         model.fit(X, y, maxiter=20)
         check_fixed_inputs(model, None, X[:3], BOUNDS, model.predict)
+
+
+# ---------------------------------------------------------------------------
+# Uncertainty in the objective (needs a solver for quadratic constraints)
+# ---------------------------------------------------------------------------
+
+try:
+    GUROBI_AVAILABLE = pyo.SolverFactory("gurobi_direct").available(exception_flag=False)
+    GUROBI_MINLP_AVAILABLE = pyo.SolverFactory("gurobi_direct_minlp").available(
+        exception_flag=False
+    )
+except Exception:
+    GUROBI_AVAILABLE = GUROBI_MINLP_AVAILABLE = False
+
+needs_gurobi = pytest.mark.skipif(not GUROBI_AVAILABLE, reason="gurobipy not installed")
+needs_gurobi_minlp = pytest.mark.skipif(
+    not GUROBI_MINLP_AVAILABLE, reason="gurobipy (MINLP) not installed"
+)
+
+
+def network_with_std(seed=0):
+    rng = np.random.default_rng(seed)
+    net = random_network(seed=seed)
+    C = rng.normal(size=(5, 5))
+    net.std = [std_from_covariance(0.1 * C @ C.T, tap=2, d=0.2)]
+    return net
+
+
+@needs_gurobi
+class TestStdObjectives:
+    @pytest.mark.parametrize(
+        "k,mode", [(1.0, True), (1.0, "cone"), (1.0, "exact"), (-1.0, "exact")]
+    )
+    def test_mean_plus_k_std_matches_grid(self, k, mode):
+        """Robust (k > 0, cone) and optimistic (k < 0, exact) objectives."""
+        net = network_with_std()
+        block = add_to_pyomo(net, input_bounds=BOUNDS, include_std=mode)
+        block.obj = pyo.Objective(expr=block.y[0] + k * block.std[0])
+        result = pyo.SolverFactory("gurobi_direct").solve(block)
+        assert str(result.solver.termination_condition) == "optimal"
+
+        grid = grid_points(BOUNDS, n=301)
+        f = net.forward(grid)[:, 0] + k * net.predict_std(grid)[:, 0]
+        x = np.array([[block.x[0].value, block.x[1].value]])
+        at_x = net.forward(x)[0, 0] + k * net.predict_std(x)[0, 0]
+        assert pyo.value(block.obj) <= f.min() + 1e-6
+        np.testing.assert_allclose(pyo.value(block.obj), at_x, atol=1e-5)
+
+    def test_cone_is_unbounded_when_std_is_rewarded(self):
+        """The cone only bounds std from below, which is why 'exact' exists."""
+        block = add_to_pyomo(network_with_std(), input_bounds=BOUNDS, include_std="cone")
+        block.obj = pyo.Objective(expr=block.y[0] - block.std[0])
+        result = pyo.SolverFactory("gurobi_direct").solve(block, load_solutions=False)
+        assert "optimal" != str(result.solver.termination_condition)
+
+
+def test_include_std_values():
+    with pytest.raises(ValueError, match="include_std"):
+        add_to_pyomo(network_with_std(), input_bounds=BOUNDS, include_std="soc")
+
+
+# ---------------------------------------------------------------------------
+# Tree split gap, KfoldNN, ragged splines, Elementwise1D and periodic models
+# ---------------------------------------------------------------------------
+
+
+@needs_highs
+@pytest.mark.filterwarnings("ignore::UserWarning")
+class TestSplitGap:
+    def test_gap_excludes_the_right_leaf_on_a_split(self, data):
+        model = TestLeafModel().make(data)
+        root_feature, t = model.tree_.feature[0], model.tree_.threshold[0]
+        x = np.zeros(2)
+        x[root_feature] = t  # exactly on the root split: the tree takes the left leaf
+        expected = model.predict(x[None, :])[0]
+
+        for gap in (0.0, 1e-4):  # the gap must exceed the solver tolerances (~1e-6)
+            block = model.to_pyomo(input_bounds=BOUNDS, split_gap=gap)
+            for i in range(2):
+                block.x[i].fix(x[i])
+            values = []
+            for sense in (pyo.minimize, pyo.maximize):
+                block.obj = pyo.Objective(expr=block.y[0], sense=sense)
+                pyo.SolverFactory("highs").solve(block)
+                values.append(pyo.value(block.y[0]))
+                block.del_component("obj")
+            if gap == 0:
+                assert expected in np.round(values, 9) or np.isclose(values, expected).any()
+            else:
+                np.testing.assert_allclose(values, expected, atol=1e-8)
+
+    def test_negative_gap_rejected(self, data):
+        model = TestLeafModel().make(data)
+        with pytest.raises(ValueError, match="split_gap"):
+            model.to_pyomo(input_bounds=BOUNDS, split_gap=-1.0)
+
+    def test_unknown_option_rejected(self, data):
+        from pycse.sklearn import LinearRegressionUQ
+
+        X, y = data
+        with pytest.raises(TypeError):
+            LinearRegressionUQ().fit(X, y).to_pyomo(input_bounds=BOUNDS, split_gap=1e-6)
+
+
+def untrained_kfoldnn(X, layers=(6, 5)):
+    import jax
+
+    from pycse.sklearn.kfoldnn import KfoldNN, _NN
+
+    model = KfoldNN(layers, activation="relu")
+    model.nn_ = _NN(layers, "relu")
+    model.optpars_ = randomize(model.nn_.init(jax.random.PRNGKey(0), X), seed=6)
+    return model
+
+
+@needs_highs
+class TestKfoldNN:
+    def test_matches_predict(self, data):
+        X, _ = data
+        model = untrained_kfoldnn(X)
+        net = model.mip_network()
+        Xt = np.random.default_rng(6).uniform(-1, 1, size=(8, 2))
+        mean, std = model.predict(Xt, return_std=True)
+        np.testing.assert_allclose(net.forward(Xt)[:, 0], mean, rtol=1e-6, atol=1e-8)
+        np.testing.assert_allclose(net.predict_std(Xt)[:, 0], std, rtol=1e-6)
+        check_fixed_inputs(
+            model, None, Xt[:3], BOUNDS, model.predict, lambda x: model.predict(x, True)[1]
+        )
+
+    def test_activation_option(self):
+        from pycse.sklearn import KfoldNN
+
+        assert KfoldNN((4, 3)).activation == "swish"
+        assert "activation" in KfoldNN((4, 3)).get_params()
+        with pytest.raises(ValueError, match="activation"):
+            KfoldNN((4, 3), activation="silu")
+
+    def test_rejects_swish(self, data):
+        model = untrained_kfoldnn(data[0])
+        model.activation = "swish"
+        with pytest.raises(ValueError, match="activation='relu'"):
+            model.mip_network()
+
+
+class TestElementwise1D:
+    def layer(self):
+        from pycse.sklearn.mip import Elementwise1D
+
+        return Elementwise1D(
+            n_in=2,
+            index=[0, 0, 1],
+            funcs=[np.sin, None, np.cos],
+            slope=[0.0, 2.0, 0.0],
+            intercept=[0.0, -1.0, 0.0],
+            spacing=[0.1, np.inf, 0.05],
+            curvature=[1.0, 0.0, 1.0],
+        )
+
+    def test_exact_forward_and_interpolation_error_bound(self):
+        net = MIPNetwork([self.layer(), Affine(np.ones((3, 1)), [0.0])])
+        bounds = np.array([[-2.0, 3.0], [0.0, 1.0]])
+        X = np.random.default_rng(7).uniform(bounds[:, 0], bounds[:, 1], size=(2000, 2))
+        exact = np.sin(X[:, 0]) + 2 * X[:, 0] - 1 + np.cos(X[:, 1])
+        np.testing.assert_allclose(net.forward(X)[:, 0], exact, atol=1e-12)
+
+        enc = net.encoded(bounds)
+        err = np.abs(enc.forward(X)[:, 0] - exact)
+        bound = net.max_feature_error(bounds)[0]
+        assert bound[1] == 0  # the linear feature is exact
+        assert err.max() <= bound.sum() + 1e-12
+        assert err.max() > 0  # it really is an approximation
+
+    @needs_highs
+    def test_milp_matches_encoded_network(self):
+        net = MIPNetwork(
+            [self.layer(), ReLU(), Affine(np.random.default_rng(8).normal(size=(3, 1)), [0.0])]
+        )
+        bounds = [(-2.0, 3.0), (0.0, 1.0)]
+        X = np.random.default_rng(9).uniform([-2, 0], [3, 1], size=(4, 2))
+        check_fixed_inputs(None, net, X, bounds, net.encoded(bounds).forward)
+
+
+def test_ragged_piecewise_linear():
+    from pycse.sklearn.mip import PiecewiseLinear
+
+    layer = PiecewiseLinear(
+        breakpoints=[[0.0, 1.0], [0.0, 0.5, 1.0, 2.0]],
+        values=[[[0.0], [1.0]], [[0.0], [1.0], [0.0], [3.0]]],
+    )
+    x = np.array([[0.5, 0.75], [2.0, 1.5]])
+    np.testing.assert_allclose(MIPNetwork([layer]).forward(x)[:, 0], [0.5 + 0.5, 1.0 + 1.5])
+    with pytest.raises(ValueError, match="values for an input"):
+        PiecewiseLinear(breakpoints=[[0.0, 1.0]], values=[[[0.0], [1.0], [2.0]]])
+
+
+def untrained_periodic(X, y, n_harmonics=2, hidden=(6,)):
+    import jax
+
+    from pycse.sklearn.jax_periodic import JAXPeriodicRegressor, _forward_batch, _init_params
+
+    model = JAXPeriodicRegressor(
+        hidden_dims=hidden,
+        activation="relu",
+        periodicity={0: 2.0},
+        n_harmonics=n_harmonics,
+    )
+    model.n_features_in_ = X.shape[1]
+    model._validate_periodicity(X.shape[1])
+    X_proc = model._preprocess_X(X, fit=True)
+    model._preprocess_y(y, fit=True)
+    params = _init_params(jax.random.PRNGKey(0), model.n_expanded_features_, hidden)
+    model.params_ = randomize(params, seed=7)
+    _, feats = _forward_batch(
+        model.params_, model._expand_features(X_proc, model.periods_), "relu", True
+    )
+    feats = np.asarray(feats)
+    model.cov_matrix_ = feats.T @ feats
+    model.n_llpr_features_ = feats.shape[1]
+    model.alpha_squared_ = 1.3
+    model.zeta_squared_ = 0.05
+    return model
+
+
+@needs_highs
+class TestPeriodic:
+    BOUNDS = [(0.0, 4.0), (-1.0, 1.0)]  # two periods of feature 0
+
+    def test_exact_path_matches_predict(self, data):
+        X, y = data
+        model = untrained_periodic(X, y)
+        net = model.mip_network()
+        Xt = np.random.default_rng(10).uniform([0, -1], [4, 1], size=(8, 2))
+        mean, std = model.predict(Xt, return_std=True)
+        np.testing.assert_allclose(net.forward(Xt)[:, 0], mean, rtol=1e-6, atol=1e-8)
+        np.testing.assert_allclose(net.predict_std(Xt)[:, 0], std, rtol=1e-5)
+
+    @pytest.mark.parametrize("ppp", [8, 32])
+    def test_interpolation_error_and_milp(self, data, ppp):
+        X, y = data
+        model = untrained_periodic(X, y)
+        net = model.mip_network(points_per_period=ppp)
+        bound = net.max_feature_error(self.BOUNDS)[0].max()
+        np.testing.assert_allclose(bound, (2 * np.pi / ppp) ** 2 / 8, rtol=1e-6)
+
+        enc = net.encoded(self.BOUNDS)
+        Xt = np.random.default_rng(11).uniform([0, -1], [4, 1], size=(500, 2))
+        features_err = np.abs(enc.layers[0](Xt) - net.layers[0](Xt)).max()
+        assert features_err <= bound + 1e-12
+
+        # The MILP represents exactly the interpolated (encoded) network.
+        block = model.to_pyomo(input_bounds=self.BOUNDS, points_per_period=ppp)
+        for x in Xt[:2]:
+            y_mip, var = solve_at(block, x)
+            np.testing.assert_allclose(y_mip, enc.forward(x[None, :])[0], atol=1e-6)
+            np.testing.assert_allclose(np.sqrt(var), enc.predict_std(x[None, :])[0], rtol=1e-5)
+
+    def test_rejects_silu(self, data):
+        model = untrained_periodic(*data)
+        model.activation = "silu"
+        with pytest.raises(ValueError, match="activation='relu'"):
+            model.mip_network()
+
+
+# ---------------------------------------------------------------------------
+# Symbolic models (SISSO): exact nonlinear export
+# ---------------------------------------------------------------------------
+
+
+def symbolic_example():
+    from pycse.sklearn.mip import SymbolicModel, eval_expression
+
+    expr = "2.0*(x0*x1) + 0.5*exp(x1)/x0 - 1.0"
+
+    def outputs(x, ops):
+        return [eval_expression(expr, ["x0", "x1"], x, ops)]
+
+    def variance(x, ops):
+        return [0.01 + 0.1 * (x[0] - 1) ** 2]
+
+    return SymbolicModel(2, outputs, variance)
+
+
+SYM_BOUNDS = [(0.5, 2.0), (0.5, 2.0)]
+
+
+@needs_highs
+def test_symbolic_expressions_match_numpy():
+    from pycse.sklearn.mip import pyomo_ops
+
+    model = symbolic_example()
+    block = add_to_pyomo(model, input_bounds=SYM_BOUNDS)
+    x = np.array([1.3, 0.7])
+    for i in range(2):
+        block.x[i].value = x[i]
+    pyomo_y = model.outputs([block.x[0], block.x[1]], pyomo_ops())[0]
+    np.testing.assert_allclose(pyo.value(pyomo_y), model.forward(x)[0, 0])
+    np.testing.assert_allclose(pyo.value(block.variance[0]), model.predict_std(x)[0, 0] ** 2)
+    assert len(block.y_def) == 1
+
+
+@needs_gurobi_minlp
+def test_symbolic_global_minimum():
+    model = symbolic_example()
+    block = add_to_pyomo(model, input_bounds=SYM_BOUNDS, include_std=True)
+    block.obj = pyo.Objective(expr=block.y[0] + 2 * block.std[0])
+    pyo.SolverFactory("gurobi_direct_minlp").solve(block)
+    grid = grid_points(SYM_BOUNDS, n=301)
+    f = model.forward(grid)[:, 0] + 2 * model.predict_std(grid)[:, 0]
+    assert pyo.value(block.obj) <= f.min() + 1e-6
+
+
+try:
+    import TorchSisso  # noqa: F401
+
+    SISSO_AVAILABLE = True
+except ImportError:
+    SISSO_AVAILABLE = False
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not SISSO_AVAILABLE, reason="TorchSisso not installed")
+@needs_highs
+class TestSISSO:
+    def fit(self, cls, **kw):
+        import contextlib
+        import io
+
+        rng = np.random.default_rng(0)
+        X = rng.uniform(0.5, 2, (60, 2))
+        y = 2 * X[:, 0] * X[:, 1] + np.exp(X[:, 1]) / X[:, 0] + 0.01 * rng.normal(size=60)
+        with contextlib.redirect_stdout(io.StringIO()):
+            return cls(operators=["+", "-", "*", "/", "exp"], n_expansion=2, **kw).fit(X, y)
+
+    @pytest.mark.parametrize("ensemble", [False, True])
+    def test_matches_predict(self, ensemble):
+        from pycse.sklearn import SISSO, SISSOEnsemble
+
+        model = self.fit(SISSOEnsemble, n_models=3) if ensemble else self.fit(SISSO, n_term=2)
+        net = model.mip_network()
+        Xt = np.random.default_rng(1).uniform(0.5, 2, (20, 2))
+        mean, std = model.predict(Xt, return_std=True)
+        np.testing.assert_allclose(net.forward(Xt)[:, 0], mean, rtol=1e-8)
+        np.testing.assert_allclose(net.predict_std(Xt)[:, 0], std, rtol=1e-6)
+
+    @needs_gurobi_minlp
+    def test_global_minimum(self):
+        from pycse.sklearn import SISSO
+
+        model = self.fit(SISSO, n_term=2)
+        block = model.to_pyomo(input_bounds=SYM_BOUNDS)
+        block.obj = pyo.Objective(expr=block.y[0])
+        pyo.SolverFactory("gurobi_direct_minlp").solve(block)
+        assert pyo.value(block.obj) <= model.predict(grid_points(SYM_BOUNDS, 301)).min() + 1e-6

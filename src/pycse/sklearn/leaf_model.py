@@ -279,15 +279,22 @@ class LeafModelRegressor(MIPExportMixin, DecisionTreeRegressor):
 
         return self
 
-    def mip_network(self):
+    def mip_network(self, split_gap=0.0):
         """Return the fitted model as a ``TreeModel`` for MIP export.
 
         Each leaf becomes a box with its leaf model's affine prediction, read off by
         probing the leaf model. Requires a linear ``leaf_model`` (e.g.
         ``LinearRegression``, ``BayesianRidge``, optionally after a scaler); others
-        raise ``ValueError``. Only the prediction is exported, not the std. Points
-        on a split threshold may be assigned to either side. See
-        ``pycse.sklearn.mip``.
+        raise ``ValueError``. Only the prediction is exported, not the std.
+
+        Args:
+            split_gap: With 0 (default), a point exactly on a split threshold may take
+                either neighboring leaf's value. A positive gap makes the right-hand
+                side ``x >= t + split_gap``, so the MIP agrees with ``predict``
+                everywhere it is feasible. The gap must be well above the solver's
+                feasibility and integrality tolerances (about 1e-6 for most MIP
+                solvers), e.g. 1e-4 in input units. Also accepted by
+                ``to_pyomo(split_gap=...)``. See ``pycse.sklearn.mip``.
         """
         if not hasattr(self, "leaf_models_"):
             raise ValueError("Fit the model before exporting it.")
@@ -319,7 +326,7 @@ class LeafModelRegressor(MIPExportMixin, DecisionTreeRegressor):
             right_lower[f] = max(lower[f], t)
             stack.append((left, lower, left_upper))
             stack.append((right, right_lower, upper))
-        return TreeModel(leaves)
+        return TreeModel(leaves, split_gap=split_gap)
 
     def predict(self, X, return_std=False, warn_extrapolation=True):
         """Predict values for X.

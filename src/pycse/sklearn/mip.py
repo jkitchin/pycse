@@ -117,32 +117,40 @@ class ReLU:
 class PiecewiseLinear:
     """Sum of 1D piecewise-linear functions: ``z_out[j] = sum_i f_ij(z_in[i]) + z_in @ W + b``.
 
-    ``f_ij`` interpolates ``values[i, :, j]`` linearly between ``breakpoints[i]`` and
+    ``f_ij`` interpolates ``values[i][:, j]`` linearly between ``breakpoints[i]`` and
     is constant outside them, as in a KAN layer with linear splines and a clipped
     grid. All functions of one input share its breakpoints, so the MIP needs one set
-    of segment binaries per input, not per edge.
+    of segment binaries per input, not per edge. Inputs may have different numbers
+    of breakpoints.
 
     Args:
-        breakpoints: Increasing breakpoints per input, shape (n_in, K).
-        values: Function values at the breakpoints, shape (n_in, K, n_out).
+        breakpoints: Increasing breakpoints for each input: an (n_in, K) array, or a
+            list of n_in 1D arrays.
+        values: Function values at the breakpoints: an (n_in, K, n_out) array, or a
+            list of (K_i, n_out) arrays.
         W: Optional linear term, shape (n_in, n_out).
         b: Optional bias, shape (n_out,).
     """
 
-    breakpoints: np.ndarray
-    values: np.ndarray
+    breakpoints: list
+    values: list
     W: np.ndarray = None
     b: np.ndarray = None
 
     def __post_init__(self):
-        self.breakpoints = np.atleast_2d(np.asarray(self.breakpoints, dtype=float))
-        self.values = np.asarray(self.values, dtype=float)
-        n_in, K = self.breakpoints.shape
-        if self.values.ndim != 3 or self.values.shape[:2] != (n_in, K):
-            raise ValueError(f"values must have shape ({n_in}, {K}, n_out).")
-        if np.any(np.diff(self.breakpoints, axis=1) <= 0):
-            raise ValueError("breakpoints must be strictly increasing for each input.")
-        n_out = self.values.shape[2]
+        self.breakpoints = [np.asarray(bp, dtype=float).reshape(-1) for bp in self.breakpoints]
+        self.values = [np.atleast_2d(np.asarray(v, dtype=float)) for v in self.values]
+        if len(self.values) != len(self.breakpoints):
+            raise ValueError("breakpoints and values need one entry per input.")
+        n_in, n_out = len(self.breakpoints), self.values[0].shape[1]
+        for bp, v in zip(self.breakpoints, self.values):
+            if v.shape != (len(bp), n_out):
+                raise ValueError(
+                    f"values for an input with {len(bp)} breakpoints must be "
+                    f"({len(bp)}, {n_out}), got {v.shape}."
+                )
+            if np.any(np.diff(bp) <= 0):
+                raise ValueError("breakpoints must be strictly increasing for each input.")
         self.W = np.zeros((n_in, n_out)) if self.W is None else np.asarray(self.W, dtype=float)
         self.b = np.zeros(n_out) if self.b is None else np.asarray(self.b, dtype=float)
         if self.W.shape != (n_in, n_out) or self.b.shape != (n_out,):
@@ -150,18 +158,18 @@ class PiecewiseLinear:
 
     @property
     def n_in(self):
-        return self.breakpoints.shape[0]
+        return len(self.breakpoints)
 
     @property
     def n_out(self):
-        return self.values.shape[2]
+        return self.values[0].shape[1]
 
     def segments(self, i, lo, hi):
         """Breakpoints of input i restricted to [lo, hi], and the values there."""
         bp = self.breakpoints[i]
         pts = np.unique(np.concatenate([[lo, hi], bp[(bp > lo) & (bp < hi)]]))
         vals = np.column_stack(
-            [np.interp(pts, bp, self.values[i, :, j]) for j in range(self.n_out)]
+            [np.interp(pts, bp, self.values[i][:, j]) for j in range(self.n_out)]
         )
         return pts, vals
 
@@ -169,8 +177,105 @@ class PiecewiseLinear:
         out = z @ self.W + self.b
         for i in range(self.n_in):
             for j in range(self.n_out):
-                out[:, j] += np.interp(z[:, i], self.breakpoints[i], self.values[i, :, j])
+                out[:, j] += np.interp(z[:, i], self.breakpoints[i], self.values[i][:, j])
         return out
+
+
+@dataclass
+class Elementwise1D:
+    """Features ``z_out[j] = f_j(z_in[index[j]])`` of one input each.
+
+    Linear features (``funcs[j] is None``) are ``slope[j] * z + intercept[j]`` and are
+    exported exactly. Nonlinear features (e.g. the sin/cos of a periodic model) are
+    interpolated in the MIP on a grid with spacing at most ``spacing[j]`` over the
+    bounds of their input, which ``add_to_pyomo`` knows only when it is called; see
+    ``MIPNetwork.encoded``. With ``|f_j''| <= curvature[j]`` the interpolation error of
+    feature j is at most ``curvature[j] * h**2 / 8`` for grid spacing ``h``.
+
+    Args:
+        n_in: Number of inputs.
+        index: Input of each feature, shape (n_out,).
+        funcs: Per feature, a vectorized numpy function, or None for a linear feature.
+        slope, intercept: Linear features' coefficients (ignored for nonlinear ones).
+        spacing: Maximum grid spacing per feature (nonlinear features only).
+        curvature: Bound on ``|f''|`` per feature, for ``max_error``.
+    """
+
+    n_in: int
+    index: np.ndarray
+    funcs: list
+    slope: np.ndarray = None
+    intercept: np.ndarray = None
+    spacing: np.ndarray = None
+    curvature: np.ndarray = None
+
+    def __post_init__(self):
+        self.index = np.asarray(self.index, dtype=int).reshape(-1)
+        n = len(self.index)
+        if len(self.funcs) != n:
+            raise ValueError(f"Got {len(self.funcs)} funcs for {n} features.")
+
+        def vec(v, default):
+            return np.full(n, default) if v is None else np.asarray(v, dtype=float).reshape(n)
+
+        self.slope = vec(self.slope, 1.0)
+        self.intercept = vec(self.intercept, 0.0)
+        self.spacing = vec(self.spacing, np.inf)
+        self.curvature = vec(self.curvature, np.nan)
+        nonlinear = np.array([f is not None for f in self.funcs])
+        if np.any(nonlinear & ~(self.spacing > 0) | nonlinear & ~np.isfinite(self.spacing)):
+            raise ValueError("Every nonlinear feature needs a finite positive spacing.")
+
+    @property
+    def n_out(self):
+        return len(self.index)
+
+    def __call__(self, z):
+        out = np.empty((len(z), self.n_out))
+        for j, (i, f) in enumerate(zip(self.index, self.funcs)):
+            zi = z[:, i]
+            out[:, j] = self.slope[j] * zi + self.intercept[j] if f is None else f(zi)
+        return out
+
+    def grid(self, i, lo, hi):
+        """The interpolation grid of input i on [lo, hi]."""
+        js = [j for j in range(self.n_out) if self.index[j] == i and self.funcs[j] is not None]
+        if not js or hi <= lo:
+            return np.unique([lo, hi])
+        h = min(self.spacing[j] for j in js)
+        return np.linspace(lo, hi, int(np.ceil((hi - lo) / h)) + 1)
+
+    def to_piecewise(self, lo, hi):
+        """The ``PiecewiseLinear`` layer the MIP uses for inputs in [lo, hi]."""
+        W = np.zeros((self.n_in, self.n_out))
+        b = self.intercept * np.array([f is None for f in self.funcs])
+        bps, vals = [], []
+        for i in range(self.n_in):
+            pts = self.grid(i, lo[i], hi[i])
+            if len(pts) == 1:  # a fixed input: widen to keep the breakpoints increasing
+                pts = np.array([pts[0], pts[0] + 1.0])
+            v = np.zeros((len(pts), self.n_out))
+            for j in range(self.n_out):
+                if self.index[j] != i:
+                    continue
+                if self.funcs[j] is None:
+                    W[i, j] = self.slope[j]
+                else:
+                    v[:, j] = self.funcs[j](pts)
+            bps.append(pts)
+            vals.append(v)
+        return PiecewiseLinear(bps, vals, W=W, b=b)
+
+    def max_error(self, lo, hi):
+        """Bound on each feature's interpolation error for inputs in [lo, hi]."""
+        err = np.zeros(self.n_out)
+        for j in range(self.n_out):
+            if self.funcs[j] is not None:
+                i = self.index[j]
+                pts = self.grid(i, lo[i], hi[i])
+                h = np.max(np.diff(pts)) if len(pts) > 1 else 0.0
+                err[j] = self.curvature[j] * h**2 / 8
+        return err
 
 
 @dataclass
@@ -218,12 +323,15 @@ class MIPNetwork:
     std: list = field(default=None)
 
     def __post_init__(self):
-        if not self.layers or not isinstance(self.layers[0], (Affine, PiecewiseLinear)):
-            raise ValueError("A MIPNetwork must start with an Affine or PiecewiseLinear layer.")
+        first_types = (Affine, PiecewiseLinear, Elementwise1D)
+        if not self.layers or not isinstance(self.layers[0], first_types):
+            raise ValueError(
+                "A MIPNetwork must start with an Affine, PiecewiseLinear or Elementwise1D layer."
+            )
         n_x = self.layers[0].n_in
         n = self.layers[0].n_out
         for layer in self.layers[1:]:
-            if isinstance(layer, (Affine, PiecewiseLinear)):
+            if isinstance(layer, first_types):
                 if layer.n_in != n:
                     raise ValueError(f"Layer expects {layer.n_in} inputs but receives {n}.")
                 n = layer.n_out
@@ -263,13 +371,49 @@ class MIPNetwork:
         for layer in self.layers:
             if isinstance(layer, Affine):
                 z = z @ layer.W + layer.b + (0.0 if layer.Wx is None else x @ layer.Wx)
-            elif isinstance(layer, PiecewiseLinear):
+            elif isinstance(layer, (PiecewiseLinear, Elementwise1D)):
                 z = layer(z)
             else:
                 s = layer.sign(z.shape[1])
                 z = s * np.maximum(s * z, 0.0)
             zs.append(z)
         return (z, zs) if return_all else z
+
+    def encoded(self, input_bounds):
+        """The network exactly as the MIP represents it for these input bounds.
+
+        ``Elementwise1D`` layers are replaced by their interpolating
+        ``PiecewiseLinear`` layers; every other layer is unchanged. Compare
+        ``encoded(bounds).forward(X)`` with ``forward(X)`` to see the approximation.
+        """
+        if not any(isinstance(layer, Elementwise1D) for layer in self.layers):
+            return self
+        net = copy.copy(self)
+        net.layers = []
+        lo, hi = np.asarray(input_bounds, dtype=float).T
+        xlo, xhi = lo, hi
+        for layer in self.layers:
+            if isinstance(layer, Elementwise1D):
+                layer = layer.to_piecewise(lo, hi)
+            net.layers.append(layer)
+            (lo, hi) = propagate_bounds([layer], np.column_stack([lo, hi]), (xlo, xhi))[0]
+        return net
+
+    def max_feature_error(self, input_bounds):
+        """Bounds on the interpolation error of each ``Elementwise1D`` feature.
+
+        Returns a list with one array per ``Elementwise1D`` layer (empty when the
+        network is exact).
+        """
+        errors = []
+        lo, hi = np.asarray(input_bounds, dtype=float).T
+        xlo, xhi = lo, hi
+        for layer in self.layers:
+            if isinstance(layer, Elementwise1D):
+                errors.append(layer.max_error(lo, hi))
+                layer = layer.to_piecewise(lo, hi)
+            (lo, hi) = propagate_bounds([layer], np.column_stack([lo, hi]), (xlo, xhi))[0]
+        return errors
 
     def predict_std(self, X):
         """Evaluate the std of each output with numpy, shape (n_samples, n_outputs)."""
@@ -289,10 +433,12 @@ class MIPNetwork:
         shift = mean / scale
 
         first = net.layers[0]
+        if isinstance(first, Elementwise1D):
+            raise ValueError("scale_inputs does not support an Elementwise1D first layer.")
         first.b = first.b - shift @ first.W
         first.W = first.W / scale[:, None]
         if isinstance(first, PiecewiseLinear):
-            first.breakpoints = first.breakpoints * scale[:, None] + mean[:, None]
+            first.breakpoints = [bp * s + m for bp, s, m in zip(first.breakpoints, scale, mean)]
         for layer in net.layers:
             if isinstance(layer, Affine) and layer.Wx is not None:
                 layer.b = layer.b - shift @ layer.Wx
@@ -309,13 +455,13 @@ class MIPNetwork:
         mean = np.broadcast_to(np.asarray(mean, dtype=float).reshape(-1), (net.n_outputs,))
         scale = np.broadcast_to(np.asarray(scale, dtype=float).reshape(-1), (net.n_outputs,))
         last = net.layers[-1]
-        if isinstance(last, ReLU):
+        if isinstance(last, (ReLU, Elementwise1D)):
             net.layers.append(Affine(np.diag(scale), mean))
         else:
             last.W = last.W * scale
             last.b = last.b * scale + mean
             if isinstance(last, PiecewiseLinear):
-                last.values = last.values * scale
+                last.values = [v * scale for v in last.values]
             elif last.Wx is not None:
                 last.Wx = last.Wx * scale
         for spec, s in zip(net.std or [], np.abs(scale)):
@@ -345,9 +491,20 @@ class Leaf:
 
 @dataclass
 class TreeModel:
-    """A piecewise-affine model on a partition of the input space into boxes."""
+    """A piecewise-affine model on a partition of the input space into boxes.
+
+    Args:
+        leaves: The ``Leaf`` boxes.
+        split_gap: In the MIP, a leaf's strict lower bounds ``x > lower`` become
+            ``x >= lower + split_gap``. With the default 0 a point exactly on a split
+            may take either neighboring leaf's value (the tree takes the left one);
+            a positive gap rules that out, at the cost of excluding inputs within the
+            gap above each split. It must be well above the solver's feasibility and
+            integrality tolerances (about 1e-6), e.g. 1e-4.
+    """
 
     leaves: list
+    split_gap: float = 0.0
 
     def __post_init__(self):
         if not self.leaves:
@@ -374,6 +531,119 @@ class TreeModel:
         return out[:, None]
 
 
+NUMPY_OPS = {
+    "exp": np.exp,
+    "ln": np.log,
+    "log": np.log,
+    "sqrt": np.sqrt,
+    "abs": np.abs,
+    "sin": np.sin,
+    "cos": np.cos,
+    "tan": np.tan,
+    "pow": np.power,
+}
+
+
+def pyomo_ops():
+    """The functions of ``NUMPY_OPS`` as Pyomo expression builders."""
+    import pyomo.environ as pyo
+
+    return {
+        "exp": pyo.exp,
+        "ln": pyo.log,
+        "log": pyo.log,
+        "sqrt": pyo.sqrt,
+        "abs": abs,
+        "sin": pyo.sin,
+        "cos": pyo.cos,
+        "tan": pyo.tan,
+        "pow": lambda a, b: a**b,
+    }
+
+
+def eval_expression(expression, names, values, ops):
+    """Evaluate a formula string such as ``"2.1*(x0*x1) - exp(x1)"``.
+
+    Args:
+        expression: The formula, using ``names`` and the functions in ``ops``.
+        names: Variable names, e.g. ``["x0", "x1"]``.
+        values: One value per name: numpy arrays or Pyomo variables/expressions.
+        ops: ``NUMPY_OPS`` or ``pyomo_ops()``.
+    """
+    context = dict(ops)
+    context.update(zip(names, values))
+    return eval(expression, {"__builtins__": {}}, context)
+
+
+@dataclass
+class SymbolicModel:
+    """A model given by explicit formulas, exported as exact nonlinear expressions.
+
+    This is not a MILP: the Pyomo block holds ``y[j] == f_j(x)`` with the original
+    nonlinear functions (division, exp, log, ...), so it needs a nonlinear solver,
+    e.g. Gurobi (``pyo.SolverFactory("gurobi_direct_minlp")``), BARON, SCIP or Ipopt
+    (local only).
+
+    Args:
+        n_inputs: Number of inputs.
+        outputs: ``outputs(x, ops)`` returns a list with one expression per output,
+            built from the list of inputs ``x`` and the functions in ``ops``.
+        variance: Optional ``variance(x, ops)`` returning one predictive variance
+            expression per output.
+    """
+
+    n_inputs: int
+    outputs: object
+    variance: object = None
+
+    @property
+    def std(self):
+        return self.variance
+
+    def forward(self, X):
+        """Evaluate with numpy, shape (n_samples, n_outputs)."""
+        X = np.atleast_2d(np.asarray(X, dtype=float))
+        cols = [X[:, i] for i in range(self.n_inputs)]
+        out = [
+            np.broadcast_to(np.asarray(v, dtype=float), (len(X),))
+            for v in self.outputs(cols, NUMPY_OPS)
+        ]
+        return np.column_stack(out)
+
+    def predict_std(self, X):
+        """Evaluate the std of each output with numpy, shape (n_samples, n_outputs)."""
+        if self.variance is None:
+            raise ValueError("This model has no uncertainty (variance is None).")
+        X = np.atleast_2d(np.asarray(X, dtype=float))
+        cols = [X[:, i] for i in range(self.n_inputs)]
+        var = [
+            np.broadcast_to(np.asarray(v, dtype=float), (len(X),))
+            for v in self.variance(cols, NUMPY_OPS)
+        ]
+        return np.sqrt(np.maximum(np.column_stack(var), 0.0))
+
+
+def _add_symbolic(block, model, x, include_std):
+    """``y[j] == f_j(x)`` (and the variance) as nonlinear Pyomo expressions."""
+    import pyomo.environ as pyo
+
+    ops = pyomo_ops()
+    exprs = list(model.outputs(x, ops))
+    block.y = pyo.Var(range(len(exprs)))
+    block.y_def = pyo.Constraint(range(len(exprs)), rule=lambda b, j: b.y[j] == exprs[j])
+    if model.variance is None:
+        return
+    variance = list(model.variance(x, ops))
+    block.variance = pyo.Expression(range(len(variance)), rule=lambda b, j: variance[j])
+    if include_std:
+        block.std = pyo.Var(range(len(variance)), within=pyo.NonNegativeReals)
+        if include_std == "exact":
+            rule = lambda b, j: b.std[j] ** 2 == b.variance[j]  # noqa: E731
+        else:
+            rule = lambda b, j: b.std[j] ** 2 >= b.variance[j]  # noqa: E731
+        block.std_def = pyo.Constraint(range(len(variance)), rule=rule)
+
+
 def _affine_interval(W, lo, hi):
     """Bounds of ``z @ W`` for ``lo <= z <= hi``."""
     Wp, Wn = np.maximum(W, 0.0), np.minimum(W, 0.0)
@@ -391,21 +661,24 @@ def _pwl_bounds(layer, lo, hi):
     return out_lo, out_hi
 
 
-def propagate_bounds(layers, input_bounds):
+def propagate_bounds(layers, input_bounds, network_input_bounds=None):
     """Interval bounds on the output of every layer.
 
     Args:
-        layers: List of ``Affine`` / ``ReLU`` / ``PiecewiseLinear`` layers.
+        layers: List of ``Affine`` / ``ReLU`` / ``PiecewiseLinear`` layers
+            (``Elementwise1D`` layers are bounded through their interpolation).
         input_bounds: Array-like of (lower, upper) per input, shape (n_inputs, 2).
+        network_input_bounds: (lower, upper) arrays of the network inputs, for skip
+            connections when ``layers`` is not the whole network.
 
     Returns:
         List of (lower, upper) array pairs, one per layer.
     """
     bounds = np.asarray(input_bounds, dtype=float)
-    xlo, xhi = bounds[:, 0], bounds[:, 1]
-    if np.any(xlo > xhi):
+    lo, hi = bounds[:, 0], bounds[:, 1]
+    if np.any(lo > hi):
         raise ValueError("Each input lower bound must not exceed its upper bound.")
-    lo, hi = xlo, xhi
+    xlo, xhi = (lo, hi) if network_input_bounds is None else network_input_bounds
     out = []
     for layer in layers:
         if isinstance(layer, Affine):
@@ -416,6 +689,8 @@ def propagate_bounds(layers, input_bounds):
             lo, hi = new_lo + layer.b, new_hi + layer.b
         elif isinstance(layer, PiecewiseLinear):
             lo, hi = _pwl_bounds(layer, lo, hi)
+        elif isinstance(layer, Elementwise1D):
+            lo, hi = _pwl_bounds(layer.to_piecewise(lo, hi), lo, hi)
         else:
             s = layer.sign(len(lo))
             relu_lo, relu_hi = np.maximum(lo, 0.0), np.maximum(hi, 0.0)
@@ -434,8 +709,10 @@ def check_convex(network, tol=1e-12):
     """
     seen_relu = False
     for k, layer in enumerate(network.layers):
-        if isinstance(layer, PiecewiseLinear):
-            raise ValueError("formulation='convex' does not support PiecewiseLinear layers.")
+        if isinstance(layer, (PiecewiseLinear, Elementwise1D)):
+            raise ValueError(
+                f"formulation='convex' does not support {type(layer).__name__} layers."
+            )
         if isinstance(layer, ReLU):
             if layer.concave is not None and layer.concave.any():
                 raise ValueError("formulation='convex' needs convex ReLUs (no concave units).")
@@ -468,20 +745,27 @@ def _resolve_input_bounds(n_inputs, input_bounds, inputs):
 def add_to_pyomo(
     model, block=None, inputs=None, input_bounds=None, include_std=False, formulation="bigm"
 ):
-    """Write a ``MIPNetwork`` or ``TreeModel`` into a Pyomo block as MILP constraints.
+    """Write a ``MIPNetwork``, ``TreeModel`` or ``SymbolicModel`` into a Pyomo block.
+
+    Networks and trees become MILP constraints; a ``SymbolicModel`` becomes exact
+    nonlinear constraints (see its docstring).
 
     Args:
-        model: The ``MIPNetwork`` or ``TreeModel`` to encode.
+        model: The ``MIPNetwork``, ``TreeModel`` or ``SymbolicModel`` to encode.
         block: Pyomo block (or ConcreteModel) to populate. A new ConcreteModel is
             created if None.
         inputs: Optional list of existing Pyomo vars to use as the inputs, e.g. the
             decision variables of your own model. If None, ``block.x`` is created.
         input_bounds: (lower, upper) per input. If None, the bounds of ``inputs`` are
             used. Required either way: they set the big-M constants.
-        include_std: If True, add ``block.std[j] >= 0`` with the second-order cone
-            constraint ``block.std[j]**2 >= block.variance[j]`` (needs a solver that
-            handles quadratic constraints, e.g. Gurobi). ``block.variance`` is always
-            added when the network has uncertainty.
+        include_std: Add ``block.std[j] >= 0`` for models with uncertainty
+            (``block.variance`` is always added). ``True`` or ``"cone"`` adds the
+            second-order cone ``block.std[j] >= sqrt(block.variance[j])``: convex, and
+            exact when the objective penalizes the std (minimize ``y + k * std`` or
+            maximize ``y - k * std``). ``"exact"`` adds ``block.std[j]**2 ==
+            block.variance[j]``, a nonconvex quadratic needed when the objective
+            rewards the std (e.g. maximize ``y + k * std`` for exploration). Both need
+            a solver for quadratic constraints, e.g. Gurobi.
         formulation: ``"bigm"`` (exact MILP) or ``"convex"`` (LP without binaries;
             exact for input-convex networks whose output is minimized or bounded
             above, see ``check_convex``). The variance is not exported with
@@ -495,6 +779,10 @@ def add_to_pyomo(
 
     if formulation not in FORMULATIONS:
         raise ValueError(f"formulation must be one of {FORMULATIONS}, got {formulation!r}.")
+    if include_std not in (False, True, "cone", "exact"):
+        raise ValueError(
+            f"include_std must be False, True, 'cone' or 'exact', got {include_std!r}."
+        )
     if block is None:
         block = pyo.ConcreteModel()
 
@@ -513,12 +801,18 @@ def add_to_pyomo(
             raise ValueError("Trees support only formulation='bigm'.")
         _add_tree(block, model, x, bounds)
         return block
+    if isinstance(model, SymbolicModel):
+        if formulation != "bigm":
+            raise ValueError("Symbolic models support only the default formulation.")
+        _add_symbolic(block, model, x, include_std)
+        return block
 
     if formulation == "convex":
         check_convex(model)
         if include_std:
             raise ValueError("include_std is not available with formulation='convex'.")
 
+    model = model.encoded(bounds)  # interpolate any Elementwise1D layers on these bounds
     layer_bounds = propagate_bounds(model.layers, bounds)
     taps = {-1: x}
     z, z_bounds = x, (bounds[:, 0], bounds[:, 1])
@@ -608,7 +902,7 @@ def _add_pwl(block, name, var, z, pre_bounds, layer):
     for i in range(layer.n_in):
         pts, vals = layer.segments(i, lo[i], hi[i])
         K = len(pts)
-        if K == 1:  # the input is fixed by its bounds
+        if K == 1 or not np.any(vals):  # a fixed input, or no nonlinear part
             pieces[i] = vals[0]
             continue
         lam = pyo.Var(range(K), bounds=(0, 1))
@@ -654,10 +948,22 @@ def _add_std(block, std_specs, taps, include_std):
 
     block.variance = pyo.Expression(range(n_out), rule=lambda b, j: variance[j])
     if include_std:
+        # Standard cone form ||(r, sqrt(d))|| <= std: the constant goes in through its own
+        # variable so solvers recognize a second-order cone, not a general quadratic.
         block.std = pyo.Var(range(n_out), within=pyo.NonNegativeReals)
-        block.std_soc = pyo.Constraint(
-            range(n_out), rule=lambda b, j: b.std[j] ** 2 >= b.variance[j]
+        block.std_const = pyo.Var(range(n_out))
+        block.std_const_def = pyo.Constraint(
+            range(n_out), rule=lambda b, j: b.std_const[j] == float(np.sqrt(std_specs[j].d))
         )
+
+        def soc_rule(b, j):
+            r = b.component(f"std_r{j}")
+            norm2 = sum(r[i] ** 2 for i in r) + b.std_const[j] ** 2
+            if include_std == "exact":
+                return norm2 == b.std[j] ** 2
+            return norm2 <= b.std[j] ** 2
+
+        block.std_soc = pyo.Constraint(range(n_out), rule=soc_rule)
 
 
 def _add_tree(block, tree, x, bounds):
@@ -666,8 +972,10 @@ def _add_tree(block, tree, x, bounds):
 
     L, U = bounds[:, 0], bounds[:, 1]
     leaves = []
+    if tree.split_gap < 0:
+        raise ValueError(f"split_gap must be nonnegative, got {tree.split_gap}.")
     for leaf in tree.leaves:
-        a, b = np.maximum(leaf.lower, L), np.minimum(leaf.upper, U)
+        a, b = np.maximum(leaf.lower + tree.split_gap, L), np.minimum(leaf.upper, U)
         if np.all(a <= b):
             leaves.append((leaf, a, b))
     if not leaves:
@@ -726,7 +1034,13 @@ class MIPExportMixin:
         return None
 
     def to_pyomo(
-        self, input_bounds=None, block=None, inputs=None, include_std=False, formulation="bigm"
+        self,
+        input_bounds=None,
+        block=None,
+        inputs=None,
+        include_std=False,
+        formulation="bigm",
+        **options,
     ):
         """Export the trained model as Pyomo MILP constraints.
 
@@ -736,18 +1050,22 @@ class MIPExportMixin:
             block: Pyomo block to populate (e.g. ``m.surrogate = pyo.Block()``).
                 A new ConcreteModel is created and returned if None.
             inputs: Existing Pyomo vars to use as the model inputs.
-            include_std: Also add ``block.std`` with a second-order cone constraint
-                (models with uncertainty only; needs a solver for quadratic
-                constraints).
+            include_std: Also add ``block.std`` (models with uncertainty only):
+                ``True``/``"cone"`` for a second-order cone, exact when the objective
+                penalizes the std; ``"exact"`` for a nonconvex equality, needed when
+                it rewards the std. See ``pycse.sklearn.mip.add_to_pyomo``.
             formulation: ``"bigm"`` (exact MILP) or ``"convex"`` (an LP for
                 input-convex networks whose output is minimized or bounded above).
+            **options: Model-specific options passed to ``mip_network()``, e.g.
+                ``split_gap`` for ``LeafModelRegressor`` or ``points_per_period``
+                for ``JAXPeriodicRegressor``.
 
         Returns:
             The populated block. ``block.x[i]`` are the inputs, ``block.y[j]`` the
             predictions, and ``block.variance[j]`` the predictive variance when the
             model has uncertainty.
         """
-        network = self.mip_network()
+        network = self.mip_network(**options)
         if include_std and network.std is None:
             raise ValueError(f"{type(self).__name__} has no uncertainty to export.")
         if input_bounds is None and inputs is None:

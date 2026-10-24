@@ -78,6 +78,8 @@ from jax import jit, vmap
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 
+from pycse.sklearn.mip import Affine, Elementwise1D, MIPExportMixin, MIPNetwork, ReLU, llpr_std
+
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
 
@@ -162,6 +164,13 @@ def _expand_periodic_features_vectorized(
     )
 
     return result
+
+
+def _fourier(omega, sin):
+    """``sin(omega x)`` or ``cos(omega x)`` as a numpy function (for MIP export)."""
+    if sin:
+        return lambda x: np.sin(omega * np.asarray(x))
+    return lambda x: np.cos(omega * np.asarray(x))
 
 
 def _build_expansion_indices(
@@ -351,7 +360,7 @@ def _forward_batch(
     return vmap(forward_single)(X_expanded)
 
 
-class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
+class JAXPeriodicRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
     """Periodic Neural Network Regressor with LLPR Uncertainty.
 
     This regressor uses Fourier features (sin/cos) to capture periodic patterns
@@ -962,6 +971,75 @@ class JAXPeriodicRegressor(BaseEstimator, RegressorMixin):
             self.zeta_squared_ = 1e-6 if self.zeta_squared == "auto" else self.zeta_squared
 
         return self
+
+    def mip_network(self, points_per_period=32):
+        """Return the trained model as a ``MIPNetwork`` for (approximate) MIP export.
+
+        Requires ``activation="relu"``. The network after the Fourier features is
+        exact; each sin/cos feature is interpolated on a grid with
+        ``points_per_period`` points per period of the highest harmonic of its input,
+        so its error is at most ``(2 pi / points_per_period)**2 / 8`` (about 4.8e-3
+        for the default 32, 1.2e-3 for 64). ``mip_network().max_feature_error(bounds)``
+        gives the bound for given input bounds, and
+        ``mip_network().encoded(bounds).forward(X)`` the function the MIP represents.
+        More points cost more binaries: about ``range / period * n_harmonics *
+        points_per_period`` per periodic input. Also accepted by
+        ``to_pyomo(points_per_period=...)``. The LLPR std is exported on the
+        (interpolated) last-layer features.
+        """
+        if not hasattr(self, "params_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires JAXPeriodicRegressor(activation='relu') (piecewise "
+                f"linear); got activation={self.activation!r}."
+            )
+        if points_per_period < 2:
+            raise ValueError(f"points_per_period must be at least 2, got {points_per_period}.")
+
+        n = self.n_features_in_
+        periods = np.maximum(np.asarray(self.periods_, dtype=float), 1e-10)
+        non_periodic = [i for i in range(n) if i not in self.periodicity_]
+        mean, scale = np.zeros(n), np.ones(n)
+        if self.scaler_X_ is not None:
+            mean[non_periodic] = self.scaler_X_.mean_
+            scale[non_periodic] = self.scaler_X_.scale_
+
+        index = np.asarray(self.expand_indices_)
+        harmonics = np.asarray(self.harmonic_nums_, dtype=float)
+        is_sin = np.asarray(self.is_sin_)
+        funcs, slope, intercept, spacing, curvature = [], [], [], [], []
+        for i, h, sin in zip(index, harmonics, is_sin):
+            if h == 0:  # a standardized pass-through feature, exact
+                funcs.append(None)
+                slope.append(1.0 / scale[i])
+                intercept.append(-mean[i] / scale[i])
+                spacing.append(np.inf)
+                curvature.append(0.0)
+            else:
+                omega = 2.0 * np.pi * h / periods[i]
+                funcs.append(_fourier(omega, sin))
+                slope.append(0.0)
+                intercept.append(0.0)
+                spacing.append(2.0 * np.pi / omega / points_per_period)
+                curvature.append(omega**2)
+        layers = [Elementwise1D(n, index, funcs, slope, intercept, spacing, curvature)]
+
+        W, b = self.params_["W"], self.params_["b"]
+        for k in range(len(W)):
+            layers.append(Affine(np.asarray(W[k], dtype=float), np.asarray(b[k], dtype=float)))
+            if k < len(W) - 1:
+                layers.append(ReLU())
+
+        std = None
+        if hasattr(self, "cov_matrix_"):
+            std = llpr_std(
+                self.cov_matrix_, self.alpha_squared_, self.zeta_squared_, len(layers) - 2
+            )
+        net = MIPNetwork(layers, std=std)
+        if self.scaler_y_ is not None:
+            net = net.scale_outputs(self.scaler_y_.mean_, self.scaler_y_.scale_)
+        return net
 
     def predict(self, X: np.ndarray, return_std: bool = False) -> np.ndarray:
         """Predict using the fitted periodic network.
