@@ -22,6 +22,8 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.model_selection import train_test_split
 import numpy as np
 
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, std_from_covariance
+
 
 class MLP(nn.Module):
     """Multi-layer perceptron with separate last layer for feature extraction."""
@@ -49,7 +51,7 @@ class MLP(nn.Module):
             return self.output_layer(x)
 
 
-class LLPRRegressor(BaseEstimator, RegressorMixin):
+class LLPRRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
     """
     Last-Layer Prediction Rigidity Regressor with sklearn interface.
 
@@ -409,6 +411,40 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         uncertainties = vmap(compute_single_uncertainty)(features)
 
         return uncertainties
+
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export.
+
+        Requires ``activation='relu'``. Output j has the LLPR std
+        ``sqrt(alpha_j^2 f^T (F^T F + zeta_j^2 I)^{-1} f)`` on the last-layer
+        features ``f``, a second-order cone. See ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self, "params_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires LLPRRegressor(activation='relu') (piecewise linear); "
+                f"got activation={self.activation!r}."
+            )
+
+        params = self.params_["params"]
+        n_hidden = len(params) - 1
+        layers = []
+        for i in range(n_hidden):
+            p = params[f"hidden_layers_{i}"]
+            layers += [Affine(np.asarray(p["kernel"]), np.asarray(p["bias"])), ReLU()]
+        p = params["output_layer"]
+        layers.append(Affine(np.asarray(p["kernel"]), np.asarray(p["bias"])))
+
+        std = None
+        if hasattr(self, "cov_matrix_"):
+            cov = np.asarray(self.cov_matrix_, dtype=float)
+            tap = len(layers) - 2  # the last ReLU, or the inputs if there are no hidden layers
+            std = []
+            for alpha2, zeta2 in zip(self.alpha_squared_, self.zeta_squared_):
+                inv = np.linalg.inv(cov + float(zeta2) * np.eye(cov.shape[0]))
+                std.append(std_from_covariance(inv, tap, scale=np.sqrt(float(alpha2))))
+        return MIPNetwork(layers, std=std)
 
     def predict(self, X, return_std=False):
         """

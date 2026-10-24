@@ -3,6 +3,17 @@
 Notable changes to pycse. Earlier releases are described on the
 [GitHub releases page](https://github.com/jkitchin/pycse/releases).
 
+## Unreleased
+
+### New
+
+- `pycse.sklearn.mip`: export trained ReLU networks as mixed-integer linear constraints in
+  Pyomo, to use them as surrogates inside an optimization problem. `DPOSE`, `LLPRRegressor`
+  and `NNBR` get `to_pyomo(input_bounds=..., block=..., inputs=...)` when they use the ReLU
+  activation. The block also holds the predictive variance as a second-order cone expression,
+  so `mean + k * std` can be optimized with a MISOCP solver. Install with
+  `pip install "pycse[mip]"`.
+
 ## 2.12.0 (2026-10-15)
 
 ### Breaking changes

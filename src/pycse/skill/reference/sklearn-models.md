@@ -10,6 +10,7 @@ Import from `pycse.sklearn` (imports are lazy, so JAX loads only when a JAX mode
 - Interpretable models: `KAN`, `SISSO`, `SISSOEnsemble`
 - Wrappers around sklearn models: `NNBR`, `NNGMM`, `LeafModelRegressor`, `LinearRegressionUQ`
 - `ZENNRegressor`, `ZENNClassifier`
+- MIP export (`to_pyomo`)
 - Optimizers
 
 ## Common conventions
@@ -104,6 +105,31 @@ temperature, which suits energy landscapes, critical points and data from severa
 `ZENNRegressor.predict(X, T=None)` takes an optional temperature;
 `predict_with_uncertainty(X)` returns the mean and std. `ZENNRegressorNLL` uses a
 negative-log-likelihood head. This is an independent JAX implementation, not the authors' code.
+
+## MIP export (`to_pyomo`)
+
+A trained ReLU network is piecewise linear, so it can be embedded in an optimization problem
+as mixed-integer linear constraints. `DPOSE` (default `activation=nn.relu`),
+`LLPRRegressor(activation="relu")` and `NNBR` with `MLPRegressor(activation="relu")` have
+`to_pyomo()`; other activations raise `ValueError`. Needs `pip install "pycse[mip]"`.
+Every input needs finite bounds; tighter bounds solve faster.
+
+```python
+import pyomo.environ as pyo
+
+m = pyo.ConcreteModel()
+m.T = pyo.Var(bounds=(300, 500))
+m.P = pyo.Var(bounds=(1, 10))
+m.nn = pyo.Block()
+model.to_pyomo(block=m.nn, inputs=[m.T, m.P])  # bounds come from the vars
+m.obj = pyo.Objective(expr=m.nn.y[0], sense=pyo.maximize)
+pyo.SolverFactory("highs").solve(m)
+```
+
+`m.nn.y[j]` is the prediction and `m.nn.variance[j]` the predictive variance (a convex
+quadratic). `to_pyomo(include_std=True)` adds `m.nn.std[j]` with a second-order cone
+constraint, for objectives such as `y - 2 * std` (needs a MISOCP solver such as Gurobi).
+`model.mip_network()` returns the layers as numpy arrays (`pycse.sklearn.mip.MIPNetwork`).
 
 ## Optimizers
 
