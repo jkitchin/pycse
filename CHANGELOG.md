@@ -30,8 +30,28 @@ Notable changes to pycse. Earlier releases are described on the
     walks through all of these.
 - `KfoldNN(activation=...)` chooses the hidden activation (`"swish"`, the default,
   `"relu"` or `"tanh"`).
+- `LLPRRegressor` has new options: `calibration` (`"auto"`, `"holdout"` or `"cv"`) with `cv`
+  folds, `standardize`, `warm_start` for refitting in an active learning loop, and `verbose`.
+  ReLU and tanh networks export the mean prediction with `get_dense_layers()`, `to_onnx()`
+  and `to_omlt()` (these need `onnx` and `omlt`, which are not installed by any extra).
 
 ### Changed
+
+- `LLPRRegressor` gives different results with the same code:
+  - It standardizes X and y internally (`standardize=True`); predictions, uncertainties and
+    `alpha_squared_` are in the original units of y.
+  - The last-layer features include a constant, so the output bias contributes to the
+    uncertainty and the std is never zero (before, a point where every last-layer ReLU was
+    off got σ = 0).
+  - With fewer than 100 samples, `calibration="auto"` calibrates on K-fold out-of-fold
+    residuals and trains the final model on all the data, so a fit trains `cv + 1` networks.
+    α² is the NLL-optimal value in closed form, and ζ² is searched relative to
+    trace(FᵀF) / n_features.
+  - The last partial batch is used, so datasets smaller than `batch_size` train.
+  - It no longer prints during `fit()` unless `verbose=True`.
+  - The predictive variance is no longer recompiled on every call, so `predict()` is faster.
+- Dependency updates in `uv.lock`: certifi, filelock, mcp, nbconvert, pillow 13 and
+  setuptools.
 
 - `KAN.to_pyomo()` uses the shared MIP module. The exported model is exact outside the spline
   grid (the grid clipping was not represented before), needs one set of segment binaries per
