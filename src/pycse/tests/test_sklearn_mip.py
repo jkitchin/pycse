@@ -1200,3 +1200,110 @@ class TestSISSO:
         block.obj = pyo.Objective(expr=block.y[0])
         pyo.SolverFactory("gurobi_direct_minlp").solve(block)
         assert pyo.value(block.obj) <= model.predict(grid_points(SYM_BOUNDS, 301)).min() + 1e-6
+
+
+class _StubSissoModel:
+    """Stands in for TorchSisso's fitted model: evaluates an equation string."""
+
+    def evaluate(self, equation, df):
+        import re
+
+        from pycse.sklearn.mip import NUMPY_OPS, eval_expression
+
+        expr = re.sub(r"^\s*y\s*=\s*", "", equation)
+        return eval_expression(
+            expr, list(df.columns), [df[c].values for c in df.columns], NUMPY_OPS
+        )
+
+
+def fitted_sisso_stub(equation="y = 2.0*(x0*x1) + 0.5*exp(x1)/x0 - 1.0"):
+    """A SISSO with a known equation, fitted without TorchSisso."""
+    from pycse.sklearn import SISSO
+
+    rng = np.random.default_rng(0)
+    X = rng.uniform(0.5, 2.0, size=(40, 2))
+    model = SISSO()
+    model._model = _StubSissoModel()
+    model._feature_names = ["x0", "x1"]
+    model.equation_ = equation
+    model._terms, model._coefficients, model._intercept = model._parse_equation(equation)
+    y = model._evaluate(X) + 0.05 * rng.normal(size=len(X))
+    model._X_train = X
+    model._compute_uq_params(X, y)
+    model.is_fitted_ = True
+    return model
+
+
+@needs_highs
+class TestSISSOExportWithoutTorchSisso:
+    """The export only needs a fitted equation, so it is tested here in CI as well."""
+
+    def test_matches_predict_and_pyomo_expression(self):
+        from pycse.sklearn.mip import pyomo_ops
+
+        model = fitted_sisso_stub()
+        net = model.mip_network()
+        Xt = np.random.default_rng(1).uniform(0.5, 2.0, size=(10, 2))
+        mean, std = model.predict(Xt, return_std=True)
+        np.testing.assert_allclose(net.forward(Xt)[:, 0], mean, rtol=1e-10)
+        np.testing.assert_allclose(net.predict_std(Xt)[:, 0], std, rtol=1e-8)
+
+        block = model.to_pyomo(input_bounds=SYM_BOUNDS, include_std=True)
+        assert hasattr(block, "std") and hasattr(block, "variance")
+        for i in range(2):
+            block.x[i].value = Xt[0, i]
+        y_expr = net.outputs([block.x[0], block.x[1]], pyomo_ops())[0]
+        np.testing.assert_allclose(pyo.value(y_expr), mean[0], rtol=1e-10)
+        np.testing.assert_allclose(np.sqrt(pyo.value(block.variance[0])), std[0], rtol=1e-8)
+
+    def test_mismatch_with_predict_is_rejected(self):
+        class OffsetEvaluator(_StubSissoModel):
+            def evaluate(self, equation, df):
+                return super().evaluate(equation, df) + 1.0
+
+        model = fitted_sisso_stub()
+        model._model = OffsetEvaluator()  # predict no longer matches the formula
+        with pytest.raises(ValueError, match="does not reproduce"):
+            model.mip_network()
+
+    def test_unknown_function_is_rejected(self):
+        class CbrtEvaluator(_StubSissoModel):
+            def evaluate(self, equation, df):
+                return 2.0 * np.cbrt(df["x0"].values)
+
+        model = fitted_sisso_stub()
+        model._model = CbrtEvaluator()
+        model.equation_ = "y = 2.0*cbrt(x0)"
+        with pytest.raises(ValueError, match="could not be evaluated"):
+            model.mip_network()
+
+    def test_unfitted(self):
+        from pycse.sklearn import SISSO
+
+        with pytest.raises(ValueError, match="Fit"):
+            SISSO().mip_network()
+
+    def test_ensemble(self):
+        from pycse.sklearn import SISSOEnsemble
+
+        members = [
+            fitted_sisso_stub("y = 2.0*(x0*x1) - 1.0"),
+            fitted_sisso_stub("y = 0.5*exp(x1)/x0 + 1.0"),
+            fitted_sisso_stub("y = 1.5*(x0*x1) + 0.2*exp(x1)/x0"),
+        ]
+        ens = SISSOEnsemble(n_models=3)
+        ens._feature_names = ["x0", "x1"]
+        ens._sisso_models = members
+        ens._coefficients = [np.r_[m._intercept, m._coefficients] * 1.1 for m in members]
+        ens.calibration_factor_ = 1.3
+        ens.min_sigma = 1e-3
+        ens._X_train = members[0]._X_train
+        ens.equations_ = [m.equation_ for m in members]
+        ens.n_ensemble_ = 3
+        ens.is_fitted_ = True
+
+        net = ens.mip_network()
+        Xt = np.random.default_rng(2).uniform(0.5, 2.0, size=(10, 2))
+        mean, std = ens.predict(Xt, return_std=True)
+        np.testing.assert_allclose(net.forward(Xt)[:, 0], mean, rtol=1e-10)
+        np.testing.assert_allclose(net.predict_std(Xt)[:, 0], std, rtol=1e-8)

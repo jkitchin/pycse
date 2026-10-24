@@ -1058,9 +1058,14 @@ def _check_symbolic_export(model, estimator, X, rtol=1e-6):
     """Raise if the exported formulas do not reproduce ``estimator.predict`` on X."""
     X = np.asarray(X, dtype=float)
     mean, std = estimator.predict(X, return_std=True)
-    with np.errstate(all="ignore"):
-        exported_mean = model.forward(X)[:, 0]
-        exported_std = model.predict_std(X)[:, 0]
+    try:
+        with np.errstate(all="ignore"):
+            exported_mean = model.forward(X)[:, 0]
+            exported_std = model.predict_std(X)[:, 0]
+    except Exception as err:  # e.g. a function the export does not know
+        raise ValueError(
+            f"The equation could not be evaluated for export ({type(err).__name__}: {err})."
+        ) from err
     scale = np.max(np.abs(mean)) + 1.0
     if not np.allclose(exported_mean, mean, rtol=rtol, atol=rtol * scale) or not np.allclose(
         exported_std, std, rtol=1e-4, atol=rtol * scale
