@@ -197,7 +197,7 @@ def untrained_dpose(X, layers=(2, 6, 8)):
 
 
 def untrained_llpr(X, n_outputs=1, hidden_dims=(6, 5)):
-    """An LLPRRegressor with initialized weights and a real covariance."""
+    """An LLPRRegressor with initialized weights, standardization and a real covariance."""
     import jax
     from flax import linen as nn
 
@@ -205,9 +205,14 @@ def untrained_llpr(X, n_outputs=1, hidden_dims=(6, 5)):
 
     model = LLPRRegressor(hidden_dims=hidden_dims, activation="relu")
     model.model_ = MLP(features=(*hidden_dims, n_outputs), activation=nn.relu)
-    model.params_ = model.model_.init(jax.random.PRNGKey(1), X)
     model.n_outputs_ = n_outputs
-    model._compute_covariance(X)
+    model.n_features_in_ = X.shape[1]
+    model.X_mean_, model.X_scale_ = X.mean(axis=0), X.std(axis=0)
+    model.y_mean_ = np.linspace(1.0, 2.0, n_outputs)
+    model.y_scale_ = np.linspace(0.5, 3.0, n_outputs)
+    Xs = model._transform_X(X)
+    model.params_ = randomize(model.model_.init(jax.random.PRNGKey(1), Xs), seed=2)
+    model._compute_covariance(Xs)
     model.alpha_squared_ = np.linspace(0.5, 2.0, n_outputs)
     model.zeta_squared_ = np.linspace(1e-3, 1e-1, n_outputs)
     return model
