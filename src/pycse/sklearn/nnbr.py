@@ -52,8 +52,10 @@ from sklearn.neural_network._base import ACTIVATIONS
 import numpy as np
 import matplotlib.pyplot as plt
 
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, std_from_covariance
 
-class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
+
+class NeuralNetworkBLR(MIPExportMixin, BaseEstimator, RegressorMixin):
     """sklearn-compatible neural network with Bayesian Regression in last layer.
 
     The idea is you fit a neural network and replace the last linear layer with
@@ -198,6 +200,51 @@ class NeuralNetworkBLR(BaseEstimator, RegressorMixin):
             return y_pred, y_std
         else:
             return result
+
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export.
+
+        Requires an ``MLPRegressor`` with ``activation='relu'`` (or ``'identity'``).
+        The prediction is the Bayesian regressor's linear model on the last hidden
+        layer, and the std (when the regressor exposes ``sigma_`` and ``alpha_``) is
+        the same posterior predictive std as ``predict(return_std=True)``, a
+        second-order cone in the features. See ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self.nn, "coefs_") or not hasattr(self.br, "coef_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.nn.activation not in ("relu", "identity"):
+            raise ValueError(
+                "MIP export requires MLPRegressor(activation='relu') (piecewise linear); "
+                f"got activation={self.nn.activation!r}."
+            )
+
+        layers = []
+        for W, b in zip(self.nn.coefs_[:-1], self.nn.intercepts_[:-1]):
+            layers.append(Affine(W, b))
+            if self.nn.activation == "relu":
+                layers.append(ReLU())
+        coef = np.asarray(self.br.coef_, dtype=float).reshape(-1, 1)
+        layers.append(Affine(coef, np.atleast_1d(self.br.intercept_)))
+
+        br = self.br
+        std = None
+        if hasattr(br, "sigma_") and hasattr(br, "alpha_"):
+            n_feat = coef.shape[0]
+            keep = np.arange(n_feat)
+            if hasattr(br, "threshold_lambda") and br.sigma_.shape[0] != n_feat:
+                keep = np.flatnonzero(br.lambda_ < br.threshold_lambda)
+            cov = np.zeros((n_feat, n_feat))
+            cov[np.ix_(keep, keep)] = br.sigma_
+
+            fit_intercept = getattr(br, "fit_intercept", False)
+            offset = br.X_offset_ if fit_intercept and hasattr(br, "X_offset_") else None
+            d = 1.0 / br.alpha_
+            n = getattr(self, "n_train_", None)
+            if fit_intercept and n:
+                d += 1.0 / (br.alpha_ * n)
+            cf = float(getattr(self, "calibration_factor_", 1.0))
+            std = [std_from_covariance(cov, len(layers) - 2, scale=cf, offset=offset, d=d)]
+        return MIPNetwork(layers, std=std)
 
     def _predict_std(self, feat):
         """Posterior predictive standard deviation of the Bayesian last layer.

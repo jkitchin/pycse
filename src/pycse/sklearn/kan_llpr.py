@@ -32,7 +32,7 @@ Requires: flax, optax, jax, scikit-learn
 import os
 
 import jax
-from jax import jit, vmap
+from jax import jit
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,7 +41,8 @@ from sklearn.model_selection import train_test_split
 from flax import linen as nn
 
 from pycse.sklearn.optimizers import run_optimizer
-from pycse.sklearn.kan import KANLayer
+from pycse.sklearn.kan import KANLayer, kan_default_input_bounds, kan_mip_layers
+from pycse.sklearn.mip import MIPExportMixin, MIPNetwork, llpr_std
 
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
@@ -114,7 +115,7 @@ class _KANNWithFeatures(nn.Module):
         return x
 
 
-class KANLLPR(BaseEstimator, RegressorMixin):
+class KANLLPR(MIPExportMixin, BaseEstimator, RegressorMixin):
     """KAN with Last-Layer Prediction Rigidity for uncertainty quantification.
 
     This model combines Kolmogorov-Arnold Networks (learnable spline activations)
@@ -506,14 +507,37 @@ class KANLLPR(BaseEstimator, RegressorMixin):
         reg_cov = self.cov_matrix_ + zeta_squared * jnp.eye(self.n_features_)
         inv_cov = jnp.linalg.inv(reg_cov)
 
-        # Vectorized computation
-        @jit
-        def compute_single_uncertainty(f):
-            return alpha_squared * f.T @ inv_cov @ f
+        # alpha^2 f^T inv_cov f for every row. A single vectorized expression: a jitted
+        # closure defined here would be recompiled on every call (once per candidate in
+        # the calibration grid search).
+        return alpha_squared * jnp.einsum("ij,jk,ik->i", features, inv_cov, features)
 
-        uncertainties = vmap(compute_single_uncertainty)(features)
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export.
 
-        return uncertainties
+        Requires ``spline_order=1`` and ``base_activation="linear"`` (see
+        ``KAN.mip_network``). Output j has the LLPR std
+        ``y_std_j * sqrt(alpha_j f^T (F^T F + zeta_j I)^{-1} f)`` on the features
+        ``f`` entering the last layer, a second-order cone.
+        """
+        if not hasattr(self, "optpars_"):
+            raise ValueError("Fit the model before exporting it.")
+        layers = kan_mip_layers(
+            self.optpars_, self.grid_size, self.spline_order, self.grid_range, self.base_activation
+        )
+        std = None
+        if hasattr(self, "cov_matrix_"):
+            # The features are the output of the second-to-last layer (or the inputs).
+            std = llpr_std(
+                self.cov_matrix_, self.alpha_squared_, self.zeta_squared_, len(layers) - 2
+            )
+        net = MIPNetwork(layers, std=std)
+        net = net.scale_inputs(np.asarray(self.X_mean_), np.asarray(self.X_std_) + 1e-8)
+        return net.scale_outputs(np.asarray(self.y_mean_), np.asarray(self.y_std_))
+
+    def _mip_default_input_bounds(self):
+        """The input range covered by the first layer's spline grid."""
+        return kan_default_input_bounds(self.X_mean_, self.X_std_, self.grid_range)
 
     def predict(self, X, return_std=False):
         """Make predictions with optional uncertainty estimates.

@@ -64,8 +64,10 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, RegressorMixin
 
+from pycse.sklearn.mip import MIPExportMixin, SymbolicModel, eval_expression
 
-class SISSO(BaseEstimator, RegressorMixin):
+
+class SISSO(MIPExportMixin, BaseEstimator, RegressorMixin):
     """sklearn-compatible wrapper for TorchSISSO symbolic regression with UQ.
 
     SISSO (Sure Independence Screening and Sparsifying Operator) discovers
@@ -428,6 +430,41 @@ class SISSO(BaseEstimator, RegressorMixin):
             y_pred = result
         return np.asarray(y_pred).ravel()
 
+    def mip_network(self):
+        """Return the equation as a ``SymbolicModel`` for export to Pyomo.
+
+        The prediction is the discovered equation itself and the std is
+        ``sigma * calibration_factor * sqrt(1 + phi(x)^T (Phi^T Phi)^+ phi(x))`` on
+        the equation's terms, as in ``predict(return_std=True)``. These are exact
+        nonlinear expressions, not MILP constraints, so ``to_pyomo()`` needs a
+        nonlinear solver (e.g. ``pyo.SolverFactory("gurobi_direct_minlp")``). The
+        export is checked against ``predict`` on the training data.
+        """
+        if not getattr(self, "is_fitted_", False):
+            raise ValueError("Fit the model before exporting it.")
+        names = list(self._feature_names)
+        equation = re.sub(r"^\s*y\s*=\s*", "", self.equation_.strip())
+        terms = list(self._terms)
+        P = np.asarray(self._PhiTPhi_inv, dtype=float)
+        scale2 = float(self.sigma_ * self.calibration_factor_) ** 2
+
+        def outputs(x, ops):
+            return [eval_expression(equation, names, x, ops)]
+
+        def variance(x, ops):
+            phi = [1.0] + [eval_expression(t, names, x, ops) for t in terms]
+            quad = sum(
+                P[a, b] * phi[a] * phi[b]
+                for a in range(len(phi))
+                for b in range(len(phi))
+                if P[a, b] != 0
+            )
+            return [scale2 * (1 + quad)]
+
+        model = SymbolicModel(len(names), outputs, variance)
+        _check_symbolic_export(model, self, self._X_train)
+        return model
+
     def predict(self, X, return_std=False):
         """Predict using discovered equation.
 
@@ -491,7 +528,7 @@ class SISSO(BaseEstimator, RegressorMixin):
         return f"SISSO({', '.join(params)})"
 
 
-class SISSOEnsemble(BaseEstimator, RegressorMixin):
+class SISSOEnsemble(MIPExportMixin, BaseEstimator, RegressorMixin):
     """Shallow ensemble of SISSO equations with calibrated uncertainty.
 
     Like DPOSE but using SISSO-discovered symbolic expressions instead of
@@ -895,6 +932,46 @@ class SISSOEnsemble(BaseEstimator, RegressorMixin):
 
         return np.column_stack(predictions)
 
+    def mip_network(self):
+        """Return the ensemble as a ``SymbolicModel`` for export to Pyomo.
+
+        The prediction is the mean of the member equations and the std is
+        ``calibration_factor * sqrt(var(members) + min_sigma**2)``, as in
+        ``predict(return_std=True)``. These are exact nonlinear expressions, not
+        MILP constraints, so ``to_pyomo()`` needs a nonlinear solver (e.g.
+        ``pyo.SolverFactory("gurobi_direct_minlp")``).
+        """
+        if not getattr(self, "is_fitted_", False):
+            raise ValueError("Fit the model before exporting it.")
+        names = list(self._feature_names)
+        members = [
+            (list(sisso._terms), np.asarray(coef, dtype=float))
+            for sisso, coef in zip(self._sisso_models, self._coefficients)
+        ]
+        cf2 = float(self.calibration_factor_) ** 2
+        min_var = float(self.min_sigma) ** 2
+
+        def member_values(x, ops):
+            values = []
+            for terms, coef in members:
+                phi = [1.0] + [eval_expression(t, names, x, ops) for t in terms]
+                values.append(sum(c * f for c, f in zip(coef, phi)))
+            return values
+
+        def outputs(x, ops):
+            values = member_values(x, ops)
+            return [sum(values) / len(values)]
+
+        def variance(x, ops):
+            values = member_values(x, ops)
+            mean = sum(values) / len(values)
+            var = sum((v - mean) ** 2 for v in values) / len(values)
+            return [cf2 * (var + min_var)]
+
+        model = SymbolicModel(len(names), outputs, variance)
+        _check_symbolic_export(model, self, self._X_train)
+        return model
+
     def predict(self, X, return_std=False):
         """Predict using ensemble of SISSO equations.
 
@@ -975,3 +1052,25 @@ class SISSOEnsemble(BaseEstimator, RegressorMixin):
             f"loss_type='{self.loss_type}'",
         ]
         return f"SISSOEnsemble({', '.join(params)})"
+
+
+def _check_symbolic_export(model, estimator, X, rtol=1e-6):
+    """Raise if the exported formulas do not reproduce ``estimator.predict`` on X."""
+    X = np.asarray(X, dtype=float)
+    mean, std = estimator.predict(X, return_std=True)
+    try:
+        with np.errstate(all="ignore"):
+            exported_mean = model.forward(X)[:, 0]
+            exported_std = model.predict_std(X)[:, 0]
+    except Exception as err:  # e.g. a function the export does not know
+        raise ValueError(
+            f"The equation could not be evaluated for export ({type(err).__name__}: {err})."
+        ) from err
+    scale = np.max(np.abs(mean)) + 1.0
+    if not np.allclose(exported_mean, mean, rtol=rtol, atol=rtol * scale) or not np.allclose(
+        exported_std, std, rtol=1e-4, atol=rtol * scale
+    ):
+        raise ValueError(
+            "The exported equation does not reproduce predict() on the training data, so "
+            "the equation could not be parsed reliably for export."
+        )

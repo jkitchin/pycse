@@ -67,6 +67,9 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
 from flax.linen.initializers import xavier_uniform
 
+import numpy as onp
+
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, StdSpec
 from pycse.sklearn.optimizers import run_optimizer
 
 os.environ["JAX_ENABLE_X64"] = "True"
@@ -103,7 +106,7 @@ class _NN(nn.Module):
         return x
 
 
-class DPOSE(BaseEstimator, RegressorMixin):
+class DPOSE(MIPExportMixin, BaseEstimator, RegressorMixin):
     """DPOSE: Direct Propagation of Shallow Ensembles.
 
     A shallow ensemble neural network where only the last layer differs across
@@ -422,6 +425,38 @@ class DPOSE(BaseEstimator, RegressorMixin):
         """
         X = np.atleast_2d(X)
         return self.nn_.apply(self.optpars_, X)
+
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export.
+
+        Requires the ReLU activation (the default). The mean prediction is the
+        average of the ensemble members, and the std is
+        ``calibration_factor * sqrt(var(members) + min_sigma**2)``, a second-order
+        cone in the members. See ``pycse.sklearn.mip`` and ``to_pyomo()``.
+        """
+        if not hasattr(self, "optpars_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation not in (None, nn.relu):
+            raise ValueError(
+                "MIP export requires DPOSE(activation=nn.relu) (piecewise linear); "
+                f"got {getattr(self.activation, '__name__', self.activation)}."
+            )
+
+        params = self.optpars_["params"]
+        dense = [params[f"Dense_{i}"] for i in range(len(params))]
+        layers = []
+        for i, p in enumerate(dense):
+            layers.append(Affine(onp.asarray(p["kernel"]), onp.asarray(p["bias"])))
+            if i < len(dense) - 1:
+                layers.append(ReLU())
+
+        m = layers[-1].n_out
+        layers.append(Affine(onp.full((m, 1), 1.0 / m), onp.zeros(1)))
+
+        cf = float(getattr(self, "calibration_factor_", 1.0))
+        A = cf / onp.sqrt(m) * (onp.eye(m) - onp.full((m, m), 1.0 / m))
+        std = StdSpec(tap=len(layers) - 2, A=A, d=(cf * self.min_sigma) ** 2)
+        return MIPNetwork(layers, std=[std])
 
     def __call__(self, X, return_std=False, distribution=False):
         """Execute the model (alternative interface to predict).

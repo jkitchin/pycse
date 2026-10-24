@@ -22,6 +22,8 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.model_selection import KFold, train_test_split
 import numpy as np
 
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, StdSpec, llpr_std
+
 
 class MLP(nn.Module):
     """Multi-layer perceptron with separate last layer for feature extraction."""
@@ -65,7 +67,7 @@ def _per_output(value, j):
     return float(value) if np.isscalar(value) else float(value[j])
 
 
-class LLPRRegressor(BaseEstimator, RegressorMixin):
+class LLPRRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
     """
     Last-Layer Prediction Rigidity Regressor with sklearn interface.
 
@@ -591,6 +593,49 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
             activation = "linear" if name == "output_layer" else self.activation
             layers.append((W, b, activation))
         return layers
+
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export (``to_pyomo()``).
+
+        Requires ``activation='relu'``. Unlike ``to_omlt()``, the uncertainty is
+        exported too: output j has the LLPR std
+        ``sqrt(alpha_j^2 [f, 1]^T (F^T F + zeta_j^2 I)^{-1} [f, 1])`` on the
+        last-layer features ``f`` (with the constant feature), a second-order cone.
+        The internal standardization is folded in, so inputs and outputs are in
+        original units. See ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self, "params_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires LLPRRegressor(activation='relu') (piecewise linear); "
+                f"got activation={self.activation!r}."
+            )
+
+        params = self.params_["params"]
+        layers = []
+        for i in range(len(self.hidden_dims)):
+            p = params[f"hidden_layers_{i}"]
+            layers += [Affine(np.asarray(p["kernel"]), np.asarray(p["bias"])), ReLU()]
+        p = params["output_layer"]
+        layers.append(Affine(np.asarray(p["kernel"]), np.asarray(p["bias"])))
+
+        std = None
+        if hasattr(self, "cov_matrix_"):
+            # The features are the last ReLU output (or the standardized inputs) with a
+            # constant 1 appended: ||A [f, 1]||^2 = ||A[:, :-1] f + A[:, -1]||^2.
+            tap = len(layers) - 2
+            std = [
+                StdSpec(tap=tap, A=spec.A[:, :-1], c=spec.A[:, -1], d=spec.d)
+                for spec in llpr_std(self.cov_matrix_, self.alpha_squared_, self.zeta_squared_, tap)
+            ]
+
+        net = MIPNetwork(layers, std=std).scale_inputs(self.X_mean_, self.X_scale_)
+        # alpha^2 is already in original units of y^2, so only the mean is rescaled.
+        std, net.std = net.std, None
+        net = net.scale_outputs(self.y_mean_, self.y_scale_)
+        net.std = std
+        return net
 
     def _default_input_bounds(self, input_bounds):
         if input_bounds is None:

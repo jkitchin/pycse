@@ -88,11 +88,17 @@ import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
 from flax import linen as nn
 
+import numpy as onp
+
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, StdSpec
 from pycse.sklearn.optimizers import run_optimizer
 
 # Enable 64-bit precision for better numerical stability
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
+
+
+ACTIVATIONS = {"swish": nn.swish, "relu": nn.relu, "tanh": nn.tanh}
 
 
 class _NN(nn.Module):
@@ -117,6 +123,7 @@ class _NN(nn.Module):
     """
 
     layers: tuple
+    activation: str = "swish"
 
     @nn.compact
     def __call__(self, x):
@@ -133,17 +140,18 @@ class _NN(nn.Module):
             Output predictions of shape (n_samples, n_outputs) where
             n_outputs = layers[-1].
         """
-        # Hidden layers with swish activation
+        # Hidden layers with the chosen activation (swish by default)
+        act = ACTIVATIONS[self.activation]
         for n_neurons in self.layers[:-1]:
             x = nn.Dense(n_neurons)(x)
-            x = nn.swish(x)
+            x = act(x)
 
         # Linear output layer (no activation)
         x = nn.Dense(self.layers[-1])(x)
         return x
 
 
-class KfoldNN(BaseEstimator, RegressorMixin):
+class KfoldNN(MIPExportMixin, BaseEstimator, RegressorMixin):
     """K-fold Neural Network for regression with uncertainty quantification.
 
     This model trains an ensemble of neural networks by dividing the training data
@@ -238,7 +246,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
     sklearn.neural_network.MLPRegressor : Standard neural network without UQ
     """
 
-    def __init__(self, layers, xtrain=0.1, seed=19):
+    def __init__(self, layers, xtrain=0.1, seed=19, activation="swish"):
         """Initialize the K-fold neural network.
 
         Parameters
@@ -250,6 +258,8 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             Fraction of training data per fold (0 < xtrain ≤ 1.0).
         seed : int, default=19
             Random seed for reproducibility.
+        activation : {"swish", "relu", "tanh"}, default="swish"
+            Hidden-layer activation. Use "relu" for MIP export (``to_pyomo()``).
 
         Raises
         ------
@@ -287,9 +297,13 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         if not isinstance(seed, int):
             raise TypeError(f"seed must be an integer, got {type(seed).__name__}")
 
+        if activation not in ACTIVATIONS:
+            raise ValueError(f"activation must be one of {list(ACTIVATIONS)}, got {activation!r}")
+
         self.layers = layers
         self.xtrain = xtrain
         self.seed = seed
+        self.activation = activation
 
     @property
     def is_fitted(self):
@@ -387,7 +401,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             raise ValueError(f"X and y must have same length. Got X: {len(X)}, y: {len(y)}")
 
         # Create derived objects from constructor params
-        self.nn_ = _NN(self.layers)
+        self.nn_ = _NN(self.layers, self.activation)
         key = jax.random.PRNGKey(self.seed)
 
         # Initialize or reuse parameters (allows retraining)
@@ -500,6 +514,32 @@ class KfoldNN(BaseEstimator, RegressorMixin):
             return np.mean(P, axis=1), np.std(P, axis=1)
         else:
             return np.mean(P, axis=1)
+
+    def mip_network(self):
+        """Return the trained model as a ``MIPNetwork`` for MIP export.
+
+        Requires ``activation="relu"``. The prediction is the mean of the output
+        neurons and the std is their standard deviation, a second-order cone in the
+        outputs. See ``pycse.sklearn.mip`` and ``to_pyomo()``.
+        """
+        if not self.is_fitted:
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires KfoldNN(activation='relu') (piecewise linear); "
+                f"got activation={self.activation!r}."
+            )
+        params = self.optpars_["params"]
+        layers = []
+        for i in range(len(params)):
+            p = params[f"Dense_{i}"]
+            layers.append(Affine(onp.asarray(p["kernel"]), onp.asarray(p["bias"])))
+            if i < len(params) - 1:
+                layers.append(ReLU())
+        m = layers[-1].n_out
+        layers.append(Affine(onp.full((m, 1), 1.0 / m), onp.zeros(1)))
+        A = (onp.eye(m) - onp.full((m, m), 1.0 / m)) / onp.sqrt(m)
+        return MIPNetwork(layers, std=[StdSpec(tap=len(layers) - 2, A=A)])
 
     def __call__(self, X, return_std=False, distribution=False):
         """Execute the model for predictions (alternate interface).
@@ -668,7 +708,7 @@ class KfoldNN(BaseEstimator, RegressorMixin):
         n_outputs = self.layers[-1]
 
         repr_str = (
-            f"KfoldNN(layers={self.layers}, xtrain={self.xtrain}, "
+            f"KfoldNN(layers={self.layers}, xtrain={self.xtrain}, activation={self.activation!r}, "
             f"outputs={n_outputs}, {fitted_str})"
         )
 

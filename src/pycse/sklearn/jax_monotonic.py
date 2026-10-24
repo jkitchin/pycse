@@ -81,6 +81,9 @@ from jax import grad, jit, vmap
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 
+from pycse.sklearn.jax_icnn import _numpy_nonneg
+from pycse.sklearn.mip import Affine, MIPExportMixin, MIPNetwork, ReLU, llpr_std
+
 os.environ["JAX_ENABLE_X64"] = "True"
 jax.config.update("jax_enable_x64", True)
 
@@ -317,7 +320,7 @@ def _forward_batch(
     return vmap(forward_single)(X)
 
 
-class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
+class JAXMonotonicRegressor(MIPExportMixin, BaseEstimator, RegressorMixin):
     """Monotonic Neural Network Regressor with LLPR Uncertainty.
 
     This regressor's prediction function f(x) is guaranteed to be monotonic
@@ -574,11 +577,10 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
         reg_cov = self.cov_matrix_ + zeta_squared * jnp.eye(self.n_llpr_features_)
         inv_cov = jnp.linalg.inv(reg_cov)
 
-        @jit
-        def compute_single_uncertainty(f):
-            return alpha_squared * f.T @ inv_cov @ f
-
-        return vmap(compute_single_uncertainty)(features)
+        # alpha^2 f^T inv_cov f for every row. A single vectorized expression: a jitted
+        # closure defined here would be recompiled on every call (once per candidate in
+        # the calibration grid search).
+        return alpha_squared * jnp.einsum("ij,jk,ik->i", features, inv_cov, features)
 
     def _calibrate_uncertainty(self, X_val: jnp.ndarray, y_val: jnp.ndarray) -> None:
         """Calibrate alpha_squared and zeta_squared on validation set."""
@@ -772,6 +774,57 @@ class JAXMonotonicRegressor(BaseEstimator, RegressorMixin):
             self.zeta_squared_ = 1e-6 if self.zeta_squared == "auto" else self.zeta_squared
 
         return self
+
+    def mip_network(self):
+        """Return the trained network as a ``MIPNetwork`` for MIP export.
+
+        Requires ``activation="relu"``. Concave units, ``-relu(-x) = min(0, x)``, are
+        exported as concave ReLUs. The LLPR std on the last-layer features is
+        exported as a second-order cone. With ``convexity="convex"`` the network is
+        input-convex and ``to_pyomo(formulation="convex")`` gives an LP when the
+        output is minimized or bounded above. See ``pycse.sklearn.mip``.
+        """
+        if not hasattr(self, "params_"):
+            raise ValueError("Fit the model before exporting it.")
+        if self.activation != "relu":
+            raise ValueError(
+                "MIP export requires JAXMonotonicRegressor(activation='relu') (piecewise "
+                f"linear); got activation={self.activation!r}."
+            )
+
+        p = self.params_
+        nonneg = _numpy_nonneg(self.nonneg_param)
+        mono = np.asarray(self.monotonicity_, dtype=float)
+        mask = mono != 0
+        sign = np.where(mask, mono, 1.0)  # inputs of decreasing features are negated
+
+        layers = []
+        for i in range(len(p["Wx_raw"])):
+            Wx_raw = np.asarray(p["Wx_raw"][i], dtype=float)
+            Wx = sign[:, None] * np.where(mask[:, None], nonneg(Wx_raw), Wx_raw)
+            b = np.asarray(p["b"][i], dtype=float)
+            if i == 0:
+                layers.append(Affine(Wx, b))
+            else:
+                layers.append(Affine(nonneg(p["Wz_raw"][i]), b, Wx=Wx))
+            concave = np.asarray(_concave_mask(len(b), self.convexity))
+            layers.append(ReLU(concave=concave))
+        a = nonneg(p["a_raw"])
+        c_raw = np.asarray(p["c_raw"], dtype=float)
+        c = sign * np.where(mask, nonneg(c_raw), c_raw)
+        layers.append(Affine(a[:, None], [float(p["b_out"])], Wx=c[:, None]))
+
+        std = None
+        if hasattr(self, "cov_matrix_"):
+            std = llpr_std(
+                self.cov_matrix_, self.alpha_squared_, self.zeta_squared_, len(layers) - 2
+            )
+        net = MIPNetwork(layers, std=std)
+        if self.scaler_X_ is not None:
+            net = net.scale_inputs(self.scaler_X_.mean_, self.scaler_X_.scale_)
+        if self.scaler_y_ is not None:
+            net = net.scale_outputs(self.scaler_y_.mean_, self.scaler_y_.scale_)
+        return net
 
     def predict(self, X: np.ndarray, return_std: bool = False) -> np.ndarray:
         """Predict using the fitted monotonic network.
