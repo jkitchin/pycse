@@ -13,13 +13,13 @@ import warnings
 
 import jax
 import jax.numpy as jnp
-from jax import random, jit, vmap
+from jax import random, jit
 import flax.linen as nn
 from flax.training import train_state
 import optax
 from typing import Tuple, Callable
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold, train_test_split
 import numpy as np
 
 
@@ -49,32 +49,76 @@ class MLP(nn.Module):
             return self.output_layer(x)
 
 
+def _quad_form(phi, cov, zeta_squared):
+    """Return f★ᵀ(cov + ζ²I)^{-1} f★ for each row f★ of ``phi``."""
+    reg_cov = cov + zeta_squared * jnp.eye(cov.shape[0])
+    sol = jnp.linalg.solve(reg_cov, phi.T)
+    return np.asarray(jnp.sum(phi.T * sol, axis=0))
+
+
+# Activations that can be exported to ONNX / OMLT, mapped to the ONNX op
+_EXPORT_ACTIVATIONS = {"relu": "Relu", "tanh": "Tanh"}
+
+
+def _per_output(value, j):
+    """Pick output ``j`` from a scalar or per-output parameter."""
+    return float(value) if np.isscalar(value) else float(value[j])
+
+
 class LLPRRegressor(BaseEstimator, RegressorMixin):
     """
     Last-Layer Prediction Rigidity Regressor with sklearn interface.
+
+    The uncertainty is σ²★ = α² f★ᵀ(FᵀF + ζ²I)^{-1} f★, where f★ are the
+    last-layer features of the network augmented with a constant 1 so that the
+    output bias contributes to the uncertainty (otherwise a point where every
+    last-layer ReLU is inactive would get σ = 0).
 
     Parameters
     ----------
     hidden_dims : tuple of int
         Dimensions of hidden layers (does not include output dim)
     activation : str, default='silu'
-        Activation function ('silu', 'relu', 'tanh')
+        Activation function ('silu', 'relu', 'tanh', 'gelu')
     learning_rate : float, default=1e-3
         Learning rate for Adam optimizer
     n_epochs : int, default=400
         Number of training epochs
     batch_size : int, default=32
-        Batch size for training
+        Batch size for training. The last partial batch is used, so datasets
+        smaller than ``batch_size`` are trained in a single full batch.
     early_stopping_patience : int, default=100
         Epochs to wait for validation improvement before stopping
+        (holdout calibration only)
     weight_decay : float, default=0.0
         L2 regularization strength
     alpha_squared : float or 'auto', default='auto'
-        Calibration parameter for uncertainty scaling
+        Calibration parameter for uncertainty scaling, in units of y².
+        With 'auto' it is the NLL-optimal value in closed form.
     zeta_squared : float or 'auto', default='auto'
-        Regularization parameter for covariance matrix
+        Regularization parameter for covariance matrix. With 'auto' it is chosen
+        by grid search on the NLL, relative to trace(FᵀF) / n_features.
     val_size : float, default=0.1
-        Fraction of training data to use for validation
+        Fraction of training data held out for early stopping and calibration
+        (holdout calibration only)
+    calibration : {'auto', 'holdout', 'cv'}, default='auto'
+        How α² and ζ² are calibrated. 'holdout' uses a validation split of
+        ``val_size``. 'cv' fits ``cv`` extra models on K folds, calibrates on
+        the pooled out-of-fold residuals, and then trains the final model on all
+        the data for ``n_epochs`` (no early stopping). 'auto' uses 'cv' when
+        there are fewer than 100 samples, which is the usual case in active
+        learning, and 'holdout' otherwise.
+    cv : int, default=5
+        Number of folds for 'cv' calibration (capped at the number of samples).
+    standardize : bool, default=True
+        Standardize X and y internally. Predictions and uncertainties are
+        returned in the original units.
+    warm_start : bool, default=False
+        Initialize the network from the previous fit's parameters when the
+        architecture is unchanged (useful when refitting in an active learning
+        loop). Fold models in 'cv' calibration always start from scratch.
+    verbose : bool, default=False
+        Print early stopping and calibration information.
     random_state : int, default=42
         Random seed for reproducibility
     """
@@ -91,6 +135,11 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         alpha_squared="auto",
         zeta_squared="auto",
         val_size=0.1,
+        calibration="auto",
+        cv=5,
+        standardize=True,
+        warm_start=False,
+        verbose=False,
         random_state=42,
     ):
         self.hidden_dims = hidden_dims
@@ -103,6 +152,11 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         self.alpha_squared = alpha_squared
         self.zeta_squared = zeta_squared
         self.val_size = val_size
+        self.calibration = calibration
+        self.cv = cv
+        self.standardize = standardize
+        self.warm_start = warm_start
+        self.verbose = verbose
         self.random_state = random_state
 
     def _get_activation(self):
@@ -110,14 +164,15 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         activations = {"silu": nn.silu, "relu": nn.relu, "tanh": nn.tanh, "gelu": nn.gelu}
         return activations.get(self.activation, nn.silu)
 
-    def _create_train_state(self, rng, input_dim, output_dim):
+    def _create_train_state(self, rng, input_dim, output_dim, init_params=None):
         """Create initial training state."""
-        features = self.hidden_dims + (output_dim,)
+        features = tuple(self.hidden_dims) + (output_dim,)
         model = MLP(features=features, activation=self._get_activation())
 
         # Initialize parameters
-        dummy_input = jnp.ones((1, input_dim))
-        params = model.init(rng, dummy_input)
+        if init_params is None:
+            dummy_input = jnp.ones((1, input_dim))
+            init_params = model.init(rng, dummy_input)
 
         # Create optimizer with optional weight decay
         if self.weight_decay > 0:
@@ -127,9 +182,10 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         else:
             optimizer = optax.adam(learning_rate=self.learning_rate)
 
-        return train_state.TrainState.create(
-            apply_fn=model.apply, params=params, tx=optimizer
-        ), model
+        return (
+            train_state.TrainState.create(apply_fn=model.apply, params=init_params, tx=optimizer),
+            model,
+        )
 
     @staticmethod
     def _mse_loss(params, apply_fn, X, y):
@@ -155,17 +211,73 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         return train_step
 
     def _create_batches(self, X, y, rng):
-        """Create shuffled batches."""
+        """Create shuffled batches, including the last partial batch."""
         n_samples = X.shape[0]
         perm = random.permutation(rng, n_samples)
-        X_shuffled = X[perm]
-        y_shuffled = y[perm]
+        batch_size = max(1, min(self.batch_size, n_samples))
 
-        n_batches = n_samples // self.batch_size
-        for i in range(n_batches):
-            start_idx = i * self.batch_size
-            end_idx = start_idx + self.batch_size
-            yield X_shuffled[start_idx:end_idx], y_shuffled[start_idx:end_idx]
+        for start_idx in range(0, n_samples, batch_size):
+            idx = perm[start_idx : start_idx + batch_size]
+            yield X[idx], y[idx]
+
+    def _train(self, X_train, y_train, rng, X_val=None, y_val=None, init_params=None):
+        """Train a network and return its parameters.
+
+        If validation data is given, the parameters with the best validation
+        loss are returned (with early stopping); otherwise the final ones.
+        """
+        rng, init_rng = random.split(rng)
+        state, model = self._create_train_state(
+            init_rng, X_train.shape[1], y_train.shape[1], init_params
+        )
+        self.model_ = model
+
+        # Create JIT-compiled training step
+        train_step_fn = self._make_train_step()
+
+        # Training loop
+        best_val_loss = float("inf")
+        patience_counter = 0
+        best_params = state.params
+
+        for epoch in range(self.n_epochs):
+            # Training
+            rng, batch_rng = random.split(rng)
+
+            for X_batch, y_batch in self._create_batches(X_train, y_train, batch_rng):
+                state, _ = train_step_fn(state, X_batch, y_batch)
+
+            # Validation
+            if X_val is not None:
+                val_predictions = state.apply_fn(state.params, X_val)
+                val_loss = jnp.mean((val_predictions - y_val) ** 2)
+
+                # Early stopping
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_params = state.params
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if patience_counter >= self.early_stopping_patience:
+                    if epoch > 50:  # Minimum training epochs
+                        if self.verbose:
+                            print(f"Early stopping at epoch {epoch}")
+                        break
+            else:
+                best_params = state.params
+
+        return best_params
+
+    def _features(self, params, X):
+        """Return predictions and last-layer features augmented with a constant 1."""
+        output, features = self.model_.apply(params, X, return_features=True)
+        phi = jnp.concatenate([features, jnp.ones((features.shape[0], 1))], axis=1)
+        return output, phi
+
+    def _transform_X(self, X):
+        return jnp.array((np.asarray(X, dtype=float) - self.X_mean_) / self.X_scale_)
 
     def fit(self, X, y):
         """
@@ -194,188 +306,168 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
                 stacklevel=2,
             )
 
-        # Convert to JAX arrays (dtype inherits from JAX env: float32 by default,
-        # float64 if jax_enable_x64 is set)
-        X = jnp.array(X)
-        y = jnp.array(y)
+        if self.calibration not in ("auto", "holdout", "cv"):
+            raise ValueError(
+                f"Unknown calibration {self.calibration!r}. Choose from 'auto', 'holdout', 'cv'."
+            )
+
+        X = np.asarray(X, dtype=float)
+        y = np.asarray(y, dtype=float)
 
         # Ensure y is 2D: (n_samples, n_outputs)
         if y.ndim == 1:
             y = y.reshape(-1, 1)
 
+        n_samples = X.shape[0]
         self.n_outputs_ = y.shape[1]
+        self.n_features_in_ = X.shape[1]
+        # Training data range, the default input bounds for MIP/ONNX exports
+        self.X_min_, self.X_max_ = X.min(axis=0), X.max(axis=0)
 
-        # Train/validation split
-        if self.val_size > 0:
-            X_train, X_val, y_train, y_val = train_test_split(
-                np.array(X), np.array(y), test_size=self.val_size, random_state=self.random_state
-            )
-            X_train = jnp.array(X_train)
-            y_train = jnp.array(y_train)
-            X_val = jnp.array(X_val)
-            y_val = jnp.array(y_val)
+        # Internal standardization; everything below works in scaled units
+        if self.standardize:
+            self.X_mean_, self.X_scale_ = X.mean(axis=0), X.std(axis=0)
+            self.y_mean_, self.y_scale_ = y.mean(axis=0), y.std(axis=0)
+            self.X_scale_[self.X_scale_ == 0] = 1.0
+            self.y_scale_[self.y_scale_ == 0] = 1.0
         else:
-            X_train, y_train = X, y
-            X_val, y_val = None, None
+            self.X_mean_, self.X_scale_ = np.zeros(X.shape[1]), np.ones(X.shape[1])
+            self.y_mean_, self.y_scale_ = np.zeros(self.n_outputs_), np.ones(self.n_outputs_)
 
-        # Initialize model
+        Xs = (X - self.X_mean_) / self.X_scale_
+        ys = (y - self.y_mean_) / self.y_scale_
+
+        # Reuse the previous parameters if requested and the architecture matches
+        signature = (self.n_features_in_, tuple(self.hidden_dims), self.n_outputs_)
+        init_params = None
+        if self.warm_start and getattr(self, "_fit_signature_", None) == signature:
+            init_params = self.params_
+        self._fit_signature_ = signature
+
+        needs_calibration = self.alpha_squared == "auto" or self.zeta_squared == "auto"
+        calibration = self.calibration
+        if calibration == "auto":
+            calibration = "cv" if n_samples < 100 else "holdout"
+        self.calibration_ = calibration
+
         rng = random.PRNGKey(self.random_state)
-        rng, init_rng = random.split(rng)
+        folds = []  # (residuals, features, covariance) used for calibration
 
-        state, model = self._create_train_state(init_rng, X.shape[1], self.n_outputs_)
-        self.model_ = model
-
-        # Create JIT-compiled training step
-        train_step_fn = self._make_train_step()
-
-        # Training loop
-        best_val_loss = float("inf")
-        patience_counter = 0
-        best_params = state.params
-
-        for epoch in range(self.n_epochs):
-            # Training
-            rng, batch_rng = random.split(rng)
-            epoch_losses = []
-
-            for X_batch, y_batch in self._create_batches(X_train, y_train, batch_rng):
-                state, loss = train_step_fn(state, X_batch, y_batch)
-                epoch_losses.append(loss)
-
-            # Validation
-            if X_val is not None:
-                val_predictions = state.apply_fn(state.params, X_val)
-                val_loss = jnp.mean((val_predictions - y_val) ** 2)
-
-                # Early stopping
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    best_params = state.params
-                    patience_counter = 0
-                else:
-                    patience_counter += 1
-
-                if patience_counter >= self.early_stopping_patience:
-                    if epoch > 50:  # Minimum training epochs
-                        print(f"Early stopping at epoch {epoch}")
-                        break
+        if calibration == "holdout":
+            if self.val_size > 0 and n_samples >= 2:
+                X_train, X_val, y_train, y_val = train_test_split(
+                    Xs, ys, test_size=self.val_size, random_state=self.random_state
+                )
+                X_val, y_val = jnp.array(X_val), jnp.array(y_val)
             else:
-                best_params = state.params
+                X_train, y_train = Xs, ys
+                X_val, y_val = None, None
 
-        # Store best parameters
-        self.params_ = best_params
+            X_train, y_train = jnp.array(X_train), jnp.array(y_train)
+            self.params_ = self._train(X_train, y_train, rng, X_val, y_val, init_params)
+            self._compute_covariance(X_train)
 
-        # Compute last-layer covariance matrix F^T F
-        self._compute_covariance(X_train)
-
-        # Calibrate uncertainty parameters if needed
-        if X_val is not None and (self.alpha_squared == "auto" or self.zeta_squared == "auto"):
-            self._calibrate_uncertainty(X_val, y_val)
+            if needs_calibration and X_val is not None:
+                pred, phi = self._features(self.params_, X_val)
+                folds.append((np.asarray(y_val - pred), phi, self.cov_matrix_))
         else:
-            # Set default values as arrays (one per output)
-            if self.alpha_squared == "auto":
-                self.alpha_squared_ = np.ones(self.n_outputs_)
-            elif np.isscalar(self.alpha_squared):
-                self.alpha_squared_ = np.full(self.n_outputs_, self.alpha_squared)
-            else:
-                self.alpha_squared_ = np.array(self.alpha_squared)
+            n_splits = min(self.cv, n_samples)
+            if needs_calibration and n_splits >= 2:
+                kfold = KFold(n_splits=n_splits, shuffle=True, random_state=self.random_state)
+                for train_idx, test_idx in kfold.split(Xs):
+                    rng, fold_rng = random.split(rng)
+                    X_tr, y_tr = jnp.array(Xs[train_idx]), jnp.array(ys[train_idx])
+                    params_k = self._train(X_tr, y_tr, fold_rng)
+                    _, phi_tr = self._features(params_k, X_tr)
+                    pred, phi = self._features(params_k, jnp.array(Xs[test_idx]))
+                    folds.append((ys[test_idx] - np.asarray(pred), phi, phi_tr.T @ phi_tr))
 
-            if self.zeta_squared == "auto":
-                self.zeta_squared_ = np.full(self.n_outputs_, 1e-6)
-            elif np.isscalar(self.zeta_squared):
-                self.zeta_squared_ = np.full(self.n_outputs_, self.zeta_squared)
-            else:
-                self.zeta_squared_ = np.array(self.zeta_squared)
+            rng, final_rng = random.split(rng)
+            X_all = jnp.array(Xs)
+            self.params_ = self._train(X_all, jnp.array(ys), final_rng, init_params=init_params)
+            self._compute_covariance(X_all)
+
+        self._calibrate_uncertainty(folds)
 
         return self
 
     def _compute_covariance(self, X):
-        """Compute F^T F covariance matrix from training data."""
-        # Extract last-layer features for all training samples
-        _, features = self.model_.apply(self.params_, X, return_features=True)
+        """Compute the FᵀF covariance matrix from (scaled) training data."""
+        _, phi = self._features(self.params_, X)
+        self.n_features_ = phi.shape[1]
+        self.cov_matrix_ = phi.T @ phi
 
-        # Compute F^T F in batches to save memory
-        self.n_features_ = features.shape[1]
-        cov_matrix = jnp.zeros((self.n_features_, self.n_features_))
-
-        batch_size = min(1000, X.shape[0])
-        n_batches = (X.shape[0] + batch_size - 1) // batch_size
-
-        for i in range(n_batches):
-            start_idx = i * batch_size
-            end_idx = min(start_idx + batch_size, X.shape[0])
-            features_batch = features[start_idx:end_idx]
-            cov_matrix += features_batch.T @ features_batch
-
-        self.cov_matrix_ = cov_matrix
-
-    def _calibrate_uncertainty(self, X_val, y_val):
+    def _calibrate_uncertainty(self, folds):
         """
-        Calibrate alpha_squared and zeta_squared on validation set.
-        Uses grid search to minimize validation NLL.
+        Calibrate alpha_squared and zeta_squared on held-out residuals.
+
+        ``folds`` is a list of ``(residuals, features, covariance)`` from a
+        validation split or from cross-validation, all in standardized units.
+        For each ζ² candidate the NLL-optimal α² = mean(r² / u) is used, where
+        u = f★ᵀ(C + ζ²I)^{-1} f★, and the ζ² with the lowest NLL is kept. ζ² is
+        searched relative to trace(C) / n_features so that it transfers between
+        the fold models and the final model. With no folds, defaults are used.
 
         For multi-output models, each output is calibrated separately.
         """
-        X_val = jnp.array(X_val)
-        y_val = jnp.array(y_val)
-
-        # Ensure y_val is 2D
-        if y_val.ndim == 1:
-            y_val = y_val.reshape(-1, 1)
-
-        # Get predictions and features on validation set
-        predictions, features = self.model_.apply(self.params_, X_val, return_features=True)
-
-        # Grid search over hyperparameters
-        alpha_candidates = jnp.logspace(-2, 2, 20)
-        zeta_candidates = jnp.logspace(-2, 2, 20)
-
-        # Calibrate each output separately
         alpha_squared_list = []
         zeta_squared_list = []
+        relative_zetas = np.logspace(-8, 2, 41)
+        final_trace = float(jnp.trace(self.cov_matrix_)) / self.n_features_
 
         for j in range(self.n_outputs_):
-            best_nll = float("inf")
-            best_alpha = 1.0
-            best_zeta = 1e-2
+            y_scale2 = self.y_scale_[j] ** 2
+            best_nll, best_alpha, best_zeta = float("inf"), None, None
 
-            y_j = y_val[:, j]
-            pred_j = predictions[:, j]
+            if folds:
+                r2 = np.concatenate([res[:, j] ** 2 for res, _, _ in folds])
 
-            for alpha in alpha_candidates:
-                for zeta in zeta_candidates:
-                    # Compute uncertainties
-                    variances = self._compute_uncertainties_batch(features, alpha, zeta)
+                if self.zeta_squared == "auto":
+                    candidates = relative_zetas
+                else:
+                    candidates = [_per_output(self.zeta_squared, j)]
+
+                for zeta in candidates:
+                    u = []
+                    for _, phi, cov in folds:
+                        if self.zeta_squared == "auto":
+                            zeta_k = zeta * float(jnp.trace(cov)) / cov.shape[0]
+                        else:
+                            zeta_k = zeta
+                        u.append(_quad_form(phi, cov, zeta_k))
+                    u = np.concatenate(u)
 
                     # Skip if any variance is non-positive or NaN
-                    if jnp.any(variances <= 0) or jnp.any(jnp.isnan(variances)):
+                    if not np.all(np.isfinite(u)) or np.any(u <= 0):
                         continue
 
-                    # Compute negative log-likelihood for this output
-                    nll = jnp.mean(
-                        0.5 * ((y_j - pred_j) ** 2 / variances + jnp.log(2 * jnp.pi * variances))
-                    )
+                    if self.alpha_squared == "auto":
+                        alpha = max(float(np.mean(r2 / u)), 1e-12)
+                    else:
+                        alpha = _per_output(self.alpha_squared, j) / y_scale2
 
-                    if jnp.isfinite(nll) and nll < best_nll:
-                        best_nll = nll
-                        best_alpha = alpha
-                        best_zeta = zeta
+                    variances = alpha * u
+                    nll = np.mean(0.5 * (r2 / variances + np.log(2 * np.pi * variances)))
 
-            if self.alpha_squared == "auto":
-                alpha_squared_list.append(float(best_alpha))
+                    if np.isfinite(nll) and nll < best_nll:
+                        best_nll, best_alpha, best_zeta = nll, alpha, zeta
+
+            # alpha in original units of y²; zeta in absolute units of FᵀF
+            if self.alpha_squared != "auto":
+                alpha_squared_list.append(_per_output(self.alpha_squared, j))
+            elif best_alpha is not None:
+                alpha_squared_list.append(best_alpha * y_scale2)
             else:
-                alpha_squared_list.append(
-                    self.alpha_squared if np.isscalar(self.alpha_squared) else self.alpha_squared[j]
-                )
+                alpha_squared_list.append(y_scale2)
 
-            if self.zeta_squared == "auto":
-                zeta_squared_list.append(float(best_zeta))
+            if self.zeta_squared != "auto":
+                zeta_squared_list.append(_per_output(self.zeta_squared, j))
+            elif best_zeta is not None:
+                zeta_squared_list.append(best_zeta * final_trace)
             else:
-                zeta_squared_list.append(
-                    self.zeta_squared if np.isscalar(self.zeta_squared) else self.zeta_squared[j]
-                )
+                zeta_squared_list.append(1e-6)
 
-            if self.n_outputs_ > 1:
+            if self.verbose:
                 print(
                     f"Output {j}: alpha²={alpha_squared_list[-1]:.2e}, "
                     f"zeta²={zeta_squared_list[-1]:.2e}, NLL={best_nll:.4f}"
@@ -385,30 +477,12 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         self.alpha_squared_ = np.array(alpha_squared_list)
         self.zeta_squared_ = np.array(zeta_squared_list)
 
-        if self.n_outputs_ == 1:
-            print(
-                f"Calibrated: alpha²={self.alpha_squared_[0]:.2e}, "
-                f"zeta²={self.zeta_squared_[0]:.2e}, NLL={best_nll:.4f}"
-            )
-
     def _compute_uncertainties_batch(self, features, alpha_squared, zeta_squared):
         """
-        Compute uncertainties for a batch of features.
-        σ²★ = α² f★ᵀ(F^T F + ζ²I)^{-1} f★
+        Compute uncertainties for a batch of (augmented) features.
+        σ²★ = α² f★ᵀ(FᵀF + ζ²I)^{-1} f★
         """
-        # Regularized inverse covariance
-        reg_cov = self.cov_matrix_ + zeta_squared * jnp.eye(self.n_features_)
-        inv_cov = jnp.linalg.inv(reg_cov)
-
-        # Vectorized computation: for each feature vector f★
-        # uncertainty = α² * f★^T * inv_cov * f★
-        @jit
-        def compute_single_uncertainty(f):
-            return alpha_squared * f.T @ inv_cov @ f
-
-        uncertainties = vmap(compute_single_uncertainty)(features)
-
-        return uncertainties
+        return alpha_squared * _quad_form(features, self.cov_matrix_, zeta_squared)
 
     def predict(self, X, return_std=False):
         """
@@ -431,14 +505,14 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         if return_std:
             return self.predict_with_uncertainty(X, return_std=True)
 
-        X = jnp.array(X)
-        predictions = self.model_.apply(self.params_, X)
+        predictions = self.model_.apply(self.params_, self._transform_X(X))
+        predictions = np.array(predictions) * self.y_scale_ + self.y_mean_
 
         # Squeeze single-output to 1D for backward compatibility
         if self.n_outputs_ == 1:
             predictions = predictions.squeeze(axis=1)
 
-        return np.array(predictions)
+        return predictions
 
     def predict_with_uncertainty(self, X, return_std=True):
         """
@@ -458,22 +532,17 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
         uncertainty : array of shape (n_samples,) or (n_samples, n_outputs)
             Predicted uncertainties (std or variance)
         """
-        X = jnp.array(X)
-
         # Get predictions and last-layer features
-        predictions, features = self.model_.apply(self.params_, X, return_features=True)
+        predictions, features = self._features(self.params_, self._transform_X(X))
+        predictions = np.array(predictions) * self.y_scale_ + self.y_mean_
 
         # Compute per-output uncertainties using each output's calibration params
-        n_samples = X.shape[0]
-        variances = np.zeros((n_samples, self.n_outputs_))
+        variances = np.zeros(predictions.shape)
 
         for j in range(self.n_outputs_):
-            alpha_j = self.alpha_squared_[j]
-            zeta_j = self.zeta_squared_[j]
-            var_j = self._compute_uncertainties_batch(features, alpha_j, zeta_j)
-            variances[:, j] = np.array(var_j)
-
-        predictions = np.array(predictions)
+            variances[:, j] = self._compute_uncertainties_batch(
+                features, self.alpha_squared_[j], self.zeta_squared_[j]
+            )
 
         # Squeeze single-output to 1D for backward compatibility
         if self.n_outputs_ == 1:
@@ -484,6 +553,165 @@ class LLPRRegressor(BaseEstimator, RegressorMixin):
             return predictions, np.sqrt(variances)
         else:
             return predictions, variances
+
+    def get_dense_layers(self):
+        """
+        Return the network as dense layers in the original units of X and y.
+
+        The internal standardization is folded into the first and last layers,
+        so the layers map raw X to raw y. Only the mean prediction is exported,
+        not the uncertainty.
+
+        Returns
+        -------
+        layers : list of (W, b, activation)
+            ``W`` has shape (n_in, n_out) so that a layer computes
+            ``activation(x @ W + b)``. ``activation`` is the network activation
+            for hidden layers and 'linear' for the output layer.
+        """
+        if self.activation not in _EXPORT_ACTIVATIONS:
+            raise ValueError(
+                f"Cannot export a network with activation={self.activation!r}. "
+                f"Supported: {sorted(_EXPORT_ACTIVATIONS)} ('relu' gives an exact MILP)."
+            )
+
+        params = self.params_["params"]
+        names = [f"hidden_layers_{i}" for i in range(len(self.hidden_dims))] + ["output_layer"]
+        layers = []
+        for i, name in enumerate(names):
+            W = np.asarray(params[name]["kernel"], dtype=np.float64)
+            b = np.asarray(params[name]["bias"], dtype=np.float64)
+            if i == 0:
+                # (x - mean) / scale @ W + b = x @ (W / scale) + (b - (mean / scale) @ W)
+                b = b - (self.X_mean_ / self.X_scale_) @ W
+                W = W / self.X_scale_[:, None]
+            if name == "output_layer":
+                W = W * self.y_scale_
+                b = b * self.y_scale_ + self.y_mean_
+            activation = "linear" if name == "output_layer" else self.activation
+            layers.append((W, b, activation))
+        return layers
+
+    def _default_input_bounds(self, input_bounds):
+        if input_bounds is None:
+            return np.asarray(self.X_min_, dtype=float), np.asarray(self.X_max_, dtype=float)
+        lb, ub = input_bounds
+        return np.asarray(lb, dtype=float), np.asarray(ub, dtype=float)
+
+    def to_onnx(self, path=None, opset=17):
+        """
+        Export the mean prediction network to ONNX.
+
+        The graph is a sequential chain of Gemm and Relu (or Tanh) nodes in
+        float64, in the original units of X and y. It can be loaded by
+        ``discopt.ml.load_onnx``, OMLT's ONNX reader, or onnxruntime.
+
+        Parameters
+        ----------
+        path : str or Path, optional
+            If given, the model is also saved to this file.
+        opset : int, default=17
+            ONNX opset version.
+
+        Returns
+        -------
+        model : onnx.ModelProto
+        """
+        try:
+            import onnx
+            from onnx import TensorProto, helper, numpy_helper
+        except ImportError as e:
+            raise ImportError("onnx is required for to_onnx. Install with: pip install onnx") from e
+
+        nodes, initializers = [], []
+        current = "X"
+        for i, (W, b, activation) in enumerate(self.get_dense_layers()):
+            initializers.append(numpy_helper.from_array(W, name=f"W{i}"))
+            initializers.append(numpy_helper.from_array(b, name=f"b{i}"))
+            out = f"z{i}"
+            nodes.append(
+                # alpha/beta/transB are written explicitly: OMLT's reader requires them
+                helper.make_node(
+                    "Gemm",
+                    [current, f"W{i}", f"b{i}"],
+                    [out],
+                    name=f"dense{i}",
+                    alpha=1.0,
+                    beta=1.0,
+                    transB=0,
+                )
+            )
+            current = out
+            if activation != "linear":
+                out = f"a{i}"
+                op = _EXPORT_ACTIVATIONS[activation]
+                nodes.append(helper.make_node(op, [current], [out], name=f"{activation}{i}"))
+                current = out
+        # The output layer is linear, so its Gemm produces "y" directly (OMLT's
+        # reader does not accept a trailing Identity node)
+        nodes[-1].output[0] = "y"
+
+        graph = helper.make_graph(
+            nodes,
+            "LLPRRegressor",
+            [helper.make_tensor_value_info("X", TensorProto.DOUBLE, [None, self.n_features_in_])],
+            [helper.make_tensor_value_info("y", TensorProto.DOUBLE, [None, self.n_outputs_])],
+            initializer=initializers,
+        )
+        model = helper.make_model(
+            graph, opset_imports=[helper.make_opsetid("", opset)], producer_name="pycse"
+        )
+        # Keep the IR version readable by older runtimes
+        model.ir_version = min(model.ir_version, 8)
+        onnx.checker.check_model(model)
+
+        if path is not None:
+            onnx.save(model, str(path))
+        return model
+
+    def to_omlt(self, input_bounds=None):
+        """
+        Export the mean prediction network as an OMLT ``NetworkDefinition``.
+
+        Use it with a Pyomo ``OmltBlock`` and a formulation, e.g.
+        ``ReluBigMFormulation`` for an exact MILP of a ReLU network::
+
+            from omlt import OmltBlock
+            from omlt.neuralnet import ReluBigMFormulation
+            m.nn = OmltBlock()
+            m.nn.build_formulation(ReluBigMFormulation(model.to_omlt()))
+            # inputs: m.nn.inputs[i], outputs: m.nn.outputs[j]
+
+        Parameters
+        ----------
+        input_bounds : tuple of (lb, ub) arrays, optional
+            Bounds on each input in original units. Big-M formulations need
+            them. Defaults to the range of the training data.
+
+        Returns
+        -------
+        net : omlt.neuralnet.NetworkDefinition
+        """
+        try:
+            from omlt.neuralnet import NetworkDefinition
+            from omlt.neuralnet.layer import DenseLayer, InputLayer
+        except ImportError as e:
+            raise ImportError("omlt is required for to_omlt. Install with: pip install omlt") from e
+
+        lb, ub = self._default_input_bounds(input_bounds)
+        bounds = {i: (float(lb[i]), float(ub[i])) for i in range(self.n_features_in_)}
+        net = NetworkDefinition(scaled_input_bounds=bounds, unscaled_input_bounds=bounds)
+
+        previous = InputLayer([self.n_features_in_])
+        net.add_layer(previous)
+        for W, b, activation in self.get_dense_layers():
+            layer = DenseLayer(
+                previous.output_size, [W.shape[1]], weights=W, biases=b, activation=activation
+            )
+            net.add_layer(layer)
+            net.add_edge(previous, layer)
+            previous = layer
+        return net
 
     def score(self, X, y):
         """

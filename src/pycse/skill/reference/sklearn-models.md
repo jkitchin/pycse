@@ -53,6 +53,9 @@ These models train one network, then estimate uncertainty from the last-layer fe
 `alpha_squared` and `zeta_squared` are calibrated on a held-out `val_size` fraction when `"auto"`.
 
 - **`LLPRRegressor(hidden_dims=(64, 64), activation="silu", n_epochs=400, ...)`** (alias `LLPR`).
+  `calibration="auto"` uses K-fold (`cv=5`) calibration below 100 samples and a holdout otherwise;
+  X and y are standardized internally (`standardize=True`). ReLU/tanh networks export the mean
+  model with `to_onnx()` / `to_omlt()`.
 - **`KANLLPR(layers, grid_size=5, spline_order=3, ...)`**: KAN with LLPR uncertainty.
 - **`JAXMonotonicRegressor(hidden_dims=(32, 32), monotonicity=1, convexity=None, epochs=50, ...)`**:
   `monotonicity` is one value per feature: `1` increasing, `-1` decreasing, `0` unconstrained.
