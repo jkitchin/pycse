@@ -446,6 +446,37 @@ class TestLayers:
         np.testing.assert_allclose(scaled.forward(X), net.forward(Xs) * y_scale + y_mean)
         np.testing.assert_allclose(scaled.predict_std(X), net.predict_std(Xs) * np.abs(y_scale))
 
+    @pytest.mark.parametrize("y_scale", [2.0, -2.0, 0.0])
+    def test_scale_outputs_std_tapping_last_layer(self, y_scale):
+        # Issue #116: a StdSpec on the final layer must keep its original features.
+        net = MIPNetwork([Affine([[1.0]], [0.0])], std=[StdSpec(tap=0, A=[[1.0]])])
+        scaled = net.scale_outputs(3.0, y_scale)
+        X = np.array([[1.0], [2.0], [-1.5]])
+        np.testing.assert_allclose(scaled.forward(X), X * y_scale + 3.0)
+        np.testing.assert_allclose(scaled.predict_std(X), np.abs(X) * abs(y_scale))
+        np.testing.assert_allclose(net.layers[0].W, [[1.0]])  # source is not mutated
+
+    def test_scale_outputs_two_outputs_tapping_last_layer(self):
+        net = random_network(n_in=2, n_out=2, seed=3)
+        tap = len(net.layers) - 1
+        net.std = [StdSpec(tap=tap, A=[[1.0, 0.5]]), StdSpec(tap=tap, A=[[-1.0, 2.0]], d=0.3)]
+        y_mean, y_scale = np.array([10.0, -5.0]), np.array([4.0, -2.0])
+        scaled = net.scale_outputs(y_mean, y_scale)
+        X = np.random.default_rng(4).normal(size=(10, 2))
+        np.testing.assert_allclose(scaled.forward(X), net.forward(X) * y_scale + y_mean)
+        np.testing.assert_allclose(scaled.predict_std(X), net.predict_std(X) * np.abs(y_scale))
+
+    @needs_highs
+    def test_scale_outputs_tapping_last_layer_exported_variance(self):
+        net = MIPNetwork([Affine([[1.0]], [0.0])], std=[StdSpec(tap=0, A=[[1.0]])])
+        scaled = net.scale_outputs(3.0, 2.0)
+        X = np.array([[-1.5], [0.0], [1.0]])
+        check_fixed_inputs(
+            None, scaled, X, [(-2.0, 2.0)], scaled.forward, predict_std=scaled.predict_std
+        )
+        y, var = solve_at(add_to_pyomo(scaled, input_bounds=[(-2.0, 2.0)]), [1.0])
+        np.testing.assert_allclose([y[0], np.sqrt(var[0])], [5.0, 2.0], atol=1e-6)
+
 
 @needs_highs
 class TestPyomoLayers:
