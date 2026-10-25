@@ -450,12 +450,18 @@ class MIPNetwork:
         return net
 
     def scale_outputs(self, mean, scale):
-        """Network predicting ``y * scale + mean`` (and std times ``|scale|``)."""
+        """Network predicting ``y * scale + mean`` (and std times ``|scale|``).
+
+        The scaling is folded into the last layer, unless that layer is a ReLU or
+        Elementwise1D, or a ``StdSpec`` taps it; then a new ``Affine`` layer is
+        appended so the tapped features are unchanged.
+        """
         net = copy.deepcopy(self)
         mean = np.broadcast_to(np.asarray(mean, dtype=float).reshape(-1), (net.n_outputs,))
         scale = np.broadcast_to(np.asarray(scale, dtype=float).reshape(-1), (net.n_outputs,))
         last = net.layers[-1]
-        if isinstance(last, (ReLU, Elementwise1D)):
+        taps_last = any(spec.tap == len(net.layers) - 1 for spec in net.std or [])
+        if isinstance(last, (ReLU, Elementwise1D)) or taps_last:
             net.layers.append(Affine(np.diag(scale), mean))
         else:
             last.W = last.W * scale
