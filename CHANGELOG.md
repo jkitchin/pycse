@@ -3,6 +3,16 @@
 Notable changes to pycse. Earlier releases are described on the
 [GitHub releases page](https://github.com/jkitchin/pycse/releases).
 
+## Unreleased
+
+### Changed
+
+- The agent skill moved to `src/pycse/skills/pycse/` (its reference files are now in
+  `references/`) so the repository can be installed with
+  `uvx knowhow add jkitchin/pycse --skill pycse` or `npx skills add jkitchin/pycse`.
+  `--mcp pycse` installs the MCP server from the new `mcp/pycse.json`, and
+  `.claude-plugin/marketplace.json` makes the repo a Claude Code plugin marketplace.
+
 ## 2.13.0 (2026-10-24)
 
 ### New

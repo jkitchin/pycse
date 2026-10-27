@@ -38,6 +38,23 @@ Feeling brave? You can install the cutting edge from GitHub:
 pip install git+https://github.com/jkitchin/pycse
 ```
 
+## AI agent skill and MCP server
+
+pycse ships an [Agent Skills](https://agentskills.io) skill that teaches coding agents
+(Claude Code, Codex, VS Code/Copilot, Gemini CLI, Cursor, OpenCode, ...) how to use pycse,
+and an MCP server with design-of-experiments and documentation tools. Install them with
+[knowhow](https://github.com/jkitchin/knowhow) (or `npx skills` for the skill):
+
+```sh
+uvx knowhow add jkitchin/pycse --skill pycse         # this project; add -g for all projects
+uvx knowhow add jkitchin/pycse --mcp pycse           # MCP server (runs uvx --from "pycse[mcp]" pycse_mcp)
+npx skills add jkitchin/pycse --skill pycse
+```
+
+The repository is also a Claude Code plugin marketplace:
+`/plugin marketplace add jkitchin/pycse` then `/plugin install pycse@pycse`.
+If pycse is already installed, `pycse skill install` copies the skill to `~/.claude/skills/pycse`.
+
 ## Docker
 
 You can use a Docker image to run everything here. You have to have Docker installed and working on your system.

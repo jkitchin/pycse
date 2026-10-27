@@ -23,7 +23,7 @@ pycse/
 ├── src/pycse/           # Main source code
 │   ├── PYCSE.py         # Core regression functions (regress, nlinfit, etc.)
 │   ├── cli.py           # `pycse` CLI (launch, mcp, skill)
-│   ├── skill/           # Claude Code skill: SKILL.md + reference/*.md
+│   ├── skills/pycse/    # Agent skill: SKILL.md + references/*.md
 │   ├── beginner.py      # Beginner-friendly utilities
 │   ├── utils.py         # General utilities
 │   ├── sklearn/         # sklearn-compatible ML models
@@ -140,10 +140,16 @@ lazily exported from `pycse.sklearn` (the `_LAZY` table in `sklearn/__init__.py`
   and compare to `predict()` (std objectives and SISSO tests need gurobipy and skip without it).
   Walkthrough: `pycse-jb/.../docs/mip.ipynb`
 
-### Claude Code skill (`src/pycse/skill/`)
+### Agent skill (`src/pycse/skills/pycse/`)
 `pycse skill install` copies this directory to `~/.claude/skills/pycse/`. Keep the
 examples in it in sync with the API when signatures change; `test_cli.py` checks
 the frontmatter and that its links resolve.
+
+The repo is installable with `knowhow add jkitchin/pycse` / `npx skills add`: the
+skill is found through `.claude-plugin/marketplace.json` (plugin source `./src/pycse`,
+whose `skills/` holds it) and the MCP server through `mcp/pycse.json`. The directory
+name must equal the frontmatter `name`, and detail files live in `references/`. Check
+with `uvx knowhow validate .`.
 
 ## Important Notes
 

@@ -39,7 +39,7 @@ and `polyfit(x, y, deg)` with `polyval(p, xnew, x, y)`. All take `alpha=0.05` fo
 (`lower, upper = yint`); write `yint[:, 0]`, `yint[:, 1]` instead.
 
 Signatures, model selection (`bic`, `lbic`, `Rsquared`) and the difference between the
-standard errors each function returns: [reference/regression.md](reference/regression.md).
+standard errors each function returns: [references/regression.md](references/regression.md).
 
 ## Models with uncertainty (`pycse.sklearn`)
 
@@ -72,14 +72,14 @@ y_mean, y_std = model.predict(X_test, return_std=True)
 | Energy landscapes, critical points, heterogeneous data | `ZENNRegressor`, `ZENNClassifier` |
 
 Constructor arguments, examples and pitfalls for each model:
-[reference/sklearn-models.md](reference/sklearn-models.md).
+[references/sklearn-models.md](references/sklearn-models.md).
 
 ## Design of experiments and active learning
 
 `LatinSquare` (three factors, equal numbers of levels, analyzed with ANOVA),
 `SurfaceResponse` (Box-Behnken or central composite design plus a quadratic fit) and
 `ActiveLearner` (choose the next experiments with an acquisition function):
-[reference/doe.md](reference/doe.md).
+[references/doe.md](references/doe.md).
 
 ## Other utilities
 
