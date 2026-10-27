@@ -597,7 +597,7 @@ class TestCLICommandNames:
         import pycse as pkg
         from pycse.cli import pycse
 
-        text = (pathlib.Path(pkg.__file__).parent / "skill" / "SKILL.md").read_text()
+        text = (pathlib.Path(pkg.__file__).parent / "skills" / "pycse" / "SKILL.md").read_text()
         found = re.findall(r"^pycse (mcp|skill) (\S+)", text, flags=re.M)
         assert found
         for group, name in found:
@@ -612,7 +612,7 @@ class TestCLICommandNames:
             result = CliRunner().invoke(cli.pycse, ["skill", "install"])
             assert result.exit_code == 0, result.output
             assert (dest / "SKILL.md").exists()
-            assert (dest / "reference" / "regression.md").exists()
+            assert (dest / "references" / "regression.md").exists()
 
             stale = dest / "stale.md"
             stale.write_text("old")
@@ -630,7 +630,7 @@ class TestSkillContent:
         import pathlib
         import pycse as pkg
 
-        return pathlib.Path(pkg.__file__).parent / "skill"
+        return pathlib.Path(pkg.__file__).parent / "skills" / "pycse"
 
     def test_frontmatter(self):
         """name and description meet the Agent Skills limits."""

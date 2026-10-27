@@ -276,7 +276,7 @@ def install_skill():
     import pycse
     import pathlib
 
-    skill_source = pathlib.Path(pycse.__file__).parent / "skill"
+    skill_source = pathlib.Path(pycse.__file__).parent / "skills" / "pycse"
 
     if not (skill_source / "SKILL.md").exists():
         click.secho(f"Error: SKILL.md not found in {skill_source}", fg="red", err=True)
